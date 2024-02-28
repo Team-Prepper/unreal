@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-Prepper.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Temp\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
+"C:\Temp\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Prepper.cpp.obj"
+"C:\Temp\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Default.rc2.res"
+/OUT:"C:\Temp\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\UnrealEditor-Prepper.lib"

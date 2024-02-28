@@ -1,0 +1,8 @@
+{
+	"SourceFiles": [
+		"C:\\Temp\\Prepper\\Source\\Prepper\\Prepper.Build.cs",
+		"C:\\Temp\\Prepper\\Source\\Prepper.Target.cs",
+		"C:\\Temp\\Prepper\\Source\\PrepperEditor.Target.cs"
+	],
+	"EngineVersion": "5.3.2"
+}
