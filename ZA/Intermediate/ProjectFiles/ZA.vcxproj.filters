@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <None Include="..\..\ZA.uproject" />
+    <Filter Include="Source">
+      <UniqueIdentifier>{F31BBDD1-B3E8-3BCC-9652-680E16935819}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\ZA.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\Source\ZAEditor.Target.cs">
+      <Filter>Source</Filter>
+    </None>
+    <None Include="..\..\.vsconfig" />
+    <None Include="..\..\UpgradeLog.htm" />
+    <Filter Include="Config">
+      <UniqueIdentifier>{FA535FFB-25E1-3D20-B416-52F9BE21E06E}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Config\DefaultEditor.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultEngine.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultGame.ini">
+      <Filter>Config</Filter>
+    </None>
+    <None Include="..\..\Config\DefaultInput.ini">
+      <Filter>Config</Filter>
+    </None>
+    <Filter Include="Source\ZA">
+      <UniqueIdentifier>{325DBA98-375D-37A4-A4FA-74B08677AB32}</UniqueIdentifier>
+    </Filter>
+    <None Include="..\..\Source\ZA\ZA.Build.cs">
+      <Filter>Source\ZA</Filter>
+    </None>
+    <ClCompile Include="..\..\Source\ZA\ZA.cpp">
+      <Filter>Source\ZA</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\ZA\ZA.h">
+      <Filter>Source\ZA</Filter>
+    </ClInclude>
+    <Filter Include="Source\ZA\Private">
+      <UniqueIdentifier>{EC0A422B-1997-3422-9109-EF45046A4965}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\ZA\Private\Inventory.cpp">
+      <Filter>Source\ZA\Private</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ZA\Private\TestPawn.cpp">
+      <Filter>Source\ZA\Private</Filter>
+    </ClCompile>
+    <Filter Include="Source\ZA\Public">
+      <UniqueIdentifier>{496279EB-C22C-335A-9463-22F3635D8651}</UniqueIdentifier>
+    </Filter>
+    <ClInclude Include="..\..\Source\ZA\Public\Inventory.h">
+      <Filter>Source\ZA\Public</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ZA\Public\TestPawn.h">
+      <Filter>Source\ZA\Public</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

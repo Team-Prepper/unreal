@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "ZA",
+			"Path": "..\\Source\\ZA.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "ZAEditor",
+			"Path": "..\\Source\\ZAEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}
