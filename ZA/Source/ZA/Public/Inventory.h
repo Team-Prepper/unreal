@@ -14,11 +14,11 @@ class ZA_API Inventory
 {
 private:
 	struct InventoryUnit {
-		int itemCode = 0;
-		int itemAmount = 0;
+		int32 itemCode = -1;
+		uint32 itemAmount = 0;
 
+		static bool compare(InventoryUnit &a, InventoryUnit &b);
 	};
-	bool InventoryUnitCompare(InventoryUnit a, InventoryUnit b);
 
 	InventoryUnit _units[INVENTORY_CAPACITY];
 
@@ -26,9 +26,11 @@ public:
 	Inventory();
 	~Inventory();
 
-	void SortAll();
-	void AddItem(int itemCode);
-	void AddItemAt(int itemCode, int idx);
-	int GetItemAmountAt(int idx);
-	int GetItemCodeAt(int idx);
+	void SortInventory();
+	
+	bool TryAddItem(int32 itemCode);
+	bool TryAddItemAt(int32 itemCode, uint32 idx);
+
+	uint32 GetItemAmountAt(uint32 idx);
+	int32 GetItemCodeAt(uint32 idx);
 };

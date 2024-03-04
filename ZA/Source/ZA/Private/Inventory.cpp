@@ -2,7 +2,7 @@
 
 
 #include "Inventory.h"
-//#include <algorithm>
+#include <algorithm>
 
 Inventory::Inventory()
 {
@@ -14,18 +14,18 @@ Inventory::~Inventory()
 
 }
 
-bool Inventory::InventoryUnitCompare(InventoryUnit a, InventoryUnit b) {
+bool Inventory::InventoryUnit::compare(InventoryUnit &a, InventoryUnit &b) {
 	if (a.itemAmount == 0) return false;
 	if (b.itemAmount == 0) return true;
 
 	return a.itemCode < b.itemCode;
 }
 
-void Inventory::SortAll() {
-	//std::sort(_units, _units + INVENTORY_CAPACITY, InventoryUnitCompare);
+void Inventory::SortInventory() {
+	std::sort(_units, _units + INVENTORY_CAPACITY, InventoryUnit::compare);
 }
 
-void Inventory::AddItem(int itemCode) {
+bool Inventory::TryAddItem(int32 itemCode) {
 	// 아이템을 추가할 위치
 	int targetPos = -1;
 
@@ -42,30 +42,37 @@ void Inventory::AddItem(int itemCode) {
 
 	// targetPos가 -1이면 아이템을 추가할 공간을 발견하지 못한 것
 	if (targetPos == -1)
-		return;
+		return false;
 
 	_units[targetPos].itemCode = itemCode;
 	_units[targetPos].itemAmount++;
 
+	return true;
+
 }
 
-void Inventory::AddItemAt(int itemCode, int idx) {
+bool Inventory::TryAddItemAt(int32 itemCode, uint32 idx) {
 
 	// idx에 다른 아이템이 이미 있다면 추가 불가능
 	if (_units[idx].itemAmount != itemCode && _units[idx].itemAmount > 0) {
-		return;
+		return false;
 	}
 
 	_units[idx].itemCode = itemCode;
 	_units[idx].itemAmount++;
 
+	return true;
+
 }
 
-int Inventory::GetItemAmountAt(int idx) {
+uint32 Inventory::GetItemAmountAt(uint32 idx) {
 	return _units[idx].itemAmount;
 }
 
-int Inventory::GetItemCodeAt(int idx) {
+int32 Inventory::GetItemCodeAt(uint32 idx) {
+	if (GetItemAmountAt(idx) == 0)
+		return -1;
+
 	return _units[idx].itemCode;
 	
 }
