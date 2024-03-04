@@ -10,27 +10,28 @@
 /**
  * 
  */
-class ZA_API Inventory
+class ZA_API FInventory
 {
-private:
-	struct InventoryUnit {
-		int32 itemCode = -1;
-		uint32 itemAmount = 0;
-
-		static bool compare(InventoryUnit &a, InventoryUnit &b);
-	};
-
-	InventoryUnit _units[INVENTORY_CAPACITY];
 
 public:
-	Inventory();
-	~Inventory();
+	FInventory();
+	~FInventory();
 
 	void SortInventory();
 	
-	bool TryAddItem(int32 itemCode);
-	bool TryAddItemAt(int32 itemCode, uint32 idx);
+	bool TryAddItem(int32 ItemCode);
+	bool TryAddItemAt(int32 ItemCode, uint32 Idx);
 
-	uint32 GetItemAmountAt(uint32 idx);
-	int32 GetItemCodeAt(uint32 idx);
+	uint32 GetItemAmountAt(uint32 Idx) const;
+	int32 GetItemCodeAt(uint32 Idx) const;
+private:
+	struct FInventoryUnit {
+		int32 ItemCode = -1;
+		uint32 ItemAmount = 0;
+
+		static bool Compare(const FInventoryUnit &A, const FInventoryUnit &B);
+	};
+
+	FInventoryUnit Units[INVENTORY_CAPACITY];
+
 };

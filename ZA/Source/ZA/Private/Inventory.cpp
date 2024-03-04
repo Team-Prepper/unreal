@@ -4,75 +4,77 @@
 #include "Inventory.h"
 #include <algorithm>
 
-Inventory::Inventory()
+FInventory::FInventory()
 {
 	
 }
 
-Inventory::~Inventory()
+FInventory::~FInventory()
 {
 
 }
 
-bool Inventory::InventoryUnit::compare(InventoryUnit &a, InventoryUnit &b) {
-	if (a.itemAmount == 0) return false;
-	if (b.itemAmount == 0) return true;
+bool FInventory::FInventoryUnit::Compare(const FInventoryUnit &A, const FInventoryUnit &B) {
+	if (A.ItemAmount == 0) return false;
+	if (B.ItemAmount == 0) return true;
 
-	return a.itemCode < b.itemCode;
+	return A.ItemCode < B.ItemCode;
 }
 
-void Inventory::SortInventory() {
-	std::sort(_units, _units + INVENTORY_CAPACITY, InventoryUnit::compare);
+void FInventory::SortInventory() {
+	std::sort(Units, Units + INVENTORY_CAPACITY, FInventoryUnit::Compare);
 }
 
-bool Inventory::TryAddItem(int32 itemCode) {
-	// ¾ÆÀÌÅÛÀ» Ãß°¡ÇÒ À§Ä¡
-	int targetPos = -1;
+bool FInventory::TryAddItem(const int32 ItemCode) {
+	// ì•„ì´í…œì„ ì¶”ê°€í•  ìœ„ì¹˜
+	int TargetPos = -1;
 
 	for (int i = 0; i < INVENTORY_CAPACITY; i++) {
-		// µ¿ÀÏÇÑ ¾ÆÀÌÅÛÀÌ ÀÖ°í, ¿ë·®À» ÃÊ°úÇÏÁö ¾Ê´Â Á¶°ÇÀ» ¸¸Á·ÇÏ´Â Ã¹ ¹øÂ° À§Ä¡¿¡ Ãß°¡
-		if (i == itemCode && _units[i].itemAmount < INVENTORY_UNIT_CAPACITY) {
-			targetPos = i;
+		// ë™ì¼í•œ ì•„ì´í…œì´ ìžˆê³ , ìš©ëŸ‰ì„ ì´ˆê³¼í•˜ì§€ ì•ŠëŠ” ì¡°ê±´ì„ ë§Œì¡±í•˜ëŠ” ì²« ë²ˆì§¸ ìœ„ì¹˜ì— ì¶”ê°€
+		if (i == ItemCode && Units[i].ItemAmount < INVENTORY_UNIT_CAPACITY) {
+			TargetPos = i;
 			break;
 		}
-		if (targetPos != -1) continue;
-		// ¸ðµç ½½·ÔÀ» È®ÀÎÇßÀ» ¶§ µ¿ÀÏÇÑ ¾ÆÀÌÅÛÀÌ ¾ø°Å³ª ¸ðµÎ ¿ë·®ÀÌ °¡µæÃ¡´Ù¸é Ã¹ ¹øÂ° ºóÄ­¿¡ Ãß°¡
-		if (_units[i].itemAmount == 0) targetPos = i;
+		if (TargetPos != -1) continue;
+		// ëª¨ë“  ìŠ¬ë¡¯ì„ í™•ì¸í–ˆì„ ë•Œ ë™ì¼í•œ ì•„ì´í…œì´ ì—†ê±°ë‚˜ ëª¨ë‘ ìš©ëŸ‰ì´ ê°€ë“ì°¼ë‹¤ë©´ ì²« ë²ˆì§¸ ë¹ˆì¹¸ì— ì¶”ê°€
+		if (Units[i].ItemAmount == 0) TargetPos = i;
 	}
 
-	// targetPos°¡ -1ÀÌ¸é ¾ÆÀÌÅÛÀ» Ãß°¡ÇÒ °ø°£À» ¹ß°ßÇÏÁö ¸øÇÑ °Í
-	if (targetPos == -1)
+	// targetPosê°€ -1ì´ë©´ ì•„ì´í…œì„ ì¶”ê°€í•  ê³µê°„ì„ ë°œê²¬í•˜ì§€ ëª»í•œ ê²ƒ
+	if (TargetPos == -1)
 		return false;
 
-	_units[targetPos].itemCode = itemCode;
-	_units[targetPos].itemAmount++;
+	Units[TargetPos].ItemCode = ItemCode;
+	Units[TargetPos].ItemAmount++;
 
 	return true;
 
 }
 
-bool Inventory::TryAddItemAt(int32 itemCode, uint32 idx) {
+bool FInventory::TryAddItemAt(const int32 ItemCode, uint32 Idx) {
 
-	// idx¿¡ ´Ù¸¥ ¾ÆÀÌÅÛÀÌ ÀÌ¹Ì ÀÖ´Ù¸é Ãß°¡ ºÒ°¡´É
-	if (_units[idx].itemAmount != itemCode && _units[idx].itemAmount > 0) {
+	// idxì— ë‹¤ë¥¸ ì•„ì´í…œì´ ì´ë¯¸ ìžˆë‹¤ë©´ ì¶”ê°€ ë¶ˆê°€ëŠ¥
+	if (Units[Idx].ItemAmount != ItemCode && Units[Idx].ItemAmount > 0) {
 		return false;
 	}
 
-	_units[idx].itemCode = itemCode;
-	_units[idx].itemAmount++;
+	Units[Idx].ItemCode = ItemCode;
+	Units[Idx].ItemAmount++;
 
 	return true;
 
 }
 
-uint32 Inventory::GetItemAmountAt(uint32 idx) {
-	return _units[idx].itemAmount;
+uint32 FInventory::GetItemAmountAt(const uint32 Idx) const
+{
+	return Units[Idx].ItemAmount;
 }
 
-int32 Inventory::GetItemCodeAt(uint32 idx) {
-	if (GetItemAmountAt(idx) == 0)
+int32 FInventory::GetItemCodeAt(const uint32 Idx) const
+{
+	if (GetItemAmountAt(Idx) == 0)
 		return -1;
 
-	return _units[idx].itemCode;
+	return Units[Idx].ItemCode;
 	
 }

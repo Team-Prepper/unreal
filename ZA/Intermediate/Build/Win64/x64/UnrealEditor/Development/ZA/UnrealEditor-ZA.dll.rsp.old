@@ -35,9 +35,11 @@
 /NODEFAULTLIB:"LIBCPD"
 /FUNCTIONPADMIN:6
 "C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\ZAEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
+"C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\UnrealEditor\Development\ZA\Inventory.gen.cpp.obj"
 "C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\UnrealEditor\Development\ZA\TestPawn.gen.cpp.obj"
 "C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\UnrealEditor\Development\ZA\ZA.init.gen.cpp.obj"
 "C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\UnrealEditor\Development\ZA\ZA.cpp.obj"
+"C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\UnrealEditor\Development\ZA\Inventory.cpp.obj"
 "C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\UnrealEditor\Development\ZA\TestPawn.cpp.obj"
 "C:\Temp\unreal\ZA\Intermediate\Build\Win64\x64\UnrealEditor\Development\ZA\Default.rc2.res"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\Engine\UnrealEditor-Engine.lib"

@@ -28,6 +28,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 private:
-	Inventory _inventory;
+	FInventory _inventory;
 
 };
