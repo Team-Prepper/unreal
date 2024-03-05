@@ -1,8 +1,8 @@
 {
 	"SourceFiles": [
-		"C:\\Temp\\unreal\\ZA\\Source\\ZA\\ZA.Build.cs",
-		"C:\\Temp\\unreal\\ZA\\Source\\ZA.Target.cs",
-		"C:\\Temp\\unreal\\ZA\\Source\\ZAEditor.Target.cs"
+		"/Users/jangbogwang/Documents/GitHub/unreal/ZA/Source/ZA/ZA.Build.cs",
+		"/Users/jangbogwang/Documents/GitHub/unreal/ZA/Source/ZA.Target.cs",
+		"/Users/jangbogwang/Documents/GitHub/unreal/ZA/Source/ZAEditor.Target.cs"
 	],
 	"EngineVersion": "5.3.2"
 }
