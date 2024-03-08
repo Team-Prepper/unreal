@@ -1563,6 +1563,21 @@
     <ClInclude Include="..\..\Source\Prepper\HUD\OverheadWidget.h">
       <Filter>Source\Prepper\HUD</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\Source\Prepper\HUD\PrepperHUD.cpp">
+      <Filter>Source\Prepper\HUD</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Prepper\HUD\PrepperHUD.h">
+      <Filter>Source\Prepper\HUD</Filter>
+    </ClInclude>
+    <Filter Include="Source\Prepper\PlayerController">
+      <UniqueIdentifier>{D7F18075-F1C1-34CD-8126-0A6A53E915CE}</UniqueIdentifier>
+    </Filter>
+    <ClCompile Include="..\..\Source\Prepper\PlayerController\PrepperPlayerController.cpp">
+      <Filter>Source\Prepper\PlayerController</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\Source\Prepper\PlayerController\PrepperPlayerController.h">
+      <Filter>Source\Prepper\PlayerController</Filter>
+    </ClInclude>
     <Filter Include="Source\Prepper\Weapon">
       <UniqueIdentifier>{DAA880BA-AEB8-3EBD-88E4-116E0C7C3667}</UniqueIdentifier>
     </Filter>

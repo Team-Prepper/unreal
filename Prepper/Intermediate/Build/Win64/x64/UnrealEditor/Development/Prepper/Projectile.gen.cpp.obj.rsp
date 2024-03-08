@@ -1,11 +1,11 @@
-"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\UnrealEditor\Inc\Prepper\UHT\Projectile.gen.cpp"
-/FI"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h"
-/FI"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Definitions.Prepper.h"
-/Yu"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h"
-/Fp"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.pch"
-/Fo"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Projectile.gen.cpp.obj"
-/sourceDependencies "C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Projectile.gen.cpp.dep.json"
-@"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Prepper.Shared.rsp"
+"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\UnrealEditor\Inc\Prepper\UHT\Projectile.gen.cpp"
+/FI"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h"
+/FI"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Definitions.Prepper.h"
+/Yu"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h"
+/Fp"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.pch"
+/Fo"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Projectile.gen.cpp.obj"
+/sourceDependencies "C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Projectile.gen.cpp.dep.json"
+@"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\UnrealEditor\Development\Prepper\Prepper.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

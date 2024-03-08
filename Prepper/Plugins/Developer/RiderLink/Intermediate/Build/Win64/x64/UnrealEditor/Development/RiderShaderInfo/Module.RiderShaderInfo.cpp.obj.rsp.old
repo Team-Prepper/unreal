@@ -1,8 +1,8 @@
-"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Module.RiderShaderInfo.cpp"
-/FI"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Definitions.h"
-/Fo"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Module.RiderShaderInfo.cpp.obj"
-/sourceDependencies "C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Module.RiderShaderInfo.cpp.dep.json"
-@"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\RiderShaderInfo.Shared.rsp"
+"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Module.RiderShaderInfo.cpp"
+/FI"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Definitions.h"
+/Fo"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Module.RiderShaderInfo.cpp.obj"
+/sourceDependencies "C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\Module.RiderShaderInfo.cpp.dep.json"
+@"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderShaderInfo\RiderShaderInfo.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

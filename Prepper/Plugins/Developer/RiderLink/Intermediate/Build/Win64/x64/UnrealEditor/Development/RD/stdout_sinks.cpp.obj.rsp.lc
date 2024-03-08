@@ -1,8 +1,8 @@
-"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\src\stdout_sinks.cpp"
-/FI"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\Definitions.h"
-/Fo"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\stdout_sinks.cpp.lc.obj"
-/sourceDependencies"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\stdout_sinks.cpp.dep.lc.json"
-@"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\RD.Shared.rsp"
+"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Source\RD\thirdparty\spdlog\src\stdout_sinks.cpp"
+/FI"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\Definitions.h"
+/Fo"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\stdout_sinks.cpp.lc.obj"
+/sourceDependencies"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\stdout_sinks.cpp.dep.lc.json"
+@"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\RD.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

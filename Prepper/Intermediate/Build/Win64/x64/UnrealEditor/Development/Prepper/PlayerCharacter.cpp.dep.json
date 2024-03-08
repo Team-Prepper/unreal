@@ -1,12 +1,12 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\character\\playercharacter.cpp",
+        "Source": "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\character\\playercharacter.cpp",
         "ProvidedModule": "",
-        "PCH": "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\preppereditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "PCH": "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\x64\\preppereditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
         "Includes": [
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\prepper\\definitions.prepper.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\character\\playercharacter.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\prepper\\definitions.prepper.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\character\\playercharacter.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\character.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\charactermovementreplication.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\experimental\\iris\\core\\public\\iris\\serialization\\irisobjectreferencepackagemap.h",
@@ -15,8 +15,8 @@
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\rootmotionsource.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\rootmotionsource.generated.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\character.generated.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\enums\\turninginplace.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\playercharacter.generated.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\enums\\turninginplace.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\playercharacter.generated.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\camera\\cameracomponent.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\cameracomponent.generated.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\gameframework\\springarmcomponent.h",
@@ -102,10 +102,10 @@
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\kismet\\kismetmathlibrary.inl",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\public\\net\\unrealnetwork.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\net\\core\\public\\net\\core\\propertyconditions\\propertyconditions.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\component\\combatcomponent.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\combatcomponent.generated.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\weapon\\weapon.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\weapon.generated.h"
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\component\\combatcomponent.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\combatcomponent.generated.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\weapon\\weapon.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\weapon.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []

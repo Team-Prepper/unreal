@@ -1,8 +1,8 @@
-"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src\SimpleSocket.cpp"
-/FI"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\Definitions.h"
-/Fo"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\SimpleSocket.cpp.obj"
-/sourceDependencies "C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\SimpleSocket.cpp.dep.json"
-@"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\RD.Shared.rsp"
+"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Source\RD\thirdparty\clsocket\src\SimpleSocket.cpp"
+/FI"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\Definitions.h"
+/Fo"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\SimpleSocket.cpp.obj"
+/sourceDependencies "C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\SimpleSocket.cpp.dep.json"
+@"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RD\RD.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

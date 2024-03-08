@@ -1,8 +1,8 @@
-"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp"
-/FI"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Definitions.h"
-/Fo"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.obj"
-/sourceDependencies "C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.dep.json"
-@"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\RiderLink.Shared.rsp"
+"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp"
+/FI"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Definitions.h"
+/Fo"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.obj"
+/sourceDependencies "C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\Module.RiderLink.cpp.dep.json"
+@"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLink\RiderLink.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

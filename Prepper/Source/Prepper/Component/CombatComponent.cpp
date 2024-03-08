@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/HUD/PrepperHUD.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/Weapon.h"
 
 #define TRACE_LEN 80000
@@ -36,7 +38,47 @@ void UCombatComponent::BeginPlay()
 		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 		
 	}
+}
 
+void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	
+	SetHUDCrosshair(DeltaTime);
+
+}
+
+void UCombatComponent::SetHUDCrosshair(float DeltaTime)
+{
+	if( Character == nullptr || Character->Controller == nullptr) return;
+
+	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
+	if(Controller)
+	{
+		HUD = HUD == nullptr ? Cast<APrepperHUD>(Controller->GetHUD()) : HUD;
+		if(HUD)
+		{
+			FHUDPackage HUDPackage;
+			if(EquippedWeapon)
+			{
+				HUDPackage.CrosshairCenter = EquippedWeapon->CrosshairCenter;
+				HUDPackage.CrosshairLeft   = EquippedWeapon->CrosshairLeft;
+				HUDPackage.CrosshairRight  = EquippedWeapon->CrosshairRight;
+				HUDPackage.CrosshairTop    = EquippedWeapon->CrosshairTop;
+				HUDPackage.CrosshairBottom = EquippedWeapon->CrosshairBottom;
+			}
+			else
+			{
+				HUDPackage.CrosshairCenter = nullptr;
+				HUDPackage.CrosshairLeft   = nullptr;
+				HUDPackage.CrosshairRight  = nullptr;
+				HUDPackage.CrosshairTop    = nullptr;
+				HUDPackage.CrosshairBottom = nullptr;
+				
+			}
+			HUD->SetHUDPackage(HUDPackage);
+		}
+	}
 }
 
 void UCombatComponent::SetAiming(bool bIsAiming)
@@ -116,6 +158,8 @@ void UCombatComponent::TraceUnderCrossHair(FHitResult& TraceHitResult)
 	}
 }
 
+
+
 void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	MulticastFire(TraceHitTarget);
@@ -133,11 +177,7 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& T
 // Fire End
 
 
-void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-}
 
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {

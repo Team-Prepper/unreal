@@ -34,9 +34,9 @@
 /NODEFAULTLIB:"LIBCD"
 /NODEFAULTLIB:"LIBCPD"
 /FUNCTIONPADMIN:6
-"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
-"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp.obj"
-"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\MultiplayerSessions\Default.rc2.res"
+"C:\Users\User\Documents\GitHub\Prepper\Prepper\Intermediate\Build\Win64\x64\PrepperEditor\Development\Engine\SharedPCH.Engine.Cpp20.h.obj"
+"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp.obj"
+"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\MultiplayerSessions\Default.rc2.res"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\CoreUObject\UnrealEditor-CoreUObject.lib"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\Engine\UnrealEditor-Engine.lib"
 "..\Intermediate\Build\Win64\x64\UnrealEditor\Development\Slate\UnrealEditor-Slate.lib"
@@ -70,7 +70,7 @@
 "synchronization.lib"
 "dwmapi.lib"
 "imm32.lib"
-/OUT:"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Binaries\Win64\UnrealEditor-MultiplayerSessions.dll"
-/IMPLIB:"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\MultiplayerSessions\UnrealEditor-MultiplayerSessions.sup.lib"
-/PDB:"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Binaries\Win64\UnrealEditor-MultiplayerSessions.pdb"
+/OUT:"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\MultiplayerSessions\Binaries\Win64\UnrealEditor-MultiplayerSessions.dll"
+/IMPLIB:"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealEditor\Development\MultiplayerSessions\UnrealEditor-MultiplayerSessions.sup.lib"
+/PDB:"C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\MultiplayerSessions\Binaries\Win64\UnrealEditor-MultiplayerSessions.pdb"
 /ignore:4078

@@ -1,12 +1,12 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\weapon\\projectile.cpp",
+        "Source": "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\weapon\\projectile.cpp",
         "ProvidedModule": "",
-        "PCH": "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\preppereditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "PCH": "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\x64\\preppereditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
         "Includes": [
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\prepper\\definitions.prepper.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\weapon\\projectile.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\prepper\\definitions.prepper.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\weapon\\projectile.h",
             "d:\\unreal\\ue_5.3\\engine\\plugins\\fx\\niagara\\source\\niagara\\public\\niagaracomponent.h",
             "d:\\unreal\\ue_5.3\\engine\\plugins\\fx\\niagara\\source\\niagara\\public\\niagaradefines.h",
             "d:\\unreal\\ue_5.3\\engine\\plugins\\fx\\niagara\\source\\niagara\\public\\niagarascalabilitystate.h",
@@ -35,7 +35,7 @@
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\emitter.generated.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\particlesystemcomponent.generated.h",
             "d:\\unreal\\ue_5.3\\engine\\plugins\\fx\\niagara\\intermediate\\build\\win64\\unrealeditor\\inc\\niagara\\uht\\niagaracomponent.generated.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\projectile.generated.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\projectile.generated.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\boxcomponent.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\engine\\classes\\components\\shapecomponent.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\engine\\uht\\shapecomponent.generated.h",

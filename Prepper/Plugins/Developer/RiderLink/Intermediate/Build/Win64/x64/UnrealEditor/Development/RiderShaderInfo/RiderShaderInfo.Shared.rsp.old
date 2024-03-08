@@ -6,7 +6,7 @@
 /I "Runtime\Json\Public"
 /I "Runtime\RenderCore\Public"
 /I "Runtime\RHI\Public"
-/I "C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\Developer\RiderLink\Source"
+/I "C:\Users\User\Documents\GitHub\Prepper\Prepper\Plugins\Developer\RiderLink\Source"
 /external:W0
 /external:I "ThirdParty\mimalloc\include"
 /external:I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\INCLUDE"

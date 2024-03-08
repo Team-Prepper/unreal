@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\User\\Documents\\GitHub\\Prepper\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj": {}
+    "C:\\Users\\User\\Documents\\GitHub\\unreal\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj": {}
   },
   "projects": {
-    "C:\\Users\\User\\Documents\\GitHub\\Prepper\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj": {
+    "C:\\Users\\User\\Documents\\GitHub\\unreal\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\Prepper\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\GitHub\\unreal\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj",
         "projectName": "PrepperModuleRules",
-        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\Prepper\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj",
+        "projectPath": "C:\\Users\\User\\Documents\\GitHub\\unreal\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\PrepperModuleRules.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\Prepper\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\obj\\",
+        "outputPath": "C:\\Users\\User\\Documents\\GitHub\\unreal\\Prepper\\Intermediate\\Build\\BuildRulesProjects\\PrepperModuleRules\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

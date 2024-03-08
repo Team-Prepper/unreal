@@ -1,11 +1,11 @@
-"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp"
-/FI"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Intermediate\Build\Win64\x64\Prepper\Development\Engine\SharedPCH.Engine.Cpp20.h"
-/FI"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Definitions.MultiplayerSessions.h"
-/Yu"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Intermediate\Build\Win64\x64\Prepper\Development\Engine\SharedPCH.Engine.Cpp20.h"
-/Fp"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Intermediate\Build\Win64\x64\Prepper\Development\Engine\SharedPCH.Engine.Cpp20.h.pch"
-/Fo"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp.obj"
-/sourceDependencies "C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp.dep.json"
-@"C:\Users\User\Documents\Unreal_MIDAS\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\MultiplayerSessions.Shared.rsp"
+"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp"
+/FI"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\Prepper\Development\Engine\SharedPCH.Engine.Cpp20.h"
+/FI"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Definitions.MultiplayerSessions.h"
+/Yu"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\Prepper\Development\Engine\SharedPCH.Engine.Cpp20.h"
+/Fp"C:\Users\User\Documents\GitHub\unreal\Prepper\Intermediate\Build\Win64\x64\Prepper\Development\Engine\SharedPCH.Engine.Cpp20.h.pch"
+/Fo"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp.obj"
+/sourceDependencies "C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\Module.MultiplayerSessions.cpp.dep.json"
+@"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\MultiplayerSessions\Intermediate\Build\Win64\x64\UnrealGame\Development\MultiplayerSessions\MultiplayerSessions.Shared.rsp"
 /Zc:inline
 /nologo
 /Oi

@@ -1,12 +1,12 @@
 {
     "Version": "1.2",
     "Data": {
-        "Source": "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\overheadwidget.gen.cpp",
+        "Source": "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\overheadwidget.gen.cpp",
         "ProvidedModule": "",
-        "PCH": "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\preppereditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "PCH": "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\x64\\preppereditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
         "Includes": [
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\prepper\\definitions.prepper.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\hud\\overheadwidget.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\prepper\\definitions.prepper.h",
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\source\\prepper\\hud\\overheadwidget.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\umg\\public\\blueprint\\userwidget.h",
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\umg\\public\\blueprint\\widgetchild.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\widgetchild.generated.h",
@@ -34,7 +34,7 @@
             "d:\\unreal\\ue_5.3\\engine\\source\\runtime\\umg\\public\\animation\\widgetanimationevents.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\widgetanimationevents.generated.h",
             "d:\\unreal\\ue_5.3\\engine\\intermediate\\build\\win64\\unrealeditor\\inc\\umg\\uht\\userwidget.generated.h",
-            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\overheadwidget.generated.h"
+            "c:\\users\\user\\documents\\github\\unreal\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\overheadwidget.generated.h"
         ],
         "ImportedModules": [],
         "ImportedHeaderUnits": []
