@@ -1,0 +1,16 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\playeraniminstance.gen.cpp",
+        "ProvidedModule": "",
+        "PCH": "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\preppereditor\\development\\engine\\sharedpch.engine.cpp20.h.pch",
+        "Includes": [
+            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\x64\\unrealeditor\\development\\prepper\\definitions.prepper.h",
+            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\character\\playeraniminstance.h",
+            "c:\\users\\user\\documents\\github\\prepper\\prepper\\source\\prepper\\enums\\turninginplace.h",
+            "c:\\users\\user\\documents\\github\\prepper\\prepper\\intermediate\\build\\win64\\unrealeditor\\inc\\prepper\\uht\\playeraniminstance.generated.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

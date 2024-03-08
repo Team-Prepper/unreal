@@ -1,0 +1,14 @@
+{
+	"Targets": [
+		{
+			"Name": "Prepper",
+			"Path": "..\\Source\\Prepper.Target.cs",
+			"Type": "Game"
+		},
+		{
+			"Name": "PrepperEditor",
+			"Path": "..\\Source\\PrepperEditor.Target.cs",
+			"Type": "Editor"
+		}
+	]
+}

@@ -1,6 +1,8 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+Prepper/Binaries/*
+Prepper/Saved/*
 # Compiled Object files
 *.slo
 *.lo
