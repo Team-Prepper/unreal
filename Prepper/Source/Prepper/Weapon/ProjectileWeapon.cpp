@@ -8,32 +8,30 @@
 
 void AProjectileWeapon::Fire(const FVector& HitTarget)
 {
-	Super::Fire(HitTarget); // fire anim
+	Super::Fire(HitTarget);
 
-	if(!HasAuthority()) return;
-	
+	if (!HasAuthority()) return;
+
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
-
-	const USkeletalMeshSocket* MuzzleSocket = GetWeaponMesh()->GetSocketByName(FName("Muzzle"));
-	if(MuzzleSocket)
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(FName("Muzzle"));
+	if (MuzzleFlashSocket)
 	{
-		FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetWeaponMesh());
-		// muzzle -> hit
+		FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
 		FVector ToTarget = HitTarget - SocketTransform.GetLocation();
 		FRotator TargetRotation = ToTarget.Rotation();
-		if(ProjectileClass && InstigatorPawn)
+		if (ProjectileClass && InstigatorPawn)
 		{
-			FActorSpawnParameters SpawnParameters;
-			SpawnParameters.Owner = GetOwner();
-			SpawnParameters.Instigator = InstigatorPawn;
+			FActorSpawnParameters SpawnParams;
+			SpawnParams.Owner = GetOwner();
+			SpawnParams.Instigator = InstigatorPawn;
 			UWorld* World = GetWorld();
-			if(World)
+			if (World)
 			{
 				World->SpawnActor<AProjectile>(
 					ProjectileClass,
 					SocketTransform.GetLocation(),
 					TargetRotation,
-					SpawnParameters
+					SpawnParams
 					);
 			}
 		}
