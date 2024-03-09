@@ -73,7 +73,7 @@
     ]
   }
 }</component>
-  <component name="RunManager" selected="C++ Project.Prepper">
+  <component name="RunManager" selected=".NET 실행 설정 프로파일.EpicGames.AspNet">
     <configuration name="Prepper" type="CppProject" factoryName="C++ Project">
       <configuration_1>
         <option name="CONFIGURATION" value="DebugGame Editor" />
@@ -185,17 +185,6 @@
         <option name="PASS_PARENT_ENVS" value="1" />
         <option name="USE_EXTERNAL_CONSOLE" value="0" />
       </configuration_10>
-      <configuration_11>
-        <option name="CONFIGURATION" value="" />
-        <option name="PLATFORM" value="" />
-        <option name="PROJECT_FILE_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/Prepper.vcxproj" />
-        <option name="CURRENT_LAUNCH_PROFILE" value="Local" />
-        <option name="EXE_PATH" value="$(TargetPath)" />
-        <option name="PROGRAM_PARAMETERS" value="" />
-        <option name="WORKING_DIRECTORY" value="$(ProjectDir)" />
-        <option name="PASS_PARENT_ENVS" value="1" />
-        <option name="USE_EXTERNAL_CONSOLE" value="0" />
-      </configuration_11>
       <option name="DEFAULT_PROJECT_PATH" value="$PROJECT_DIR$/Intermediate/ProjectFiles/Prepper.vcxproj" />
       <method v="2">
         <option name="Build" />

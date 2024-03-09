@@ -6,10 +6,10 @@
 /I "Runtime\Json\Public"
 /I "Runtime\RenderCore\Public"
 /I "Runtime\RHI\Public"
-/I "C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Source"
+/I "C:\Temp\unreal\Prepper\Plugins\Developer\RiderLink\Source"
 /external:W0
 /external:I "ThirdParty\mimalloc\include"
-/external:I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.36.32532\INCLUDE"
+/external:I "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.37.32822\INCLUDE"
 /external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\ucrt"
 /external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\shared"
 /external:I "C:\Program Files (x86)\Windows Kits\10\include\10.0.22621.0\um"

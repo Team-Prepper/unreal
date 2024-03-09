@@ -6,6 +6,6 @@
 /NAME:"UnrealEditor-RiderLC.dll"
 /IGNORE:4221
 /NODEFAULTLIB
-"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLC\Module.RiderLC.cpp.obj"
-"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLC\Default.rc2.res"
-/OUT:"C:\Users\User\Documents\GitHub\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLC\UnrealEditor-RiderLC.lib"
+"C:\Temp\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLC\Module.RiderLC.cpp.obj"
+"C:\Temp\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLC\Default.rc2.res"
+/OUT:"C:\Temp\unreal\Prepper\Plugins\Developer\RiderLink\Intermediate\Build\Win64\x64\UnrealEditor\Development\RiderLC\UnrealEditor-RiderLC.lib"
