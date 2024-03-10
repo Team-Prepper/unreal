@@ -11,6 +11,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Component/CombatComponent.h"
+#include "Prepper/Item/InteractableItem.h"
 #include "Prepper/Weapon/Weapon.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -20,6 +21,7 @@ APlayerCharacter::APlayerCharacter()
 	WalkSpeed = 600.f;
 	SprintSpeed = 900.f;
 
+	
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
 	CameraBoom->TargetArmLength = 600.f;
@@ -198,6 +200,11 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::EquipButtonPressed()
 {
+	if(OverlappingItem)
+	{
+		OverlappingItem->Interaction();
+		return;
+	}
 	if(Combat)
 	{
 		if(HasAuthority())
@@ -352,6 +359,24 @@ void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
+void APlayerCharacter::SetOverlappingItem(AInteractableItem* InteractableItem)
+{
+	if(OverlappingItem)
+	{
+		OverlappingItem->ShowPickUpWidget(false);
+	}
+	OverlappingItem = InteractableItem;
+	
+	if(IsLocallyControlled())
+	{
+		if(OverlappingItem)
+		{
+			OverlappingItem->ShowPickUpWidget(true);
+		}
+	}
+	
+}
+
 void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
 	if(OverlappingWeapon)
@@ -362,6 +387,19 @@ void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickUpWidget(false);
 	}
+}
+
+void APlayerCharacter::OnRep_OverlappingItem(AInteractableItem* LastItem)
+{
+	if(OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickUpWidget(true);
+	}
+	if(LastItem)
+	{
+		LastItem->ShowPickUpWidget(false);
+	}
+	
 }
 
 bool APlayerCharacter::IsWeaponEquipped()
