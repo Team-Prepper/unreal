@@ -80,13 +80,13 @@ private:
 	class AWeapon* OverlappingWeapon;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingItem)
-	class AInteractableItem* OverlappingItem;
+	class AInteractable* OverlappingItem;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
 	
 	UFUNCTION()
-	void OnRep_OverlappingItem(AInteractableItem* LastItem);
+	void OnRep_OverlappingItem(AInteractable* LastItem);
 
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* Combat;
@@ -112,7 +112,7 @@ private:
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
-	void SetOverlappingItem(AInteractableItem* InteractableItem);
+	void SetOverlappingItem(AInteractable* InteractableItem);
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	AWeapon* GetEquippedWeapon();

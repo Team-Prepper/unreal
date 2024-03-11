@@ -202,7 +202,7 @@ void APlayerCharacter::EquipButtonPressed()
 {
 	if(OverlappingItem)
 	{
-		OverlappingItem->Interaction();
+		OverlappingItem->Interaction(this);
 		return;
 	}
 	if(Combat)
@@ -359,7 +359,7 @@ void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
-void APlayerCharacter::SetOverlappingItem(AInteractableItem* InteractableItem)
+void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 {
 	if(OverlappingItem)
 	{
@@ -389,7 +389,7 @@ void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	}
 }
 
-void APlayerCharacter::OnRep_OverlappingItem(AInteractableItem* LastItem)
+void APlayerCharacter::OnRep_OverlappingItem(AInteractable* LastItem)
 {
 	if(OverlappingWeapon)
 	{
