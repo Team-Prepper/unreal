@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Prepper/Item/Interactable.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -16,15 +17,17 @@ enum class EWeaponState : uint8
 };
 
 UCLASS()
-class PREPPER_API AWeapon : public AActor
+class PREPPER_API AWeapon : public AInteractable
 {
 	GENERATED_BODY()
 	
 public:	
 	AWeapon();
+	virtual void Interaction(APlayerCharacter* Target) override;
+	virtual void ShowPickUpWidget(bool bShowWidget) override;
+	
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	void ShowPickUpWidget(bool bShowWidget);
 	virtual void Fire(const FVector& HitTarget);
 
 	UPROPERTY(EditAnywhere, Category = Crosshiar)

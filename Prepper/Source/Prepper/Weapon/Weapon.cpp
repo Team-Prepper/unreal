@@ -51,6 +51,20 @@ void AWeapon::Tick(float DeltaTime)
 
 }
 
+void AWeapon::Interaction(APlayerCharacter* Target)
+{
+	Target->EquipWeapon(this);
+}
+
+
+void AWeapon::ShowPickUpWidget(bool bShowWidget)
+{
+	if(PickUpWidget)
+	{
+		PickUpWidget->SetVisibility(bShowWidget);
+	}
+}
+
 void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -64,7 +78,7 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingWeapon(this);
+		PlayerCharacter->SetOverlappingItem(this);
 	}
 }
 
@@ -74,7 +88,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingWeapon(nullptr);
+		PlayerCharacter->SetOverlappingItem(nullptr);
 	}
 }
 
@@ -98,14 +112,6 @@ void AWeapon::OnRep_WeaponState()
 	case EWeaponState::EWS_Equipped:
 		ShowPickUpWidget(false);
 		break;
-	}
-}
-
-void AWeapon::ShowPickUpWidget(bool bShowWidget)
-{
-	if(PickUpWidget)
-	{
-		PickUpWidget->SetVisibility(bShowWidget);
 	}
 }
 
