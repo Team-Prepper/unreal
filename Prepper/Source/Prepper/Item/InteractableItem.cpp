@@ -68,7 +68,7 @@ void AInteractableItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingItem(this);
+		//PlayerCharacter->SetOverlappingItem(this);
 	}
 }
 
@@ -78,7 +78,7 @@ void AInteractableItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedCompon
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingItem(nullptr);
+		//PlayerCharacter->SetOverlappingItem(nullptr);
 	}
 }
 
