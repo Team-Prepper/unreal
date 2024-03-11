@@ -2,17 +2,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interactable.h"
 #include "InteractableItem.generated.h"
 
 UCLASS()
-class PREPPER_API AInteractableItem : public AActor
+class PREPPER_API AInteractableItem : public AInteractable
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
 	AInteractableItem();
-	void Interaction();
+	virtual void Tick(float DeltaTime) override;
+
+	virtual void Interaction(APlayerCharacter *Target) override;
+	virtual void ShowPickUpWidget(bool bShowWidget) override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -35,12 +39,6 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 		);
-	
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-	void ShowPickUpWidget(bool bShowWidget);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Item Properties")

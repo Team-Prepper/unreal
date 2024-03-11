@@ -81,12 +81,18 @@ private:
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
+	
+	UPROPERTY(ReplicatedUsing = OnRep_OverlappingItem)
+	class AInteractable* OverlappingItem;
+	
+	UFUNCTION()
+	void OnRep_OverlappingItem(AInteractable* LastItem);
 
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* Combat;
 
 	UFUNCTION(Server, Reliable)
-	void ServerEquipButtonPressed();
+	void ServerEquipButtonPressed(AWeapon* Weapon);
 	
 	UFUNCTION(Server, Reliable)
 	void ServerSprintButtonPressed();
@@ -106,6 +112,8 @@ private:
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
+	void SetOverlappingItem(AInteractable* InteractableItem);
+	void EquipWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	AWeapon* GetEquippedWeapon();

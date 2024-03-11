@@ -7,11 +7,12 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetArrayLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Component/CombatComponent.h"
+#include "Prepper/Item/Interactable.h"
 #include "Prepper/Weapon/Weapon.h"
+
 
 APlayerCharacter::APlayerCharacter()
 {
@@ -198,6 +199,12 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::EquipButtonPressed()
 {
+	if(OverlappingItem)
+	{
+		OverlappingItem->Interaction(this);
+		return;
+	}
+	
 	if(Combat)
 	{
 		if(HasAuthority())
@@ -205,12 +212,28 @@ void APlayerCharacter::EquipButtonPressed()
 			Combat->EquipWeapon(OverlappingWeapon);
 		}else
 		{
-			ServerEquipButtonPressed();
+			ServerEquipButtonPressed(OverlappingWeapon);
 		}
 	}
 }
 
-void APlayerCharacter::ServerEquipButtonPressed_Implementation()
+void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
+{
+	if(Combat)
+	{
+		if(HasAuthority())
+		{
+			Combat->EquipWeapon(Weapon);
+		}else
+		{
+			ServerEquipButtonPressed(Weapon);
+		}
+	}
+	
+	
+}
+
+void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 {
 	if(Combat)
 	{
@@ -352,6 +375,24 @@ void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
+void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
+{
+	if(OverlappingItem)
+	{
+		OverlappingItem->ShowPickUpWidget(false);
+	}
+	OverlappingItem = InteractableItem;
+	
+	if(IsLocallyControlled())
+	{
+		if(OverlappingItem)
+		{
+			OverlappingItem->ShowPickUpWidget(true);
+		}
+	}
+	
+}
+
 void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 {
 	if(OverlappingWeapon)
@@ -362,6 +403,19 @@ void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
 	{
 		LastWeapon->ShowPickUpWidget(false);
 	}
+}
+
+void APlayerCharacter::OnRep_OverlappingItem(AInteractable* LastItem)
+{
+	if(OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickUpWidget(true);
+	}
+	if(LastItem)
+	{
+		LastItem->ShowPickUpWidget(false);
+	}
+	
 }
 
 bool APlayerCharacter::IsWeaponEquipped()

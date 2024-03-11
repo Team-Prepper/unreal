@@ -54,9 +54,8 @@ void AInteractableItem::Tick(float DeltaTime)
 }
 
 // Called when the game starts or when spawned
-void AInteractableItem::Interaction()
+void AInteractableItem::Interaction(APlayerCharacter* Target)
 {
-	Super::BeginPlay();
 	UE_LOG(LogTemp, Warning, TEXT("Hello World"));
 	
 }
