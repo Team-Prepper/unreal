@@ -41,6 +41,11 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ImpactSound;
+
+	
+	FTimerHandle TimerHandle_DestroySelf;
+
+	void DestroySelf();
 	
 public:	
 	

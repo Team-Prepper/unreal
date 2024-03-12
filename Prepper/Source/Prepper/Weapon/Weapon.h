@@ -51,7 +51,6 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
 	
 	UFUNCTION()
 	virtual void OnSphereOverlap(
@@ -70,6 +69,8 @@ protected:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 		);
+
+	float TargetDistance;
 	
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")

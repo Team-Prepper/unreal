@@ -110,6 +110,22 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
 
+	UPROPERTY(EditAnywhere, Category = CrouchMovement)
+	float CrouchCamOffset;
+	UPROPERTY(EditAnywhere, Category = CrouchMovement)
+	float DefaultCamOffset;
+	UPROPERTY(EditAnywhere, Category = CrouchMovement)
+	float CrouchCamArmLength;
+	UPROPERTY(EditAnywhere, Category = CrouchMovement)
+	float DefaultCamArmLength;
+
+	float InterpSpeed;
+	float TargetArmLength;
+	FVector  TargetSpringArmLocation;
+
+	virtual void Crouch(bool bClientSimulation = false) override;
+	virtual void UnCrouch(bool bClientSimulation = false) override;
+
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
 	void SetOverlappingItem(AInteractable* InteractableItem);

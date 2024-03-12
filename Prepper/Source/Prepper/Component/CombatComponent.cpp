@@ -185,7 +185,7 @@ void UCombatComponent::TraceUnderCrossHair(FHitResult& TraceHitResult)
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 	}
 
-	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y/2.f);
+	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
 	FVector CrosshairWorldPosition;
 	FVector CrosshairWorldDirection;
 	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
@@ -205,6 +205,7 @@ void UCombatComponent::TraceUnderCrossHair(FHitResult& TraceHitResult)
 			End,
 			ECC_Visibility
 			);
+		
 		if (!TraceHitResult.bBlockingHit) {
 			TraceHitResult.ImpactPoint = End;
 		}

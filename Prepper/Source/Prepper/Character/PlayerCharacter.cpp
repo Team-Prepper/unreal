@@ -20,10 +20,15 @@ APlayerCharacter::APlayerCharacter()
 
 	WalkSpeed = 600.f;
 	SprintSpeed = 900.f;
+	CrouchCamOffset = 30.f;
+	DefaultCamOffset = 100.f;
+	CrouchCamArmLength = 200.f;
+	DefaultCamArmLength = 350.f;
+	InterpSpeed = 5.f;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
-	CameraBoom->TargetArmLength = 600.f;
+	CameraBoom->TargetArmLength = DefaultCamArmLength;
 	CameraBoom->bUsePawnControlRotation = true;
 
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCam"));
@@ -53,7 +58,8 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	
+	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingWeapon, COND_OwnerOnly);
 }
 
@@ -98,6 +104,14 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+
+	FVector CurrentLocation = CameraBoom->GetRelativeLocation();
+	FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetSpringArmLocation, DeltaTime, InterpSpeed);
+	CameraBoom->SetRelativeLocation(NewLocation);
+	
+	float CurrentArmLength = CameraBoom->TargetArmLength;
+	float NewArmLength = FMath::FInterpTo(CurrentArmLength, TargetArmLength, DeltaTime, InterpSpeed);
+	CameraBoom->TargetArmLength = NewArmLength;
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -194,8 +208,6 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
-
-
 
 void APlayerCharacter::EquipButtonPressed()
 {
@@ -356,6 +368,23 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		}
 	}
+}
+
+
+void APlayerCharacter::Crouch(bool bClientSimulation)
+{
+	Super::Crouch(bClientSimulation);
+
+	TargetSpringArmLocation = (FVector(0.0f, 0.0f, CrouchCamOffset));
+	TargetArmLength = CrouchCamArmLength;
+}
+
+void APlayerCharacter::UnCrouch(bool bClientSimulation)
+{
+	Super::UnCrouch(bClientSimulation);
+
+	TargetSpringArmLocation = (FVector(0.0f, 0.0f, DefaultCamOffset));
+	TargetArmLength = DefaultCamArmLength;
 }
 
 void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)

@@ -14,5 +14,5 @@ class PREPPER_API AInteractable : public AActor
 	
 public:
 	virtual void Interaction(APlayerCharacter* Target) PURE_VIRTUAL(AInteractable::Interaction, );
-	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL(AInteractable::ShowPickUpWidget, );;
+	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL(AInteractable::ShowPickUpWidget, );
 };

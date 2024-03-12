@@ -44,19 +44,27 @@ void AProjectile::BeginPlay()
 	{
 		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
 	}
+	GetWorldTimerManager().SetTimer(TimerHandle_DestroySelf, this, &AProjectile::DestroySelf, 3.0f, false);
+
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
-	
 	Destroy();
 }
 
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+void AProjectile::DestroySelf()
+{
+	if (HasAuthority())
+	{
+		Destroy();
+	}
 }
 
 void AProjectile::Destroyed()

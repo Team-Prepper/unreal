@@ -78,7 +78,7 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingItem(this);
+		PlayerCharacter->SetOverlappingWeapon(this);
 	}
 }
 
@@ -88,7 +88,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingItem(nullptr);
+		PlayerCharacter->SetOverlappingWeapon(nullptr);
 	}
 }
 
@@ -117,6 +117,8 @@ void AWeapon::OnRep_WeaponState()
 
 void AWeapon::Fire(const FVector& HitTarget)
 {
+	TargetDistance = FVector::Distance(HitTarget, WeaponMesh->GetComponentLocation());
+	
 	if(FireAnimation)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
