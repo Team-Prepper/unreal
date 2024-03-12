@@ -7,7 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/HUD/PrepperHUD.h"
+//#include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/Weapon.h"
 
@@ -75,7 +75,6 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 		HUD = HUD == nullptr ? Cast<APrepperHUD>(Controller->GetHUD()) : HUD;
 		if(HUD)
 		{
-			FHUDPackage HUDPackage;
 			if(EquippedWeapon)
 			{
 				HUDPackage.CrosshairCenter = EquippedWeapon->CrosshairCenter;
@@ -109,7 +108,24 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 				CrosshairInAirFactor = FMath::FInterpTo(CrosshairInAirFactor, 0.f, DeltaTime, 30.f);
 			}
 
-			HUDPackage.CrosshairSpread = CrosshairVelocityFactor + CrosshairInAirFactor;
+			if(bAiming)
+			{
+				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.58f, DeltaTime, 30.f);
+			}
+			else
+			{
+				CrosshairAimFactor = FMath::FInterpTo(CrosshairAimFactor, 0.f, DeltaTime, 30.f);
+			}
+
+			CrosshairShootingFactor = FMath::FInterpTo(CrosshairShootingFactor, 0.f, DeltaTime, 40.f);
+
+			HUDPackage.CrosshairSpread =
+					0.5f +
+					CrosshairVelocityFactor +
+					CrosshairInAirFactor -
+					CrosshairAimFactor +
+					CrosshairShootingFactor;
+			
 			HUD->SetHUDPackage(HUDPackage);
 		}
 	}
@@ -166,14 +182,17 @@ void UCombatComponent::OnRep_EquippedWeapon()
 void UCombatComponent::FireButtonPressed(bool bPressed)
 {
 	bFireButtonPressed = bPressed;
-
 	if(bFireButtonPressed)
 	{
-		
 		FHitResult HitResult;
 		TraceUnderCrossHair(HitResult);
 	
 		ServerFire(HitResult.ImpactPoint);
+
+		if(EquippedWeapon)
+		{
+			CrosshairShootingFactor = 0.75f;
+		}
 	}
 }
 
@@ -205,6 +224,15 @@ void UCombatComponent::TraceUnderCrossHair(FHitResult& TraceHitResult)
 			End,
 			ECC_Visibility
 			);
+
+		if(TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
+		{
+			HUDPackage.CrosshairColor = FLinearColor::Red;
+		}
+		else
+		{
+			HUDPackage.CrosshairColor = FLinearColor::White;
+		}
 		
 		if (!TraceHitResult.bBlockingHit) {
 			TraceHitResult.ImpactPoint = End;

@@ -11,25 +11,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3d2104cc-c13a-4c5a-9f92-b876401deca7" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper.dir/.idea/aws.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper.dir/.idea/indexLayout.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper.dir/.idea/projectSettingsUpdater.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper.dir/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper.dir/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper/.idea/dictionaries/.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Prepper/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Prepper/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Prepper.sln.DotSettings.user" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Prepper/Character/PlayerAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Character/PlayerAnimInstance.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Item/Interactable.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Item/Interactable.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Weapon/Projectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Weapon/Projectile.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Weapon/Projectile.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Weapon/Projectile.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Weapon/ProjectileWeapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Weapon/ProjectileWeapon.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Weapon/Weapon.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Weapon/Weapon.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Weapon/Weapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Weapon/Weapon.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,36 +28,36 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="2dap0ngZl5IoJH4jWzT0bSrdaxS" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "C++ Project.Prepper.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;C++ Project.Prepper.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "rider.external.source.directories": [
-      "C:\\Users\\User\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache",
-      "C:\\Users\\User\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache",
-      "C:\\Users\\User\\AppData\\Local\\Symbols\\src"
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;C:\\Users\\User\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;C:\\Users\\User\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;C:\\Users\\User\\AppData\\Local\\Symbols\\src&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="C++ Project.Prepper">
     <configuration name="Prepper" type="CppProject" factoryName="C++ Project">
       <configuration_1>
@@ -247,6 +236,7 @@
       <option name="presentableId" value="Default" />
       <updated>1710255823354</updated>
       <workItem from="1710255826210" duration="5710000" />
+      <workItem from="1710261727178" duration="2319000" />
     </task>
     <servers />
   </component>

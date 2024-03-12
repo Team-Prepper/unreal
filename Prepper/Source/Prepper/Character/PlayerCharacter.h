@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Prepper/Enums/TurningInPlace.h"
+#include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "PlayerCharacter.generated.h"
 
 class UInputAction;
@@ -10,7 +11,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class PREPPER_API APlayerCharacter : public ACharacter
+class PREPPER_API APlayerCharacter : public ACharacter, public IInteractWithCrosshairInterface
 {
 	GENERATED_BODY()
 
