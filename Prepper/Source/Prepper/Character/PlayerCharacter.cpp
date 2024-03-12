@@ -434,4 +434,10 @@ AWeapon* APlayerCharacter::GetEquippedWeapon()
 	return Combat->EquippedWeapon;
 }
 
+FVector APlayerCharacter::GetHitTarget() const
+{
+	if(Combat == nullptr) return FVector();
+	return Combat->HitTarget;
+}
+
 
