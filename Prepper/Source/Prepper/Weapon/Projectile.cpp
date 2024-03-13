@@ -4,7 +4,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prepper/Character/PlayerCharacter.h"
 #include "Sound/SoundCue.h"
+#include "Prepper/Prepper.h"
 
 AProjectile::AProjectile()
 {
@@ -18,7 +20,8 @@ AProjectile::AProjectile()
 	CollisionBox->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionBox->SetCollisionResponseToChannel(ECC_Visibility,ECR_Block);
 	CollisionBox->SetCollisionResponseToChannel(ECC_WorldStatic,ECR_Block);
-
+	CollisionBox->SetCollisionResponseToChannel(ECC_SkeletalMesh,ECR_Block);
+	
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponet"));
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 }
@@ -51,6 +54,12 @@ void AProjectile::BeginPlay()
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
+	if(PlayerCharacter)
+	{
+		PlayerCharacter-> MulticastHit();
+	}
+	
 	Destroy();
 }
 

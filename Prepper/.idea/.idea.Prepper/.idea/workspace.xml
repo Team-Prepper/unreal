@@ -12,13 +12,16 @@
   <component name="ChangeListManager">
     <list default="true" id="3d2104cc-c13a-4c5a-9f92-b876401deca7" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Prepper/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Prepper/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Character/PlayerAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Character/PlayerAnimInstance.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/ABP_PlayerAnim.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/Animation/ABP_PlayerAnim.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Character/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Character/BP_PlayerCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_AssaultRifle.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Weapon/BP_AssaultRifle.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Character/PlayerCharacter.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Component/CombatComponent.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/HUD/PrepperHUD.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Prepper/Prepper.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Prepper.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Prepper/Weapon/Projectile.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Weapon/Projectile.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/Prepper/Weapon/Weapon.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/Prepper/Weapon/Weapon.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -237,6 +240,7 @@
       <updated>1710255823354</updated>
       <workItem from="1710255826210" duration="5710000" />
       <workItem from="1710261727178" duration="2319000" />
+      <workItem from="1710343703440" duration="4685000" />
     </task>
     <servers />
   </component>

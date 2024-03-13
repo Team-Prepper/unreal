@@ -22,7 +22,11 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
+	
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHit();
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -44,6 +48,8 @@ protected:
 
 	void AimOffset(float DeltaTime);
 	virtual void Jump() override;
+
+	void PlayHitReactMontage();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -108,8 +114,19 @@ private:
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
 
+	/*
+	 * For Animation 
+	 */
+
 	UPROPERTY(EditAnywhere, Category = Combat)
 	class UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* HitReactMontage;
+
+	/*
+	 * For Crouch Cam
+	 */
 
 	UPROPERTY(EditAnywhere, Category = CrouchMovement)
 	float CrouchCamOffset;
@@ -126,6 +143,10 @@ private:
 
 	virtual void Crouch(bool bClientSimulation = false) override;
 	virtual void UnCrouch(bool bClientSimulation = false) override;
+
+	void HideCamIfCharacterClose();
+	UPROPERTY(EditAnywhere)
+	float CamThreshold = 200.f;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);

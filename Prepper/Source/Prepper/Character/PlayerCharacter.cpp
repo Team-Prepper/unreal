@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Prepper/Prepper.h"
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/Item/Interactable.h"
 #include "Prepper/Weapon/Weapon.h"
@@ -46,6 +47,8 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 850.f);
@@ -87,6 +90,19 @@ void APlayerCharacter::PlayFireMontage(bool bAiming)
 	}
 }
 
+void APlayerCharacter::PlayHitReactMontage()
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		FName SectionName("FromFront");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -105,6 +121,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+	HideCamIfCharacterClose();
 
 	FVector CurrentLocation = CameraBoom->GetRelativeLocation();
 	FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetSpringArmLocation, DeltaTime, InterpSpeed);
@@ -371,6 +388,11 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
+void APlayerCharacter::MulticastHit_Implementation()
+{
+	PlayHitReactMontage();
+}
+
 
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
@@ -386,6 +408,34 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 	TargetSpringArmLocation = (FVector(0.0f, 0.0f, DefaultCamOffset));
 	TargetArmLength = DefaultCamArmLength;
+}
+
+void APlayerCharacter::HideCamIfCharacterClose()
+{
+	if (!IsLocallyControlled()) return;
+	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CamThreshold)
+	{
+		GetMesh()->SetVisibility(false);
+		/*
+		 * UTF-8
+		 * 벽에 가까이가서 자신 캐릭터가 시야를 가릴 때
+		 * 장비한 무기도 같이 가리기 위한 코드
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+		}
+		*/
+	}
+	else
+	{
+		GetMesh()->SetVisibility(true);
+		/*
+		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+		{
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
+		}
+		*/
+	}
 }
 
 void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)
