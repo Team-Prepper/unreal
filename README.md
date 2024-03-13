@@ -37,3 +37,11 @@
 
 ## 라이선스
 이 프로젝트는 MIT 라이센스에 따라 배포됩니다. 자세한 내용은 LICENSE 파일을 참고해주세요
+
+## 실행
+해당 프로젝트가 열리지 않는다면 
+ - Binaries
+ - DerivedDataCache
+ - Intermediate
+ - Saved
+  폴더를 제거하고 uproject를 실행햐여 프로젝트를 다시 빌드하세요.
