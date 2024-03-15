@@ -64,7 +64,6 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingWeapon, COND_OwnerOnly);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -234,17 +233,6 @@ void APlayerCharacter::EquipButtonPressed()
 		OverlappingItem->Interaction(this);
 		return;
 	}
-	
-	if(Combat)
-	{
-		if(HasAuthority())
-		{
-			Combat->EquipWeapon(OverlappingWeapon);
-		}else
-		{
-			ServerEquipButtonPressed(OverlappingWeapon);
-		}
-	}
 }
 
 void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
@@ -267,7 +255,7 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 {
 	if(Combat)
 	{
-		Combat->EquipWeapon(OverlappingWeapon);
+		Combat->EquipWeapon(Weapon);
 	}
 }
 
@@ -437,23 +425,11 @@ void APlayerCharacter::HideCamIfCharacterClose()
 		*/
 	}
 }
-
-void APlayerCharacter::SetOverlappingWeapon(AWeapon* Weapon)
+void APlayerCharacter::AddItem(FString& ItemCode)
 {
-	if(OverlappingWeapon)
-	{
-		OverlappingWeapon->ShowPickUpWidget(false);
-	}
-	OverlappingWeapon = Weapon;
-	
-	if(IsLocallyControlled())
-	{
-		if(OverlappingWeapon)
-		{
-			OverlappingWeapon->ShowPickUpWidget(true);
-		}
-	}
+	Inven.TryAddItem(ItemCode);
 }
+
 
 void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 {
@@ -473,24 +449,8 @@ void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 	
 }
 
-void APlayerCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
-{
-	if(OverlappingWeapon)
-	{
-		OverlappingWeapon->ShowPickUpWidget(true);
-	}
-	if(LastWeapon)
-	{
-		LastWeapon->ShowPickUpWidget(false);
-	}
-}
-
 void APlayerCharacter::OnRep_OverlappingItem(AInteractable* LastItem)
 {
-	if(OverlappingWeapon)
-	{
-		OverlappingWeapon->ShowPickUpWidget(true);
-	}
 	if(LastItem)
 	{
 		LastItem->ShowPickUpWidget(false);

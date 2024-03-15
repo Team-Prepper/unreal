@@ -56,8 +56,8 @@ void AInteractableItem::Tick(float DeltaTime)
 // Called when the game starts or when spawned
 void AInteractableItem::Interaction(APlayerCharacter* Target)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hello World"));
-	
+	Target->AddItem(ItemCode);
+	Destroy();
 }
 
 void AInteractableItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

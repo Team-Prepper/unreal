@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
+#include "Prepper/Item/Inventory.h"
 #include "PlayerCharacter.generated.h"
 
 class UInputAction;
@@ -83,11 +84,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UWidgetComponent* OverheadWidget;
 
+	/*
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeapon* OverlappingWeapon;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeapon* LastWeapon);
+	*/
 	
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingItem)
 	class AInteractable* OverlappingItem;
@@ -105,7 +108,7 @@ private:
 	void ServerSprintButtonPressed();
 	UFUNCTION(Server, Reliable)
 	void ServerSprintButtonReleased();
-
+	
 	float AO_Yaw;
 	float InterpAO_Yaw;
 	float AO_Pitch;
@@ -148,12 +151,14 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CamThreshold = 200.f;
 
+	Inventory Inven;
+
 public:
-	void SetOverlappingWeapon(AWeapon* Weapon);
 	void SetOverlappingItem(AInteractable* InteractableItem);
 	void EquipWeapon(AWeapon* Weapon);
 	bool IsWeaponEquipped();
 	bool IsAiming();
+	void AddItem(FString& ItemCode);
 	AWeapon* GetEquippedWeapon();
 	FVector GetHitTarget() const;
 

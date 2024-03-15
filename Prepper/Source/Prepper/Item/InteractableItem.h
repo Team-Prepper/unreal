@@ -42,7 +42,7 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Item Properties")
-	uint8 ItemCode;
+	FString ItemCode;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Item Properties")
 	USkeletalMeshComponent* ItemMesh;

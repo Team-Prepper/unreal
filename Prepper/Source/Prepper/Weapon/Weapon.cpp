@@ -78,7 +78,7 @@ void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingWeapon(this);
+		PlayerCharacter->SetOverlappingItem(this);
 	}
 }
 
@@ -88,7 +88,7 @@ void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
 	{
-		PlayerCharacter->SetOverlappingWeapon(nullptr);
+		PlayerCharacter->SetOverlappingItem(nullptr);
 	}
 }
 
