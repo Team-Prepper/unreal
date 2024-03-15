@@ -201,7 +201,7 @@ void UCombatComponent::TraceUnderCrossHair(FHitResult& TraceHitResult)
 	FVector2D ViewportSize;
 	if(GEngine && GEngine->GameViewport)
 	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
+		GEngine->GameViewport->GetViewportSize(ViewportSize);	
 	}
 
 	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
@@ -224,6 +224,7 @@ void UCombatComponent::TraceUnderCrossHair(FHitResult& TraceHitResult)
 			Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
 		}
 		FVector End = Start + CrosshairWorldDirection * TRACE_LEN;
+		
 		GetWorld()->LineTraceSingleByChannel(
 			TraceHitResult,
 			Start,
