@@ -28,6 +28,7 @@ public:
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHit();
 	
+	virtual void OnRep_ReplicatedMovement() override;
 protected:
 	virtual void BeginPlay() override;
 
@@ -46,8 +47,10 @@ protected:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
-
+	void CalculateAO_Pitch();
 	void AimOffset(float DeltaTime);
+	void SimProxiesTurn();
+	
 	virtual void Jump() override;
 
 	void PlayHitReactMontage();
@@ -60,6 +63,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	class UInputMappingContext* PlayerMappingContext;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
@@ -142,7 +146,7 @@ private:
 
 	float InterpSpeed;
 	float TargetArmLength;
-	FVector  TargetSpringArmLocation;
+	FVector TargetSpringArmLocation;
 
 	virtual void Crouch(bool bClientSimulation = false) override;
 	virtual void UnCrouch(bool bClientSimulation = false) override;
@@ -150,6 +154,14 @@ private:
 	void HideCamIfCharacterClose();
 	UPROPERTY(EditAnywhere)
 	float CamThreshold = 200.f;
+
+	bool bRotateRootBone;
+	float TurnThreshold = 0.5f;
+	FRotator ProxyRotationLastFrame;
+	FRotator ProxyRotation;
+	float ProxyYaw;
+	float TimeSinceLastMovementReplication;
+	float CalculateSpeed();
 
 	Inventory Inven;
 
@@ -166,5 +178,6 @@ public:
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch;}
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace;}
-	FORCEINLINE UCameraComponent* GetFollowCamera() const {return FollowCamera; }
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 };
