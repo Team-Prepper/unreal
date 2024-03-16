@@ -11,15 +11,12 @@ class PREPPER_API AInteractableItem : public AInteractable
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AInteractableItem();
-	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interaction(APlayerCharacter *Target) override;
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION()

@@ -27,6 +27,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
+	void Fire();
 
 	void FireButtonPressed(bool bPressed);
 
@@ -36,7 +37,7 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
-	void TraceUnderCrossHair(FHitResult& TraceHitResult);
+	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 
 	void SetHUDCrosshair(float DeltaTime);
 
@@ -79,5 +80,12 @@ private:
 	float ZoomInterpSpeed = 20.f;
 
 	void InterpFOV(float DeltaTime);
+
+	//Auto Fire
+	FTimerHandle FireTimer;
 	
+	bool bCanFire = true;
+	
+	void StartFireTimer();
+	void FireTimerFinished();
 };

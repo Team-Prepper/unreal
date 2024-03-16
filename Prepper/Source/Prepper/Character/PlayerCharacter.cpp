@@ -12,6 +12,7 @@
 #include "Prepper/Prepper.h"
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/Item/Interactable.h"
+#include "Prepper/Item/InteractableItem.h"
 #include "Prepper/Weapon/Weapon.h"
 
 
@@ -64,6 +65,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
+	DOREPLIFETIME(APlayerCharacter, Health);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -73,40 +75,6 @@ void APlayerCharacter::PostInitializeComponents()
 	{
 		Combat->Character = this;
 	}
-}
-
-void APlayerCharacter::PlayFireMontage(bool bAiming)
-{
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance && FireWeaponMontage)
-	{
-		AnimInstance->Montage_Play(FireWeaponMontage);
-		FName SectionName;
-		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
-		AnimInstance->Montage_JumpToSection(SectionName);
-	}
-}
-
-void APlayerCharacter::PlayHitReactMontage()
-{
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance && HitReactMontage)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		FName SectionName("FromFront");
-		AnimInstance->Montage_JumpToSection(SectionName);
-	}
-}
-
-void APlayerCharacter::OnRep_ReplicatedMovement()
-{
-	Super::OnRep_ReplicatedMovement();
-	SimProxiesTurn();
-	TimeSinceLastMovementReplication = 0.f;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -181,9 +149,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APlayerCharacter::AimButtonReleased);
 
 		// Fire
-		//Aim
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::FireButtonPressed);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APlayerCharacter::FireButtonPressed);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APlayerCharacter::FireButtonReleased);
 	}
 }
 
@@ -209,6 +176,32 @@ void APlayerCharacter::ServerSprintButtonReleased_Implementation()
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
+void APlayerCharacter::PlayFireMontage(bool bAiming)
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && FireWeaponMontage)
+	{
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName;
+		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void APlayerCharacter::PlayHitReactMontage()
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance && HitReactMontage)
+	{
+		AnimInstance->Montage_Play(HitReactMontage);
+		FName SectionName("FromFront");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
@@ -231,6 +224,13 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
 	}
+}
+
+void APlayerCharacter::OnRep_ReplicatedMovement()
+{
+	Super::OnRep_ReplicatedMovement();
+	SimProxiesTurn();
+	TimeSinceLastMovementReplication = 0.f;
 }
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
@@ -343,7 +343,6 @@ float APlayerCharacter::CalculateSpeed()
 	return Velocity.Size();
 }
 
-
 void APlayerCharacter::AimOffset(float DeltaTime)
 {
 	if(Combat && Combat->EquippedWeapon == nullptr) return;
@@ -425,7 +424,6 @@ void APlayerCharacter::Jump()
 	}
 }
 
-
 void APlayerCharacter::TurnInPlace(float DeltaTime)
 {
 	if(AO_Yaw > 90.f)
@@ -452,7 +450,6 @@ void APlayerCharacter::MulticastHit_Implementation()
 {
 	PlayHitReactMontage();
 }
-
 
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
@@ -497,12 +494,16 @@ void APlayerCharacter::HideCamIfCharacterClose()
 		*/
 	}
 }
+
 void APlayerCharacter::AddItem(FString& ItemCode)
 {
 	Inven.TryAddItem(ItemCode);
 }
 
-
+void APlayerCharacter::OnRep_Health()
+{
+	
+}
 
 void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 {

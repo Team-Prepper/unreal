@@ -1,15 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "InteractableItem.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
-// Sets default values
 AInteractableItem::AInteractableItem()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
 	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
@@ -28,7 +24,6 @@ AInteractableItem::AInteractableItem()
 	PickUpWidget->SetupAttachment(RootComponent);
 }
 
-// Called when the game starts or when spawned
 void AInteractableItem::BeginPlay()
 {
 	Super::BeginPlay();
@@ -46,14 +41,7 @@ void AInteractableItem::BeginPlay()
 	
 }
 
-// Called every frame
-void AInteractableItem::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
-}
-
-// Called when the game starts or when spawned
 void AInteractableItem::Interaction(APlayerCharacter* Target)
 {
 	Target->AddItem(ItemCode);
@@ -64,7 +52,6 @@ void AInteractableItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent
 							  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-
 	if(PlayerCharacter)
 	{
 		PlayerCharacter->SetOverlappingItem(this);
