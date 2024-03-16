@@ -26,7 +26,6 @@ public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
 	
-	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Fire(const FVector& HitTarget);
 
@@ -48,6 +47,12 @@ public:
 	
 	UPROPERTY(EditAnywhere)
 	float ZoomInterpSpeed = 20.f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	float FireDelay = .15f;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	bool bAutomatic = true;
 	
 protected:
 	virtual void BeginPlay() override;
