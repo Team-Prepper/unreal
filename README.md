@@ -44,4 +44,5 @@
  - DerivedDataCache
  - Intermediate
  - Saved
-  폴더를 제거하고 uproject를 실행햐여 프로젝트를 다시 빌드하세요.
+
+  폴더를 제거하고 uproject를 실행하여 프로젝트를 다시 빌드하세요.
