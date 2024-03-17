@@ -24,10 +24,6 @@ public:
 	virtual void PostInitializeComponents() override;
 	void PlayFireMontage(bool bAiming);
 	
-
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
-	
 	virtual void OnRep_ReplicatedMovement() override;
 protected:
 	virtual void BeginPlay() override;
@@ -54,6 +50,10 @@ protected:
 	virtual void Jump() override;
 
 	void PlayHitReactMontage();
+
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+	void UpdateHUDHealth();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -157,18 +157,18 @@ private:
 
 	Inventory Inven;
 
-	/**
-	* Player health
-	*/
+	class APrepperPlayerController* PrepperPlayerController;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
-	float Health = 100.f;
+	float CurrentHealth = 100.f;
 
 	UFUNCTION()
 	void OnRep_Health();
+
+	
 
 public:
 	void SetOverlappingItem(AInteractable* InteractableItem);

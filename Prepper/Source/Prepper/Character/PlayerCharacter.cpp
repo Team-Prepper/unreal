@@ -13,6 +13,7 @@
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/Item/Interactable.h"
 #include "Prepper/Item/InteractableItem.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/Weapon.h"
 
 
@@ -65,7 +66,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
-	DOREPLIFETIME(APlayerCharacter, Health);
+	DOREPLIFETIME(APlayerCharacter, CurrentHealth);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -87,6 +88,12 @@ void APlayerCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(PlayerMappingContext, 0);
 		}
+	}
+
+	UpdateHUDHealth();
+	if(HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &APlayerCharacter::ReceiveDamage);
 	}
 }
 
@@ -200,6 +207,23 @@ void APlayerCharacter::PlayHitReactMontage()
 		AnimInstance->Montage_Play(HitReactMontage);
 		FName SectionName("FromFront");
 		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+}
+
+void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatorController, AActor* DamageCauser)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+	UpdateHUDHealth();
+	PlayHitReactMontage();
+}
+
+void APlayerCharacter::UpdateHUDHealth()
+{
+	PrepperPlayerController = PrepperPlayerController == nullptr ?  Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
+	if(PrepperPlayerController)
+	{
+		PrepperPlayerController->SetHUDHealth(CurrentHealth, MaxHealth);
 	}
 }
 
@@ -446,11 +470,6 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
-void APlayerCharacter::MulticastHit_Implementation()
-{
-	PlayHitReactMontage();
-}
-
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
 	Super::Crouch(bClientSimulation);
@@ -502,7 +521,8 @@ void APlayerCharacter::AddItem(FString& ItemCode)
 
 void APlayerCharacter::OnRep_Health()
 {
-	
+	UpdateHUDHealth();
+	PlayHitReactMontage();
 }
 
 void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
