@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Component/CombatComponent.h"
+#include "Prepper/GameMode/DeathMatchGameMode.h"
 #include "Prepper/Item/Interactable.h"
 #include "Prepper/Item/InteractableItem.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
@@ -216,6 +217,19 @@ void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const U
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
 	PlayHitReactMontage();
+
+	// DEATH MATCH
+	if(CurrentHealth == 0.f)
+	{
+		ADeathMatchGameMode* DeathMatchGameMode =  GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
+        if(DeathMatchGameMode)
+        {
+        	PrepperPlayerController = PrepperPlayerController == nullptr ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
+        	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+        	DeathMatchGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
+        }
+	}
+	
 }
 
 void APlayerCharacter::UpdateHUDHealth()
@@ -255,6 +269,11 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 	Super::OnRep_ReplicatedMovement();
 	SimProxiesTurn();
 	TimeSinceLastMovementReplication = 0.f;
+}
+
+void APlayerCharacter::Elim()
+{
+	
 }
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
