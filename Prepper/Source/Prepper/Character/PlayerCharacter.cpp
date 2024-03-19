@@ -15,6 +15,7 @@
 #include "Prepper/Item/Interactable.h"
 #include "Prepper/Item/InteractableItem.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
+#include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/Weapon.h"
 
 
@@ -60,6 +61,8 @@ APlayerCharacter::APlayerCharacter()
 
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
+
+	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -91,6 +94,7 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 
+	// 게임 시작시 플레이어 UI 동기화(초기화)
 	UpdateHUDHealth();
 	if(HasAuthority())
 	{
@@ -125,6 +129,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 	float CurrentArmLength = CameraBoom->TargetArmLength;
 	float NewArmLength = FMath::FInterpTo(CurrentArmLength, TargetArmLength, DeltaTime, InterpSpeed);
 	CameraBoom->TargetArmLength = NewArmLength;
+	
+	PollInit();
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -250,6 +256,19 @@ void APlayerCharacter::UpdateHUDHealth()
 	}
 }
 
+void APlayerCharacter::PollInit()
+{
+	if(DeathMatchPlayerState == nullptr)
+	{
+		DeathMatchPlayerState = GetPlayerState<ADeathMatchPlayerState>();
+		if(DeathMatchPlayerState)
+		{
+			DeathMatchPlayerState->AddToScore(0.f);
+			DeathMatchPlayerState->AddToDefeats(0);
+		}
+	}
+}
+
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -282,6 +301,10 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 
 void APlayerCharacter::Elim()
 {
+	if (Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Dropped();
+	}
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(
 		ElimTimer,
@@ -295,6 +318,27 @@ void APlayerCharacter::MulticastElim_Implementation()
 {
 	bElimmed = true;
 	PlayElimMontage();
+
+	// Start Dissolve Effect
+	if (DissolveMaterialInstance)
+	{
+		DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+		GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), 0.55f);
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("GlowValue"), 200.f);
+	}
+	StartDissolve();
+
+	// Disable Movement
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	if(PrepperPlayerController)
+	{
+		DisableInput(PrepperPlayerController);
+	}
+	// Disable Collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void APlayerCharacter::ElimTimerFinished()
@@ -303,6 +347,24 @@ void APlayerCharacter::ElimTimerFinished()
 	if (DeathMatchGameMode)
 	{
 		DeathMatchGameMode->RequestRespawn(this, Controller);
+	}
+}
+
+void APlayerCharacter::UpdateDissolveMaterial(float DissolveValue)
+{
+	if (DynamicDissolveMaterialInstance)
+	{
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), DissolveValue);
+	}
+}
+
+void APlayerCharacter::StartDissolve()
+{
+	DissolveTrack.BindDynamic(this, &APlayerCharacter::UpdateDissolveMaterial);
+	if (DissolveCurve && DissolveTimeline)
+	{
+		DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
+		DissolveTimeline->Play();
 	}
 }
 
@@ -464,8 +526,6 @@ void APlayerCharacter::SimProxiesTurn()
 	ProxyRotationLastFrame = ProxyRotation;
 	ProxyRotation = GetActorRotation();
 	ProxyYaw =  UKismetMathLibrary::NormalizedDeltaRotator(ProxyRotation, ProxyRotationLastFrame).Yaw;
-
-	UE_LOG(LogTemp, Warning, TEXT("ProxyYaw:  %f"), ProxyYaw);
 
 	if(FMath::Abs(ProxyYaw) > TurnThreshold)
 	{

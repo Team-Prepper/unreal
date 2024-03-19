@@ -5,6 +5,7 @@
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Item/Inventory.h"
+#include "Components/TimelineComponent.h"
 #include "PlayerCharacter.generated.h"
 
 class UInputAction;
@@ -61,6 +62,9 @@ protected:
 	UFUNCTION()
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
 	void UpdateHUDHealth();
+
+	// init 되었는지 확인하고 init함 _ DeathMatch
+	void PollInit();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -167,26 +171,53 @@ private:
 
 	Inventory Inven;
 
+	/*
+	 * Health Component
+	 **/
+
+	UPROPERTY()
 	class APrepperPlayerController* PrepperPlayerController;
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
-
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float CurrentHealth = 100.f;
-
 	UFUNCTION()
 	void OnRep_Health();
 
 	bool bElimmed = false;
-
 	FTimerHandle ElimTimer;
-	
 	UPROPERTY(EditDefaultsOnly)
 	float ElimDelay = 3.f;
 
 	void ElimTimerFinished();
 
+	/*
+	 * Disolved Effect
+	 */
+
+	UPROPERTY(VisibleAnywhere)
+	UTimelineComponent* DissolveTimeline;
+	FOnTimelineFloat DissolveTrack;
+
+	UPROPERTY(EditAnywhere)
+	UCurveFloat* DissolveCurve;
+
+	UFUNCTION()
+	void UpdateDissolveMaterial(float DissolveValue);
+	void StartDissolve();
+
+	// DissolveMaterialInstance로 부터 동적 생성
+	UPROPERTY(VisibleAnywhere, Category = Elim)
+	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;
+
+	// 블루 프린트에 세팅
+	UPROPERTY(EditAnywhere, Category = Elim)
+	UMaterialInstance* DissolveMaterialInstance;
+
+	UPROPERTY()
+	class ADeathMatchPlayerState* DeathMatchPlayerState;
+	
 public:
 	void SetOverlappingItem(AInteractable* InteractableItem);
 	void EquipWeapon(AWeapon* Weapon);
@@ -203,4 +234,6 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE bool IsElimed() const { return bElimmed; }
+	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
+	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 };

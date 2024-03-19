@@ -15,10 +15,14 @@ class PREPPER_API APrepperPlayerController : public APlayerController
 	GENERATED_BODY()
 public:
 	void SetHUDHealth(float Health, float MaxHealth);
+	void SetHUDScore(float Score);
+	void SetHUDDefeats(int32 Defeats);
+	virtual void OnPossess(APawn* InPawn) override;
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY()
 	class APrepperHUD* PrepperHUD;
 	
 };

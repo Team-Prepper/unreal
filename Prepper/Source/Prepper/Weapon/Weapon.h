@@ -28,6 +28,7 @@ public:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void Fire(const FVector& HitTarget);
+	void Dropped();
 
 	UPROPERTY(EditAnywhere, Category = Crosshiar)
 	class UTexture2D* CrosshairCenter;
