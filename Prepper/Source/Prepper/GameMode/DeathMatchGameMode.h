@@ -16,5 +16,5 @@ class PREPPER_API ADeathMatchGameMode : public AGameMode
 	
 public:
 	virtual void PlayerEliminated(class APlayerCharacter* ElimmedCharacter, class APrepperPlayerController* VictimController, APrepperPlayerController* AttackerController);
-	
+	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 };

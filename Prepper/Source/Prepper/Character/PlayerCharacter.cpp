@@ -21,7 +21,7 @@
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 	WalkSpeed = 600.f;
 	SprintSpeed = 900.f;
 	CrouchCamOffset = 30.f;
@@ -198,6 +198,15 @@ void APlayerCharacter::PlayFireMontage(bool bAiming)
 	}
 }
 
+void APlayerCharacter::PlayElimMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ElimMontage)
+	{
+		AnimInstance->Montage_Play(ElimMontage);
+	}
+}
+
 void APlayerCharacter::PlayHitReactMontage()
 {
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
@@ -273,7 +282,28 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 
 void APlayerCharacter::Elim()
 {
-	
+	MulticastElim();
+	GetWorldTimerManager().SetTimer(
+		ElimTimer,
+		this,
+		&APlayerCharacter::ElimTimerFinished,
+		ElimDelay
+	);
+}
+
+void APlayerCharacter::MulticastElim_Implementation()
+{
+	bElimmed = true;
+	PlayElimMontage();
+}
+
+void APlayerCharacter::ElimTimerFinished()
+{
+	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
+	if (DeathMatchGameMode)
+	{
+		DeathMatchGameMode->RequestRespawn(this, Controller);
+	}
 }
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
@@ -543,6 +573,8 @@ void APlayerCharacter::OnRep_Health()
 	UpdateHUDHealth();
 	PlayHitReactMontage();
 }
+
+
 
 void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 {
