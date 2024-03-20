@@ -48,14 +48,19 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
-	
 
 	if(Character && Character->IsLocallyControlled())
 	{
 		FHitResult HitResult;
         TraceUnderCrosshair(HitResult);
-        HitTarget = HitResult.ImpactPoint;
+		if(HitResult.bBlockingHit)
+		{
+			HitTarget = HitResult.ImpactPoint;
+		}
+		else
+		{
+			HitTarget = HitResult.Location;
+		}
 
 		SetHUDCrosshair(DeltaTime);
 		InterpFOV(DeltaTime);
@@ -289,12 +294,18 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 
 		FVector End = Start + CrosshairWorldDirection * TRACE_LEN;
 
-		GetWorld()->LineTraceSingleByChannel(
+		 bool bHitSomething = GetWorld()->LineTraceSingleByChannel(
 			TraceHitResult,
 			Start,
 			End,
 			ECollisionChannel::ECC_Visibility
 		);
+		if (!bHitSomething)
+		{
+			// TraceHitResult의 Location에 End 좌표 설정
+			TraceHitResult.Location = End;
+		}
+		
 		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
 		{
 			HUDPackage.CrosshairColor = FLinearColor::Red;
