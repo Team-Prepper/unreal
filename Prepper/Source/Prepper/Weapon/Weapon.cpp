@@ -3,6 +3,7 @@
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 
 AWeapon::AWeapon()
 {
@@ -49,6 +50,52 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponState);
+	DOREPLIFETIME(AWeapon, Ammo);
+}
+
+void AWeapon::SetHUDAmmo()
+{
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	if(PlayerOwnerCharacter)
+	{
+		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		if(PlayerOwnerController)
+		{
+			PlayerOwnerController->SetHUDWeaponAmmo(Ammo);
+		}
+	}
+}
+
+
+void AWeapon::SpendRound()
+{
+	Ammo = FMath::Clamp(Ammo -1, 0, MagCapacity);
+	SetHUDAmmo();
+}
+
+void AWeapon::OnRep_Ammo()
+{
+	SetHUDAmmo();
+}
+
+void AWeapon::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+	if(Owner == nullptr)
+	{
+		PlayerOwnerCharacter = nullptr;
+		PlayerOwnerController = nullptr;
+	}
+	else
+	{
+		SetHUDAmmo();
+	}
+}
+
+
+bool AWeapon::IsAmmoEmpty()
+{
+	return Ammo <= 0;
 }
 
 void AWeapon::SetWeaponState(EWeaponState State)
@@ -103,6 +150,7 @@ void AWeapon::Fire(const FVector& HitTarget)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
 	}
+	SpendRound();
 }
 
 void AWeapon::Dropped()
@@ -111,6 +159,8 @@ void AWeapon::Dropped()
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	WeaponMesh->DetachFromComponent(DetachRules);
 	SetOwner(nullptr);
+	PlayerOwnerCharacter = nullptr;
+	PlayerOwnerController = nullptr;
 }
 
 

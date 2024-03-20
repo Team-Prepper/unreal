@@ -86,8 +86,12 @@ private:
 
 	//Auto Fire
 	FTimerHandle FireTimer;
-	
+
+	// State
 	bool bCanFire = true;
+
+	// chk Ammo
+	bool CanFire();
 	
 	void StartFireTimer();
 	void FireTimerFinished();

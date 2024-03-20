@@ -25,4 +25,7 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* DefeatsValue;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* WeaponAmmoValue;
 };

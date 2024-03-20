@@ -24,9 +24,11 @@ class PREPPER_API AWeapon : public AInteractable
 public:	
 	AWeapon();
 	virtual void Interaction(APlayerCharacter* Target) override;
-	virtual void ShowPickUpWidget(bool bShowWidget) override;
-	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void OnRep_Owner() override;
+
+	void SetHUDAmmo();
+	virtual void ShowPickUpWidget(bool bShowWidget) override;
 	virtual void Fire(const FVector& HitTarget);
 	void Dropped();
 
@@ -76,10 +78,28 @@ private:
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	class UAnimationAsset* FireAnimation;
 
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	int32 Ammo;
+
+	UFUNCTION()
+	void OnRep_Ammo();
+
+	void SpendRound();
+
 	
 
+	UPROPERTY(EditAnywhere)
+	int32 MagCapacity;
+
+	UPROPERTY()
+	class APlayerCharacter* PlayerOwnerCharacter;
+	UPROPERTY()
+	class APrepperPlayerController* PlayerOwnerController;
+	
 public:
 	void SetWeaponState(EWeaponState State);
+	bool IsAmmoEmpty();
+	
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE float GetZoomedFOV() const {return ZoomFOV; }

@@ -316,6 +316,10 @@ void APlayerCharacter::Elim()
 
 void APlayerCharacter::MulticastElim_Implementation()
 {
+	if(PrepperPlayerController)
+	{
+		PrepperPlayerController->SetHUDWeaponAmmo(0);
+	}
 	bElimmed = true;
 	PlayElimMontage();
 

@@ -163,9 +163,15 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 	}
 }
 
+bool UCombatComponent::CanFire()
+{
+	if(EquippedWeapon == nullptr) return false;
+	return !EquippedWeapon->IsAmmoEmpty() && bCanFire;
+}
+
 void UCombatComponent::Fire()
 {
-	if (bCanFire && EquippedWeapon)
+	if (CanFire())
 	{
 		bCanFire = false;
 		ServerFire(HitTarget);
@@ -236,7 +242,10 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
-
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->Dropped();
+	}
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
@@ -245,6 +254,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
+	EquippedWeapon->SetHUDAmmo();
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
 }
