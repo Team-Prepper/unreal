@@ -51,26 +51,6 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	DOREPLIFETIME(AWeapon, WeaponState);
 }
 
-void AWeapon::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-							  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(this);
-	}
-}
-
-void AWeapon::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(nullptr);
-	}
-}
-
 void AWeapon::SetWeaponState(EWeaponState State)
 {
 	WeaponState = State;

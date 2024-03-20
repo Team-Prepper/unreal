@@ -28,17 +28,10 @@ void AInteractableItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AInteractableItem::OnSphereOverlap);
-	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AInteractableItem::OnSphereEndOverlap);
-	
-
 	if(PickUpWidget)
 	{
 		PickUpWidget->SetVisibility(false);
 	}
-	
 }
 
 
@@ -46,26 +39,6 @@ void AInteractableItem::Interaction(APlayerCharacter* Target)
 {
 	Target->AddItem(ItemCode);
 	Destroy();
-}
-
-void AInteractableItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-							  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(this);
-	}
-}
-
-void AInteractableItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(nullptr);
-	}
 }
 
 void AInteractableItem::ShowPickUpWidget(bool bShowWidget)

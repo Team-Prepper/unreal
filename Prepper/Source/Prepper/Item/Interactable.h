@@ -7,7 +7,7 @@
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Interactable.generated.h"
 
-UCLASS(Abstract)
+UCLASS()
 class PREPPER_API AInteractable : public AActor
 {
 	GENERATED_BODY()
@@ -15,4 +15,27 @@ class PREPPER_API AInteractable : public AActor
 public:
 	virtual void Interaction(APlayerCharacter* Target) PURE_VIRTUAL(AInteractable::Interaction, );
 	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL(AInteractable::ShowPickUpWidget, );
+	
+	UFUNCTION()
+	virtual void OnSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+		);
+
+	UFUNCTION()
+	void OnSphereEndOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+		);
+	
+protected:
+	UPROPERTY(VisibleAnywhere, Category = "Trigger")
+	class USphereComponent* AreaSphere;
+	virtual void BeginPlay() override;
 };

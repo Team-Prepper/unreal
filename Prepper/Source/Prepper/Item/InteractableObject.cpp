@@ -32,17 +32,6 @@ void AInteractableObject::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AInteractableObject::OnSphereOverlap);
-	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AInteractableObject::OnSphereEndOverlap);
-	
-
-	if(PickUpWidget)
-	{
-		PickUpWidget->SetVisibility(false);
-	}
-	
 }
 
 // Called every frame
@@ -57,27 +46,6 @@ void AInteractableObject::Interaction(APlayerCharacter* Target)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Open Door"));
 	
-}
-
-void AInteractableObject::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-							  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(this);
-	}
-}
-
-void AInteractableObject::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(nullptr);
-	}
 }
 
 void AInteractableObject::ShowPickUpWidget(bool bShowWidget)
