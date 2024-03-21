@@ -88,3 +88,16 @@ void APrepperPlayerController::SetHUDWeaponAmmo(int32 Value)
 	}
 }
 
+void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
+{
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	bool bHUDValid = PrepperHUD &&
+					 PrepperHUD->CharacterOverlay &&
+					 PrepperHUD->CharacterOverlay->CarriedAmmoValue;
+	if(bHUDValid)
+	{
+		FString AmmoText = FString::Printf(TEXT("%d"),Value);
+		PrepperHUD->CharacterOverlay->CarriedAmmoValue->SetText(FText::FromString(AmmoText));
+	}
+}
+

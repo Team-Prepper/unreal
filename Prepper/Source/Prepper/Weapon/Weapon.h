@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WeaponTypes.h"
 #include "GameFramework/Actor.h"
 #include "Prepper/Item/Interactable.h"
 #include "Weapon.generated.h"
@@ -95,15 +96,19 @@ private:
 	class APlayerCharacter* PlayerOwnerCharacter;
 	UPROPERTY()
 	class APrepperPlayerController* PlayerOwnerController;
+
+	UPROPERTY(EditAnywhere)
+	EWeaponType WeaponType;
 	
 public:
 	void SetWeaponState(EWeaponState State);
 	bool IsAmmoEmpty();
 	
-	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
+	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
-	FORCEINLINE float GetZoomedFOV() const {return ZoomFOV; }
-	FORCEINLINE float GetZoomedInterpSpeed() const {return ZoomInterpSpeed; }
+	FORCEINLINE float GetZoomedFOV()					const { return ZoomFOV; }
+	FORCEINLINE float GetZoomedInterpSpeed()			const { return ZoomInterpSpeed; }
+	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
 };
 
 

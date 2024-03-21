@@ -2,7 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/Enums/CombatState.h"
 #include "Prepper/HUD/PrepperHUD.h"
+#include "Prepper/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -16,8 +18,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-
 	void EquipWeapon(class AWeapon* WeaponToEquip);
+	void Reload();
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 protected:
 	virtual void BeginPlay() override;
 	void SetAiming(bool bIsAiming);
@@ -40,6 +44,11 @@ protected:
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 
 	void SetHUDCrosshair(float DeltaTime);
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+
+	void HandleReload();
 
 private:
 	UPROPERTY()
@@ -92,6 +101,26 @@ private:
 
 	// chk Ammo
 	bool CanFire();
+
+	// carried ammo for cur equip weapon
+	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+
+	UFUNCTION()
+	void OnRep_CarriedAmmo();
+
+	TMap<EWeaponType, int32> CarriedAmmoMap;
+
+	UPROPERTY(EditAnywhere)
+	int32 StartingARAmmo = 30;
+
+	void InitCarriedAmmo();
+
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatState CombatState = ECombatState::ECS_Unoccupied;
+
+	UFUNCTION()
+	void OnRep_CombatState();
 	
 	void StartFireTimer();
 	void FireTimerFinished();

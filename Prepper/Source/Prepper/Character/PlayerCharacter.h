@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Prepper/Enums/TurningInPlace.h"
+#include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Item/Inventory.h"
 #include "Components/TimelineComponent.h"
@@ -25,6 +26,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	
 	void PlayFireMontage(bool bAiming);
+	void PlayReloadMontage();
 	void PlayElimMontage();
 	
 	virtual void OnRep_ReplicatedMovement() override;
@@ -47,6 +49,7 @@ protected:
 	
 	void EquipButtonPressed();
 	void CrouchButtonPressed();
+	void ReloadButtonPressed();
 	void AimButtonPressed();
 	void AimButtonReleased();
 	void FireButtonPressed();
@@ -91,6 +94,9 @@ private:
 	UInputAction* CrouchAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* ReloadAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* AimAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
@@ -105,7 +111,7 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingItem(AInteractable* LastItem);
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UCombatComponent* Combat;
 
 	UFUNCTION(Server, Reliable)
@@ -130,6 +136,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* FireWeaponMontage;
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ReloadMontage;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
@@ -137,6 +146,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ElimMontage;
 
+	
 	/*
 	 * For Crouch Cam
 	 */
@@ -226,6 +236,7 @@ public:
 	void AddItem(FString& ItemCode);
 	AWeapon* GetEquippedWeapon();
 	FVector GetHitTarget() const;
+	ECombatState GetCombatState() const;
 
 public:
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
@@ -236,4 +247,5 @@ public:
 	FORCEINLINE bool IsElimed() const { return bElimmed; }
 	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	
 };

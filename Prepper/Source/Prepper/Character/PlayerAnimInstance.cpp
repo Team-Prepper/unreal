@@ -38,6 +38,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	TurningInPlace = PlayerCharacter->GetTurningInPlace();
 	bRotateRootBone = PlayerCharacter->ShouldRotateRootBone();
 	bElimmed = PlayerCharacter->IsElimed();
+	bUseFABRIK = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading;
 
 	// OFFSET YAW FOR STRAFING
 	FRotator AimRotation = PlayerCharacter->GetBaseAimRotation();
