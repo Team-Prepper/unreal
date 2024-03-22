@@ -4,17 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "PrepperGameMode.h"
 #include "DeathMatchGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PREPPER_API ADeathMatchGameMode : public AGameMode
+class PREPPER_API ADeathMatchGameMode : public APrepperGameMode
 {
 	GENERATED_BODY()
 	
 public:
-	virtual void PlayerEliminated(class APlayerCharacter* ElimmedCharacter, class APrepperPlayerController* VictimController, APrepperPlayerController* AttackerController);
+	virtual void PlayerEliminated(class APlayerCharacter* ElimmedCharacter,
+									class APrepperPlayerController* VictimController,
+									APrepperPlayerController* AttackerController) override;
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 };

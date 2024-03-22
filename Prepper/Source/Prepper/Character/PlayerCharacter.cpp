@@ -13,7 +13,6 @@
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
 #include "Prepper/Item/Interactable.h"
-#include "Prepper/Item/InteractableItem.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/Weapon.h"
@@ -258,12 +257,12 @@ void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const U
 	// DEATH MATCH
 	if(CurrentHealth == 0.f)
 	{
-		ADeathMatchGameMode* DeathMatchGameMode =  GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
-        if(DeathMatchGameMode)
+		APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
+        if(PrepperGameMode)
         {
-        	PrepperPlayerController = PrepperPlayerController == nullptr ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
+        	PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
         	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
-        	DeathMatchGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
+        	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
         }
 	}
 	
