@@ -22,8 +22,6 @@ APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	WalkSpeed = 600.f;
-	SprintSpeed = 900.f;
 	CrouchCamOffset = 30.f;
 	DefaultCamOffset = 100.f;
 	CrouchCamArmLength = 200.f;
@@ -38,6 +36,10 @@ APlayerCharacter::APlayerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCam"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	Hair = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hair"));
+	Hair->SetRelativeRotation(FRotator(-90.f, 0, 90.f));
+	Hair->SetupAttachment(GetMesh(),FName("Head"));
 
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -61,7 +63,7 @@ APlayerCharacter::APlayerCharacter()
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 
-	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
+	
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -69,7 +71,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
-	DOREPLIFETIME(APlayerCharacter, CurrentHealth);
+	
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -94,16 +96,12 @@ void APlayerCharacter::BeginPlay()
 	}
 
 	// 게임 시작시 플레이어 UI 동기화(초기화)
-	UpdateHUDHealth();
-	if(HasAuthority())
-	{
-		OnTakeAnyDamage.AddDynamic(this, &APlayerCharacter::ReceiveDamage);
-	}
+	
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	ACharacter::Tick(DeltaTime);
 
 	if(GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
 	{
@@ -225,15 +223,6 @@ void APlayerCharacter::PlayReloadMontage()
 	}
 }
 
-void APlayerCharacter::PlayElimMontage()
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && ElimMontage)
-	{
-		AnimInstance->Montage_Play(ElimMontage);
-	}
-}
-
 void APlayerCharacter::PlayHitReactMontage()
 {
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
@@ -247,26 +236,6 @@ void APlayerCharacter::PlayHitReactMontage()
 	}
 }
 
-void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatorController, AActor* DamageCauser)
-{
-	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-	UpdateHUDHealth();
-	PlayHitReactMontage();
-
-	// DEATH MATCH
-	if(CurrentHealth == 0.f)
-	{
-		APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
-        if(PrepperGameMode)
-        {
-        	PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
-        	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
-        	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
-        }
-	}
-	
-}
 
 void APlayerCharacter::UpdateHUDHealth()
 {
@@ -313,13 +282,6 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::OnRep_ReplicatedMovement()
-{
-	Super::OnRep_ReplicatedMovement();
-	SimProxiesTurn();
-	TimeSinceLastMovementReplication = 0.f;
-}
-
 void APlayerCharacter::Elim()
 {
 	if (Combat && Combat->EquippedWeapon)
@@ -335,62 +297,13 @@ void APlayerCharacter::Elim()
 	);
 }
 
-void APlayerCharacter::MulticastElim_Implementation()
+void APlayerCharacter::MulticastElim()
 {
 	if(PrepperPlayerController)
 	{
 		PrepperPlayerController->SetHUDWeaponAmmo(0);
 	}
-	bElimmed = true;
-	PlayElimMontage();
-
-	// Start Dissolve Effect
-	if (DissolveMaterialInstance)
-	{
-		DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-		GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
-		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), 0.55f);
-		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("GlowValue"), 200.f);
-	}
-	StartDissolve();
-
-	// Disable Movement
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->StopMovementImmediately();
-	if(PrepperPlayerController)
-	{
-		DisableInput(PrepperPlayerController);
-	}
-	// Disable Collision
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void APlayerCharacter::ElimTimerFinished()
-{
-	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
-	if (DeathMatchGameMode)
-	{
-		DeathMatchGameMode->RequestRespawn(this, Controller);
-	}
-}
-
-void APlayerCharacter::UpdateDissolveMaterial(float DissolveValue)
-{
-	if (DynamicDissolveMaterialInstance)
-	{
-		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), DissolveValue);
-	}
-}
-
-void APlayerCharacter::StartDissolve()
-{
-	DissolveTrack.BindDynamic(this, &APlayerCharacter::UpdateDissolveMaterial);
-	if (DissolveCurve && DissolveTimeline)
-	{
-		DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
-		DissolveTimeline->Play();
-	}
+	Super::MulticastElim();
 }
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
@@ -543,6 +456,13 @@ void APlayerCharacter::AimOffset(float DeltaTime)
 	CalculateAO_Pitch();
 }
 
+void APlayerCharacter::OnRep_ReplicatedMovement()
+{
+	Super::OnRep_ReplicatedMovement();
+	SimProxiesTurn();
+	TimeSinceLastMovementReplication = 0.f;
+}
+
 void APlayerCharacter::SimProxiesTurn()
 {
 	if(Combat == nullptr || Combat -> EquippedWeapon == nullptr) return;
@@ -634,6 +554,18 @@ void APlayerCharacter::HideCamIfCharacterClose()
 	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CamThreshold)
 	{
 		GetMesh()->SetVisibility(false);
+		TArray<USceneComponent*> AttachedComponents;
+		GetMesh()->GetChildrenComponents(true,  AttachedComponents);
+
+		// Loop through all found Static Mesh components
+		for (USceneComponent* SceneComponent : AttachedComponents)
+		{
+			UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
+			if(SMComp)
+			{
+				SMComp->SetVisibility(false);
+			}
+		}
 		/*
 		 * UTF-8
 		 * 벽에 가까이가서 자신 캐릭터가 시야를 가릴 때
@@ -647,6 +579,18 @@ void APlayerCharacter::HideCamIfCharacterClose()
 	else
 	{
 		GetMesh()->SetVisibility(true);
+		TArray<USceneComponent*> AttachedComponents;
+		GetMesh()->GetChildrenComponents(true,  AttachedComponents);
+
+		// Loop through all found Static Mesh components
+		for (USceneComponent* SceneComponent : AttachedComponents)
+		{
+			UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
+			if(SMComp)
+			{
+				SMComp->SetVisibility(true);
+			}
+		}
 		/*
 		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
 		{
@@ -661,11 +605,7 @@ void APlayerCharacter::AddItem(FString& ItemCode)
 	Inven.TryAddItem(ItemCode);
 }
 
-void APlayerCharacter::OnRep_Health()
-{
-	UpdateHUDHealth();
-	PlayHitReactMontage();
-}
+
 
 
 
