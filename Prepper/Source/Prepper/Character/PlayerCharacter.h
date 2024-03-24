@@ -7,6 +7,7 @@
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Item/Inventory.h"
 #include "Components/TimelineComponent.h"
+#include "Prepper/PlayerController/Controllable.h"
 #include "PlayerCharacter.generated.h"
 
 class UInputAction;
@@ -14,7 +15,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class PREPPER_API APlayerCharacter : public ACharacter, public IInteractWithCrosshairInterface
+class PREPPER_API APlayerCharacter : public ACharacter, public IInteractWithCrosshairInterface, public IControllable
 {
 	GENERATED_BODY()
 
@@ -35,25 +36,27 @@ public:
 	void Elim();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastElim();
+	
+	virtual void Move(const FInputActionValue& Value) override;
+	virtual void Look(const FInputActionValue& Value) override;
+	
+	virtual void ShiftPressed() override;
+	virtual void ShiftReleased() override;
+	
+	virtual void EPressed() override;
+	virtual void RPressed() override;
+	virtual void ControlPressed() override;
+	
+	virtual void MouseLeftPressed() override;
+	virtual void MouseLeftReleased() override;
+	virtual void MouseRightPressed() override;
+	virtual void MouseRightReleased() override;
+	
 protected:
 	virtual void BeginPlay() override;
 
 	float WalkSpeed;
 	float SprintSpeed;
-
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-	
-	void SprintButtonPressed();
-	void SprintButtonReleased();
-	
-	void EquipButtonPressed();
-	void CrouchButtonPressed();
-	void ReloadButtonPressed();
-	void AimButtonPressed();
-	void AimButtonReleased();
-	void FireButtonPressed();
-	void FireButtonReleased();
 	void CalculateAO_Pitch();
 	void AimOffset(float DeltaTime);
 	void SimProxiesTurn();
