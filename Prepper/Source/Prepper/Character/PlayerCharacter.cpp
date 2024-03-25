@@ -237,6 +237,24 @@ void APlayerCharacter::PlayHitReactMontage()
 }
 
 
+void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatorController, AActor* DamageCauser)
+{
+	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
+
+	// DEATH MATCH
+	if(CurrentHealth == 0.f)
+	{
+		ADeathMatchGameMode* DeathMatchGameMode =  GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
+		if(DeathMatchGameMode)
+		{
+			PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
+			APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+			DeathMatchGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
+		}
+	}
+}
+
 void APlayerCharacter::UpdateHUDHealth()
 {
 	PrepperPlayerController = PrepperPlayerController == nullptr ?  Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;

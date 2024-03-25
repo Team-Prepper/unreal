@@ -47,7 +47,7 @@ protected:
 	UAnimMontage* HitReactMontage;
 	
 	UFUNCTION()
-	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
 	virtual void UpdateHUDHealth();
 
 	virtual void PlayHitReactMontage();

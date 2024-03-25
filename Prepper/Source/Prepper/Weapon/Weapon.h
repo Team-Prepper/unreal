@@ -12,7 +12,6 @@ enum class EWeaponState : uint8
 	EWS_Initial UMETA(DisplayName = "Initial State"),
 	EWS_Equipped UMETA(DisplayName = "Equipped"),
 	EWS_Dropped UMETA(DisplayName = "Dropped"),
-
 	
 	EWS_MAX UMETA(DisplayName = "Default MAX")
 };
@@ -59,6 +58,9 @@ public:
 	bool bAutomatic = true;
 
 	void AddAmmo(int32 AmmoToAdd);
+
+	UPROPERTY()
+	class USoundCue* EquipSound;
 	
 protected:
 	virtual void BeginPlay() override;
