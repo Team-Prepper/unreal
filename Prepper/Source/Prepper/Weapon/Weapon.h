@@ -57,6 +57,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	bool bAutomatic = true;
+
+	void AddAmmo(int32 AmmoToAdd);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -109,6 +111,8 @@ public:
 	FORCEINLINE float GetZoomedFOV()					const { return ZoomFOV; }
 	FORCEINLINE float GetZoomedInterpSpeed()			const { return ZoomInterpSpeed; }
 	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
+	FORCEINLINE int32 GetAmmo()							const { return Ammo; }
+	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }
 };
 
 

@@ -22,6 +22,7 @@ public:
 	void Reload();
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
+	
 protected:
 	virtual void BeginPlay() override;
 	void SetAiming(bool bIsAiming);
@@ -49,7 +50,7 @@ protected:
 	void ServerReload();
 
 	void HandleReload();
-
+	int32 AmountToReload();
 private:
 	UPROPERTY()
 	class APlayerCharacter* Character;
@@ -121,7 +122,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_CombatState();
-	
+	void UpdateAmmoValues();
 	void StartFireTimer();
 	void FireTimerFinished();
+	
 };

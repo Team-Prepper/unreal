@@ -163,6 +163,11 @@ void AWeapon::Dropped()
 	PlayerOwnerController = nullptr;
 }
 
+void AWeapon::AddAmmo(int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo - AmmoToAdd, 0, MagCapacity);
+	SetHUDAmmo();
+}
 
 void AWeapon::Interaction(APlayerCharacter* Target)
 {
