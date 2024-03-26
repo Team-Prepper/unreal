@@ -91,6 +91,21 @@ void ACarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 		UE_LOG(LogTemplateVehicle, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
+void ACarPawn::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(PlayerMappingContext, 0);
+		}
+	}
+
+	// 게임 시작시 플레이어 UI 동기화(초기화)
+	
+}
 
 void ACarPawn::Tick(float Delta)
 {
