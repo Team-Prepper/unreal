@@ -20,7 +20,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interaction(APlayerCharacter *Target) override;
-	virtual void ShowPickUpWidget(bool bShowWidget) override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -30,7 +29,5 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Item Properties")
 	USkeletalMeshComponent* ItemMesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Item Properties")
-	class UWidgetComponent* PickUpWidget;
 
 };

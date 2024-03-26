@@ -71,7 +71,6 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
-	
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -633,6 +632,7 @@ void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 	{
 		OverlappingItem->ShowPickUpWidget(false);
 	}
+	
 	OverlappingItem = InteractableItem;
 	
 	if(IsLocallyControlled())
@@ -647,7 +647,11 @@ void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 
 void APlayerCharacter::OnRep_OverlappingItem(AInteractable* LastItem)
 {
-	if(LastItem)
+	if (OverlappingItem)
+	{
+		OverlappingItem->ShowPickUpWidget(true);
+	}
+	if (LastItem)
 	{
 		LastItem->ShowPickUpWidget(false);
 	}

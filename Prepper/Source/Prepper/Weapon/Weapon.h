@@ -28,7 +28,6 @@ public:
 	virtual void OnRep_Owner() override;
 
 	void SetHUDAmmo();
-	virtual void ShowPickUpWidget(bool bShowWidget) override;
 	virtual void Fire(const FVector& HitTarget);
 	void Dropped();
 
@@ -76,9 +75,6 @@ private:
 
 	UFUNCTION()
 	void OnRep_WeaponState();
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	class UWidgetComponent* PickUpWidget;
 
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	class UAnimationAsset* FireAnimation;

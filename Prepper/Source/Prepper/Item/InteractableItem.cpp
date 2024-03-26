@@ -41,10 +41,3 @@ void AInteractableItem::Interaction(APlayerCharacter* Target)
 	Destroy();
 }
 
-void AInteractableItem::ShowPickUpWidget(bool bShowWidget)
-{
-	if(PickUpWidget)
-	{
-		PickUpWidget->SetVisibility(bShowWidget);
-	}
-}

@@ -45,13 +45,4 @@ void AInteractableObject::Tick(float DeltaTime)
 void AInteractableObject::Interaction(APlayerCharacter* Target)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Open Door"));
-	
-}
-
-void AInteractableObject::ShowPickUpWidget(bool bShowWidget)
-{
-	if(PickUpWidget)
-	{
-		PickUpWidget->SetVisibility(bShowWidget);
-	}
 }

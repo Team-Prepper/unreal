@@ -12,9 +12,7 @@ class PREPPER_API AInteractableItem : public AInteractable
 	
 public:	
 	AInteractableItem();
-
 	virtual void Interaction(APlayerCharacter *Target) override;
-	virtual void ShowPickUpWidget(bool bShowWidget) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,8 +24,5 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, Category = "Item Properties")
 	USkeletalMeshComponent* ItemMesh;
-
-	UPROPERTY(VisibleAnywhere, Category = "Item Properties")
-	class UWidgetComponent* PickUpWidget;
 
 };
