@@ -3,13 +3,12 @@
 
 #include "PrepperPlayerController.h"
 
+#include "EnhancedInputComponent.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/HUD/CharacterOverlay.h"
 #include "Prepper/HUD/PrepperHUD.h"
-
-
 
 void APrepperPlayerController::BeginPlay()
 {
@@ -21,9 +20,11 @@ void APrepperPlayerController::BeginPlay()
 void APrepperPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
 	// 리스폰시 플레이어 HUD 동기화
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+	const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+	TargetPlayer = Cast<IControllable>(InPawn);
+	UE_LOG(LogTemp, Warning, TEXT("This a testing statement. %s"), *Player->GetName())
+	
 	if (PlayerCharacter)
 	{
 		SetHUDHealth(PlayerCharacter->GetCurrentHealth(), PlayerCharacter->GetMaxHealth());
@@ -103,6 +104,110 @@ void APrepperPlayerController::SetHUDWeaponAmmo(int32 Value)
 		FString AmmoText = FString::Printf(TEXT("%d"),Value);
 		PrepperHUD->CharacterOverlay->WeaponAmmoValue->SetText(FText::FromString(AmmoText));
 	}
+}
+
+void APrepperPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+	UE_LOG(LogTemp, Warning, TEXT("Binding"));
+		// 점프는 추가해야 함
+		// Moving
+		///*
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::Move);
+		// Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::Look);
+		//*/
+
+		//Sprint
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::SprintButtonPressed);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrepperPlayerController::SprintButtonReleased);
+
+		// Equip
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::EquipButtonPressed);
+
+		// Crouch
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::CrouchButtonPressed);
+
+		//Aim
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::AimButtonPressed);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APrepperPlayerController::AimButtonReleased);
+
+		// Fire
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::FireButtonPressed);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APrepperPlayerController::FireButtonReleased);
+
+		// Reload
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::ReloadButtonPressed);
+	}
+	
+}
+void APrepperPlayerController::Move(const FInputActionValue& Value)
+{
+	TargetPlayer = Cast<IControllable>(GetPawn());
+	
+	TargetPlayer->Move(Value);
+}
+void APrepperPlayerController::Look(const FInputActionValue& Value)
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->Look(Value);
+}
+
+void APrepperPlayerController::SprintButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->ShiftPressed();
+}
+
+void APrepperPlayerController::SprintButtonReleased()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->ShiftReleased();
+}
+void APrepperPlayerController::EquipButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->EPressed();
+	
+}
+void APrepperPlayerController::CrouchButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->ControlPressed();
+	
+}
+void APrepperPlayerController::ReloadButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->RPressed();
+}
+void APrepperPlayerController::AimButtonPressed()
+{
+	
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseRightPressed();
+}
+void APrepperPlayerController::AimButtonReleased()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseRightReleased();
+	
+}
+void APrepperPlayerController::FireButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseLeftPressed();
+	
+}
+void APrepperPlayerController::FireButtonReleased()
+{
+	
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseLeftReleased();
+	
 }
 
 void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)

@@ -7,7 +7,7 @@
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Item/Inventory.h"
-
+#include "Prepper/PlayerController/Controllable.h"
 #include "PlayerCharacter.generated.h"
 
 class UInputAction;
@@ -15,7 +15,8 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class PREPPER_API APlayerCharacter : public ABaseCharacter, public IInteractWithCrosshairInterface
+class PREPPER_API APlayerCharacter : public ACharacter, public IInteractWithCrosshairInterface, public IControllable
+
 {
 	GENERATED_BODY()
 
@@ -31,29 +32,34 @@ public:
 	virtual void Elim() override;
 	virtual void MulticastElim() override;
 	
+	virtual void OnRep_ReplicatedMovement() override;
+
+	// DEATH MATCH
+	void Elim();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastElim();
+	
+	virtual void Move(const FInputActionValue& Value) override;
+	virtual void Look(const FInputActionValue& Value) override;
+	
+	virtual void ShiftPressed() override;
+	virtual void ShiftReleased() override;
+	
+	virtual void EPressed() override;
+	virtual void RPressed() override;
+	virtual void ControlPressed() override;
+	
+	virtual void MouseLeftPressed() override;
+	virtual void MouseLeftReleased() override;
+	virtual void MouseRightPressed() override;
+	virtual void MouseRightReleased() override;
+	
 protected:
 	virtual void BeginPlay() override;
 
-	/* 행동관련 */
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
-	virtual void Jump() override;
-	// 자연스러운 회전 - 멀티플레이 proxies
-	void SimProxiesTurn();
-	float TimeSinceLastMovementReplication;
-	
-	/* 입력 관련 */
-private:	
-	void SprintButtonPressed();
-	void SprintButtonReleased();
-	void EquipButtonPressed();
-	void CrouchButtonPressed();
-	void ReloadButtonPressed();
-	void AimButtonPressed();
-	void AimButtonReleased();
-	void FireButtonPressed();
-	void FireButtonReleased();
-	// Aim 연산
+	float WalkSpeed;
+	float SprintSpeed;
+
 	void CalculateAO_Pitch();
 	void AimOffset(float DeltaTime);
 
