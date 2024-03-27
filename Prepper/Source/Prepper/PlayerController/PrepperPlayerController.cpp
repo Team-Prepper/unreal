@@ -1,8 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PrepperPlayerController.h"
-
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Prepper/Character/PlayerCharacter.h"
@@ -10,20 +8,24 @@
 #include "Prepper/HUD/PrepperHUD.h"
 
 
-
 void APrepperPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	PrepperHUD = Cast<APrepperHUD>(GetHUD());
+	TargetPlayer = Cast<IControllable>(GetPawn());
+
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(PlayerMappingContext, 0);
+	}
 }
 
 void APrepperPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-
-	// 리스폰시 플레이어 HUD 동기화
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+	
 	if (PlayerCharacter)
 	{
 		SetHUDHealth(PlayerCharacter->GetCurrentHealth(), PlayerCharacter->GetMaxHealth());
@@ -36,6 +38,123 @@ void APrepperPlayerController::Tick(float DeltaTime)
 	SetHUDTime();
 }
 
+void APrepperPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+	
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
+	{
+		
+		// Moving
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::Move);
+		// Looking
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::Look);
+
+		// Jumping
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APrepperPlayerController::JumpButtonPressed);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &APrepperPlayerController::JumpButtonReleased);
+
+		//Sprint
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::SprintButtonPressed);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APrepperPlayerController::SprintButtonReleased);
+
+		// Equip
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::EquipButtonPressed);
+
+		// Crouch
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::CrouchButtonPressed);
+
+		//Aim
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::AimButtonPressed);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APrepperPlayerController::AimButtonReleased);
+
+		// Fire
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::FireButtonPressed);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APrepperPlayerController::FireButtonReleased);
+
+		// Reload
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::ReloadButtonPressed);
+	}
+	
+}
+void APrepperPlayerController::Move(const FInputActionValue& Value)
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->Move(Value);
+}
+
+
+void APrepperPlayerController::Look(const FInputActionValue& Value)
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->Look(Value);
+}
+
+void APrepperPlayerController::JumpButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->SpacePressed();
+}
+
+void APrepperPlayerController::JumpButtonReleased()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->SpaceReleased();
+}
+
+void APrepperPlayerController::SprintButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->ShiftPressed();
+}
+
+void APrepperPlayerController::SprintButtonReleased()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->ShiftReleased();
+}
+void APrepperPlayerController::EquipButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->EPressed();
+	
+}
+void APrepperPlayerController::CrouchButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->ControlPressed();
+	
+}
+void APrepperPlayerController::ReloadButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->RPressed();
+}
+void APrepperPlayerController::AimButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseRightPressed();
+}
+void APrepperPlayerController::AimButtonReleased()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseRightReleased();
+	
+}
+void APrepperPlayerController::FireButtonPressed()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseLeftPressed();
+	
+}
+void APrepperPlayerController::FireButtonReleased()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->MouseLeftReleased();
+}
+
+/* HUD Setting*/
+
 void APrepperPlayerController::SetHUDTime()
 {
 	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds());
@@ -43,7 +162,6 @@ void APrepperPlayerController::SetHUDTime()
 	{
 		SetHUDMatchCountDown(MatchTime - GetWorld()->GetTimeSeconds());
 	}
-
 	CountdownInt = SecondsLeft;
 }
 
@@ -133,4 +251,5 @@ void APrepperPlayerController::SetHUDMatchCountDown(float CountDownTime)
 		PrepperHUD->CharacterOverlay->MatchCountDownText->SetText(FText::FromString(CountDownText));
 	}
 }
+
 

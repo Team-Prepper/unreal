@@ -36,6 +36,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsCrouch = PlayerCharacter->bIsCrouched;
 	bAiming = PlayerCharacter->IsAiming();
 	TurningInPlace = PlayerCharacter->GetTurningInPlace();
+	
 	bRotateRootBone = PlayerCharacter->ShouldRotateRootBone();
 	bElimmed = PlayerCharacter->IsElimed();
 	bUseFABRIK = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading;
@@ -68,6 +69,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		LeftHandTransform.SetLocation(OutPosition);
 		LeftHandTransform.SetRotation(FQuat(OutRotator));
 
+		
 		if(PlayerCharacter->IsLocallyControlled())
 		{
 			bLocallyControlled = true;
@@ -76,14 +78,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaSeconds, 30.f);
 		}
 		
-		/*
-		//Debug Line
-		FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Muzzle"), RTS_World);
-		FVector MuzzleX(FRotationMatrix(MuzzleTipTransform.GetRotation().Rotator()).GetUnitAxis(EAxis::X));
-		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), MuzzleTipTransform.GetLocation() + MuzzleX* 1000.f, FColor::Red);
-		DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), PlayerCharacter->GetHitTarget(), FColor::Cyan);
-		*/
-		
 	}
+
 }
 

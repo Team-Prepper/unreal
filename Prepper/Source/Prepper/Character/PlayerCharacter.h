@@ -2,12 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
-#include "GameFramework/Character.h"
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
+#include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Item/Inventory.h"
-
 #include "PlayerCharacter.generated.h"
 
 class UInputAction;
@@ -15,7 +14,7 @@ class UInputAction;
 struct FInputActionValue;
 
 UCLASS()
-class PREPPER_API APlayerCharacter : public ABaseCharacter, public IInteractWithCrosshairInterface
+class PREPPER_API APlayerCharacter : public ABaseCharacter, public IInteractWithCrosshairInterface, public IControllable
 {
 	GENERATED_BODY()
 
@@ -23,7 +22,6 @@ public:
 	APlayerCharacter();
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//combatcomponent 에서 사용
 	void PlayFireMontage(bool bAiming); 
@@ -34,25 +32,36 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Move(const FInputActionValue& Value) override;
+	virtual void Look(const FInputActionValue& Value) override;
+
+	virtual void SpacePressed() override;
+	virtual void SpaceReleased() override;
+
+	virtual void ShiftPressed() override;
+	virtual void ShiftReleased() override;
+
+	virtual void EPressed() override;
+	virtual void RPressed() override;
+	virtual void ControlPressed() override;
+
+	virtual void MouseLeftPressed() override;
+	virtual void MouseLeftReleased() override;
+	virtual void MouseRightPressed() override;
+	virtual void MouseRightReleased() override;
+
 	/* 행동관련 */
-	void Move(const FInputActionValue& Value);
-	void Look(const FInputActionValue& Value);
 	virtual void Jump() override;
+	virtual void StopJumping() override;
+
+
+	
 	// 자연스러운 회전 - 멀티플레이 proxies
 	void SimProxiesTurn();
 	float TimeSinceLastMovementReplication;
 	
 	/* 입력 관련 */
 private:	
-	void SprintButtonPressed();
-	void SprintButtonReleased();
-	void EquipButtonPressed();
-	void CrouchButtonPressed();
-	void ReloadButtonPressed();
-	void AimButtonPressed();
-	void AimButtonReleased();
-	void FireButtonPressed();
-	void FireButtonReleased();
 	// Aim 연산
 	void CalculateAO_Pitch();
 	void AimOffset(float DeltaTime);
@@ -65,27 +74,6 @@ private:
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
 	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	class UInputMappingContext* PlayerMappingContext;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* MoveAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* JumpAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* LookAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* SprintAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* EquipAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* CrouchAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* ReloadAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* AimAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	UInputAction* FireAction;
-
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed(AWeapon* Weapon);
 	UFUNCTION(Server, Reliable)

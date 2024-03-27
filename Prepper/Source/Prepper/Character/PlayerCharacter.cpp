@@ -1,7 +1,6 @@
 #include "PlayerCharacter.h"	
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Components/CapsuleComponent.h"
@@ -85,17 +84,6 @@ void APlayerCharacter::PostInitializeComponents()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(PlayerMappingContext, 0);
-		}
-	}
-
-	// 게임 시작시 플레이어 UI 동기화(초기화)
-	
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -129,45 +117,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	PollInit();
 }
 
-void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
-		//Sprint
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SprintButtonPressed);
-		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::SprintButtonReleased);
-		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
-
-		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
-
-		// Equip
-		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &APlayerCharacter::EquipButtonPressed);
-
-		// Crouch
-		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CrouchButtonPressed);
-
-		//Aim
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APlayerCharacter::AimButtonPressed);
-		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APlayerCharacter::AimButtonReleased);
-
-		// Fire
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::FireButtonPressed);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APlayerCharacter::FireButtonReleased);
-
-		// Reload
-		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ReloadButtonPressed);
-	}
-}
-
-void APlayerCharacter::SprintButtonPressed()
+void APlayerCharacter::ShiftPressed()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed; // local player
 	ServerSprintButtonPressed(); // server
@@ -178,7 +128,7 @@ void APlayerCharacter::ServerSprintButtonPressed_Implementation()
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 }
 
-void APlayerCharacter::SprintButtonReleased()
+void APlayerCharacter::ShiftReleased()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	ServerSprintButtonReleased();
@@ -336,7 +286,17 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::EquipButtonPressed()
+void APlayerCharacter::SpacePressed()
+{
+	Jump();
+}
+
+void APlayerCharacter::SpaceReleased()
+{
+	StopJumping();
+}
+
+void APlayerCharacter::EPressed()
 {
 	if(OverlappingItem)
 	{
@@ -369,7 +329,7 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 	}
 }
 
-void APlayerCharacter::CrouchButtonPressed()
+void APlayerCharacter::ControlPressed()
 {
 	if(bIsCrouched)
 	{
@@ -381,7 +341,7 @@ void APlayerCharacter::CrouchButtonPressed()
 	}
 }
 
-void APlayerCharacter::ReloadButtonPressed()
+void APlayerCharacter::RPressed()
 {
 	if(Combat)
 	{
@@ -389,7 +349,7 @@ void APlayerCharacter::ReloadButtonPressed()
 	}
 }
 
-void APlayerCharacter::AimButtonPressed()
+void APlayerCharacter::MouseRightPressed()
 {
 	if(Combat)
 	{
@@ -397,7 +357,7 @@ void APlayerCharacter::AimButtonPressed()
 	}
 }
 
-void APlayerCharacter::AimButtonReleased()
+void APlayerCharacter::MouseRightReleased()
 {
 	if(Combat)
 	{
@@ -405,7 +365,7 @@ void APlayerCharacter::AimButtonReleased()
 	}
 }
 
-void APlayerCharacter::FireButtonPressed()
+void APlayerCharacter::MouseLeftPressed()
 {
 	if(Combat)
 	{
@@ -413,7 +373,7 @@ void APlayerCharacter::FireButtonPressed()
 	}
 }
 
-void APlayerCharacter::FireButtonReleased()
+void APlayerCharacter::MouseLeftReleased()
 {
 	if(Combat)
 	{
@@ -525,6 +485,11 @@ void APlayerCharacter::Jump()
 	{
 		Super::Jump();
 	}
+}
+
+void APlayerCharacter::StopJumping()
+{
+	Super::StopJumping();
 }
 
 void APlayerCharacter::TurnInPlace(float DeltaTime)
