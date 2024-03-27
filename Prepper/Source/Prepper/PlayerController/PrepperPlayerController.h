@@ -41,6 +41,7 @@ private:
 	UInputAction* FireAction;
 	
 public:
+	virtual void Tick(float DeltaTime) override;
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Defeats);
@@ -48,13 +49,22 @@ public:
 	void SetHUDCarriedAmmo(int32 Value);
 
 	virtual void SetupInputComponent() override;
+
+	void SetHUDMatchCountDown(float CountDownTime);
+
 	virtual void OnPossess(APawn* InPawn) override;
 protected:
 	virtual void BeginPlay() override;
 
+	void SetHUDTime();
 private:
 	UPROPERTY()
 	class APrepperHUD* PrepperHUD;
+
+	/* 플레이 시간 카운터 */
+	UPROPERTY(EditAnywhere)
+	float MatchTime = 120.f;
+	uint32 CountdownInt = 0;
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);

@@ -12,7 +12,6 @@ enum class EWeaponState : uint8
 	EWS_Initial UMETA(DisplayName = "Initial State"),
 	EWS_Equipped UMETA(DisplayName = "Equipped"),
 	EWS_Dropped UMETA(DisplayName = "Dropped"),
-
 	
 	EWS_MAX UMETA(DisplayName = "Default MAX")
 };
@@ -29,7 +28,6 @@ public:
 	virtual void OnRep_Owner() override;
 
 	void SetHUDAmmo();
-	virtual void ShowPickUpWidget(bool bShowWidget) override;
 	virtual void Fire(const FVector& HitTarget);
 	void Dropped();
 
@@ -57,6 +55,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	bool bAutomatic = true;
+
+	void AddAmmo(int32 AmmoToAdd);
+
+	UPROPERTY()
+	class USoundCue* EquipSound;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -72,9 +75,6 @@ private:
 
 	UFUNCTION()
 	void OnRep_WeaponState();
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	class UWidgetComponent* PickUpWidget;
 
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	class UAnimationAsset* FireAnimation;
@@ -109,6 +109,8 @@ public:
 	FORCEINLINE float GetZoomedFOV()					const { return ZoomFOV; }
 	FORCEINLINE float GetZoomedInterpSpeed()			const { return ZoomInterpSpeed; }
 	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
+	FORCEINLINE int32 GetAmmo()							const { return Ammo; }
+	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }
 };
 
 

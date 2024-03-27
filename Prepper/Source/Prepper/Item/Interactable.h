@@ -14,7 +14,7 @@ class PREPPER_API AInteractable : public AActor
 	
 public:
 	virtual void Interaction(APlayerCharacter* Target) PURE_VIRTUAL(AInteractable::Interaction, );
-	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL(AInteractable::ShowPickUpWidget, );
+	virtual void ShowPickUpWidget(bool bShowWidget);
 	
 	UFUNCTION()
 	virtual void OnSphereOverlap(
@@ -38,4 +38,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	class USphereComponent* AreaSphere;
 	virtual void BeginPlay() override;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	class UWidgetComponent* PickUpWidget;
 };

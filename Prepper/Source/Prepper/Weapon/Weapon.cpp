@@ -37,11 +37,6 @@ void AWeapon::BeginPlay()
 		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::OnSphereOverlap);
 		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AWeapon::OnSphereEndOverlap);
 	}
-	
-	if(PickUpWidget)
-	{
-		PickUpWidget->SetVisibility(false);
-	}
 }
 
 
@@ -163,18 +158,15 @@ void AWeapon::Dropped()
 	PlayerOwnerController = nullptr;
 }
 
+void AWeapon::AddAmmo(int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo - AmmoToAdd, 0, MagCapacity);
+	SetHUDAmmo();
+}
 
 void AWeapon::Interaction(APlayerCharacter* Target)
 {
 	Target->EquipWeapon(this);
-}
-
-void AWeapon::ShowPickUpWidget(bool bShowWidget)
-{
-	if(PickUpWidget)
-	{
-		PickUpWidget->SetVisibility(bShowWidget);
-	}
 }
 
 
