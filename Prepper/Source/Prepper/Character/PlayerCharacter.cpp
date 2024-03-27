@@ -63,6 +63,7 @@ APlayerCharacter::APlayerCharacter()
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 
+	
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -137,16 +138,36 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayerCharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-		/*
+
+		//Sprint
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &APlayerCharacter::SprintButtonPressed);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayerCharacter::SprintButtonReleased);
+		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
-		*/
+
+		// Equip
+		EnhancedInputComponent->BindAction(EquipAction, ETriggerEvent::Triggered, this, &APlayerCharacter::EquipButtonPressed);
+
+		// Crouch
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &APlayerCharacter::CrouchButtonPressed);
+
+		//Aim
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Triggered, this, &APlayerCharacter::AimButtonPressed);
+		EnhancedInputComponent->BindAction(AimAction, ETriggerEvent::Completed, this, &APlayerCharacter::AimButtonReleased);
+
+		// Fire
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::FireButtonPressed);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APlayerCharacter::FireButtonReleased);
+
+		// Reload
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::ReloadButtonPressed);
 	}
 }
 
-void APlayerCharacter::ShiftPressed()
+void APlayerCharacter::SprintButtonPressed()
 {
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed; // local player
 	ServerSprintButtonPressed(); // server
@@ -157,7 +178,7 @@ void APlayerCharacter::ServerSprintButtonPressed_Implementation()
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 }
 
-void APlayerCharacter::ShiftReleased()
+void APlayerCharacter::SprintButtonReleased()
 {
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	ServerSprintButtonReleased();
@@ -315,11 +336,12 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::EPressed()
+void APlayerCharacter::EquipButtonPressed()
 {
 	if(OverlappingItem)
 	{
 		OverlappingItem->Interaction(this);
+		return;
 	}
 }
 
@@ -347,7 +369,7 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 	}
 }
 
-void APlayerCharacter::ControlPressed()
+void APlayerCharacter::CrouchButtonPressed()
 {
 	if(bIsCrouched)
 	{
@@ -359,7 +381,7 @@ void APlayerCharacter::ControlPressed()
 	}
 }
 
-void APlayerCharacter::RPressed()
+void APlayerCharacter::ReloadButtonPressed()
 {
 	if(Combat)
 	{
@@ -367,7 +389,7 @@ void APlayerCharacter::RPressed()
 	}
 }
 
-void APlayerCharacter::MouseRightPressed()
+void APlayerCharacter::AimButtonPressed()
 {
 	if(Combat)
 	{
@@ -375,7 +397,7 @@ void APlayerCharacter::MouseRightPressed()
 	}
 }
 
-void APlayerCharacter::MouseRightReleased()
+void APlayerCharacter::AimButtonReleased()
 {
 	if(Combat)
 	{
@@ -383,7 +405,7 @@ void APlayerCharacter::MouseRightReleased()
 	}
 }
 
-void APlayerCharacter::MouseLeftPressed()
+void APlayerCharacter::FireButtonPressed()
 {
 	if(Combat)
 	{
@@ -391,7 +413,7 @@ void APlayerCharacter::MouseLeftPressed()
 	}
 }
 
-void APlayerCharacter::MouseLeftReleased()
+void APlayerCharacter::FireButtonReleased()
 {
 	if(Combat)
 	{
