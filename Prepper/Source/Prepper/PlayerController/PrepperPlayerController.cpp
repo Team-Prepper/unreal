@@ -30,6 +30,23 @@ void APrepperPlayerController::OnPossess(APawn* InPawn)
 	}
 }
 
+void APrepperPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	SetHUDTime();
+}
+
+void APrepperPlayerController::SetHUDTime()
+{
+	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds());
+	if (CountdownInt != SecondsLeft)
+	{
+		SetHUDMatchCountDown(MatchTime - GetWorld()->GetTimeSeconds());
+	}
+
+	CountdownInt = SecondsLeft;
+}
+
 void APrepperPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
@@ -98,6 +115,22 @@ void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
 	{
 		FString AmmoText = FString::Printf(TEXT("%d"),Value);
 		PrepperHUD->CharacterOverlay->CarriedAmmoValue->SetText(FText::FromString(AmmoText));
+	}
+}
+
+void APrepperPlayerController::SetHUDMatchCountDown(float CountDownTime)
+{
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	bool bHUDValid = PrepperHUD &&
+					 PrepperHUD->CharacterOverlay &&
+					 PrepperHUD->CharacterOverlay->WeaponAmmoValue;
+	if (bHUDValid)
+	{
+		int32 Minutes = FMath::FloorToInt(CountDownTime / 60.f);
+		int32 Seconds = CountDownTime - Minutes * 60;
+
+		FString CountDownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		PrepperHUD->CharacterOverlay->MatchCountDownText->SetText(FText::FromString(CountDownText));
 	}
 }
 
