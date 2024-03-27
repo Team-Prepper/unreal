@@ -19,6 +19,5 @@ void ALobbyGameMode::PostLogin(APlayerController* NewPlayer)
 			World->ServerTravel(FString("/Game/Maps/WaitingRoom?listen"));
 		}
 	}
-	
 }
 
