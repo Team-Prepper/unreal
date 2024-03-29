@@ -28,6 +28,8 @@ public:
 	void PlayReloadMontage();
 	virtual void Elim() override;
 	virtual void MulticastElim() override;
+private:
+	void ElimTimerFinished();
 	
 protected:
 	virtual void BeginPlay() override;

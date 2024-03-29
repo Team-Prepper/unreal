@@ -3,9 +3,11 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/HUD/CharacterOverlay.h"
 #include "Prepper/HUD/PrepperHUD.h"
+#include "Prepper/GameMode/DeathMatchGameMode.h"
 
 
 void APrepperPlayerController::BeginPlay()
@@ -13,12 +15,34 @@ void APrepperPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	PrepperHUD = Cast<APrepperHUD>(GetHUD());
-	TargetPlayer = Cast<IControllable>(GetPawn());
-
+	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(PlayerMappingContext, 0);
 	}
+}
+
+void APrepperPlayerController::PollInit()
+{
+	if(CharacterOverlay == nullptr)
+	{
+		if(PrepperHUD && PrepperHUD->CharacterOverlay)
+		{
+			CharacterOverlay = PrepperHUD->CharacterOverlay;
+			if(CharacterOverlay)
+			{
+				SetHUDHealth(HUDHealth,HUDMaxHealth);
+				SetHUDScore(HUDScore);
+				SetHUDDefeats(HUDDefeats);
+			}
+		}
+	}
+	if(TargetPlayer == nullptr)
+	{
+		
+		TargetPlayer = Cast<IControllable>(GetPawn());
+	}
+	
 }
 
 void APrepperPlayerController::OnPossess(APawn* InPawn)
@@ -32,12 +56,18 @@ void APrepperPlayerController::OnPossess(APawn* InPawn)
 	}
 }
 
+void APrepperPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(APrepperPlayerController,MatchState);
+}
+
 void APrepperPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 	SetHUDTime();
 	CheckTimeSync(DeltaTime);
+	PollInit();
 }
 
 
@@ -83,6 +113,7 @@ void APrepperPlayerController::SetupInputComponent()
 	}
 	
 }
+
 void APrepperPlayerController::Move(const FInputActionValue& Value)
 {
 	if (!TargetPlayer) return;
@@ -153,6 +184,11 @@ void APrepperPlayerController::FireButtonReleased()
 	TargetPlayer->MouseLeftReleased();
 }
 
+void APrepperPlayerController::BindPlayerAction()
+{
+	TargetPlayer = Cast<IControllable>(GetPawn());
+}
+
 /* HUD Setting*/
 void APrepperPlayerController::SetHUDTime()
 {
@@ -179,6 +215,12 @@ void APrepperPlayerController::SetHUDHealth(float Health, float MaxHealth)
 		FString HealthText = FString::Printf(TEXT("%d/%d"),FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
 		PrepperHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
+	else
+	{
+		bInitCharacterOverlay = true;
+		HUDHealth = Health;
+		HUDMaxHealth = MaxHealth;
+	}
 
 	
 }
@@ -194,6 +236,11 @@ void APrepperPlayerController::SetHUDScore(float Score)
 		FString ScoreText = FString::Printf(TEXT("%d"),FMath::FloorToInt(Score));
 		PrepperHUD->CharacterOverlay->ScoreValue->SetText(FText::FromString(ScoreText));
 	}
+	else
+	{
+		bInitCharacterOverlay = true;
+		HUDScore = Score;
+	}
 }
 
 void APrepperPlayerController::SetHUDDefeats(int32 Defeats)
@@ -206,6 +253,11 @@ void APrepperPlayerController::SetHUDDefeats(int32 Defeats)
 	{
 		FString DefeatsText = FString::Printf(TEXT("%d"),Defeats);
 		PrepperHUD->CharacterOverlay->DefeatsValue->SetText(FText::FromString(DefeatsText));
+	}
+	else
+	{
+		bInitCharacterOverlay = true;
+		HUDDefeats = Defeats;
 	}
 }
 
@@ -288,6 +340,32 @@ void APrepperPlayerController::CheckTimeSync(float DeltaTime)
 	{
 		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
 		TimeSyncRunningTime = 0.f;
+	}
+}
+
+void APrepperPlayerController::OnMatchStateSet(FName State)
+{
+	MatchState = State;
+
+	if(MatchState == MatchState::InProgress)
+	{
+		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+		if(PrepperHUD)
+		{
+			PrepperHUD->AddCharacterOverlay();
+		}
+	}
+}
+
+void APrepperPlayerController::OnRep_MatchState()
+{
+	if(MatchState == MatchState::InProgress)
+	{
+		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+		if(PrepperHUD)
+		{
+			PrepperHUD->AddCharacterOverlay();
+		}
 	}
 }
 

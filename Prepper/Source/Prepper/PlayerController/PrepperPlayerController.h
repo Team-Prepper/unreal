@@ -15,8 +15,10 @@ class PREPPER_API APrepperPlayerController : public APlayerController
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	virtual void BeginPlay() override;
+	void PollInit();
 	
 	/* Set HUD*/
 public:
@@ -57,13 +59,31 @@ protected:
 	float TimeSyncRunningTime = 0.f;
 	void CheckTimeSync(float DeltaTime);
 
+	/* Match Mode */
+public:
+	UPROPERTY()
+	class UCharacterOverlay* CharacterOverlay;
+	
+	bool bInitCharacterOverlay = false;
+	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
+	FName MatchState;
+	
+	void OnMatchStateSet(FName State);
+	UFUNCTION()
+	void OnRep_MatchState();
+
+	// for init when end of progress
+	float HUDHealth;
+	float HUDMaxHealth;
+	float HUDScore;
+	int32 HUDDefeats;
 	
 	/* Input Component */
 public:
 	virtual void SetupInputComponent() override;
-private:
+
 	IControllable* TargetPlayer = nullptr;
-	
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	class UInputMappingContext* PlayerMappingContext;
 	
@@ -99,4 +119,8 @@ private:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
+
+	/* Binding */
+public:
+	void BindPlayerAction();
 };

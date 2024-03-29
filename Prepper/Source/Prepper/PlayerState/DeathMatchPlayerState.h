@@ -18,10 +18,9 @@ public:
 
 	// REPLICATION NOTIFY
 	virtual void OnRep_Score() override;
-	UFUNCTION()
-	virtual void OnRep_Defeats();
+	
 	void AddToScore(float ScoreValue);
-	void AddToDefeats(int32 DefeatsValue);
+	
 private:
 	UPROPERTY()
 	class APlayerCharacter* Character;
@@ -30,7 +29,9 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
-
-	
+public:
+	UFUNCTION()
+	virtual void OnRep_Defeats();
+	void AddToDefeats(int32 DefeatsValue);
 	
 };

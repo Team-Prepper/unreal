@@ -11,15 +11,17 @@ void APrepperHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AddCharacterOverlay();
-}
-
-void APrepperHUD::AddCharacterOverlay()
-{
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if(PlayerController && CharacterOverlayClass)
 	{
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
+	}
+}
+
+void APrepperHUD::AddCharacterOverlay()
+{
+	if(CharacterOverlay)
+	{
 		CharacterOverlay->AddToViewport();
 	}
 }

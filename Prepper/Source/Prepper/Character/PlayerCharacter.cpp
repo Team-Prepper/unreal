@@ -6,6 +6,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
@@ -61,8 +62,6 @@ APlayerCharacter::APlayerCharacter()
 
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
-
-	
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -84,6 +83,12 @@ void APlayerCharacter::PostInitializeComponents()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
+	if(PrepperPlayerController)
+	{
+		PrepperPlayerController->BindPlayerAction();
+	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -254,6 +259,7 @@ void APlayerCharacter::Elim()
 	if (Combat && Combat->EquippedWeapon)
 	{
 		Combat->EquippedWeapon->Dropped();
+		Combat->EquippedWeapon = nullptr;
 	}
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(
@@ -271,6 +277,19 @@ void APlayerCharacter::MulticastElim()
 		PrepperPlayerController->SetHUDWeaponAmmo(0);
 	}
 	Super::MulticastElim();
+}
+
+void APlayerCharacter::ElimTimerFinished()
+{
+	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
+	if (DeathMatchGameMode)
+	{
+		DeathMatchGameMode->RequestRespawn(this, Controller);
+	}
+	if(PrepperPlayerController)
+	{
+		PrepperPlayerController->TargetPlayer = nullptr;
+	}
 }
 
 void APlayerCharacter::Look(const FInputActionValue& Value)

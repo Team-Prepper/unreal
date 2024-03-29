@@ -8,12 +8,52 @@
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 
+ADeathMatchGameMode::ADeathMatchGameMode()
+{
+	bDelayedStart = true;
+}
+
+
+void ADeathMatchGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
+}
+
+void ADeathMatchGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		APrepperPlayerController* PrepperController = Cast<APrepperPlayerController>(*It);
+		if (PrepperController)
+		{
+			PrepperController->OnMatchStateSet(MatchState);
+		}
+	}
+}
+
+void ADeathMatchGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		CountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (CountdownTime <= 0.f)
+		{
+			StartMatch();
+		}
+	}
+}
+
 void ADeathMatchGameMode::PlayerEliminated(APlayerCharacter* ElimmedCharacter,
                                            APrepperPlayerController* VictimController, APrepperPlayerController* AttackerController)
 {
 	ADeathMatchPlayerState* AttackPlayerState = AttackerController ? Cast<ADeathMatchPlayerState>(AttackerController->PlayerState) : nullptr;
 	ADeathMatchPlayerState* VictimPlayerState = VictimController ? Cast<ADeathMatchPlayerState>(VictimController -> PlayerState) : nullptr;
-
 	if(AttackPlayerState &&  AttackPlayerState != VictimPlayerState)
 	{
 		AttackPlayerState->AddToScore(1.0f);

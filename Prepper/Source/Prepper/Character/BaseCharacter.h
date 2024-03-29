@@ -60,9 +60,6 @@ protected:
 	float ElimDelay = 3.f;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ElimMontage;
-
-	
-	void ElimTimerFinished();
 	void PlayElimMontage();
 
 public:

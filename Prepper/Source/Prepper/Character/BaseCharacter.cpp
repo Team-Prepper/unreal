@@ -65,12 +65,6 @@ void ABaseCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 void ABaseCharacter::Elim()
 {
 	MulticastElim();
-	GetWorldTimerManager().SetTimer(
-		ElimTimer,
-		this,
-		&ABaseCharacter::ElimTimerFinished,
-		ElimDelay
-	);
 }
 
 void ABaseCharacter::MulticastElim_Implementation()
@@ -112,15 +106,6 @@ void ABaseCharacter::MulticastElim_Implementation()
 	// Disable Collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void ABaseCharacter::ElimTimerFinished()
-{
-	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
-	if (DeathMatchGameMode)
-	{
-		DeathMatchGameMode->RequestRespawn(this, Controller);
-	}
 }
 
 void ABaseCharacter::UpdateDissolveMaterial(float DissolveValue)
