@@ -35,9 +35,14 @@ void APrepperPlayerController::OnPossess(APawn* InPawn)
 void APrepperPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	SetHUDTime();
+	CheckTimeSync(DeltaTime);
 }
 
+
+
+/* Input Binding */
 void APrepperPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -83,32 +88,26 @@ void APrepperPlayerController::Move(const FInputActionValue& Value)
 	if (!TargetPlayer) return;
 	TargetPlayer->Move(Value);
 }
-
-
 void APrepperPlayerController::Look(const FInputActionValue& Value)
 {
 	if (!TargetPlayer) return;
 	TargetPlayer->Look(Value);
 }
-
 void APrepperPlayerController::JumpButtonPressed()
 {
 	if (!TargetPlayer) return;
 	TargetPlayer->SpacePressed();
 }
-
 void APrepperPlayerController::JumpButtonReleased()
 {
 	if (!TargetPlayer) return;
 	TargetPlayer->SpaceReleased();
 }
-
 void APrepperPlayerController::SprintButtonPressed()
 {
 	if (!TargetPlayer) return;
 	TargetPlayer->ShiftPressed();
 }
-
 void APrepperPlayerController::SprintButtonReleased()
 {
 	if (!TargetPlayer) return;
@@ -155,13 +154,12 @@ void APrepperPlayerController::FireButtonReleased()
 }
 
 /* HUD Setting*/
-
 void APrepperPlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds());
+	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
 	if (CountdownInt != SecondsLeft)
 	{
-		SetHUDMatchCountDown(MatchTime - GetWorld()->GetTimeSeconds());
+		SetHUDMatchCountDown(MatchTime - GetServerTime());
 	}
 	CountdownInt = SecondsLeft;
 }
@@ -250,6 +248,46 @@ void APrepperPlayerController::SetHUDMatchCountDown(float CountDownTime)
 
 		FString CountDownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
 		PrepperHUD->CharacterOverlay->MatchCountDownText->SetText(FText::FromString(CountDownText));
+	}
+}
+
+/* Sync time */
+void APrepperPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)
+{
+	float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();
+	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt);
+}
+
+void APrepperPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest,
+	float TimeServerReceivedClientRequest)
+{
+	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
+	float CurrentServerTime = TimeServerReceivedClientRequest + (0.5f * RoundTripTime);
+	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
+}
+
+float APrepperPlayerController::GetServerTime()
+{
+	if (HasAuthority()) return GetWorld()->GetTimeSeconds();
+	else return GetWorld()->GetTimeSeconds() + ClientServerDelta;
+}
+
+void APrepperPlayerController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+	if (IsLocalController())
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+	}
+}
+
+void APrepperPlayerController::CheckTimeSync(float DeltaTime)
+{
+	TimeSyncRunningTime += DeltaTime;
+	if (IsLocalController() && TimeSyncRunningTime > TimeSyncFrequency)
+	{
+		ServerRequestServerTime(GetWorld()->GetTimeSeconds());
+		TimeSyncRunningTime = 0.f;
 	}
 }
 

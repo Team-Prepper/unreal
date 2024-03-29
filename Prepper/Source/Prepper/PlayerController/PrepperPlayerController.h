@@ -10,22 +10,57 @@ class UInputAction;
 UCLASS()
 class PREPPER_API APrepperPlayerController : public APlayerController
 {
+	/* Default */
 	GENERATED_BODY()
 public:
 	virtual void Tick(float DeltaTime) override;
+	virtual void OnPossess(APawn* InPawn) override;
+protected:
+	virtual void BeginPlay() override;
+	
+	/* Set HUD*/
+public:
 	void SetHUDHealth(float Health, float MaxHealth);
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Defeats);
 	void SetHUDWeaponAmmo(int32 Value);
 	void SetHUDCarriedAmmo(int32 Value);
 	void SetHUDMatchCountDown(float CountDownTime);
-
-	virtual void SetupInputComponent() override;
-	virtual void OnPossess(APawn* InPawn) override;
 protected:
-	virtual void BeginPlay() override;
-
 	void SetHUDTime();
+private:
+	UPROPERTY()
+	class APrepperHUD* PrepperHUD;
+
+	// play time counter (in game)
+	UPROPERTY(EditAnywhere)
+	float MatchTime = 120.f;
+	uint32 CountdownInt = 0;
+	
+	
+	/* Sync time client <-> server*/
+public:
+	virtual float GetServerTime(); // Synced with server world clock
+	virtual void ReceivedPlayer() override; // Sync with server clock as soon as possible
+
+protected:
+	UFUNCTION(Server, Reliable)
+	void ServerRequestServerTime(float TimeOfClientRequest);
+	UFUNCTION(Client, Reliable)
+	void ClientReportServerTime(float TimeOfClientRequest, float TimeServerReceivedClientRequest);
+	
+	float ClientServerDelta = 0.f; // difference between client and server time
+
+	UPROPERTY(EditAnywhere, Category = Time)
+	float TimeSyncFrequency = 5.f;
+
+	float TimeSyncRunningTime = 0.f;
+	void CheckTimeSync(float DeltaTime);
+
+	
+	/* Input Component */
+public:
+	virtual void SetupInputComponent() override;
 private:
 	IControllable* TargetPlayer = nullptr;
 	
@@ -64,13 +99,4 @@ private:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
-
-	UPROPERTY()
-	class APrepperHUD* PrepperHUD;
-	
-	/* 플레이 시간 카운터 */
-	UPROPERTY(EditAnywhere)
-	float MatchTime = 120.f;
-	uint32 CountdownInt = 0;
-	
 };
