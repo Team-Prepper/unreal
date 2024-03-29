@@ -2,7 +2,7 @@
 
 #include "CarPawn.h"
 #include "PrepperWheelFront.h"
-#include "PrepperWheelRear.h"
+                        #include "PrepperWheelRear.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -60,28 +60,13 @@ void ACarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		// steering 
-		EnhancedInputComponent->BindAction(SteeringAction, ETriggerEvent::Triggered, this, &ACarPawn::Steering);
-		EnhancedInputComponent->BindAction(SteeringAction, ETriggerEvent::Completed, this, &ACarPawn::Steering);
-
-		// throttle 
-		EnhancedInputComponent->BindAction(ThrottleAction, ETriggerEvent::Triggered, this, &ACarPawn::Throttle);
-		EnhancedInputComponent->BindAction(ThrottleAction, ETriggerEvent::Completed, this, &ACarPawn::Throttle);
-
-		// break 
-		EnhancedInputComponent->BindAction(BrakeAction, ETriggerEvent::Triggered, this, &ACarPawn::Brake);
+		//EnhancedInputComponent->BindAction(SteeringAction, ETriggerEvent::Completed, this, &ACarPawn::Move);
 		EnhancedInputComponent->BindAction(BrakeAction, ETriggerEvent::Started, this, &ACarPawn::StartBrake);
 		EnhancedInputComponent->BindAction(BrakeAction, ETriggerEvent::Completed, this, &ACarPawn::StopBrake);
 
 		// handbrake 
 		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Started, this, &ACarPawn::StartHandbrake);
 		EnhancedInputComponent->BindAction(HandbrakeAction, ETriggerEvent::Completed, this, &ACarPawn::StopHandbrake);
-
-		// look around 
-		EnhancedInputComponent->BindAction(LookAroundAction, ETriggerEvent::Triggered, this, &ACarPawn::LookAround);
-
-		// toggle camera 
-		EnhancedInputComponent->BindAction(ToggleCameraAction, ETriggerEvent::Triggered, this, &ACarPawn::ToggleCamera);
 
 		// reset the vehicle 
 		EnhancedInputComponent->BindAction(ResetVehicleAction, ETriggerEvent::Triggered, this, &ACarPawn::ResetVehicle);
@@ -94,14 +79,6 @@ void ACarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 void ACarPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->AddMappingContext(PlayerMappingContext, 0);
-		}
-	}
 
 	// 게임 시작시 플레이어 UI 동기화(초기화)
 	
@@ -122,34 +99,48 @@ void ACarPawn::Tick(float Delta)
 	BackSpringArm->SetRelativeRotation(FRotator(0.0f, CameraYaw, 0.0f));
 }
 
-void ACarPawn::Steering(const FInputActionValue& Value)
+void ACarPawn::Move(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Steering"));
-	// get the input magnitude for steering
-	float SteeringValue = Value.Get<float>();
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	ChaosVehicleMovement->SetSteeringInput(MovementVector.X);
+	
+	ChaosVehicleMovement->SetThrottleInput(MovementVector.Y);
+	
+	ChaosVehicleMovement->SetBrakeInput(-MovementVector.Y);
+}
+void ACarPawn::Look(const FInputActionValue& Value)
+{
+	// get the flat angle value for the input 
+	float LookValue = Value.Get<float>();
 
 	// add the input
-	ChaosVehicleMovement->SetSteeringInput(SteeringValue);
+	BackSpringArm->AddLocalRotation(FRotator(0.0f, LookValue, 0.0f));
+
+	
 }
 
-void ACarPawn::Throttle(const FInputActionValue& Value)
+void ACarPawn::ShiftPressed() {}
+void ACarPawn::ShiftReleased() {}
+
+void ACarPawn::SpacePressed() {}
+void ACarPawn::SpaceReleased() {}
+void ACarPawn::EPressed() {}
+void ACarPawn::RPressed() {}
+
+void ACarPawn::ControlPressed()
 {
-	// get the input magnitude for the throttle
-	float ThrottleValue = Value.Get<float>();
+	// toggle the active camera flag
+	bFrontCameraActive = !bFrontCameraActive;
 
-	// add the input
-	ChaosVehicleMovement->SetThrottleInput(ThrottleValue);
+	FrontCamera->SetActive(bFrontCameraActive);
+	BackCamera->SetActive(!bFrontCameraActive);
 }
 
-void ACarPawn::Brake(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Brake"));
-	// get the input magnitude for the brakes
-	float BreakValue = Value.Get<float>();
-
-	// add the input
-	ChaosVehicleMovement->SetBrakeInput(BreakValue);
-}
+void ACarPawn::MouseLeftPressed() {}
+void ACarPawn::MouseLeftReleased() {}
+void ACarPawn::MouseRightPressed() {}
+void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::StartBrake(const FInputActionValue& Value)
 {
@@ -182,24 +173,6 @@ void ACarPawn::StopHandbrake(const FInputActionValue& Value)
 
 	// call the Blueprint hook for the break lights
 	BrakeLights(false);
-}
-
-void ACarPawn::LookAround(const FInputActionValue& Value)
-{
-	// get the flat angle value for the input 
-	float LookValue = Value.Get<float>();
-
-	// add the input
-	BackSpringArm->AddLocalRotation(FRotator(0.0f, LookValue, 0.0f));
-}
-
-void ACarPawn::ToggleCamera(const FInputActionValue& Value)
-{
-	// toggle the active camera flag
-	bFrontCameraActive = !bFrontCameraActive;
-
-	FrontCamera->SetActive(bFrontCameraActive);
-	BackCamera->SetActive(!bFrontCameraActive);
 }
 
 void ACarPawn::ResetVehicle(const FInputActionValue& Value)

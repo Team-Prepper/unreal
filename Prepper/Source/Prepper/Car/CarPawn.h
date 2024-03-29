@@ -2,8 +2,11 @@
 
 #pragma once
 
+
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
+#include "Prepper/Interfaces/Controllable.h"
+
 #include "CarPawn.generated.h"
 
 class UCameraComponent;
@@ -22,7 +25,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateVehicle, Log, All);
  *  Specific vehicle configurations are handled in subclasses.
  */
 UCLASS(abstract)
-class ACarPawn : public AWheeledVehiclePawn
+class ACarPawn : public AWheeledVehiclePawn, public IControllable
 {
 	GENERATED_BODY()
 
@@ -44,7 +47,25 @@ class ACarPawn : public AWheeledVehiclePawn
 
 	/** Cast pointer to the Chaos Vehicle movement component */
 	TObjectPtr<UChaosWheeledVehicleMovementComponent> ChaosVehicleMovement;
+public:
+	virtual void Move(const FInputActionValue& Value) override;
+	virtual void Look(const FInputActionValue& Value) override;
 
+	virtual void ShiftPressed() override;
+	virtual void ShiftReleased() override;
+
+	virtual void SpacePressed() override;
+	virtual void SpaceReleased() override;
+	virtual void EPressed() override;
+	virtual void RPressed() override;
+
+	virtual void ControlPressed() override;
+
+	virtual void MouseLeftPressed() override;
+	virtual void MouseLeftReleased() override;
+	virtual void MouseRightPressed() override;
+	virtual void MouseRightReleased() override;
+	
 protected:
 
 	virtual void BeginPlay() override;
@@ -54,7 +75,7 @@ protected:
 	
 	/** Steering Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* SteeringAction;
+	UInputAction* MoveAction;
 
 	/** Throttle Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -100,15 +121,6 @@ public:
 
 protected:
 
-	/** Handles steering input */
-	void Steering(const FInputActionValue& Value);
-
-	/** Handles throttle input */
-	void Throttle(const FInputActionValue& Value);
-
-	/** Handles brake input */
-	void Brake(const FInputActionValue& Value);
-
 	/** Handles brake start/stop inputs */
 	void StartBrake(const FInputActionValue& Value);
 	void StopBrake(const FInputActionValue& Value);
@@ -116,12 +128,6 @@ protected:
 	/** Handles handbrake start/stop inputs */
 	void StartHandbrake(const FInputActionValue& Value);
 	void StopHandbrake(const FInputActionValue& Value);
-
-	/** Handles look around input */
-	void LookAround(const FInputActionValue& Value);
-
-	/** Handles toggle camera input */
-	void ToggleCamera(const FInputActionValue& Value);
 
 	/** Handles reset vehicle input */
 	void ResetVehicle(const FInputActionValue& Value);
