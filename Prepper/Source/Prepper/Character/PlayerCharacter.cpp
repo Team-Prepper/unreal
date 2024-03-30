@@ -340,6 +340,28 @@ void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 	
 }
 
+void APlayerCharacter::DestroyInteractionItem(AInteractable* InteractableItem)
+{
+	if(HasAuthority())
+	{
+		MulticastDestroyInteractionItem(InteractableItem);
+	}
+	else
+	{
+		ServerDestroyInteractionItem(InteractableItem);
+	}
+}
+
+void APlayerCharacter::ServerDestroyInteractionItem_Implementation(AInteractable* InteractableItem)
+{
+	MulticastDestroyInteractionItem(InteractableItem);
+}
+
+void APlayerCharacter::MulticastDestroyInteractionItem_Implementation(AInteractable* InteractableItem)
+{
+	InteractableItem->Destroy();
+}
+
 void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 {
 	if(Combat)

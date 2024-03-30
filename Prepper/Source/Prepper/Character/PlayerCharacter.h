@@ -152,6 +152,11 @@ private:
 public:
 	void SetOverlappingItem(AInteractable* InteractableItem);
 	void EquipWeapon(AWeapon* Weapon);
+	void DestroyInteractionItem(AInteractable* InteractableItem);
+	UFUNCTION(Server, Reliable)
+	void ServerDestroyInteractionItem(AInteractable* InteractableItem);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDestroyInteractionItem(AInteractable* InteractableItem);
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	void AddItem(FString& ItemCode);

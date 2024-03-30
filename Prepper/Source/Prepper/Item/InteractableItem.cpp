@@ -38,6 +38,6 @@ void AInteractableItem::BeginPlay()
 void AInteractableItem::Interaction(APlayerCharacter* Target)
 {
 	Target->AddItem(ItemCode);
-	Destroy();
+	Target->DestroyInteractionItem(this);
 }
 
