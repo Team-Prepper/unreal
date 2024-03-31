@@ -3,6 +3,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/HUD/CharacterOverlay.h"
@@ -14,14 +15,8 @@
 void APrepperPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	PrepperHUD = Cast<APrepperHUD>(GetHUD());
-
-	if(PrepperHUD)
-	{
-		PrepperHUD->AddAnnouncement();
-	}
-	
+	ServerCheckMatchState();
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(PlayerMappingContext, 0);
@@ -75,6 +70,8 @@ void APrepperPlayerController::Tick(float DeltaTime)
 	CheckTimeSync(DeltaTime);
 	PollInit();
 }
+
+
 
 /* Input Binding */
 void APrepperPlayerController::SetupInputComponent()
@@ -196,10 +193,21 @@ void APrepperPlayerController::BindPlayerAction()
 /* HUD Setting*/
 void APrepperPlayerController::SetHUDTime()
 {
-	uint32 SecondsLeft = FMath::CeilToInt(MatchTime - GetServerTime());
+	float TimeLeft = 0.f;
+	if (MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+
+	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 	if (CountdownInt != SecondsLeft)
 	{
-		SetHUDMatchCountDown(MatchTime - GetServerTime());
+		if (MatchState == MatchState::WaitingToStart)
+	{
+		SetHUDAnnouncementCountdown(TimeLeft);
+	}
+		if (MatchState == MatchState::InProgress)
+		{
+			SetHUDMatchCountDown(TimeLeft);
+		}
 	}
 	CountdownInt = SecondsLeft;
 }
@@ -307,6 +315,22 @@ void APrepperPlayerController::SetHUDMatchCountDown(float CountDownTime)
 	}
 }
 
+void APrepperPlayerController::SetHUDAnnouncementCountdown(float CountdownTime)
+{
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	bool bHUDValid = PrepperHUD &&
+					 PrepperHUD->Announcement &&
+					 PrepperHUD->Announcement->WarmupTime;
+	if (bHUDValid)
+	{
+		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
+		int32 Seconds = CountdownTime - Minutes * 60;
+
+		FString CountdownText = FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds);
+		PrepperHUD->Announcement->WarmupTime->SetText(FText::FromString(CountdownText));
+	}
+}
+
 /* Sync time */
 void APrepperPlayerController::ServerRequestServerTime_Implementation(float TimeOfClientRequest)
 {
@@ -380,3 +404,29 @@ void APrepperPlayerController::HandleMatchHasStarted()
 	}
 }
 
+void APrepperPlayerController::ServerCheckMatchState_Implementation()
+{
+	ADeathMatchGameMode* GameMode = Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this));
+	if(GameMode)
+	{
+		WarmupTime = GameMode->WarmupTime;
+		MatchTime = GameMode->MatchTime;
+		LevelStartingTime = GameMode->LevelStartingTime;
+		MatchState = GameMode->GetMatchState();
+		ClientJoinMidgame(MatchState, WarmupTime, MatchTime, LevelStartingTime);
+	}
+}
+
+void APrepperPlayerController::ClientJoinMidgame_Implementation(FName StateOfMatch, float Warmup, float Match,
+	float StartingTime)
+{
+	WarmupTime = Warmup;
+	MatchTime = Match;
+	LevelStartingTime = StartingTime;
+	MatchState = StateOfMatch;
+	OnMatchStateSet(MatchState);
+	if (PrepperHUD && MatchState == MatchState::WaitingToStart)
+	{
+		PrepperHUD->AddAnnouncement();
+	}
+}
