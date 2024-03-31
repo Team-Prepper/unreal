@@ -8,6 +8,7 @@
 #include "Prepper/HUD/CharacterOverlay.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
+#include "Prepper/HUD/Announcement.h"
 
 
 void APrepperPlayerController::BeginPlay()
@@ -15,6 +16,11 @@ void APrepperPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	PrepperHUD = Cast<APrepperHUD>(GetHUD());
+
+	if(PrepperHUD)
+	{
+		PrepperHUD->AddAnnouncement();
+	}
 	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
@@ -69,8 +75,6 @@ void APrepperPlayerController::Tick(float DeltaTime)
 	CheckTimeSync(DeltaTime);
 	PollInit();
 }
-
-
 
 /* Input Binding */
 void APrepperPlayerController::SetupInputComponent()
@@ -349,11 +353,7 @@ void APrepperPlayerController::OnMatchStateSet(FName State)
 
 	if(MatchState == MatchState::InProgress)
 	{
-		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-		if(PrepperHUD)
-		{
-			PrepperHUD->AddCharacterOverlay();
-		}
+		HandleMatchHasStarted();
 	}
 }
 
@@ -361,12 +361,22 @@ void APrepperPlayerController::OnRep_MatchState()
 {
 	if(MatchState == MatchState::InProgress)
 	{
-		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-		if(PrepperHUD)
-		{
-			PrepperHUD->AddCharacterOverlay();
-		}
+		HandleMatchHasStarted();
 	}
 }
 
+
+
+void APrepperPlayerController::HandleMatchHasStarted()
+{
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	if(PrepperHUD)
+	{
+		PrepperHUD->AddCharacterOverlay();
+		if(PrepperHUD->Announcement)
+		{
+			PrepperHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
+}
 

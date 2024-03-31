@@ -21,7 +21,6 @@ void AInteractable::BeginPlay()
 	}
 }
 
-
 void AInteractable::ShowPickUpWidget(bool bShowWidget)
 {
 	if(PickUpWidget)

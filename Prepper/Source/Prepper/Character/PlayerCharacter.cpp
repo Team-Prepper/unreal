@@ -336,8 +336,14 @@ void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 			ServerEquipButtonPressed(Weapon);
 		}
 	}
-	
-	
+}
+
+void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
+{
+	if(Combat)
+	{
+		Combat->EquipWeapon(Weapon);
+	}
 }
 
 void APlayerCharacter::DestroyInteractionItem(AInteractable* InteractableItem)
@@ -359,16 +365,12 @@ void APlayerCharacter::ServerDestroyInteractionItem_Implementation(AInteractable
 
 void APlayerCharacter::MulticastDestroyInteractionItem_Implementation(AInteractable* InteractableItem)
 {
-	InteractableItem->Destroy();
-}
-
-void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
-{
-	if(Combat)
+	if(InteractableItem)
 	{
-		Combat->EquipWeapon(Weapon);
+		InteractableItem->Destroy();
 	}
 }
+
 
 void APlayerCharacter::ControlPressed()
 {
@@ -623,7 +625,7 @@ void APlayerCharacter::HideCamIfCharacterClose()
 	}
 }
 
-void APlayerCharacter::AddItem(FString& ItemCode)
+void APlayerCharacter::AddItem(FString ItemCode)
 {
 	Inven.TryAddItem(ItemCode);
 }

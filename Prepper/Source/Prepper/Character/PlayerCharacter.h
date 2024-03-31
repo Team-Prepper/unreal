@@ -159,7 +159,7 @@ public:
 	void MulticastDestroyInteractionItem(AInteractable* InteractableItem);
 	bool IsWeaponEquipped();
 	bool IsAiming();
-	void AddItem(FString& ItemCode);
+	void AddItem(FString ItemCode);
 	AWeapon* GetEquippedWeapon();
 	FVector GetHitTarget() const;
 	ECombatState GetCombatState() const;

@@ -39,7 +39,6 @@ private:
 	float MatchTime = 120.f;
 	uint32 CountdownInt = 0;
 	
-	
 	/* Sync time client <-> server*/
 public:
 	virtual float GetServerTime(); // Synced with server world clock
@@ -77,6 +76,8 @@ public:
 	float HUDMaxHealth;
 	float HUDScore;
 	int32 HUDDefeats;
+protected:
+	void HandleMatchHasStarted();
 	
 	/* Input Component */
 public:
