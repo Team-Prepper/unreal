@@ -10,7 +10,9 @@
 #include "Prepper/HUD/CharacterOverlay.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
+#include "Prepper/GameState/DeathMatchGameState.h"
 #include "Prepper/HUD/Announcement.h"
+#include "Prepper/PlayerState/DeathMatchPlayerState.h"
 
 
 void APrepperPlayerController::BeginPlay()
@@ -452,7 +454,37 @@ void APrepperPlayerController::HandleCooldown()
 			PrepperHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 			FString AnnouncementText("New Match Starts In : ");
 			PrepperHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
-			PrepperHUD->Announcement->InfoText->SetText(FText());
+			
+			ADeathMatchGameState* DeathMatchGameState = Cast<ADeathMatchGameState>(UGameplayStatics::GetGameState(this));
+			ADeathMatchPlayerState* DeathMatchPlayerState = GetPlayerState<ADeathMatchPlayerState>();
+			if(DeathMatchGameState && DeathMatchPlayerState)
+			{
+				TArray<ADeathMatchPlayerState*> TopPlayers = DeathMatchGameState->TopScoringPlayers;
+				FString InfoTexString;
+				if(TopPlayers.Num() == 0)
+				{
+					InfoTexString = FString("There is no winner");
+				}
+				else if (TopPlayers.Num() == 1 && TopPlayers[0] == DeathMatchPlayerState)
+				{
+					InfoTexString = FString("You are the winner");
+				}
+				else if (TopPlayers.Num() == 1)
+				{
+					InfoTexString = FString::Printf(TEXT("Winner : \n%s"), *TopPlayers[0]->GetPlayerName());
+				}
+				else if (TopPlayers.Num() > 1)
+				{
+					InfoTexString = FString("Players tied for the win: \n");
+					for (auto TiedPlayer : TopPlayers)
+					{
+						InfoTexString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
+					}
+				}
+				
+				PrepperHUD->Announcement->InfoText->SetText(FText::FromString(InfoTexString));
+			}
+			
 		}
 	}
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetPawn());

@@ -5,6 +5,7 @@
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "Prepper/GameState/DeathMatchGameState.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 
@@ -75,9 +76,13 @@ void ADeathMatchGameMode::PlayerEliminated(APlayerCharacter* ElimmedCharacter,
 {
 	ADeathMatchPlayerState* AttackPlayerState = AttackerController ? Cast<ADeathMatchPlayerState>(AttackerController->PlayerState) : nullptr;
 	ADeathMatchPlayerState* VictimPlayerState = VictimController ? Cast<ADeathMatchPlayerState>(VictimController -> PlayerState) : nullptr;
-	if(AttackPlayerState &&  AttackPlayerState != VictimPlayerState)
+
+	ADeathMatchGameState* DeathMatchGameState = GetGameState<ADeathMatchGameState>();
+	
+	if(AttackPlayerState &&  AttackPlayerState != VictimPlayerState && DeathMatchGameState)
 	{
 		AttackPlayerState->AddToScore(1.0f);
+		DeathMatchGameState->UpdateTopScore(AttackPlayerState);
 	}
 	if(VictimPlayerState)
 	{

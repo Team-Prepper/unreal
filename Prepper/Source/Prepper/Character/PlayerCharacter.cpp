@@ -294,6 +294,10 @@ void APlayerCharacter::MulticastElim()
 	}
 	Super::MulticastElim();
 	bDisableGamePlay = true;
+	if(Combat)
+	{
+		Combat->FireButtonPressed(false);
+	}
 }
 
 void APlayerCharacter::ElimTimerFinished()
@@ -658,7 +662,10 @@ void APlayerCharacter::Destroyed()
 {
 	Super::Destroyed();
 
-	if(Combat && Combat->EquippedWeapon)
+	ADeathMatchGameMode* DeathMatchGameMode = Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this));
+	bool bMatchNotInProgress = DeathMatchGameMode && DeathMatchGameMode->GetMatchState() != MatchState::InProgress;
+
+	if(Combat && Combat->EquippedWeapon && bMatchNotInProgress)
 	{
 		Combat->EquippedWeapon->Destroy();
 	}
