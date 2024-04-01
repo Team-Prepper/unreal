@@ -69,6 +69,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
+	DOREPLIFETIME(APlayerCharacter, bDisableGamePlay);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -95,20 +96,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	ACharacter::Tick(DeltaTime);
 
-	if(GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
-	{
-		AimOffset(DeltaTime);
-	}
-	else
-	{
-		TimeSinceLastMovementReplication += DeltaTime;
-		if (TimeSinceLastMovementReplication > 0.25f)
-		{
-			OnRep_ReplicatedMovement();
-		}
-		CalculateAO_Pitch();
-	}
-	
+	RotateInPlace(DeltaTime);
 	HideCamIfCharacterClose();
 
 	FVector CurrentLocation = CameraBoom->GetRelativeLocation();
@@ -122,8 +110,33 @@ void APlayerCharacter::Tick(float DeltaTime)
 	PollInit();
 }
 
+void APlayerCharacter::RotateInPlace(float DeltaTime)
+{
+	if(bDisableGamePlay)
+	{
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
+	}
+	if(GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
+	{
+		AimOffset(DeltaTime);
+	}
+	else
+	{
+		TimeSinceLastMovementReplication += DeltaTime;
+		if (TimeSinceLastMovementReplication > 0.25f)
+		{
+			OnRep_ReplicatedMovement();
+		}
+		CalculateAO_Pitch();
+	}
+}
+
+
 void APlayerCharacter::ShiftPressed()
 {
+	if(bDisableGamePlay) return;
 	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed; // local player
 	ServerSprintButtonPressed(); // server
 }
@@ -135,12 +148,14 @@ void APlayerCharacter::ServerSprintButtonPressed_Implementation()
 
 void APlayerCharacter::ShiftReleased()
 {
+	if(bDisableGamePlay) return;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 	ServerSprintButtonReleased();
 }
 
 void APlayerCharacter::ServerSprintButtonReleased_Implementation()
 {
+	if(bDisableGamePlay) return;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
@@ -233,6 +248,7 @@ void APlayerCharacter::PollInit()
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
+	if(bDisableGamePlay) return;
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
@@ -277,6 +293,7 @@ void APlayerCharacter::MulticastElim()
 		PrepperPlayerController->SetHUDWeaponAmmo(0);
 	}
 	Super::MulticastElim();
+	bDisableGamePlay = true;
 }
 
 void APlayerCharacter::ElimTimerFinished()
@@ -307,16 +324,19 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 
 void APlayerCharacter::SpacePressed()
 {
+	if(bDisableGamePlay) return;
 	Jump();
 }
 
 void APlayerCharacter::SpaceReleased()
 {
+	if(bDisableGamePlay) return;
 	StopJumping();
 }
 
 void APlayerCharacter::EPressed()
 {
+	if(bDisableGamePlay) return;
 	if(OverlappingItem)
 	{
 		OverlappingItem->Interaction(this);
@@ -326,6 +346,7 @@ void APlayerCharacter::EPressed()
 
 void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 {
+	if(bDisableGamePlay) return;
 	if(Combat)
 	{
 		if(HasAuthority())
@@ -374,6 +395,7 @@ void APlayerCharacter::MulticastDestroyInteractionItem_Implementation(AInteracta
 
 void APlayerCharacter::ControlPressed()
 {
+	if(bDisableGamePlay) return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -386,6 +408,7 @@ void APlayerCharacter::ControlPressed()
 
 void APlayerCharacter::RPressed()
 {
+	if(bDisableGamePlay) return;
 	if(Combat)
 	{
 		Combat->Reload();
@@ -394,6 +417,7 @@ void APlayerCharacter::RPressed()
 
 void APlayerCharacter::MouseRightPressed()
 {
+	if(bDisableGamePlay) return;
 	if(Combat)
 	{
 		Combat->SetAiming(true);
@@ -402,6 +426,7 @@ void APlayerCharacter::MouseRightPressed()
 
 void APlayerCharacter::MouseRightReleased()
 {
+	if(bDisableGamePlay) return;
 	if(Combat)
 	{
 		Combat->SetAiming(false);
@@ -410,6 +435,7 @@ void APlayerCharacter::MouseRightReleased()
 
 void APlayerCharacter::MouseLeftPressed()
 {
+	if(bDisableGamePlay) return;
 	if(Combat)
 	{
 		Combat->FireButtonPressed(true);
@@ -418,6 +444,7 @@ void APlayerCharacter::MouseLeftPressed()
 
 void APlayerCharacter::MouseLeftReleased()
 {
+	if(bDisableGamePlay) return;
 	if(Combat)
 	{
 		Combat->FireButtonPressed(false);
@@ -482,6 +509,7 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 	SimProxiesTurn();
 	TimeSinceLastMovementReplication = 0.f;
 }
+
 
 void APlayerCharacter::SimProxiesTurn()
 {
@@ -625,14 +653,21 @@ void APlayerCharacter::HideCamIfCharacterClose()
 	}
 }
 
+
+void APlayerCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	if(Combat && Combat->EquippedWeapon)
+	{
+		Combat->EquippedWeapon->Destroy();
+	}
+}
+
 void APlayerCharacter::AddItem(FString ItemCode)
 {
 	Inven.TryAddItem(ItemCode);
 }
-
-
-
-
 
 void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 {

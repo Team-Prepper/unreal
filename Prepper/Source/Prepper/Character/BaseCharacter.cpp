@@ -99,10 +99,6 @@ void ABaseCharacter::MulticastElim_Implementation()
 	// Disable Movement
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	if(PrepperPlayerController)
-	{
-		DisableInput(PrepperPlayerController);
-	}
 	// Disable Collision
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

@@ -27,7 +27,7 @@ public:
 	void SetHUDDefeats(int32 Defeats);
 	void SetHUDWeaponAmmo(int32 Value);
 	void SetHUDCarriedAmmo(int32 Value);
-	void SetHUDMatchCountDown(float CountDownTime);
+	void SetHUDMatchCountdown(float CountdownTime);
 	void SetHUDAnnouncementCountdown(float CountdownTime);
 protected:
 	void SetHUDTime();
@@ -35,10 +35,14 @@ private:
 	UPROPERTY()
 	class APrepperHUD* PrepperHUD;
 
+	UPROPERTY()
+	class ADeathMatchGameMode* DeathMatchGameMode;
+
 	// play time counter (in game)
 	float LevelStartingTime = 0.f;
 	float MatchTime = 0.f;
 	float WarmupTime = 0.f;
+	float CooldownTime = 0.f;
 	uint32 CountdownInt = 0;
 	
 	/* Sync time client <-> server*/
@@ -80,12 +84,12 @@ public:
 	int32 HUDDefeats;
 protected:
 	void HandleMatchHasStarted();
-
+	void HandleCooldown();
 	UFUNCTION(Server, Reliable)
 	void ServerCheckMatchState();
 
 	UFUNCTION(Client, Reliable)
-	void ClientJoinMidgame(FName StateOfMatch, float Warmup, float Match, float StartingTime);
+	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
 	
 	/* Input Component */
 public:

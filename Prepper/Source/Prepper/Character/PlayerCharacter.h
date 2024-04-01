@@ -28,6 +28,10 @@ public:
 	void PlayReloadMontage();
 	virtual void Elim() override;
 	virtual void MulticastElim() override;
+
+	UPROPERTY(Replicated)
+	bool bDisableGamePlay = false;
+	
 private:
 	void ElimTimerFinished();
 	
@@ -92,6 +96,10 @@ protected:
 
 	virtual void PlayHitReactMontage() override;
 	virtual void OnRep_ReplicatedMovement() override;
+
+	void RotateInPlace(float DeltaTime);
+
+	virtual void Destroyed() override;
 
 private:
 	/* 기본 캐릭터 구성 */
@@ -169,4 +177,6 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace;}
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
+	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
+	FORCEINLINE bool GetDisableGamePlay() const { return bDisableGamePlay; }
 };
