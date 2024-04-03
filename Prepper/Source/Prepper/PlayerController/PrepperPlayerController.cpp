@@ -432,6 +432,7 @@ void APrepperPlayerController::HandleMatchHasStarted()
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
 	if(PrepperHUD)
 	{
+		if(PrepperHUD->CharacterOverlay == nullptr)
 		PrepperHUD->AddCharacterOverlay();
 		if(PrepperHUD->Announcement)
 		{
