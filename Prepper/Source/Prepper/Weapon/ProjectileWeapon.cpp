@@ -12,12 +12,6 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 
 	if (!HasAuthority()) return;
 	
-	if (TargetDistance >= 50000.0f)
-	{
-		return;
-	}
-	
-
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName(FName("Muzzle"));
 	if (MuzzleFlashSocket)

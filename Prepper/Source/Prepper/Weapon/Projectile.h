@@ -18,25 +18,19 @@ public:
 	virtual void Destroyed() override;
 
 protected:
-	
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(VisibleAnywhere)
+	class UProjectileMovementComponent* ProjectileMovementComponent;
 
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
-private:
+
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* CollisionBox;
-
-	UPROPERTY(VisibleAnywhere)
-	class UProjectileMovementComponent* ProjectileMovementComponent;
-
-	UPROPERTY(EditAnywhere)
-	class UNiagaraSystem* Tracer;
-
-	class UNiagaraComponent* TracerComponet;
 
 	UPROPERTY(EditAnywhere)
 	UNiagaraSystem* ImpactParticles;
@@ -49,8 +43,13 @@ private:
 
 	void DestroySelf();
 	
-public:	
+	
+private:
 	
 	
 
+	UPROPERTY(EditAnywhere)
+	class UNiagaraSystem* Tracer;
+
+	class UNiagaraComponent* TracerComponet;
 };
