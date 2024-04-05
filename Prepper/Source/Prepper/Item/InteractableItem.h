@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Interactable.h"
+#include "AInteractable.h"
 #include "InteractableItem.generated.h"
 
 UCLASS()

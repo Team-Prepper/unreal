@@ -59,8 +59,6 @@ protected:
 	/* 행동관련 */
 	virtual void Jump() override;
 	virtual void StopJumping() override;
-
-
 	
 	// 자연스러운 회전 - 멀티플레이 proxies
 	void SimProxiesTurn();
@@ -114,9 +112,9 @@ private:
 
 	/* 아이템 획득 */
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingItem)
-	class AInteractable* OverlappingItem;
+	TScriptInterface<IIInteractable> OverlappingItem;
 	UFUNCTION()
-	void OnRep_OverlappingItem(AInteractable* LastItem);
+	void OnRep_OverlappingItem(TScriptInterface<IIInteractable> LastItem);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UCombatComponent* Combat;
@@ -158,7 +156,7 @@ private:
 	Inventory Inven;
 
 public:
-	void SetOverlappingItem(AInteractable* InteractableItem);
+	void SetOverlappingItem(AActor* InteractableItem);
 	void EquipWeapon(AWeapon* Weapon);
 	void DestroyInteractionItem(AInteractable* InteractableItem);
 	UFUNCTION(Server, Reliable)

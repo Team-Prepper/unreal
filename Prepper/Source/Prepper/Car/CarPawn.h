@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
 #include "Prepper/Interfaces/Controllable.h"
+#include "Prepper/Interfaces/IInteractable.h"
 
 #include "CarPawn.generated.h"
 
@@ -25,7 +26,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateVehicle, Log, All);
  *  Specific vehicle configurations are handled in subclasses.
  */
 UCLASS(abstract)
-class ACarPawn : public AWheeledVehiclePawn, public IControllable
+class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IIInteractable
 {
 	GENERATED_BODY()
 
@@ -47,6 +48,10 @@ class ACarPawn : public AWheeledVehiclePawn, public IControllable
 
 	/** Cast pointer to the Chaos Vehicle movement component */
 	TObjectPtr<UChaosWheeledVehicleMovementComponent> ChaosVehicleMovement;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Trigger")
+	class USphereComponent* AreaSphere;
+	
 public:
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
@@ -65,21 +70,31 @@ public:
 	virtual void MouseLeftReleased() override;
 	virtual void MouseRightPressed() override;
 	virtual void MouseRightReleased() override;
+
+	virtual void Interaction(APlayerCharacter* Target) override;
+	virtual void ShowPickUpWidget(bool bShowWidget) override;
+	
+	UFUNCTION()
+	void OnSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult
+		);
+
+	UFUNCTION()
+	void OnSphereEndOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex
+		);
 	
 protected:
 
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
-	class UInputMappingContext* PlayerMappingContext;
-	
-	/** Steering Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* MoveAction;
-
-	/** Throttle Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* ThrottleAction;
 
 	/** Brake Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -88,14 +103,6 @@ protected:
 	/** Handbrake Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* HandbrakeAction;
-	
-	/** Look Around Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* LookAroundAction;
-
-	/** Toggle Camera Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* ToggleCameraAction;
 
 	/** Reset Vehicle Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -106,18 +113,9 @@ protected:
 
 public:
 	ACarPawn();
-
-	// Begin Pawn interface
-
+	
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
-
-	// End Pawn interface
-
-	// Begin Actor interface
-
 	virtual void Tick(float Delta) override;
-
-	// End Actor interface
 
 protected:
 

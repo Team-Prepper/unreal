@@ -19,7 +19,7 @@ bool Inventory::TryAddItem(const FString& ItemCode)
 	// 그 아이템의 소지수를 1 늘리고 true 반환
 	if (ItemUnits.Contains(ItemCode))
 	{
-		uint8 ItemCount = *ItemUnits.Find(ItemCode) + 1;
+		const uint8 ItemCount = *ItemUnits.Find(ItemCode) + 1;
 		ItemUnits.Add(ItemCode, ItemCount);
 		
 		UE_LOG(LogTemp, Warning, TEXT("Add Item %s"), *ItemCode);
