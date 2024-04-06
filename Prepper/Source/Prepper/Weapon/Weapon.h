@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "WeaponTypes.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/Item/Interactable.h"
+#include "..\Item\AInteractable.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)

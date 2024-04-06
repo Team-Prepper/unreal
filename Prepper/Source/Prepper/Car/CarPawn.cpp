@@ -1,8 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CarPawn.h"
-#include "PrepperWheelFront.h"
-                        #include "PrepperWheelRear.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -10,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
+#include "Components/SphereComponent.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -48,6 +47,11 @@ ACarPawn::ACarPawn()
 	// Configure the car mesh
 	GetMesh()->SetSimulatePhysics(true);
 	GetMesh()->SetCollisionProfileName(FName("Vehicle"));
+	
+	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
+	AreaSphere->SetupAttachment(RootComponent);
+	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	// get the Chaos Wheeled movement component
 	ChaosVehicleMovement = CastChecked<UChaosWheeledVehicleMovementComponent>(GetVehicleMovement());
@@ -79,6 +83,14 @@ void ACarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 void ACarPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if(HasAuthority())
+	{
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ACarPawn::OnSphereOverlap);
+		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ACarPawn::OnSphereEndOverlap);
+	}
 
 	// 게임 시작시 플레이어 UI 동기화(초기화)
 	
@@ -141,6 +153,38 @@ void ACarPawn::MouseLeftPressed() {}
 void ACarPawn::MouseLeftReleased() {}
 void ACarPawn::MouseRightPressed() {}
 void ACarPawn::MouseRightReleased() {}
+
+void ACarPawn::Interaction(APlayerCharacter* Target)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Riding Car"));
+	GetWorld()->GetFirstPlayerController()->Possess(this);
+}
+
+void ACarPawn::ShowPickUpWidget(bool bShowWidget)
+{
+	
+}
+
+
+void ACarPawn::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+									UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
+	if(PlayerCharacter)
+	{
+		PlayerCharacter->SetOverlappingItem(this);
+	}
+}
+
+void ACarPawn::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
+	if(PlayerCharacter)
+	{
+		PlayerCharacter->SetOverlappingItem(nullptr);
+	}
+}
 
 void ACarPawn::StartBrake(const FInputActionValue& Value)
 {

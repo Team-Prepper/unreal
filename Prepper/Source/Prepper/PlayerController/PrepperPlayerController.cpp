@@ -60,6 +60,8 @@ void APrepperPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+	TargetPlayer = nullptr;
+	UE_LOG(LogTemp, Warning, TEXT("Change Pawn"));
 	
 	if (PlayerCharacter)
 	{

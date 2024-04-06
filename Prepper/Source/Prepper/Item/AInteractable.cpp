@@ -1,5 +1,5 @@
 
-#include "Interactable.h"
+#include "AInteractable.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/Character/PlayerCharacter.h"
