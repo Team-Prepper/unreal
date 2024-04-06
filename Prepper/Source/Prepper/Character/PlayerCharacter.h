@@ -84,7 +84,7 @@ private:
 	void ServerSprintButtonPressed();
 	UFUNCTION(Server, Reliable)
 	void ServerSprintButtonReleased();
-
+	
 protected:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	virtual void UpdateHUDHealth() override;

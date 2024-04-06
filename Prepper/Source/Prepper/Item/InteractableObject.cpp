@@ -44,5 +44,6 @@ void AInteractableObject::Tick(float DeltaTime)
 // Called when the game starts or when spawned
 void AInteractableObject::Interaction(APlayerCharacter* Target)
 {
+	InteractAction();
 	UE_LOG(LogTemp, Warning, TEXT("Open Door"));
 }
