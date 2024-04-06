@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/GameSession.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -156,8 +157,7 @@ void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Riding Car"));
-	GetWorld()->GetFirstPlayerController()->Possess(this);
+	Target->Controller->Possess(this);
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)

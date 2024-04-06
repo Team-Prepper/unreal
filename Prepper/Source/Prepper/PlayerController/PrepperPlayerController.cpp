@@ -48,11 +48,9 @@ void APrepperPlayerController::PollInit()
 			}
 		}
 	}
-	if(TargetPlayer == nullptr)
-	{
-		
-		TargetPlayer = Cast<IControllable>(GetPawn());
-	}
+
+	if (Cast<IControllable>(GetPawn()))
+		TargetPlayer = GetPawn();
 	
 }
 
@@ -60,7 +58,9 @@ void APrepperPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
-	TargetPlayer = nullptr;
+	
+	if (Cast<IControllable>(GetPawn()))
+		TargetPlayer = GetPawn();
 	UE_LOG(LogTemp, Warning, TEXT("Change Pawn"));
 	
 	if (PlayerCharacter)
@@ -78,8 +78,6 @@ void APrepperPlayerController::Tick(float DeltaTime)
 	CheckTimeSync(DeltaTime);
 	PollInit();
 }
-
-
 
 /* Input Binding */
 void APrepperPlayerController::SetupInputComponent()
@@ -195,7 +193,8 @@ void APrepperPlayerController::FireButtonReleased()
 
 void APrepperPlayerController::BindPlayerAction()
 {
-	TargetPlayer = Cast<IControllable>(GetPawn());
+	if (Cast<IControllable>(GetPawn()))
+		TargetPlayer = GetPawn();
 }
 
 /* HUD Setting*/
