@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Interactable.h"
+#include "AInteractable.h"
 #include "InteractableObject.generated.h"
 
 /**
@@ -20,6 +20,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interaction(APlayerCharacter *Target) override;
+	
+	/** Called when the brake lights are turned on or off */
+	UFUNCTION(BlueprintImplementableEvent)
+	void InteractAction();
 
 protected:
 	// Called when the game starts or when spawned

@@ -12,7 +12,7 @@
 #include "Prepper/Prepper.h"
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
-#include "Prepper/Item/Interactable.h"
+#include "Prepper/Item/AInteractable.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/Weapon.h"
@@ -682,14 +682,20 @@ void APlayerCharacter::AddItem(FString ItemCode)
 	Inven.TryAddItem(ItemCode);
 }
 
-void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
+void APlayerCharacter::SetOverlappingItem(AActor* InteractableItem)
 {
+    IIInteractable* TheInterface = Cast<IIInteractable>(InteractableItem);
+	if (TheInterface == nullptr)
+	{
+		return;
+	}
+	
 	if(OverlappingItem)
 	{
 		OverlappingItem->ShowPickUpWidget(false);
 	}
 	
-	OverlappingItem = InteractableItem;
+	OverlappingItem = TScriptInterface<IIInteractable>(InteractableItem);
 	
 	if(IsLocallyControlled())
 	{
@@ -701,7 +707,7 @@ void APlayerCharacter::SetOverlappingItem(AInteractable* InteractableItem)
 	
 }
 
-void APlayerCharacter::OnRep_OverlappingItem(AInteractable* LastItem)
+void APlayerCharacter::OnRep_OverlappingItem(TScriptInterface<IIInteractable> LastItem)
 {
 	if (OverlappingItem)
 	{

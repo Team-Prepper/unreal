@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Interactable.generated.h"
+#include "Prepper/Interfaces/IInteractable.h"
+#include "AInteractable.generated.h"
 
 UCLASS()
-class PREPPER_API AInteractable : public AActor
+class PREPPER_API AInteractable : public AActor, public IIInteractable
 {
 	GENERATED_BODY()
 	
 public:
-	virtual void Interaction(APlayerCharacter* Target) PURE_VIRTUAL(AInteractable::Interaction, );
-	virtual void ShowPickUpWidget(bool bShowWidget);
+	virtual void ShowPickUpWidget(bool bShowWidget) override;
 	
 	UFUNCTION()
 	virtual void OnSphereOverlap(
@@ -37,10 +37,11 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	class USphereComponent* AreaSphere;
-	virtual void BeginPlay() override;
-
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickUpWidget;
+	
+	virtual void BeginPlay() override;
+
 
 	
 };
