@@ -190,6 +190,9 @@ void APlayerCharacter::PlayReloadMontage()
 			case EWeaponType::EWT_RocketLauncher:
 				SectionName = FName("AssaultRifle");
 				break;
+		case EWeaponType::EWT_Revolver:
+			SectionName = FName("AssaultRifle");
+			break;
 		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
