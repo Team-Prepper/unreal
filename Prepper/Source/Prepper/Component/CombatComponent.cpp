@@ -10,8 +10,6 @@
 #include "Prepper/Weapon/Weapon.h"
 #include "Sound/SoundCue.h"
 
-#define TRACE_LEN 80000
-
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -167,7 +165,11 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 	bFireButtonPressed = bPressed;
 	if(bFireButtonPressed)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("FIRE PRESSED"));
 		Fire();
+	}else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FIRE RR"));
 	}
 }
 
@@ -222,6 +224,8 @@ void UCombatComponent::InitCarriedAmmo()
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_Revolver, StartingRevolverAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
 }
 
 

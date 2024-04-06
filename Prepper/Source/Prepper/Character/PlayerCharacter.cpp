@@ -190,9 +190,15 @@ void APlayerCharacter::PlayReloadMontage()
 			case EWeaponType::EWT_RocketLauncher:
 				SectionName = FName("AssaultRifle");
 				break;
-		case EWeaponType::EWT_Revolver:
-			SectionName = FName("AssaultRifle");
-			break;
+			case EWeaponType::EWT_Revolver:
+				SectionName = FName("AssaultRifle");
+				break;
+			case EWeaponType::EWT_SMG:
+				SectionName = FName("AssaultRifle");
+				break;
+			case EWeaponType::EWT_Shotgun:
+				SectionName = FName("AssaultRifle");
+				break;
 		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
@@ -356,6 +362,7 @@ void APlayerCharacter::EPressed()
 
 void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
 	if(bDisableGamePlay) return;
 	if(Combat)
 	{

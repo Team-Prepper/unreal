@@ -88,7 +88,6 @@ void APrepperPlayerController::SetupInputComponent()
 	
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
-		
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::Move);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &APrepperPlayerController::Move);
@@ -185,7 +184,6 @@ void APrepperPlayerController::FireButtonPressed()
 {
 	if (!TargetPlayer) return;
 	TargetPlayer->MouseLeftPressed();
-	
 }
 void APrepperPlayerController::FireButtonReleased()
 {

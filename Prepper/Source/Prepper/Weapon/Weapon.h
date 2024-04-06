@@ -54,7 +54,7 @@ public:
 	float FireDelay = .15f;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
-	bool bAutomatic = true;
+	bool bAutomatic = false;
 
 	void AddAmmo(int32 AmmoToAdd);
 
@@ -63,12 +63,14 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-
+	
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	USkeletalMeshComponent* WeaponMesh;
+	
 	float TargetDistance;
 	
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	USkeletalMeshComponent* WeaponMesh;
+	
 	
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
