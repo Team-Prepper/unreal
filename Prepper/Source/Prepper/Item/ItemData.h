@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AInteractable.h"
 #include "GameFramework/Actor.h"
 #include "ItemData.generated.h"
 
@@ -18,6 +17,4 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
 	FString ItemName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
-	TObjectPtr<AInteractable> Target;
 };

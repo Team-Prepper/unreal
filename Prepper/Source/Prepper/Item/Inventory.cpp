@@ -1,38 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ItemData.h"
-#include "UObject/ConstructorHelpers.h"
 #include "Inventory.h"
+#include "UObject/ConstructorHelpers.h"
 
-#include "ItemCombinationData.h"
-
-bool Inventory::TryCombineItem(FString& Result)
+bool Inventory::TryCombineItem(const FString& Input1, const FString& Input2, FString& Result)
 {
-	
-	return false;
+	return  ItemData.TryCombinationItem(Input1, Input2, Result);
 }
 
 Inventory::Inventory()
 {
 	BulletCount = 0;
-	
-	static ConstructorHelpers::FObjectFinder<UDataTable> ItemData(
-	TEXT("/Game/Data/ItemDataTable"));
-	
-	if (ItemData.Succeeded())
-	{
-		ItemDataTable = ItemData.Object;
-		
-	}
-	
-	static ConstructorHelpers::FObjectFinder<UDataTable> CombinationData(
-	TEXT("/Game/Data/ItemCombinationDataTable"));
-	
-	if (CombinationData.Succeeded())
-	{
-		ItemConbinationDataTable = CombinationData.Object;
-		
-	}
 }
 
 Inventory::~Inventory()
@@ -42,6 +20,18 @@ Inventory::~Inventory()
 
 bool Inventory::TryAddItem(const FString& ItemCode)
 {
+	FString retval;
+	
+	if (TryCombineItem("Milk", "Milgaru", retval))
+	{
+		
+		UE_LOG(LogTemp, Warning, TEXT("Test Success: %s"), *retval);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Fail Test"));
+	}
+	
 	// 아이템이 존재한다면
 	// 그 아이템의 소지수를 1 늘리고 true 반환
 	if (ItemUnits.Contains(ItemCode))

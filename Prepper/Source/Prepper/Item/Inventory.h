@@ -3,19 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemDataGetter.h"
 
 #define MAX_ITEM_COUNT 16
 
 class PREPPER_API Inventory
 {
 private:
-	UDataTable* ItemDataTable;
-	UDataTable* ItemConbinationDataTable;
+	ItemDataGetter ItemData;
 	uint8 BulletCount;
 	
 	TMap<FString, uint8> ItemUnits;
 
-	bool TryCombineItem(FString& result);
+	bool TryCombineItem(const FString& Input1, const FString& Input2, FString& Result);
 public:
 	Inventory();
 	~Inventory();
