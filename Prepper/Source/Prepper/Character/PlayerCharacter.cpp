@@ -706,15 +706,15 @@ void APlayerCharacter::AddItem(FString ItemCode)
 
 void APlayerCharacter::SetOverlappingItem(AActor* InteractableItem)
 {
+	if(OverlappingItem)
+    {
+    	OverlappingItem->ShowPickUpWidget(false);
+    }
+	
     IIInteractable* TheInterface = Cast<IIInteractable>(InteractableItem);
 	if (TheInterface == nullptr)
 	{
 		return;
-	}
-	
-	if(OverlappingItem)
-	{
-		OverlappingItem->ShowPickUpWidget(false);
 	}
 	
 	OverlappingItem = TScriptInterface<IIInteractable>(InteractableItem);
