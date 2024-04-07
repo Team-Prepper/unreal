@@ -1,11 +1,38 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "ItemData.h"
+#include "UObject/ConstructorHelpers.h"
 #include "Inventory.h"
+
+#include "ItemCombinationData.h"
+
+bool Inventory::TryCombineItem(FString& Result)
+{
+	
+	return false;
+}
 
 Inventory::Inventory()
 {
 	BulletCount = 0;
+	
+	static ConstructorHelpers::FObjectFinder<UDataTable> ItemData(
+	TEXT("/Game/Data/ItemDataTable"));
+	
+	if (ItemData.Succeeded())
+	{
+		ItemDataTable = ItemData.Object;
+		
+	}
+	
+	static ConstructorHelpers::FObjectFinder<UDataTable> CombinationData(
+	TEXT("/Game/Data/ItemCombinationDataTable"));
+	
+	if (CombinationData.Succeeded())
+	{
+		ItemConbinationDataTable = CombinationData.Object;
+		
+	}
 }
 
 Inventory::~Inventory()

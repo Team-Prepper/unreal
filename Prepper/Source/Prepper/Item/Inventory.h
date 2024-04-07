@@ -9,14 +9,20 @@
 class PREPPER_API Inventory
 {
 private:
+	UDataTable* ItemDataTable;
+	UDataTable* ItemConbinationDataTable;
 	uint8 BulletCount;
 	
 	TMap<FString, uint8> ItemUnits;
+
+	bool TryCombineItem(FString& result);
 public:
 	Inventory();
 	~Inventory();
 	bool TryAddItem(const FString& ItemCode);
 	bool TryUseItem(const FString& ItemCode);
+	
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;
+	
 };
