@@ -1,6 +1,7 @@
 #include "PrepperPlayerController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
@@ -77,9 +78,40 @@ void APrepperPlayerController::Tick(float DeltaTime)
 	SetHUDTime();
 	CheckTimeSync(DeltaTime);
 	PollInit();
+	CheckPing(DeltaTime);
+	
 }
 
-
+void APrepperPlayerController::CheckPing(float DeltaTime)
+{
+	HighPingRunningTime += DeltaTime;
+	if(HighPingRunningTime > CheckPingFrequency)
+	{
+		PlayerState = PlayerState == nullptr ? GetPlayerState<APlayerState>() : PlayerState;
+		if(PlayerState)
+		{
+			if(PlayerState->GetPingInMilliseconds() > HighPingThreshold)
+			{
+				HighPingWarning();
+				PingAnimationRunningTime = 0.f;
+			}
+		}
+		HighPingRunningTime = 0.f;
+	}
+	bool bHighPingAnimationPlaying =
+		PrepperHUD &&
+		PrepperHUD->CharacterOverlay &&
+		PrepperHUD->CharacterOverlay->HighPingAnimation &&
+		PrepperHUD->CharacterOverlay->IsAnimationPlaying(PrepperHUD->CharacterOverlay->HighPingAnimation);
+	if(bHighPingAnimationPlaying)
+	{
+		PingAnimationRunningTime += DeltaTime;
+		if(PingAnimationRunningTime > HighPingRunningTime)
+		{
+			StopHighPingWarning();
+		}
+	}
+}
 
 /* Input Binding */
 void APrepperPlayerController::SetupInputComponent()
@@ -196,6 +228,8 @@ void APrepperPlayerController::BindPlayerAction()
 	TargetPlayer = Cast<IControllable>(GetPawn());
 }
 
+
+
 /* HUD Setting*/
 void APrepperPlayerController::SetHUDTime()
 {
@@ -226,6 +260,42 @@ void APrepperPlayerController::SetHUDTime()
 		}
 	}
 	CountdownInt = SecondsLeft;
+}
+
+void APrepperPlayerController::HighPingWarning()
+{
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	bool bHUDValid = PrepperHUD &&
+					 PrepperHUD->CharacterOverlay &&
+					 PrepperHUD->CharacterOverlay->HighPingImg &&
+					 PrepperHUD->CharacterOverlay->HighPingAnimation;
+	
+	if(bHUDValid)
+	{
+		PrepperHUD->CharacterOverlay->HighPingImg->SetOpacity(1.f);
+		PrepperHUD->CharacterOverlay->PlayAnimation(
+			PrepperHUD->CharacterOverlay->HighPingAnimation,
+			0.f,
+			5);
+	}
+}
+
+void APrepperPlayerController::StopHighPingWarning()
+{
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	bool bHUDValid = PrepperHUD &&
+					 PrepperHUD->CharacterOverlay &&
+					 PrepperHUD->CharacterOverlay->HighPingImg &&
+					 PrepperHUD->CharacterOverlay->HighPingAnimation;
+	
+	if(bHUDValid)
+	{
+		PrepperHUD->CharacterOverlay->HighPingImg->SetOpacity(0.f);
+		if(PrepperHUD->CharacterOverlay->IsAnimationPlaying(PrepperHUD->CharacterOverlay->HighPingAnimation))
+		{
+			PrepperHUD->CharacterOverlay->StopAnimation(PrepperHUD->CharacterOverlay->HighPingAnimation);
+		}
+	}
 }
 
 void APrepperPlayerController::SetHUDHealth(float Health, float MaxHealth)

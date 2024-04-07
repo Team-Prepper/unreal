@@ -31,6 +31,9 @@ public:
 	void SetHUDAnnouncementCountdown(float CountdownTime);
 protected:
 	void SetHUDTime();
+
+	void HighPingWarning();
+	void StopHighPingWarning();
 private:
 	UPROPERTY()
 	class APrepperHUD* PrepperHUD;
@@ -136,4 +139,19 @@ private:
 	/* Binding */
 public:
 	void BindPlayerAction();
+
+	/* HIGH PING WARNING */
+private:
+	float HighPingRunningTime = 0.f;
+	float PingAnimationRunningTime = 5.f;
+	
+	UPROPERTY(EditAnywhere)
+	float HighPingDuration = 5.f;
+	UPROPERTY(EditAnywhere)
+	float CheckPingFrequency = 20.f;
+	UPROPERTY(EditAnywhere)
+	float HighPingThreshold = 50.f;
+
+protected:
+	void CheckPing(float DeltaTime);
 };
