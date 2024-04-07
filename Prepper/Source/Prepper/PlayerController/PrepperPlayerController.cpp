@@ -87,6 +87,7 @@ void APrepperPlayerController::CheckPing(float DeltaTime)
 	HighPingRunningTime += DeltaTime;
 	if(HighPingRunningTime > CheckPingFrequency)
 	{
+		/*
 		PlayerState = PlayerState == nullptr ? GetPlayerState<APlayerState>() : PlayerState;
 		if(PlayerState)
 		{
@@ -97,6 +98,7 @@ void APrepperPlayerController::CheckPing(float DeltaTime)
 			}
 		}
 		HighPingRunningTime = 0.f;
+		*/
 	}
 	bool bHighPingAnimationPlaying =
 		PrepperHUD &&
