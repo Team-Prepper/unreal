@@ -199,6 +199,12 @@ void APlayerCharacter::PlayReloadMontage()
 			case EWeaponType::EWT_Shotgun:
 				SectionName = FName("AssaultRifle");
 				break;
+			case EWeaponType::EWT_SniperRifle:
+				SectionName = FName("AssaultRifle");
+				break;
+			case EWeaponType::EWT_MiniGun:
+				SectionName = FName("AssaultRifle");
+				break;
 		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
@@ -309,6 +315,15 @@ void APlayerCharacter::MulticastElim()
 	if(Combat)
 	{
 		Combat->FireButtonPressed(false);
+	}
+	bool bHideSniperScope = IsLocallyControlled() && 
+		Combat && 
+		Combat->bAiming && 
+		Combat->EquippedWeapon && 
+		Combat->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
+	if (bHideSniperScope)
+	{
+		ShowSniperScopeWidget(false);
 	}
 }
 

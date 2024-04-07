@@ -31,6 +31,9 @@ public:
 
 	UPROPERTY(Replicated)
 	bool bDisableGamePlay = false;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowSniperScopeWidget(bool bShowScope);
 	
 private:
 	void ElimTimerFinished();

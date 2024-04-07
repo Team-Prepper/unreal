@@ -70,7 +70,6 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 		SetHUDCrosshair(DeltaTime);
 		InterpFOV(DeltaTime);
 	}
-	
 }
 
 void UCombatComponent::SetHUDCrosshair(float DeltaTime)
@@ -162,15 +161,22 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 // Fire Start
 void UCombatComponent::FireButtonPressed(bool bPressed)
 {
-	bFireButtonPressed = bPressed;
-	if(bFireButtonPressed)
+	if(EquippedWeapon && EquippedWeapon->bAutomatic == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("FIRE PRESSED"));
-		Fire();
-	}else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("FIRE RR"));
+		if(bFireButtonPressed == bPressed) return;
 	}
+	
+	bFireButtonPressed = bPressed;
+	
+	
+	
+	if(bFireButtonPressed)
+    {
+        Fire();
+    }
+	
+	
+	
 }
 
 bool UCombatComponent::CanFire()
@@ -210,25 +216,6 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& T
 	}
 }
 
-void UCombatComponent::OnRep_CarriedAmmo()
-{
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if(Controller)
-	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);
-	}
-}
-
-void UCombatComponent::InitCarriedAmmo()
-{
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Revolver, StartingRevolverAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
-}
-
-
 void UCombatComponent::StartFireTimer()
 {
 	if (EquippedWeapon == nullptr || Character == nullptr) return;
@@ -250,13 +237,40 @@ void UCombatComponent::FireTimerFinished()
 	}
 }
 
+void UCombatComponent::OnRep_CarriedAmmo()
+{
+	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
+	if(Controller)
+	{
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);
+	}
+}
+
+void UCombatComponent::InitCarriedAmmo()
+{
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_Revolver, StartingRevolverAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperRifleAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_MiniGun, StartingMiniGunAmmo);
+}
+
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
+	if(Character == nullptr || EquippedWeapon == nullptr) return;
+	if(bAiming == bIsAiming) return;
+	
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
 	if(Character)
 	{
 		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
+	if(Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	{
+		Character->ShowSniperScopeWidget(bIsAiming);
 	}
 }
 

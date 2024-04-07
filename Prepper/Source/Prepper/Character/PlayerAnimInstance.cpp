@@ -43,7 +43,7 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bUseAimOffsets = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bTransformRightHand = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bEquippedShoulderFireWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_RocketLauncher : false;
-
+	bEquippedMiniGun = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MiniGun : false;
 	// OFFSET YAW FOR STRAFING
 	FRotator AimRotation = PlayerCharacter->GetBaseAimRotation();
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PlayerCharacter->GetVelocity());

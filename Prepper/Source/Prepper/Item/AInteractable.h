@@ -33,6 +33,7 @@ public:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex
 		);
+
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")

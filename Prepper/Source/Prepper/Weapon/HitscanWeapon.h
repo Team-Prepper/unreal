@@ -20,15 +20,19 @@ public:
 
 protected:
 	FVector TraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget);
+
+	void WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit);
+
+	UPROPERTY(EditAnywhere)
+    float Damage = 20.f;
+
+    UPROPERTY(EditAnywhere)
+    UNiagaraSystem* ImpactParticles;
+
+	UPROPERTY(EditAnywhere)
+	USoundCue* HitSound;
 	
 private:
-
-	UPROPERTY(EditAnywhere)
-	float Damage = 20.f;
-
-	UPROPERTY(EditAnywhere)
-	UNiagaraSystem* ImpactParticles;
-	
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* BeamParticles;
 
@@ -38,8 +42,7 @@ private:
 	UPROPERTY(EditAnywhere)
 	USoundCue* FireSound;
 
-	UPROPERTY(EditAnywhere)
-	USoundCue* HitSound;
+	// 산탄
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	float DistanceToSphere = 800.f;
