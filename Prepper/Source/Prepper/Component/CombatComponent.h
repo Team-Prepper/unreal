@@ -33,6 +33,8 @@ protected:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 	void Fire();
+	
+	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
 public:
 	void FireButtonPressed(bool bPressed);
 protected:

@@ -39,5 +39,5 @@ public:
 	class UImage* HighPingImg;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* HighPingAnimation;
+	UWidgetAnimation* HighPingAnim;
 };

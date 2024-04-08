@@ -166,7 +166,11 @@ void AWeapon::Fire(const FVector& HitTarget)
 	{
 		WeaponMesh->PlayAnimation(FireAnimation, false);
 	}
-	SpendRound();
+	if(HasAuthority())
+	{
+		SpendRound();
+	}
+	
 }
 
 void AWeapon::Dropped()

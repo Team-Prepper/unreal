@@ -82,41 +82,6 @@ void APrepperPlayerController::Tick(float DeltaTime)
 	
 }
 
-void APrepperPlayerController::CheckPing(float DeltaTime)
-{
-	HighPingRunningTime += DeltaTime;
-	if(HighPingRunningTime > CheckPingFrequency)
-	{
-		if(PlayerState == nullptr)
-		{
-			PlayerState = GetPlayerState<APlayerState>();
-		}
-		if(PlayerState)
-		{
-			if(PlayerState->GetPingInMilliseconds() > HighPingThreshold)
-			{
-				HighPingWarning();
-				PingAnimationRunningTime = 0.f;
-			}
-		}
-		HighPingRunningTime = 0.f;
-		
-	}
-	bool bHighPingAnimationPlaying =
-		PrepperHUD &&
-		PrepperHUD->CharacterOverlay &&
-		PrepperHUD->CharacterOverlay->HighPingAnimation &&
-		PrepperHUD->CharacterOverlay->IsAnimationPlaying(PrepperHUD->CharacterOverlay->HighPingAnimation);
-	if(bHighPingAnimationPlaying)
-	{
-		PingAnimationRunningTime += DeltaTime;
-		if(PingAnimationRunningTime > HighPingRunningTime)
-		{
-			StopHighPingWarning();
-		}
-	}
-}
-
 /* Input Binding */
 void APrepperPlayerController::SetupInputComponent()
 {
@@ -266,21 +231,71 @@ void APrepperPlayerController::SetHUDTime()
 	CountdownInt = SecondsLeft;
 }
 
+void APrepperPlayerController::CheckPing(float DeltaTime)
+{
+	HighPingRunningTime += DeltaTime;
+	if(HighPingRunningTime > CheckPingFrequency)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("Ping chk"));
+		FString ping = FString::SanitizeFloat(PlayerState->GetPingInMilliseconds());
+		UE_LOG(LogTemp,Warning,TEXT("PING : %s"), *ping);
+		if(PlayerState == nullptr)
+		{
+			PlayerState = GetPlayerState<APlayerState>();
+		}
+		if(PlayerState)
+		{
+			if(PlayerState->GetPingInMilliseconds() > HighPingThreshold)
+			{
+				UE_LOG(LogTemp,Warning,TEXT("HIGH PING WARNING"));
+				if(IsLocalController())
+				{
+					HighPingWarningBP();
+					PingAnimationRunningTime = 0.f;
+				}
+				
+			}
+		}
+		HighPingRunningTime = 0.f;
+		
+	}
+	bool bHighPingAnimationPlaying =
+		PrepperHUD &&
+		PrepperHUD->CharacterOverlay &&
+		PrepperHUD->CharacterOverlay->HighPingAnim &&
+		PrepperHUD->CharacterOverlay->IsAnimationPlaying(PrepperHUD->CharacterOverlay->HighPingAnim);
+	if(bHighPingAnimationPlaying)
+	{
+		PingAnimationRunningTime += DeltaTime;
+		UE_LOG(LogTemp,Warning,TEXT("HIGH PING WARNING Anim is playing"));
+		if(PingAnimationRunningTime > HighPingRunningTime)
+		{
+			if(IsLocalController())
+				StopHighPingWarningBP();
+		}
+	}
+}
+
 void APrepperPlayerController::HighPingWarning()
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
 	bool bHUDValid = PrepperHUD &&
 					 PrepperHUD->CharacterOverlay &&
 					 PrepperHUD->CharacterOverlay->HighPingImg &&
-					 PrepperHUD->CharacterOverlay->HighPingAnimation;
+					 PrepperHUD->CharacterOverlay->HighPingAnim;
 	
 	if(bHUDValid)
 	{
+		UE_LOG(LogTemp,Warning,TEXT("bHUDValid"));
 		PrepperHUD->CharacterOverlay->HighPingImg->SetOpacity(1.f);
 		PrepperHUD->CharacterOverlay->PlayAnimation(
-			PrepperHUD->CharacterOverlay->HighPingAnimation,
+			PrepperHUD->CharacterOverlay->HighPingAnim,
 			0.f,
 			5);
+	}
+	else
+	{
+		UE_LOG(LogTemp,Warning,TEXT("bHUDValid Unvalid"));
 	}
 }
 
@@ -290,14 +305,14 @@ void APrepperPlayerController::StopHighPingWarning()
 	bool bHUDValid = PrepperHUD &&
 					 PrepperHUD->CharacterOverlay &&
 					 PrepperHUD->CharacterOverlay->HighPingImg &&
-					 PrepperHUD->CharacterOverlay->HighPingAnimation;
+					 PrepperHUD->CharacterOverlay->HighPingAnim;
 	
 	if(bHUDValid)
 	{
 		PrepperHUD->CharacterOverlay->HighPingImg->SetOpacity(0.f);
-		if(PrepperHUD->CharacterOverlay->IsAnimationPlaying(PrepperHUD->CharacterOverlay->HighPingAnimation))
+		if(PrepperHUD->CharacterOverlay->IsAnimationPlaying(PrepperHUD->CharacterOverlay->HighPingAnim))
 		{
-			PrepperHUD->CharacterOverlay->StopAnimation(PrepperHUD->CharacterOverlay->HighPingAnimation);
+			PrepperHUD->CharacterOverlay->StopAnimation(PrepperHUD->CharacterOverlay->HighPingAnim);
 		}
 	}
 }
