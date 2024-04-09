@@ -153,12 +153,10 @@ private:
 
 protected:
 	void CheckPing(float DeltaTime);
-	UFUNCTION()
-	void HighPingWarning();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void HighPingWarningBP();
-	UFUNCTION()
-	void StopHighPingWarning();
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void StopHighPingWarningBP();
 };
