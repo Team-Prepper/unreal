@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
+#include "Prepper/Weapon/ShotgunWeapon.h"
 #include "Prepper/Weapon/Weapon.h"
 #include "Sound/SoundCue.h"
 
@@ -186,13 +187,57 @@ void UCombatComponent::Fire()
 	if (CanFire())
 	{
 		bCanFire = false;
-		ServerFire(HitTarget);
-		LocalFire(HitTarget);
 		if (EquippedWeapon)
 		{
 			CrosshairShootingFactor = .75f;
+			switch (EquippedWeapon->FireType)
+			{
+			case EFireType::EFT_Projectile:
+				FireProjectileWeapon();
+				break;
+			case EFireType::EFT_HitScan:
+				FireHitScanWeapon();
+				break;
+			case EFireType::EFT_Shotgun:
+				FireShotgun();
+				break;
+			}
 		}
 		StartFireTimer();
+	}
+}
+
+void UCombatComponent::FireProjectileWeapon()
+{
+	if(EquippedWeapon)
+	{
+		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+			
+		LocalFire(HitTarget);
+		ServerFire(HitTarget);
+	}
+	
+}
+
+void UCombatComponent::FireHitScanWeapon()
+{
+		if (EquippedWeapon)
+		{
+			HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+			LocalFire(HitTarget);
+			ServerFire(HitTarget);
+		}
+}
+
+void UCombatComponent::FireShotgun()
+{
+	AShotgunWeapon* Shotgun = Cast<AShotgunWeapon>(EquippedWeapon);
+	if (Shotgun)
+	{
+		TArray<FVector_NetQuantize> HitTargets;
+		Shotgun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);
+		ShotgunLocalFire(HitTargets);
+		ServerShotgunFire(HitTargets);
 	}
 }
 
@@ -206,6 +251,17 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 	}
 }
 
+void UCombatComponent::ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	AShotgunWeapon* ShotgunWeapon = Cast<AShotgunWeapon>(EquippedWeapon);
+	if(EquippedWeapon == nullptr || Character == nullptr) return;
+	if (CombatState == ECombatState::ECS_Unoccupied)
+	{
+		Character->PlayFireMontage(bAiming);
+		ShotgunWeapon->FireShotgun(TraceHitTargets);
+	}
+}
+
 void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	MulticastFire(TraceHitTarget);
@@ -215,6 +271,17 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& T
 {
 	if (Character && Character->IsLocallyControlled()) return;
 	LocalFire(TraceHitTarget);
+}
+
+void UCombatComponent::ServerShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	MulticastShotgunFire(TraceHitTargets);
+}
+
+void UCombatComponent::MulticastShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
+{
+	if (Character && Character->IsLocallyControlled()) return;
+	ShotgunLocalFire(TraceHitTargets);
 }
 
 void UCombatComponent::StartFireTimer()
@@ -433,6 +500,8 @@ void UCombatComponent::HandleReload()
 {
 	Character->PlayReloadMontage();
 }
+
+
 
 void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 {

@@ -1,6 +1,8 @@
 #include "Weapon.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
@@ -194,4 +196,31 @@ void AWeapon::Interaction(APlayerCharacter* Target)
 	Target->EquipWeapon(this);
 }
 
+
+FVector AWeapon::TraceEndWithScatter(const FVector& HitTarget)
+{
+	const USkeletalMeshSocket* MuzzleSocket = GetWeaponMesh()->GetSocketByName("Muzzle");
+	if (MuzzleSocket == nullptr) return FVector();
+	
+	const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetWeaponMesh());
+	const FVector TraceStart = SocketTransform.GetLocation();
+	
+	const FVector ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();
+	const FVector SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;
+	const FVector RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);
+	const FVector EndLoc = SphereCenter + RandVec;
+	const FVector ToEndLoc = EndLoc - TraceStart;
+
+	/*
+	DrawDebugSphere(GetWorld(), SphereCenter, SphereRadius, 12, FColor::Red, true);
+	DrawDebugSphere(GetWorld(), EndLoc, 4.f, 12, FColor::Orange, true);
+	DrawDebugLine(
+		GetWorld(),
+		TraceStart,
+		FVector(TraceStart + ToEndLoc * TRACE_LEN / ToEndLoc.Size()),
+		FColor::Cyan,
+		true);
+	*/
+	return FVector(TraceStart + ToEndLoc * TRACE_LEN / ToEndLoc.Size());
+}
 

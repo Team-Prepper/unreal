@@ -16,6 +16,15 @@ enum class EWeaponState : uint8
 	EWS_MAX UMETA(DisplayName = "Default MAX")
 };
 
+UENUM(BlueprintType)
+enum class EFireType : uint8
+{
+	EFT_HitScan UMETA(DisplayName = "Hit Scan Weapon"),
+	EFT_Projectile UMETA(DisplayName = "Projectile Weapon"),
+	EFT_Shotgun UMETA(DisplayName = "Shotgun Weapon"),
+
+	EFT_MAX UMETA(DisplayName = "DefaultMAX")
+};
 UCLASS()
 class PREPPER_API AWeapon : public AInteractable
 {
@@ -58,6 +67,16 @@ public:
 
 	void AddAmmo(int32 AmmoToAdd);
 
+
+	// 산탄
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	float DistanceToSphere = 800.f;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	float SphereRadius = 75.f;
+	
+	FVector TraceEndWithScatter(const FVector& HitTarget);
+
 	UPROPERTY()
 	class USoundCue* EquipSound;
 
@@ -66,6 +85,12 @@ public:
 	 * 
 	 */
 	void EnableCustomDepth(bool bEnable);
+
+	UPROPERTY(EditAnywhere)
+	EFireType FireType;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	bool bUseScatter = false;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -76,8 +101,6 @@ protected:
 	float TargetDistance;
 	
 private:
-	
-	
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
@@ -94,8 +117,6 @@ private:
 	void OnRep_Ammo();
 
 	void SpendRound();
-
-	
 
 	UPROPERTY(EditAnywhere)
 	int32 MagCapacity;

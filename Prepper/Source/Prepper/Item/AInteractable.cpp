@@ -8,13 +8,12 @@
 void AInteractable::BeginPlay()
 {
 	Super::BeginPlay();
-	if(HasAuthority())
-	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AInteractable::OnSphereOverlap);
-		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AInteractable::OnSphereEndOverlap);
-	}
+	
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AInteractable::OnSphereOverlap);
+	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AInteractable::OnSphereEndOverlap);
+	
 	if(PickUpWidget)
 	{
 		PickUpWidget->SetVisibility(false);

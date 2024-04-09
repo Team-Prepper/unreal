@@ -8,30 +8,31 @@
 #include "particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
-
-void AShotgunWeapon::Fire(const FVector& HitTarget)
+void AShotgunWeapon::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 {
-	AWeapon::Fire(HitTarget);
+	AWeapon::Fire(FVector());
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();
 
-	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("Muzzle");
-	if (MuzzleFlashSocket)
+	const USkeletalMeshSocket* MuzzleSocket = GetWeaponMesh()->GetSocketByName("Muzzle");
+	if (MuzzleSocket)
 	{
-		FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-		FVector Start = SocketTransform.GetLocation();
+		const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetWeaponMesh());
+		const FVector Start = SocketTransform.GetLocation();
 
+		// hit Character - number of hit
 		TMap<ABaseCharacter*, uint32> HitMap;
-		for (uint32 i = 0; i < NumberOfPellets; i++)
+		for(FVector_NetQuantize HitTarget : HitTargets)
 		{
 			FHitResult FireHit;
 			WeaponTraceHit(Start, HitTarget, FireHit);
 
 			ABaseCharacter* DamagedCharacter = Cast<ABaseCharacter>(FireHit.GetActor());
-			if (DamagedCharacter && HasAuthority() && InstigatorController)
+			if (DamagedCharacter)
 			{
 				if (HitMap.Contains(DamagedCharacter))
 				{
@@ -41,26 +42,25 @@ void AShotgunWeapon::Fire(const FVector& HitTarget)
 				{
 					HitMap.Emplace(DamagedCharacter, 1);
 				}
-			}
-
-			if(ImpactParticles)
-			{
-				UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-					GetWorld(),
-					ImpactParticles,
-					FireHit.ImpactPoint,
-					FireHit.ImpactNormal.Rotation()
-				);
-			}
-			if (HitSound)
-			{
-				UGameplayStatics::PlaySoundAtLocation(
-					this,
-					HitSound,
-					FireHit.ImpactPoint,
-					.5f,
-					FMath::FRandRange(-.5f, .5f)
-				);
+				if(ImpactParticles)
+				{
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+						GetWorld(),
+						ImpactParticles,
+						FireHit.ImpactPoint,
+						FireHit.ImpactNormal.Rotation()
+					);
+				}
+				if (HitSound)
+				{
+					UGameplayStatics::PlaySoundAtLocation(
+						this,
+						HitSound,
+						FireHit.ImpactPoint,
+						.5f,
+						FMath::FRandRange(-.5f, .5f)
+					);
+				}
 			}
 		}
 		for (auto HitPair : HitMap)
@@ -76,5 +76,27 @@ void AShotgunWeapon::Fire(const FVector& HitTarget)
 				);
 			}
 		}
+	}
+}
+
+void AShotgunWeapon::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets)
+{
+	const USkeletalMeshSocket* MuzzleSocket = GetWeaponMesh()->GetSocketByName("Muzzle");
+	if (MuzzleSocket == nullptr) return;
+
+	const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetWeaponMesh());
+	const FVector TraceStart = SocketTransform.GetLocation();
+
+	const FVector ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();
+	const FVector SphereCenter = TraceStart + ToTargetNormalized * DistanceToSphere;
+
+	for (uint32 i = 0; i < NumberOfPellets; i++)
+	{
+		const FVector RandVec = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, SphereRadius);
+		const FVector EndLoc = SphereCenter + RandVec;
+		FVector ToEndLoc = EndLoc - TraceStart;
+		ToEndLoc = TraceStart + ToEndLoc * TRACE_LEN / ToEndLoc.Size();
+
+		HitTargets.Add(ToEndLoc);
 	}
 }
