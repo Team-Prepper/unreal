@@ -110,18 +110,25 @@ private:
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	class UAnimationAsset* FireAnimation;
 
-	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Ammo)
+	UPROPERTY(EditAnywhere)
 	int32 Ammo;
 
-	UFUNCTION()
-	void OnRep_Ammo();
+	UFUNCTION(Client, Reliable)
+	void ClientUpdateAmmo(int32 ServerAmmo);
 
+	UFUNCTION(Client, Reliable)
+	void ClientAddAmmo(int32 AmmoToAdd);
+
+	int32 Sequence = 0;
+
+	UPROPERTY(EditAnywhere)
+	int32 MagCapacity;
+	
 	UPROPERTY(EditAnywhere)
 	bool bAutoReload = false;
 	void SpendRound();
 
-	UPROPERTY(EditAnywhere)
-	int32 MagCapacity;
+	
 
 	UPROPERTY()
 	class APlayerCharacter* PlayerOwnerCharacter;
