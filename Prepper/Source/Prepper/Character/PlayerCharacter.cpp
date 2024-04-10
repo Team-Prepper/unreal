@@ -370,9 +370,14 @@ void APlayerCharacter::EPressed()
 	if(bDisableGamePlay) return;
 	if(OverlappingItem)
 	{
-		OverlappingItem->Interaction(this);
-		return;
+		ServerInteractionPressed();
 	}
+}
+
+
+void APlayerCharacter::ServerInteractionPressed_Implementation()
+{
+	OverlappingItem->Interaction(this);
 }
 
 void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
@@ -616,7 +621,6 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 		}
 	}
 }
-
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
 	Super::Crouch(bClientSimulation);

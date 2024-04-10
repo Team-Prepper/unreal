@@ -84,6 +84,8 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed(AWeapon* Weapon);
 	UFUNCTION(Server, Reliable)
+	void ServerInteractionPressed();
+	UFUNCTION(Server, Reliable)
 	void ServerSprintButtonPressed();
 	UFUNCTION(Server, Reliable)
 	void ServerSprintButtonReleased();

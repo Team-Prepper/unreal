@@ -28,8 +28,8 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateVehicle, Log, All);
 UCLASS(abstract)
 class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IIInteractable
 {
+private:
 	GENERATED_BODY()
-
 	/** Spring Arm for the front camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* FrontSpringArm;
@@ -48,6 +48,8 @@ class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IIInte
 
 	/** Cast pointer to the Chaos Vehicle movement component */
 	TObjectPtr<UChaosWheeledVehicleMovementComponent> ChaosVehicleMovement;
+
+	TObjectPtr<APawn> Driver;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	class USphereComponent* AreaSphere;

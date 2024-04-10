@@ -56,6 +56,8 @@ ACarPawn::ACarPawn()
 	// get the Chaos Wheeled movement component
 	ChaosVehicleMovement = CastChecked<UChaosWheeledVehicleMovementComponent>(GetVehicleMovement());
 
+	Driver = nullptr;
+
 }
 
 void ACarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -137,7 +139,10 @@ void ACarPawn::ShiftReleased() {}
 
 void ACarPawn::SpacePressed() {}
 void ACarPawn::SpaceReleased() {}
-void ACarPawn::EPressed() {}
+void ACarPawn::EPressed()
+{
+	Controller->Possess(Driver);
+}
 void ACarPawn::RPressed() {}
 
 void ACarPawn::ControlPressed()
@@ -156,8 +161,8 @@ void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Riding Car"));
-	GetWorld()->GetFirstPlayerController()->Possess(this);
+	Driver = Target;
+	Target->Controller->Possess(this);
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)

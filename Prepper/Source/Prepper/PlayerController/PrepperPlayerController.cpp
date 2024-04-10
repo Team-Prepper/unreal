@@ -49,11 +49,9 @@ void APrepperPlayerController::PollInit()
 			}
 		}
 	}
-	if(TargetPlayer == nullptr)
-	{
-		
-		TargetPlayer = Cast<IControllable>(GetPawn());
-	}
+
+	if (Cast<IControllable>(GetPawn()))
+		TargetPlayer = GetPawn();
 	
 }
 
@@ -61,7 +59,9 @@ void APrepperPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
-	TargetPlayer = nullptr;
+	
+	if (Cast<IControllable>(GetPawn()))
+		TargetPlayer = GetPawn();
 	UE_LOG(LogTemp, Warning, TEXT("Change Pawn"));
 	
 	if (PlayerCharacter)
@@ -155,9 +155,7 @@ void APrepperPlayerController::SprintButtonReleased()
 }
 void APrepperPlayerController::EquipButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->EPressed();
-	
+	ServerInteractionPressed();
 }
 void APrepperPlayerController::CrouchButtonPressed()
 {
@@ -192,9 +190,17 @@ void APrepperPlayerController::FireButtonReleased()
 	TargetPlayer->MouseLeftReleased();
 }
 
+void APrepperPlayerController::ServerInteractionPressed_Implementation()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->EPressed();
+	
+}
+
 void APrepperPlayerController::BindPlayerAction()
 {
-	TargetPlayer = Cast<IControllable>(GetPawn());
+	if (Cast<IControllable>(GetPawn()))
+		TargetPlayer = GetPawn();
 }
 
 
