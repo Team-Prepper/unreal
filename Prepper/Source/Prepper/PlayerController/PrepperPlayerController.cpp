@@ -153,9 +153,7 @@ void APrepperPlayerController::SprintButtonReleased()
 }
 void APrepperPlayerController::EquipButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->EPressed();
-	
+	ServerInteractionPressed();
 }
 void APrepperPlayerController::CrouchButtonPressed()
 {
@@ -189,6 +187,13 @@ void APrepperPlayerController::FireButtonReleased()
 {
 	if (!TargetPlayer) return;
 	TargetPlayer->MouseLeftReleased();
+}
+
+void APrepperPlayerController::ServerInteractionPressed_Implementation()
+{
+	if (!TargetPlayer) return;
+	TargetPlayer->EPressed();
+	
 }
 
 void APrepperPlayerController::BindPlayerAction()

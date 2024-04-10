@@ -133,6 +133,8 @@ private:
 	void FireButtonPressed();
 	void FireButtonReleased();
 
+	UFUNCTION(Server, Reliable)
+	void ServerInteractionPressed();
 	/* Binding */
 public:
 	void BindPlayerAction();

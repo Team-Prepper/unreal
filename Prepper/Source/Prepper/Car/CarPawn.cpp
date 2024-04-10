@@ -9,7 +9,6 @@
 #include "InputActionValue.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "Components/SphereComponent.h"
-#include "GameFramework/GameSession.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -56,6 +55,8 @@ ACarPawn::ACarPawn()
 
 	// get the Chaos Wheeled movement component
 	ChaosVehicleMovement = CastChecked<UChaosWheeledVehicleMovementComponent>(GetVehicleMovement());
+
+	Driver = nullptr;
 
 }
 
@@ -138,7 +139,10 @@ void ACarPawn::ShiftReleased() {}
 
 void ACarPawn::SpacePressed() {}
 void ACarPawn::SpaceReleased() {}
-void ACarPawn::EPressed() {}
+void ACarPawn::EPressed()
+{
+	Controller->Possess(Driver);
+}
 void ACarPawn::RPressed() {}
 
 void ACarPawn::ControlPressed()
@@ -157,6 +161,7 @@ void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
+	Driver = Target;
 	Target->Controller->Possess(this);
 }
 

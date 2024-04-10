@@ -344,14 +344,12 @@ void APlayerCharacter::EPressed()
 	if(OverlappingItem)
 	{
 		ServerInteractionPressed();
-		return;
 	}
 }
 
 
 void APlayerCharacter::ServerInteractionPressed_Implementation()
 {
-	
 	OverlappingItem->Interaction(this);
 }
 
