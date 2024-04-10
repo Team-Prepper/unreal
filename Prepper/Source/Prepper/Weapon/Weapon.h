@@ -116,6 +116,8 @@ private:
 	UFUNCTION()
 	void OnRep_Ammo();
 
+	UPROPERTY(EditAnywhere)
+	bool bAutoReload = false;
 	void SpendRound();
 
 	UPROPERTY(EditAnywhere)
@@ -140,6 +142,7 @@ public:
 	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
 	FORCEINLINE int32 GetAmmo()							const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }
+	FORCEINLINE bool GetAutoReload()					const { return bAutoReload; }
 };
 
 

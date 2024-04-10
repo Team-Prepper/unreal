@@ -27,6 +27,8 @@ protected:
 	virtual void BeginPlay() override;
 	void SetAiming(bool bIsAiming);
 
+	void ReloadEmptyWeapon();
+
 	UFUNCTION(Server, Reliable)
 	void ServerSetAiming(bool bIsAiming);
 

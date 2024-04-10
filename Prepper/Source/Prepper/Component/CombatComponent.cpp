@@ -303,7 +303,20 @@ void UCombatComponent::FireTimerFinished()
 	{
 		Fire();
 	}
+	if(EquippedWeapon -> GetAutoReload())
+	{
+		ReloadEmptyWeapon();
+	}
 }
+
+void UCombatComponent::ReloadEmptyWeapon()
+{
+	if (EquippedWeapon && EquippedWeapon->IsAmmoEmpty())
+	{
+		Reload();
+	}
+}
+
 
 void UCombatComponent::OnRep_CarriedAmmo()
 {
@@ -463,7 +476,7 @@ void UCombatComponent::UpdateAmmoValues()
 	{
 		Controller->SetHUDCarriedAmmo(CarriedAmmo);
 	}
-	EquippedWeapon->AddAmmo(-ReloadAmount);	
+	EquippedWeapon->AddAmmo(ReloadAmount);	
 }
 
 int32 UCombatComponent::AmountToReload()
