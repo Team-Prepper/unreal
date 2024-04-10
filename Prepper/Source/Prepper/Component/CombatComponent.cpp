@@ -338,6 +338,15 @@ void UCombatComponent::InitCarriedAmmo()
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_MiniGun, StartingMiniGunAmmo);
 }
 
+
+void UCombatComponent::OnRep_Aiming()
+{
+	if(Character && Character->IsLocallyControlled())
+	{
+		bAiming = bAimButtonPressed;
+	}
+}
+
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	if(Character == nullptr || EquippedWeapon == nullptr) return;
@@ -352,6 +361,10 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	if(Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
 	{
 		Character->ShowSniperScopeWidget(bIsAiming);
+	}
+	if(Character->IsLocallyControlled())
+	{
+		bAimButtonPressed = bIsAiming;
 	}
 }
 
@@ -448,9 +461,9 @@ void UCombatComponent::ServerReload_Implementation()
 void UCombatComponent::FinishReloading()
 {
 	if (Character == nullptr) return;
+	CombatState = ECombatState::ECS_Unoccupied;
 	if (Character->HasAuthority())
 	{
-		CombatState = ECombatState::ECS_Unoccupied;
 		UpdateAmmoValues();
 	}
 	if(bFireButtonPressed)
