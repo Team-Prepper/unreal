@@ -75,6 +75,11 @@ public:
 
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
+
+	UFUNCTION(Server, Reliable)
+	void ServerTakeCar(APlayerCharacter* Target);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastTakeCar(APlayerCharacter* Target);
 	
 	UFUNCTION()
 	void OnSphereOverlap(

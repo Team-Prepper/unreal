@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -161,6 +162,14 @@ void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
+	if(HasAuthority())
+	{
+		MulticastTakeCar(Target);
+	}
+	else
+	{
+		ServerTakeCar(Target);
+	}
 	Driver = Target;
 	Target->Controller->Possess(this);
 }
@@ -170,9 +179,24 @@ void ACarPawn::ShowPickUpWidget(bool bShowWidget)
 	
 }
 
+void ACarPawn::ServerTakeCar_Implementation(APlayerCharacter* Target)
+{
+	MulticastTakeCar(Target);
+}
+
+
+void ACarPawn::MulticastTakeCar_Implementation(APlayerCharacter* Target)
+{
+	const USkeletalMeshSocket* SeatSocket = GetMesh()->GetSocketByName(FName("SeatSocket"));
+	if (SeatSocket)
+	{
+		Target->SetActorEnableCollision(false);
+		SeatSocket->AttachActor(Target,GetMesh());
+	}
+}
 
 void ACarPawn::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-									UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
 	if(PlayerCharacter)
