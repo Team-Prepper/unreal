@@ -141,6 +141,7 @@ private:
 public:
 	void SetWeaponState(EWeaponState State);
 	bool IsAmmoEmpty();
+	bool IsAmmoFull();
 	
 	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }

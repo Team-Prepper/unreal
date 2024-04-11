@@ -64,6 +64,8 @@ protected:
 
 	void HandleReload();
 	int32 AmountToReload();
+	
+	bool bLocallyReload = false;
 private:
 	UPROPERTY()
 	class APlayerCharacter* Character;
@@ -79,6 +81,7 @@ private:
 	bool bAiming;
 
 	bool bAimButtonPressed = false;
+	
 
 	UFUNCTION()
 	void OnRep_Aiming();

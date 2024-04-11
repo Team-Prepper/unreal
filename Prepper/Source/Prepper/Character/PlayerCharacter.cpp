@@ -756,6 +756,12 @@ bool APlayerCharacter::IsAiming()
 	return (Combat && Combat->bAiming);
 }
 
+bool APlayerCharacter::IsLocallyReloading()
+{
+	if(Combat == nullptr) return false;
+	return Combat->bLocallyReload;
+}
+
 AWeapon* APlayerCharacter::GetEquippedWeapon()
 {
 	if(Combat == nullptr) return nullptr;

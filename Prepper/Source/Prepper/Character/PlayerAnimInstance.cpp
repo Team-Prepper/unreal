@@ -40,6 +40,10 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bRotateRootBone = PlayerCharacter->ShouldRotateRootBone();
 	bElimmed = PlayerCharacter->IsElimed();
 	bUseFABRIK = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading;
+	if(PlayerCharacter->IsLocallyControlled())
+	{
+		bUseFABRIK = !PlayerCharacter->IsLocallyReloading();
+	}
 	bUseAimOffsets = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bTransformRightHand = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bEquippedShoulderFireWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_RocketLauncher : false;

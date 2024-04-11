@@ -96,6 +96,11 @@ bool AWeapon::IsAmmoEmpty()
 	return Ammo <= 0;
 }
 
+bool AWeapon::IsAmmoFull()
+{
+	return Ammo == MagCapacity;
+}
+
 void AWeapon::SetWeaponState(EWeaponState State)
 {
 	WeaponState = State;
