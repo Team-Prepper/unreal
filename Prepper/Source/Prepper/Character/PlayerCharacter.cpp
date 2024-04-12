@@ -718,6 +718,7 @@ void APlayerCharacter::SetOverlappingItem(AActor* InteractableItem)
     IIInteractable* TheInterface = Cast<IIInteractable>(InteractableItem);
 	if (TheInterface == nullptr)
 	{
+		OverlappingItem = nullptr;
 		return;
 	}
 	

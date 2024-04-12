@@ -88,4 +88,7 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	bool bEquippedMiniGun;
+
+	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	bool bEquippedMeleeWeapon;
 };

@@ -7,16 +7,6 @@
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
-enum class EWeaponState : uint8
-{
-	EWS_Initial UMETA(DisplayName = "Initial State"),
-	EWS_Equipped UMETA(DisplayName = "Equipped"),
-	EWS_Dropped UMETA(DisplayName = "Dropped"),
-	
-	EWS_MAX UMETA(DisplayName = "Default MAX")
-};
-
-UENUM(BlueprintType)
 enum class EFireType : uint8
 {
 	EFT_HitScan UMETA(DisplayName = "Hit Scan Weapon"),
@@ -51,6 +41,9 @@ public:
 	UTexture2D* CrosshairTop;
 	UPROPERTY(EditAnywhere, Category = Crosshiar)
 	UTexture2D* CrosshairBottom;
+
+	UPROPERTY(EditAnywhere)
+	float Damage = 20.f;
 
 	// Zoom FOV
 	UPROPERTY(EditAnywhere)

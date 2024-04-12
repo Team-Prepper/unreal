@@ -1,12 +1,14 @@
 #include "CombatComponent.h"
 
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
+#include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/ShotgunWeapon.h"
 #include "Prepper/Weapon/Weapon.h"
 #include "Sound/SoundCue.h"
@@ -480,6 +482,18 @@ void UCombatComponent::FinishReloading()
 	if(bFireButtonPressed)
 	{
 		Fire();
+	}
+}
+
+void UCombatComponent::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnable)
+{
+	if(Character && Character->IsWeaponEquipped() && Character->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MeleeWeapon)
+	{
+		AMeleeWeapon* CurMeleeWeapon = Cast<AMeleeWeapon>(Character->GetEquippedWeapon());
+		if(CurMeleeWeapon && CurMeleeWeapon->GetWeaponBoxComponent())
+		{
+			CurMeleeWeapon->GetWeaponBoxComponent()->SetCollisionEnabled(CollisionEnable);
+		}
 	}
 }
 

@@ -75,7 +75,6 @@ void AHitscanWeapon::Fire(const FVector& HitTarget)
 				FireSound,
 				GetActorLocation());
 		}
-		
 	}
 }
 
