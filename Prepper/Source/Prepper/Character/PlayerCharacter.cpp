@@ -164,13 +164,28 @@ void APlayerCharacter::PlayFireMontage(bool bAiming)
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance && FireWeaponMontage)
+	if(Combat->EquippedRangeWeapon)
 	{
-		AnimInstance->Montage_Play(FireWeaponMontage);
-		FName SectionName;
-		SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
-		AnimInstance->Montage_JumpToSection(SectionName);
+		if(AnimInstance && FireWeaponMontage)
+		{
+			AnimInstance->Montage_Play(FireWeaponMontage);
+			FName SectionName;
+			SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+			AnimInstance->Montage_JumpToSection(SectionName);
+		}
 	}
+	else
+	{
+		// TODO
+		if(AnimInstance && MeleeWeaponMontage)
+		{
+			AnimInstance->Montage_Play(MeleeWeaponMontage);
+			//FName SectionName;
+			//SectionName = FName("Attack1");
+			//AnimInstance->Montage_JumpToSection(SectionName);
+		}
+	}
+	
 }
 
 void APlayerCharacter::PlayReloadMontage()

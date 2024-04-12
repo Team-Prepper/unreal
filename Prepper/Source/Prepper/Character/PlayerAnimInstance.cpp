@@ -5,6 +5,7 @@
 #include "PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Prepper/Weapon/RangeWeapon.h"
 #include "Prepper/Weapon/Weapon.h"
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
@@ -39,16 +40,23 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	
 	bRotateRootBone = PlayerCharacter->ShouldRotateRootBone();
 	bElimmed = PlayerCharacter->IsElimed();
-	bUseFABRIK = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading;
-	if(PlayerCharacter->IsLocallyControlled())
-	{
-		bUseFABRIK = !PlayerCharacter->IsLocallyReloading();
-	}
 	bUseAimOffsets = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bTransformRightHand = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bEquippedShoulderFireWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_RocketLauncher : false;
 	bEquippedMiniGun = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MiniGun : false;
 	bEquippedMeleeWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MeleeWeapon : false;
+
+	bUseFABRIK = PlayerCharacter->GetCombatState() < ECombatState::ECS_Reloading;
+	if(PlayerCharacter->IsLocallyControlled())
+	{
+		bUseFABRIK = !PlayerCharacter->IsLocallyReloading();
+		if(bEquippedMeleeWeapon)
+		{
+			bUseFABRIK = !bEquippedMeleeWeapon;
+		}
+	}
+
+	
 	// OFFSET YAW FOR STRAFING
 	FRotator AimRotation = PlayerCharacter->GetBaseAimRotation();
 	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(PlayerCharacter->GetVelocity());
@@ -68,21 +76,25 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	if(bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && PlayerCharacter->GetMesh())
 	{
-		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), RTS_World);
-		FVector OutPosition;
-		FRotator OutRotator;
-		PlayerCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotator);
-		LeftHandTransform.SetLocation(OutPosition);
-		LeftHandTransform.SetRotation(FQuat(OutRotator));
+		if(Cast<ARangeWeapon>(EquippedWeapon))
+		{
+			LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket"), RTS_World);
+			FVector OutPosition;
+			FRotator OutRotator;
+			PlayerCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotator);
+			LeftHandTransform.SetLocation(OutPosition);
+			LeftHandTransform.SetRotation(FQuat(OutRotator));
 
 		
-		if(PlayerCharacter->IsLocallyControlled())
-		{
-			bLocallyControlled = true;
-			FTransform RightHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Hand_R"), RTS_World);
-			FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PlayerCharacter->GetHitTarget()));
-			RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaSeconds, 30.f);
+			if(PlayerCharacter->IsLocallyControlled())
+			{
+				bLocallyControlled = true;
+				FTransform RightHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("Hand_R"), RTS_World);
+				FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - PlayerCharacter->GetHitTarget()));
+				RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaSeconds, 30.f);
+			}
 		}
+		
 		
 	}
 

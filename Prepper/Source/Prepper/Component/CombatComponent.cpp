@@ -27,6 +27,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, EquippedRangeWeapon);
+	DOREPLIFETIME(UCombatComponent, EquippedMeleeWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 	DOREPLIFETIME(UCombatComponent, CombatState);
@@ -180,7 +181,10 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 // TODO
 bool UCombatComponent::CanFire()
 {
+	if(EquippedMeleeWeapon) return bCanFire;
+	
 	if(EquippedRangeWeapon == nullptr) return false;
+	
 	if(bLocallyReload) return false;
 	return !EquippedRangeWeapon->IsAmmoEmpty() &&
 			bCanFire &&
@@ -210,6 +214,10 @@ void UCombatComponent::Fire()
 				default:
 					break;
 			}
+		}
+		else
+		{
+			FireMeleeWeapon();
 		}
 		StartFireTimer();
 	}
@@ -246,6 +254,16 @@ void UCombatComponent::FireShotgun()
 		Shotgun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);
 		ShotgunLocalFire(HitTargets);
 		ServerShotgunFire(HitTargets);
+	}
+}
+
+void UCombatComponent::FireMeleeWeapon()
+{
+	if(EquippedMeleeWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("MELEE WEAPON ATTACK"));
+		Character->PlayFireMontage(false);
+		// TODO
 	}
 }
 
@@ -305,8 +323,9 @@ void UCombatComponent::StartFireTimer()
 
 void UCombatComponent::FireTimerFinished()
 {
-	if (EquippedRangeWeapon == nullptr) return;
+	if (EquippedWeapon == nullptr) return;
 	bCanFire = true;
+	if(!EquippedRangeWeapon) return;
 	if (bFireButtonPressed && EquippedRangeWeapon->bAutomatic)
 	{
 		Fire();
@@ -347,19 +366,24 @@ void UCombatComponent::InitCarriedAmmo()
 }
 
 
-bool UCombatComponent::IsRangeWeapon()
+EWeaponType UCombatComponent::SetWeaponType()
 {
 	if(EquippedWeapon)
-    {
-        EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
+	{
+		EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
 		if(EquippedRangeWeapon)
 		{
-			return true;
+			return EquippedRangeWeapon->GetWeaponType();
 		}
-    }
-    return false;
-	
+		EquippedMeleeWeapon = Cast<AMeleeWeapon>(EquippedWeapon);
+		if(EquippedMeleeWeapon)
+		{
+			return EquippedMeleeWeapon->GetWeaponType();
+		}
+	}
+	return EWeaponType::EWT_MAX;
 }
+
 
 void UCombatComponent::OnRep_Aiming()
 {
@@ -415,7 +439,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
-	IsRangeWeapon();
+	SetWeaponType();
 	if(EquippedRangeWeapon)
 	{
 		EquippedRangeWeapon->SetHUDAmmo();

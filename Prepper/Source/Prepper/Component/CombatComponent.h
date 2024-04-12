@@ -43,6 +43,7 @@ protected:
 	void FireProjectileWeapon();
 	void FireHitScanWeapon();
 	void FireShotgun();
+	void FireMeleeWeapon();
 	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
 	void ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
 public:
@@ -86,8 +87,11 @@ private:
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
 
+	UPROPERTY(Replicated)
+	class AMeleeWeapon* EquippedMeleeWeapon;
+
 	UFUNCTION()
-	bool IsRangeWeapon();
+	EWeaponType SetWeaponType();
 	
 	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
 	bool bAiming;
