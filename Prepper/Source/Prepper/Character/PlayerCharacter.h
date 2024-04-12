@@ -35,6 +35,8 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
 	
+	void SetState(const FString& state);
+	
 private:
 	void ElimTimerFinished();
 	
@@ -80,15 +82,12 @@ private:
 
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
-	
+
+	bool beforeSeat;
+	UFUNCTION(Server, Reliable)
+	void ServerSetState(const FString& state);
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed(AWeapon* Weapon);
-	UFUNCTION(Server, Reliable)
-	void ServerInteractionPressed();
-	UFUNCTION(Server, Reliable)
-	void ServerSprintButtonPressed();
-	UFUNCTION(Server, Reliable)
-	void ServerSprintButtonReleased();
 	
 protected:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;

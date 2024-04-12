@@ -143,6 +143,9 @@ void ACarPawn::SpaceReleased() {}
 void ACarPawn::EPressed()
 {
 	Controller->Possess(Driver);
+	Driver->SetOwner(nullptr);
+	Driver->SetActorLocation(GetActorLocation() + FVector(0, 0, 200));
+	Driver->SetState("Walk");
 }
 void ACarPawn::RPressed() {}
 
@@ -162,16 +165,9 @@ void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
-	if(HasAuthority())
-	{
-		MulticastTakeCar(Target);
-	}
-	else
-	{
-		ServerTakeCar(Target);
-	}
-	Driver = Target;
 	Target->Controller->Possess(this);
+	MulticastTakeCar(Target);
+	Driver = Target;
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)
@@ -179,18 +175,12 @@ void ACarPawn::ShowPickUpWidget(bool bShowWidget)
 	
 }
 
-void ACarPawn::ServerTakeCar_Implementation(APlayerCharacter* Target)
-{
-	MulticastTakeCar(Target);
-}
-
-
 void ACarPawn::MulticastTakeCar_Implementation(APlayerCharacter* Target)
 {
+	Target->SetState("Seat");
 	const USkeletalMeshSocket* SeatSocket = GetMesh()->GetSocketByName(FName("SeatSocket"));
 	if (SeatSocket)
 	{
-		Target->SetActorEnableCollision(false);
 		SeatSocket->AttachActor(Target,GetMesh());
 	}
 }

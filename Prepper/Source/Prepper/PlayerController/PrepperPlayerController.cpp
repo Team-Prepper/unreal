@@ -203,8 +203,6 @@ void APrepperPlayerController::BindPlayerAction()
 		TargetPlayer = GetPawn();
 }
 
-
-
 /* HUD Setting*/
 void APrepperPlayerController::SetHUDTime()
 {

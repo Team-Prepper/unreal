@@ -16,6 +16,7 @@
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/Weapon.h"
+#include "WorldPartition/ContentBundle/ContentBundleLog.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -62,6 +63,8 @@ APlayerCharacter::APlayerCharacter()
 
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
+
+	beforeSeat = false;
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -137,26 +140,15 @@ void APlayerCharacter::RotateInPlace(float DeltaTime)
 void APlayerCharacter::ShiftPressed()
 {
 	if(bDisableGamePlay) return;
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed; // local player
-	ServerSprintButtonPressed(); // server
-}
-
-void APlayerCharacter::ServerSprintButtonPressed_Implementation()
-{
-	GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+	SetState("Sprint");
+	ServerSetState("Sprint"); // server
 }
 
 void APlayerCharacter::ShiftReleased()
 {
 	if(bDisableGamePlay) return;
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
-	ServerSprintButtonReleased();
-}
-
-void APlayerCharacter::ServerSprintButtonReleased_Implementation()
-{
-	if(bDisableGamePlay) return;
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	SetState("Walk");
+	ServerSetState("Walk"); // server
 }
 
 void APlayerCharacter::PlayFireMontage(bool bAiming)
@@ -370,34 +362,14 @@ void APlayerCharacter::EPressed()
 	if(bDisableGamePlay) return;
 	if(OverlappingItem)
 	{
-		ServerInteractionPressed();
+		OverlappingItem->Interaction(this);
 	}
-}
-
-
-void APlayerCharacter::ServerInteractionPressed_Implementation()
-{
-	OverlappingItem->Interaction(this);
 }
 
 void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
 	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		if(HasAuthority())
-		{
-			Combat->EquipWeapon(Weapon);
-		}else
-		{
-			ServerEquipButtonPressed(Weapon);
-		}
-	}
-}
-
-void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
-{
 	if(Combat)
 	{
 		Combat->EquipWeapon(Weapon);
@@ -621,10 +593,50 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 		}
 	}
 }
+
+void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
+{
+}
+
+void APlayerCharacter::SetState(const FString& state)
+{
+	if (state.Compare("Seat") == 0)
+	{
+		beforeSeat = true;
+		SetActorEnableCollision(false);
+		GetMesh()->SetSimulatePhysics(false);
+		GetMesh()->SetEnableGravity(false);
+		return;
+	}
+	if (beforeSeat)
+	{
+		beforeSeat = false;
+		SetActorEnableCollision(true);
+		GetMesh()->SetSimulatePhysics(true);
+		GetMesh()->SetEnableGravity(true);
+	}
+	if (state.Compare("Aim") == 0)
+	{
+		// 속도 바꾸기 추가해야 함	
+		return;	
+	}
+	if (state.Compare("Sprint") == 0)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		return;
+	}
+	
+	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+}
+
+void APlayerCharacter::ServerSetState_Implementation(const FString& state)
+{
+	SetState(state);
+}
+
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
 	Super::Crouch(bClientSimulation);
-
 	TargetSpringArmLocation = (FVector(0.0f, 0.0f, CrouchCamOffset));
 	TargetArmLength = CrouchCamArmLength;
 }
