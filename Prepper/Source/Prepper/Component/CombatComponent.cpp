@@ -144,7 +144,7 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 
 void UCombatComponent::InterpFOV(float DeltaTime)
 {
-	if(EquippedWeapon == nullptr) return;
+	if(EquippedRangeWeapon == nullptr) return;
 
 	if(bAiming)
 	{
@@ -161,6 +161,7 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 	}
 }
 
+// TODO
 // Fire Start
 void UCombatComponent::FireButtonPressed(bool bPressed)
 {
@@ -176,21 +177,23 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
     }
 }
 
+// TODO
 bool UCombatComponent::CanFire()
 {
-	if(EquippedWeapon == nullptr) return false;
+	if(EquippedRangeWeapon == nullptr) return false;
 	if(bLocallyReload) return false;
 	return !EquippedRangeWeapon->IsAmmoEmpty() &&
 			bCanFire &&
 			CombatState == ECombatState::ECS_Unoccupied;
 }
 
+// TODO
 void UCombatComponent::Fire()
 {
 	if (CanFire())
 	{
 		bCanFire = false;
-		if (EquippedWeapon)
+		if (EquippedRangeWeapon)
 		{
 			CrosshairShootingFactor = .75f;
 			switch (EquippedRangeWeapon->FireType)
@@ -248,7 +251,7 @@ void UCombatComponent::FireShotgun()
 
 void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (EquippedWeapon == nullptr) return;
+	if (EquippedRangeWeapon == nullptr) return;
 	if (Character && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		Character->PlayFireMontage(bAiming);
@@ -346,11 +349,6 @@ void UCombatComponent::InitCarriedAmmo()
 
 bool UCombatComponent::IsRangeWeapon()
 {
-	if(EquippedRangeWeapon)
-	{
-		return true;
-	}
-	
 	if(EquippedWeapon)
     {
         EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
@@ -418,19 +416,22 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	}
 	EquippedWeapon->SetOwner(Character);
 	IsRangeWeapon();
-	EquippedRangeWeapon->SetHUDAmmo();
-
-	if(CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+	if(EquippedRangeWeapon)
 	{
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+		EquippedRangeWeapon->SetHUDAmmo();
+
+		if(CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+		{
+			CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+		}
+	
+		Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
+		if(Controller)
+		{
+			Controller->SetHUDCarriedAmmo(CarriedAmmo);
+		}
 	}
 	
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if(Controller)
-	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);
-	}
-
 	if(EquippedWeapon->EquipSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(
@@ -472,7 +473,7 @@ void UCombatComponent::Reload()
 {
 	if (CarriedAmmo > 0 &&
 		CombatState != ECombatState::ECS_Reloading &&
-		EquippedWeapon &&
+		EquippedRangeWeapon &&
 		!EquippedRangeWeapon -> IsAmmoFull() &&
 		!bLocallyReload)
 	{
@@ -521,7 +522,7 @@ void UCombatComponent::SetWeaponCollisionEnabled(ECollisionEnabled::Type Collisi
 
 void UCombatComponent::UpdateAmmoValues()
 {
-	if (Character == nullptr || EquippedWeapon == nullptr) return;
+	if (Character == nullptr || EquippedRangeWeapon == nullptr) return;
 	int32 ReloadAmount = AmountToReload();
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
@@ -538,7 +539,7 @@ void UCombatComponent::UpdateAmmoValues()
 
 int32 UCombatComponent::AmountToReload()
 {
-	if (EquippedWeapon == nullptr) return 0;
+	if (EquippedRangeWeapon == nullptr) return 0;
 	int32 RoomInMag = EquippedRangeWeapon->GetMagCapacity() - EquippedRangeWeapon->GetAmmo();
 
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))

@@ -1,8 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MeleeWeapon.h"
-
 #include "NiagaraFunctionLibrary.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -12,8 +8,9 @@ AMeleeWeapon::AMeleeWeapon()
 {
 	MeleeWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
 	MeleeWeaponMesh->SetupAttachment(RootComponent);
+	
 	WeaponTracer = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponTracer"));
-	WeaponTracer->SetupAttachment(GetRootComponent());
+	WeaponTracer->SetupAttachment(MeleeWeaponMesh);
 	WeaponTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	WeaponTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
 	WeaponTracer->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Ignore);
