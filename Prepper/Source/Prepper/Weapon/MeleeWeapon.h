@@ -17,7 +17,7 @@ class PREPPER_API AMeleeWeapon : public AWeapon
 
 public:
 	AMeleeWeapon();
-	virtual void Fire(const FVector& HitTarget) override;
+	virtual void Fire(const FVector& HitTarget);
 
 protected:
 	virtual void BeginPlay() override;

@@ -13,15 +13,15 @@
 
 void AShotgunWeapon::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 {
-	AWeapon::Fire(FVector());
+	ARangeWeapon::Fire(FVector());
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();
 
-	const USkeletalMeshSocket* MuzzleSocket = GetWeaponMesh()->GetSocketByName("Muzzle");
+	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
 	if (MuzzleSocket)
 	{
-		const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetWeaponMesh());
+		const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
 		const FVector Start = SocketTransform.GetLocation();
 
 		// hit Character - number of hit
@@ -81,10 +81,10 @@ void AShotgunWeapon::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 
 void AShotgunWeapon::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets)
 {
-	const USkeletalMeshSocket* MuzzleSocket = GetWeaponMesh()->GetSocketByName("Muzzle");
+	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
 	if (MuzzleSocket == nullptr) return;
 
-	const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetWeaponMesh());
+	const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
 	const FVector TraceStart = SocketTransform.GetLocation();
 
 	const FVector ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();

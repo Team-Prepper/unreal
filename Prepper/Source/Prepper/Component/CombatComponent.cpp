@@ -19,7 +19,6 @@ UCombatComponent::UCombatComponent()
 
 	BaseWalkSpeed = 600.f;
 	AimWalkSpeed = 400.f;
-	
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,6 +26,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, EquippedRangeWeapon);
 	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 	DOREPLIFETIME(UCombatComponent, CombatState);
@@ -85,13 +85,13 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 		HUD = HUD == nullptr ? Cast<APrepperHUD>(Controller->GetHUD()) : HUD;
 		if(HUD)
 		{
-			if(EquippedWeapon)
+			if(EquippedRangeWeapon)
 			{
-				HUDPackage.CrosshairCenter = EquippedWeapon->CrosshairCenter;
-				HUDPackage.CrosshairLeft   = EquippedWeapon->CrosshairLeft;
-				HUDPackage.CrosshairRight  = EquippedWeapon->CrosshairRight;
-				HUDPackage.CrosshairTop    = EquippedWeapon->CrosshairTop;
-				HUDPackage.CrosshairBottom = EquippedWeapon->CrosshairBottom;
+				HUDPackage.CrosshairCenter = EquippedRangeWeapon->CrosshairCenter;
+				HUDPackage.CrosshairLeft   = EquippedRangeWeapon->CrosshairLeft;
+				HUDPackage.CrosshairRight  = EquippedRangeWeapon->CrosshairRight;
+				HUDPackage.CrosshairTop    = EquippedRangeWeapon->CrosshairTop;
+				HUDPackage.CrosshairBottom = EquippedRangeWeapon->CrosshairBottom;
 			}
 			else
 			{
@@ -148,7 +148,7 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 
 	if(bAiming)
 	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedWeapon->GetZoomedFOV(), DeltaTime, EquippedWeapon->GetZoomedInterpSpeed());
+		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedRangeWeapon->GetZoomedFOV(), DeltaTime, EquippedRangeWeapon->GetZoomedInterpSpeed());
 	}
 	else
 	{
@@ -164,7 +164,7 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 // Fire Start
 void UCombatComponent::FireButtonPressed(bool bPressed)
 {
-	if(EquippedWeapon && EquippedWeapon->bAutomatic == false)
+	if(EquippedRangeWeapon && EquippedRangeWeapon->bAutomatic == false)
 	{
 		if(bFireButtonPressed == bPressed) return;
 	}
@@ -180,7 +180,7 @@ bool UCombatComponent::CanFire()
 {
 	if(EquippedWeapon == nullptr) return false;
 	if(bLocallyReload) return false;
-	return !EquippedWeapon->IsAmmoEmpty() &&
+	return !EquippedRangeWeapon->IsAmmoEmpty() &&
 			bCanFire &&
 			CombatState == ECombatState::ECS_Unoccupied;
 }
@@ -193,17 +193,19 @@ void UCombatComponent::Fire()
 		if (EquippedWeapon)
 		{
 			CrosshairShootingFactor = .75f;
-			switch (EquippedWeapon->FireType)
+			switch (EquippedRangeWeapon->FireType)
 			{
-			case EFireType::EFT_Projectile:
-				FireProjectileWeapon();
-				break;
-			case EFireType::EFT_HitScan:
-				FireHitScanWeapon();
-				break;
-			case EFireType::EFT_Shotgun:
-				FireShotgun();
-				break;
+				case EFireType::EFT_Projectile:
+					FireProjectileWeapon();
+					break;
+				case EFireType::EFT_HitScan:
+					FireHitScanWeapon();
+					break;
+				case EFireType::EFT_Shotgun:
+					FireShotgun();
+					break;
+				default:
+					break;
 			}
 		}
 		StartFireTimer();
@@ -212,9 +214,9 @@ void UCombatComponent::Fire()
 
 void UCombatComponent::FireProjectileWeapon()
 {
-	if(EquippedWeapon)
+	if(EquippedRangeWeapon)
 	{
-		HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+		HitTarget = EquippedRangeWeapon->bUseScatter ? EquippedRangeWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
 			
 		LocalFire(HitTarget);
 		ServerFire(HitTarget);
@@ -224,12 +226,12 @@ void UCombatComponent::FireProjectileWeapon()
 
 void UCombatComponent::FireHitScanWeapon()
 {
-		if (EquippedWeapon)
-		{
-			HitTarget = EquippedWeapon->bUseScatter ? EquippedWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
-			LocalFire(HitTarget);
-			ServerFire(HitTarget);
-		}
+	if (EquippedRangeWeapon)
+	{
+		HitTarget = EquippedRangeWeapon->bUseScatter ? EquippedRangeWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
+		LocalFire(HitTarget);
+		ServerFire(HitTarget);
+	}
 }
 
 void UCombatComponent::FireShotgun()
@@ -250,7 +252,7 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 	if (Character && CombatState == ECombatState::ECS_Unoccupied)
 	{
 		Character->PlayFireMontage(bAiming);
-		EquippedWeapon->Fire(TraceHitTarget);
+		EquippedRangeWeapon->Fire(TraceHitTarget);
 	}
 }
 
@@ -300,13 +302,13 @@ void UCombatComponent::StartFireTimer()
 
 void UCombatComponent::FireTimerFinished()
 {
-	if (EquippedWeapon == nullptr) return;
+	if (EquippedRangeWeapon == nullptr) return;
 	bCanFire = true;
-	if (bFireButtonPressed && EquippedWeapon->bAutomatic)
+	if (bFireButtonPressed && EquippedRangeWeapon->bAutomatic)
 	{
 		Fire();
 	}
-	if(EquippedWeapon -> GetAutoReload())
+	if(EquippedRangeWeapon -> GetAutoReload())
 	{
 		ReloadEmptyWeapon();
 	}
@@ -314,7 +316,7 @@ void UCombatComponent::FireTimerFinished()
 
 void UCombatComponent::ReloadEmptyWeapon()
 {
-	if (EquippedWeapon && EquippedWeapon->IsAmmoEmpty())
+	if (EquippedRangeWeapon && EquippedRangeWeapon->IsAmmoEmpty())
 	{
 		Reload();
 	}
@@ -341,6 +343,25 @@ void UCombatComponent::InitCarriedAmmo()
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_MiniGun, StartingMiniGunAmmo);
 }
 
+
+bool UCombatComponent::IsRangeWeapon()
+{
+	if(EquippedRangeWeapon)
+	{
+		return true;
+	}
+	
+	if(EquippedWeapon)
+    {
+        EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
+		if(EquippedRangeWeapon)
+		{
+			return true;
+		}
+    }
+    return false;
+	
+}
 
 void UCombatComponent::OnRep_Aiming()
 {
@@ -396,7 +417,8 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->SetHUDAmmo();
+	IsRangeWeapon();
+	EquippedRangeWeapon->SetHUDAmmo();
 
 	if(CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
@@ -451,7 +473,7 @@ void UCombatComponent::Reload()
 	if (CarriedAmmo > 0 &&
 		CombatState != ECombatState::ECS_Reloading &&
 		EquippedWeapon &&
-		!EquippedWeapon -> IsAmmoFull() &&
+		!EquippedRangeWeapon -> IsAmmoFull() &&
 		!bLocallyReload)
 	{
 		ServerReload();
@@ -511,13 +533,13 @@ void UCombatComponent::UpdateAmmoValues()
 	{
 		Controller->SetHUDCarriedAmmo(CarriedAmmo);
 	}
-	EquippedWeapon->AddAmmo(ReloadAmount);	
+	EquippedRangeWeapon->AddAmmo(ReloadAmount);	
 }
 
 int32 UCombatComponent::AmountToReload()
 {
 	if (EquippedWeapon == nullptr) return 0;
-	int32 RoomInMag = EquippedWeapon->GetMagCapacity() - EquippedWeapon->GetAmmo();
+	int32 RoomInMag = EquippedRangeWeapon->GetMagCapacity() - EquippedRangeWeapon->GetAmmo();
 
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{

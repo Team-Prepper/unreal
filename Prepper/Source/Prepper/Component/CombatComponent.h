@@ -71,6 +71,7 @@ protected:
 	int32 AmountToReload();
 	
 	bool bLocallyReload = false;
+	
 private:
 	UPROPERTY()
 	class APlayerCharacter* Character;
@@ -81,12 +82,17 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	class AWeapon* EquippedWeapon;
+
+	UPROPERTY(Replicated)
+	class ARangeWeapon* EquippedRangeWeapon;
+
+	UFUNCTION()
+	bool IsRangeWeapon();
 	
 	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
 	bool bAiming;
 
 	bool bAimButtonPressed = false;
-	
 
 	UFUNCTION()
 	void OnRep_Aiming();

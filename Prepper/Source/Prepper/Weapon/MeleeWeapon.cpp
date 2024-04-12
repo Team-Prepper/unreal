@@ -11,7 +11,7 @@
 AMeleeWeapon::AMeleeWeapon()
 {
 	MeleeWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
-	SetRootComponent(MeleeWeaponMesh);
+	MeleeWeaponMesh->SetupAttachment(RootComponent);
 	WeaponTracer = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponTracer"));
 	WeaponTracer->SetupAttachment(GetRootComponent());
 	WeaponTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -19,9 +19,9 @@ AMeleeWeapon::AMeleeWeapon()
 	WeaponTracer->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Ignore);
 
 	TracerStart = CreateDefaultSubobject<USceneComponent>(TEXT("TracerStart"));
-	TracerStart-> SetupAttachment(RootComponent);
+	TracerStart-> SetupAttachment(MeleeWeaponMesh);
 	TracerEnd   = CreateDefaultSubobject<USceneComponent>(TEXT("TracerEnd"));
-	TracerEnd  -> SetupAttachment(RootComponent);
+	TracerEnd  -> SetupAttachment(MeleeWeaponMesh);
 }
 
 void AMeleeWeapon::BeginPlay()
@@ -33,8 +33,6 @@ void AMeleeWeapon::BeginPlay()
 
 void AMeleeWeapon::Fire(const FVector& HitTarget)
 {
-	Super::Fire(HitTarget);
-
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();

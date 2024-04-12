@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "NiagaraSystem.h"
-#include "Weapon.h"
-#include "HitscanWeapon.generated.h"
+#include "RangeWeapon.h"
+#include "HitScanWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PREPPER_API AHitscanWeapon : public AWeapon
+class PREPPER_API AHitScanWeapon : public ARangeWeapon
 {
 	GENERATED_BODY()
 	

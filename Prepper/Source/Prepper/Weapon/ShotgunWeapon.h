@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HitscanWeapon.h"
+#include "HitScanWeapon.h"
 #include "ShotgunWeapon.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PREPPER_API AShotgunWeapon : public AHitscanWeapon
+class PREPPER_API AShotgunWeapon : public AHitScanWeapon
 {
 	GENERATED_BODY()
 public:

@@ -1,7 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "HitscanWeapon.h"
+#include "HitScanWeapon.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,7 +8,7 @@
 
 #include "DrawDebugHelpers.h"
 
-void AHitscanWeapon::Fire(const FVector& HitTarget)
+void AHitScanWeapon::Fire(const FVector& HitTarget)
 {
 	Super::Fire(HitTarget);
 
@@ -19,10 +16,10 @@ void AHitscanWeapon::Fire(const FVector& HitTarget)
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();
 
-	const USkeletalMeshSocket* MuzzleSocket = GetWeaponMesh()->GetSocketByName("Muzzle");
+	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
 	if (MuzzleSocket)
 	{
-		FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetWeaponMesh());
+		FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
 		FVector Start = SocketTransform.GetLocation();
 
 		FHitResult FireHit;
@@ -78,7 +75,7 @@ void AHitscanWeapon::Fire(const FVector& HitTarget)
 	}
 }
 
-void AHitscanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit)
+void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit)
 {
 	UWorld* World = GetWorld();
 	if (World)
