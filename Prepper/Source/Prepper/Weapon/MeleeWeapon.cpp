@@ -23,81 +23,47 @@ AMeleeWeapon::AMeleeWeapon()
 void AMeleeWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	WeaponTracer->OnComponentBeginOverlap.AddDynamic(this,&AMeleeWeapon::AMeleeWeapon::OnBoxOverlap);
 }
 
 
 void AMeleeWeapon::Fire(const FVector& HitTarget)
 {
-	/*
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (OwnerPawn == nullptr) return;
-	AController* InstigatorController = OwnerPawn->GetController();
-
-	FHitResult FireHit;
-	
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(FireHit.GetActor());
-	if (PlayerCharacter && HasAuthority() && InstigatorController)
-	{
-		UGameplayStatics::ApplyDamage(
-			PlayerCharacter,
-			Damage,
-			InstigatorController,
-			this,
-			UDamageType::StaticClass()
-		);
-	}
-	if(ImpactParticles)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			ImpactParticles,
-			FireHit.ImpactPoint,
-			FireHit.ImpactNormal.Rotation()
-		);
-	}
-	if(HitSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-		this,
-		HitSound,
-		FireHit.ImpactPoint);
-	}
-	*/
+	FindActorsWithinRadius();
 }
 
-
-
-
-void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AMeleeWeapon::FindActorsWithinRadius()
 {
-	const FVector Start = TracerStart->GetComponentLocation();
-	const FVector End = TracerEnd->GetComponentLocation();
+	UWorld* World = Owner->GetWorld();
+	if (!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid World!"));
+		return;
+	}
+	
+	TArray<FHitResult> HitResults;
+	FVector StartLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100;
+	FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(50);
+	FCollisionObjectQueryParams ObjectQueryParams = FCollisionObjectQueryParams(ECollisionChannel::ECC_Pawn);
 
-	TArray<AActor*> ActorsToIgnore;
-	ActorsToIgnore.Add(this);
-	ActorsToIgnore.Add(Owner);
-	FHitResult BoxHit;
-	UKismetSystemLibrary::BoxTraceSingle(
-		this,
-		Start,
-		End,
-		FVector(5.f, 5.f, 5.f),
-		TracerStart->GetComponentRotation(),
-		TraceTypeQuery1,
-		false,
-		ActorsToIgnore,
-		EDrawDebugTrace::ForDuration,
-		BoxHit,
-		true
+	GetWorld()->SweepMultiByObjectType(
+		HitResults,
+		StartLocation,
+		StartLocation, // End 위치는 시작 위치와 같음 (구체 검사)
+		FQuat::Identity, // 회전 없음
+		ObjectQueryParams,
+		SphereCollisionShape
 	);
-
-	DamageTarget(BoxHit);
+	
+	UE_LOG(LogTemp, Warning, TEXT("HIT NUM : %d"),HitResults.Num());
+	for (const FHitResult& Hit : HitResults)
+	{
+		DamageTarget(Hit);
+		UE_LOG(LogTemp, Warning, TEXT("HIT impact : %f, %f, %f"),Hit.ImpactPoint.X,Hit.ImpactPoint.Y,Hit.ImpactPoint.Z);
+	}
+	DrawDebugSphere(World, StartLocation, 50, 24, FColor::Green, false, 5.0f);
 }
 
-void AMeleeWeapon::DamageTarget(FHitResult& HitTarget)
+void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
@@ -114,6 +80,7 @@ void AMeleeWeapon::DamageTarget(FHitResult& HitTarget)
 			UDamageType::StaticClass()
 		);
 	}
+	DrawDebugSphere(GetWorld(), HitTarget.ImpactPoint, 16.f, 12, FColor::Purple, true);
 	if(ImpactParticles)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(

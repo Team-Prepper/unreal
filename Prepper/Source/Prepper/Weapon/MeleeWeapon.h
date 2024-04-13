@@ -15,8 +15,10 @@ public:
 	AMeleeWeapon();
 	virtual void Fire(const FVector& HitTarget) override;
 
+	void FindActorsWithinRadius();
 protected:
 	virtual void BeginPlay() override;
+	/*
 	UFUNCTION()
 	void OnBoxOverlap(
 		UPrimitiveComponent* OverlappedComponent,
@@ -26,9 +28,7 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult
 		);
-	
-	void WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit);
-
+	*/
 	UPROPERTY(EditAnywhere)
 	UNiagaraSystem* ImpactParticles;
 
@@ -48,7 +48,7 @@ private:
 	USceneComponent* TracerEnd;
 
 	UFUNCTION()
-	void DamageTarget(FHitResult& HitTarget);
+	void DamageTarget(const FHitResult& HitTarget);
 	
 public:
 	FORCEINLINE UBoxComponent* GetWeaponBoxComponent() const { return WeaponTracer; }

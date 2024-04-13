@@ -22,11 +22,6 @@ public:
 	void Reload();
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
-
-	/* Melee Weapon */
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnable );
-
 	
 protected:
 	virtual void BeginPlay() override;

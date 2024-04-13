@@ -482,11 +482,13 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	if (EquippedWeapon && Character)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-		const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
+		const USkeletalMeshSocket* HandSocket =
+			Character->GetMesh()->GetSocketByName( EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeapon ? FName("MeleeWeaponSocket") : FName("RightHandSocket"));
 		if (HandSocket)
 		{
 			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 		}
+		
 		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 		Character->bUseControllerRotationYaw = true;
 
@@ -537,14 +539,6 @@ void UCombatComponent::FinishReloading()
 	if(bFireButtonPressed)
 	{
 		Fire();
-	}
-}
-
-void UCombatComponent::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnable)
-{
-	if(EquippedMeleeWeapon && EquippedMeleeWeapon->GetWeaponBoxComponent())
-	{
-		EquippedMeleeWeapon->GetWeaponBoxComponent()->SetCollisionEnabled(CollisionEnable);
 	}
 }
 
