@@ -11,9 +11,8 @@ AMeleeWeapon::AMeleeWeapon()
 	
 	WeaponTracer = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponTracer"));
 	WeaponTracer->SetupAttachment(MeleeWeaponMesh);
-	WeaponTracer->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	WeaponTracer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
-	WeaponTracer->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECR_Ignore);
 
 	TracerStart = CreateDefaultSubobject<USceneComponent>(TEXT("TracerStart"));
 	TracerStart-> SetupAttachment(MeleeWeaponMesh);
@@ -28,6 +27,7 @@ void AMeleeWeapon::BeginPlay()
 	WeaponTracer->OnComponentBeginOverlap.AddDynamic(this,&AMeleeWeapon::AMeleeWeapon::OnBoxOverlap);
 }
 
+/*
 void AMeleeWeapon::Fire(const FVector& HitTarget)
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
@@ -64,7 +64,7 @@ void AMeleeWeapon::Fire(const FVector& HitTarget)
 		FireHit.ImpactPoint);
 	}
 }
-
+*/
 
 void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -74,6 +74,7 @@ void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 	TArray<AActor*> ActorsToIgnore;
 	ActorsToIgnore.Add(this);
+	ActorsToIgnore.Add(Owner);
 	FHitResult BoxHit;
 	UKismetSystemLibrary::BoxTraceSingle(
 		this,
@@ -81,11 +82,13 @@ void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		End,
 		FVector(5.f, 5.f, 5.f),
 		TracerStart->GetComponentRotation(),
-		ETraceTypeQuery::TraceTypeQuery1,
+		TraceTypeQuery1,
 		false,
 		ActorsToIgnore,
 		EDrawDebugTrace::ForDuration,
 		BoxHit,
 		true
 	);
+
+	
 }

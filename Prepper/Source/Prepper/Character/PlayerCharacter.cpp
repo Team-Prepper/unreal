@@ -180,9 +180,9 @@ void APlayerCharacter::PlayFireMontage(bool bAiming)
 		if(AnimInstance && MeleeWeaponMontage)
 		{
 			AnimInstance->Montage_Play(MeleeWeaponMontage);
-			//FName SectionName;
-			//SectionName = FName("Attack1");
-			//AnimInstance->Montage_JumpToSection(SectionName);
+			FName SectionName;
+			SectionName = FName("Attack1");
+			AnimInstance->Montage_JumpToSection(SectionName);
 		}
 	}
 	

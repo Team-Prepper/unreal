@@ -68,7 +68,7 @@ public:
 
 	virtual void OnRep_Owner() override;
 
-	virtual void Fire(const FVector& HitTarget);
+	virtual void Fire(const FVector& HitTarget) override;
 	
 protected:
 	float TargetDistance;

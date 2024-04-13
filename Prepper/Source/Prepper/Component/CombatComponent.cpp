@@ -60,6 +60,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if(Character && Character->IsLocallyControlled())
 	{
+		// 총구의 방향을 내 화면의 방향과 일치 시키기 위해서 틱에서 처리 
 		FHitResult HitResult;
         TraceUnderCrosshair(HitResult);
 		if(HitResult.bBlockingHit)
@@ -262,18 +263,21 @@ void UCombatComponent::FireMeleeWeapon()
 	if(EquippedMeleeWeapon)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("MELEE WEAPON ATTACK"));
-		Character->PlayFireMontage(false);
-		// TODO
+		LocalFire(HitTarget);
+		ServerFire(HitTarget);
 	}
 }
 
 void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (EquippedRangeWeapon == nullptr) return;
-	if (Character && CombatState == ECombatState::ECS_Unoccupied)
+	if (EquippedWeapon == nullptr) return;
+	if(EquippedWeapon)
 	{
-		Character->PlayFireMontage(bAiming);
-		EquippedRangeWeapon->Fire(TraceHitTarget);
+		if (Character && (CombatState == ECombatState::ECS_Unoccupied))
+        {
+        	Character->PlayFireMontage(bAiming);
+        	//EquippedWeapon->Fire(TraceHitTarget);
+        }
 	}
 }
 
@@ -433,13 +437,17 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	}
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("RightHandSocket"));
+	SetWeaponType();
+	const USkeletalMeshSocket* HandSocket;
+	
+	HandSocket = Character->GetMesh()->GetSocketByName(
+		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeapon ? FName("MeleeWeaponSocket") : FName("RightHandSocket"));
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	}
 	EquippedWeapon->SetOwner(Character);
-	SetWeaponType();
+	
 	if(EquippedRangeWeapon)
 	{
 		EquippedRangeWeapon->SetHUDAmmo();
@@ -534,13 +542,9 @@ void UCombatComponent::FinishReloading()
 
 void UCombatComponent::SetWeaponCollisionEnabled(ECollisionEnabled::Type CollisionEnable)
 {
-	if(Character && Character->IsWeaponEquipped() && Character->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MeleeWeapon)
+	if(EquippedMeleeWeapon && EquippedMeleeWeapon->GetWeaponBoxComponent())
 	{
-		AMeleeWeapon* CurMeleeWeapon = Cast<AMeleeWeapon>(Character->GetEquippedWeapon());
-		if(CurMeleeWeapon && CurMeleeWeapon->GetWeaponBoxComponent())
-		{
-			CurMeleeWeapon->GetWeaponBoxComponent()->SetCollisionEnabled(CollisionEnable);
-		}
+		EquippedMeleeWeapon->GetWeaponBoxComponent()->SetCollisionEnabled(CollisionEnable);
 	}
 }
 

@@ -94,8 +94,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 				RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaSeconds, 30.f);
 			}
 		}
-		
-		
 	}
 
 }

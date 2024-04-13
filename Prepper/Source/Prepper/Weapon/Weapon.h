@@ -32,7 +32,7 @@ public:
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
 
-	
+	virtual void Fire(const FVector& HitTarget) PURE_VIRTUAL();
 protected:
 	virtual void BeginPlay() override;
 
