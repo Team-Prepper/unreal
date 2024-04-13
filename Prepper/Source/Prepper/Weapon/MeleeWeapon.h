@@ -13,7 +13,7 @@ class PREPPER_API AMeleeWeapon : public AWeapon
 
 public:
 	AMeleeWeapon();
-	//virtual void Fire(const FVector& HitTarget) override;
+	virtual void Fire(const FVector& HitTarget) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,6 +47,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* TracerEnd;
 
+	UFUNCTION()
+	void DamageTarget(FHitResult& HitTarget);
+	
 public:
 	FORCEINLINE UBoxComponent* GetWeaponBoxComponent() const { return WeaponTracer; }
 	

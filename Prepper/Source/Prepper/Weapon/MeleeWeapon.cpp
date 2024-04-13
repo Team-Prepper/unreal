@@ -27,9 +27,10 @@ void AMeleeWeapon::BeginPlay()
 	WeaponTracer->OnComponentBeginOverlap.AddDynamic(this,&AMeleeWeapon::AMeleeWeapon::OnBoxOverlap);
 }
 
-/*
+
 void AMeleeWeapon::Fire(const FVector& HitTarget)
 {
+	/*
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();
@@ -63,8 +64,11 @@ void AMeleeWeapon::Fire(const FVector& HitTarget)
 		HitSound,
 		FireHit.ImpactPoint);
 	}
+	*/
 }
-*/
+
+
+
 
 void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -90,5 +94,40 @@ void AMeleeWeapon::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 		true
 	);
 
+	DamageTarget(BoxHit);
+}
+
+void AMeleeWeapon::DamageTarget(FHitResult& HitTarget)
+{
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn == nullptr) return;
+	AController* InstigatorController = OwnerPawn->GetController();
 	
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(HitTarget.GetActor());
+	if (PlayerCharacter && HasAuthority() && InstigatorController)
+	{
+		UGameplayStatics::ApplyDamage(
+			PlayerCharacter,
+			Damage,
+			InstigatorController,
+			this,
+			UDamageType::StaticClass()
+		);
+	}
+	if(ImpactParticles)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			ImpactParticles,
+			HitTarget.ImpactPoint,
+			HitTarget.ImpactNormal.Rotation()
+		);
+	}
+	if(HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+		this,
+		HitSound,
+		HitTarget.ImpactPoint);
+	}
 }

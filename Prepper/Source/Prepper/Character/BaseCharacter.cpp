@@ -49,7 +49,7 @@ void ABaseCharacter::PlayHitReactMontage()
 	if(AnimInstance && HitReactMontage)
 	{
 		AnimInstance->Montage_Play(HitReactMontage);
-		FName SectionName("FromFront");
+		FName SectionName("HitFront");
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }

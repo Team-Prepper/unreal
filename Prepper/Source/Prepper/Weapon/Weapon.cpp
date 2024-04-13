@@ -75,26 +75,26 @@ void AWeapon::SetWeaponState(EWeaponState State)
 	
 	switch (WeaponState)
 	{
-	case EWeaponState::EWS_Equipped:
-		ShowPickUpWidget(false);
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponMesh->SetSimulatePhysics(false);
-		WeaponMesh->SetEnableGravity(false);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		EnableCustomDepth(false);
-		break;
-	case EWeaponState::EWS_Dropped:
-		if(HasAuthority())
-		{
-			AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		}
-		WeaponMesh->SetSimulatePhysics(true);
-		WeaponMesh->SetEnableGravity(true);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
-		WeaponMesh->MarkRenderStateDirty();
-		EnableCustomDepth(true);
-		break;
+		case EWeaponState::EWS_Equipped:
+			ShowPickUpWidget(false);
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			WeaponMesh->SetSimulatePhysics(false);
+			WeaponMesh->SetEnableGravity(false);
+			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			EnableCustomDepth(false);
+			break;
+		case EWeaponState::EWS_Dropped:
+			if(HasAuthority())
+			{
+				AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			}
+			WeaponMesh->SetSimulatePhysics(true);
+			WeaponMesh->SetEnableGravity(true);
+			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+			WeaponMesh->MarkRenderStateDirty();
+			EnableCustomDepth(true);
+			break;
 	}
 }
 

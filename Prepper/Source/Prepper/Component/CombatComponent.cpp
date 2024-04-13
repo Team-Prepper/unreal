@@ -276,7 +276,7 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 		if (Character && (CombatState == ECombatState::ECS_Unoccupied))
         {
         	Character->PlayFireMontage(bAiming);
-        	//EquippedWeapon->Fire(TraceHitTarget);
+        	EquippedWeapon->Fire(TraceHitTarget);
         }
 	}
 }
