@@ -54,13 +54,12 @@ void AMeleeWeapon::FindActorsWithinRadius()
 		SphereCollisionShape
 	);
 	
-	UE_LOG(LogTemp, Warning, TEXT("HIT NUM : %d"),HitResults.Num());
 	for (const FHitResult& Hit : HitResults)
 	{
 		DamageTarget(Hit);
-		UE_LOG(LogTemp, Warning, TEXT("HIT impact : %f, %f, %f"),Hit.ImpactPoint.X,Hit.ImpactPoint.Y,Hit.ImpactPoint.Z);
+		DrawDebugSphere(World, Hit.GetActor()->GetActorLocation(), 16.f, 12, FColor::Purple, false, 5.0f);
 	}
-	DrawDebugSphere(World, StartLocation, 50, 24, FColor::Green, false, 5.0f);
+	DrawDebugSphere(World, StartLocation, 50, 24, FColor::Emerald, false, 5.0f);
 }
 
 void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
@@ -80,13 +79,13 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 			UDamageType::StaticClass()
 		);
 	}
-	DrawDebugSphere(GetWorld(), HitTarget.ImpactPoint, 16.f, 12, FColor::Purple, true);
+	//DrawDebugSphere(GetWorld(), HitTarget.ImpactPoint, 16.f, 12, FColor::Purple, false, 5.0f);
 	if(ImpactParticles)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			GetWorld(),
 			ImpactParticles,
-			HitTarget.ImpactPoint,
+			HitTarget.GetActor()->GetActorLocation(),
 			HitTarget.ImpactNormal.Rotation()
 		);
 	}
