@@ -8,16 +8,6 @@ AMeleeWeapon::AMeleeWeapon()
 {
 	MeleeWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
 	MeleeWeaponMesh->SetupAttachment(RootComponent);
-	
-	WeaponTracer = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponTracer"));
-	WeaponTracer->SetupAttachment(MeleeWeaponMesh);
-	WeaponTracer->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponTracer->SetCollisionResponseToAllChannels(ECR_Overlap);
-
-	TracerStart = CreateDefaultSubobject<USceneComponent>(TEXT("TracerStart"));
-	TracerStart-> SetupAttachment(MeleeWeaponMesh);
-	TracerEnd   = CreateDefaultSubobject<USceneComponent>(TEXT("TracerEnd"));
-	TracerEnd  -> SetupAttachment(MeleeWeaponMesh);
 }
 
 void AMeleeWeapon::BeginPlay()
