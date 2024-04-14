@@ -39,6 +39,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	UMeshComponent* WeaponMesh;
 
+	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	UStaticMeshComponent* StaticWeaponMesh;
+
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	class UAnimationAsset* FireAnimation;
 	

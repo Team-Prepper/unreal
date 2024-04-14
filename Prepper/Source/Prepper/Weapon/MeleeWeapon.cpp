@@ -1,19 +1,7 @@
 #include "MeleeWeapon.h"
 #include "NiagaraFunctionLibrary.h"
-#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
-
-AMeleeWeapon::AMeleeWeapon()
-{
-	MeleeWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
-	MeleeWeaponMesh->SetupAttachment(RootComponent);
-}
-
-void AMeleeWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-}
 
 
 void AMeleeWeapon::Fire(const FVector& HitTarget)
