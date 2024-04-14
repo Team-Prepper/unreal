@@ -619,16 +619,12 @@ void APlayerCharacter::SetState(const FString& state)
 	{
 		beforeSeat = true;
 		SetActorEnableCollision(false);
-		GetMesh()->SetSimulatePhysics(false);
-		GetMesh()->SetEnableGravity(false);
 		return;
 	}
 	if (beforeSeat)
 	{
 		beforeSeat = false;
 		SetActorEnableCollision(true);
-		GetMesh()->SetSimulatePhysics(true);
-		GetMesh()->SetEnableGravity(true);
 	}
 	if (state.Compare("Aim") == 0)
 	{
