@@ -49,7 +49,7 @@ private:
 	/** Cast pointer to the Chaos Vehicle movement component */
 	TObjectPtr<UChaosWheeledVehicleMovementComponent> ChaosVehicleMovement;
 
-	TObjectPtr<APawn> Driver;
+	TObjectPtr<APlayerCharacter> Driver;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	class USphereComponent* AreaSphere;
@@ -76,8 +76,6 @@ public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
 
-	UFUNCTION(Server, Reliable)
-	void ServerTakeCar(APlayerCharacter* Target);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastTakeCar(APlayerCharacter* Target);
 	
