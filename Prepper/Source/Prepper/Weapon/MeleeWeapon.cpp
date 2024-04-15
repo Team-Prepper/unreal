@@ -19,8 +19,8 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	}
 	
 	TArray<FHitResult> HitResults;
-	FVector StartLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100;
-	FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(50);
+	FVector StartLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * AttackReach;
+	FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(AttackRange);
 	FCollisionObjectQueryParams ObjectQueryParams = FCollisionObjectQueryParams(ECollisionChannel::ECC_Pawn);
 
 	GetWorld()->SweepMultiByObjectType(
@@ -37,7 +37,7 @@ void AMeleeWeapon::FindActorsWithinRadius()
 		DamageTarget(Hit);
 		DrawDebugSphere(World, Hit.GetActor()->GetActorLocation(), 16.f, 12, FColor::Purple, false, 5.0f);
 	}
-	DrawDebugSphere(World, StartLocation, 50, 24, FColor::Emerald, false, 5.0f);
+	DrawDebugSphere(World, StartLocation, AttackRange, 24, FColor::Emerald, false, 5.0f);
 }
 
 void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)

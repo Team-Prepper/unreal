@@ -22,6 +22,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	USoundCue* HitSound;
 
+	UPROPERTY(EditAnywhere)
+	float AttackRange = 50.f;
+
+	UPROPERTY(EditAnywhere)
+	float AttackReach = 100.f;
+
 private:
 	UFUNCTION()
 	void DamageTarget(const FHitResult& HitTarget);
