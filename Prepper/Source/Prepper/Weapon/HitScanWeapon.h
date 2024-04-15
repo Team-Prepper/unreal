@@ -19,7 +19,7 @@ public:
 	virtual void Fire(const FVector& HitTarget) override;
 
 protected:
-	void WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit);
+	bool WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit);
 
     UPROPERTY(EditAnywhere)
     UNiagaraSystem* ImpactParticles;

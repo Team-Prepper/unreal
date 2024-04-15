@@ -21,8 +21,8 @@ AWeapon::AWeapon()
 	StaticWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
 	StaticWeaponMesh->SetupAttachment(RootComponent);
 
-	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
-	StaticWeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
+	StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	WeaponMesh->MarkRenderStateDirty();
 	StaticWeaponMesh->MarkRenderStateDirty();
 	EnableCustomDepth(true);
@@ -39,6 +39,9 @@ AWeapon::AWeapon()
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	CustomDepthColor = CUSTOM_DEPTH_MINT;
+	
 	if(HasAuthority())
 	{
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
@@ -103,12 +106,12 @@ void AWeapon::SetWeaponState(EWeaponState State)
 			WeaponMesh->SetSimulatePhysics(true);
 			WeaponMesh->SetEnableGravity(true);
 			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+			WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 			WeaponMesh->MarkRenderStateDirty();
 			StaticWeaponMesh->SetSimulatePhysics(true);
 			StaticWeaponMesh->SetEnableGravity(true);
 			StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			StaticWeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+			StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 			StaticWeaponMesh->MarkRenderStateDirty();
 			EnableCustomDepth(true);
 			break;
@@ -134,12 +137,12 @@ void AWeapon::OnRep_WeaponState()
 		WeaponMesh->SetSimulatePhysics(true);
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+		WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 		WeaponMesh->MarkRenderStateDirty();
 		StaticWeaponMesh->SetSimulatePhysics(true);
 		StaticWeaponMesh->SetEnableGravity(true);
 		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		StaticWeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+		StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 		StaticWeaponMesh->MarkRenderStateDirty();
 		EnableCustomDepth(true);
 		break;

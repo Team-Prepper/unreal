@@ -23,7 +23,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 		FVector Start = SocketTransform.GetLocation();
 
 		FHitResult FireHit;
-		WeaponTraceHit(Start, HitTarget, FireHit);
+		bool IsHit = WeaponTraceHit(Start, HitTarget, FireHit);
 		
 		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(FireHit.GetActor());
 		if (PlayerCharacter && HasAuthority() && InstigatorController)
@@ -36,7 +36,7 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 				UDamageType::StaticClass()
 			);
 		}
-		if(ImpactParticles)
+		if(ImpactParticles && IsHit)
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 				GetWorld(),
@@ -75,8 +75,9 @@ void AHitScanWeapon::Fire(const FVector& HitTarget)
 	}
 }
 
-void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit)
+bool AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit)
 {
+	bool IsBlock = false;
 	UWorld* World = GetWorld();
 	if (World)
 	{
@@ -92,6 +93,7 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& Hi
 		if (OutHit.bBlockingHit)
 		{
 			BeamEnd = OutHit.ImpactPoint;
+			IsBlock = true;
 		}
 		DrawDebugSphere(GetWorld(), BeamEnd, 16.f, 12, FColor::Green, true);
 		if (BeamParticles)
@@ -109,4 +111,5 @@ void AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& Hi
 			}
 		}
 	}
+	return IsBlock;
 }
