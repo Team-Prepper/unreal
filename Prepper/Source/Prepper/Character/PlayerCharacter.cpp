@@ -334,6 +334,8 @@ void APlayerCharacter::MulticastElim()
 	}
 }
 
+
+
 void APlayerCharacter::ElimTimerFinished()
 {
 	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
@@ -615,6 +617,12 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 
 void APlayerCharacter::SetState(const FString& state)
 {
+	LocalSetState(state);
+	ServerSetState(state);
+}
+
+void APlayerCharacter::LocalSetState(const FString& state)
+{
 	if (state.Compare("Seat") == 0)
 	{
 		beforeSeat = true;
@@ -642,7 +650,13 @@ void APlayerCharacter::SetState(const FString& state)
 
 void APlayerCharacter::ServerSetState_Implementation(const FString& state)
 {
-	SetState(state);
+	MultiSetState(state);
+}
+
+void APlayerCharacter::MultiSetState_Implementation(const FString& state)
+{
+	if(IsLocallyControlled()) return;
+	LocalSetState(state);
 }
 
 void APlayerCharacter::Crouch(bool bClientSimulation)

@@ -14,9 +14,6 @@ class UIInteractable : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class PREPPER_API IIInteractable
 {
 	GENERATED_BODY()

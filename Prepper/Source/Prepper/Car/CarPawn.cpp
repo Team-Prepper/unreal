@@ -163,7 +163,6 @@ void ACarPawn::Interaction(APlayerCharacter* Target)
 {
 	LocalInteraction(Target);
 	ServerInteraction(Target);
-	//MulticastTakeCar(Target);
 }
 
 void ACarPawn::LocalInteraction(APlayerCharacter* Target)

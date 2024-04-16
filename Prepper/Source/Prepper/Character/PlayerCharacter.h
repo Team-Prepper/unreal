@@ -36,6 +36,15 @@ public:
 	void ShowSniperScopeWidget(bool bShowScope);
 	
 	void SetState(const FString& state);
+
+	UFUNCTION()
+	void LocalSetState(const FString& state);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSetState(const FString& state);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MultiSetState(const FString& state);
 	
 private:
 	void ElimTimerFinished();
@@ -84,8 +93,7 @@ private:
 	void TurnInPlace(float DeltaTime);
 
 	bool beforeSeat;
-	UFUNCTION(Server, Reliable)
-	void ServerSetState(const FString& state);
+	
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed(AWeapon* Weapon);
 	
