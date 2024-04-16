@@ -86,15 +86,11 @@ void ACarPawn::SetupPlayerInputComponent(class UInputComponent* PlayerInputCompo
 void ACarPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ACarPawn::OnSphereOverlap);
+	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ACarPawn::OnSphereEndOverlap);
 	
-	if(HasAuthority())
-	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ACarPawn::OnSphereOverlap);
-		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ACarPawn::OnSphereEndOverlap);
-	}
-
 	// 게임 시작시 플레이어 UI 동기화(초기화)
 	
 }
@@ -165,6 +161,13 @@ void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
+	LocalInteraction(Target);
+	ServerInteraction(Target);
+	//MulticastTakeCar(Target);
+}
+
+void ACarPawn::LocalInteraction(APlayerCharacter* Target)
+{
 	Driver = Target;
 	Target->Controller->Possess(this);
 	const USkeletalMeshSocket* SeatSocket = GetMesh()->GetSocketByName(FName("SeatSocket"));
@@ -173,7 +176,26 @@ void ACarPawn::Interaction(APlayerCharacter* Target)
 		SeatSocket->AttachActor(Target,GetMesh());
 	}
 	Target->SetState("Seat");
-	MulticastTakeCar(Target);
+}
+
+void ACarPawn::ServerInteraction_Implementation(APlayerCharacter* Target)
+{
+	if(HasAuthority())
+	{
+		MulticastInteraction(Target);
+	}
+}
+
+void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
+{
+	if(IsLocallyControlled()) return;
+	Driver = Target;
+	const USkeletalMeshSocket* SeatSocket = GetMesh()->GetSocketByName(FName("SeatSocket"));
+	if (SeatSocket)
+	{
+		SeatSocket->AttachActor(Target,GetMesh());
+	}
+	Target->SetState("Seat");
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)

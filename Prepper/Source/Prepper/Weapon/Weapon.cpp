@@ -41,6 +41,12 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 	
 	CustomDepthColor = CUSTOM_DEPTH_MINT;
+
+	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
+	StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
+	WeaponMesh->MarkRenderStateDirty();
+	StaticWeaponMesh->MarkRenderStateDirty();
+	EnableCustomDepth(true);
 	
 	if(HasAuthority())
 	{

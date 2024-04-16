@@ -74,6 +74,14 @@ public:
 	virtual void MouseRightReleased() override;
 
 	virtual void Interaction(APlayerCharacter* Target) override;
+
+	UFUNCTION()
+	void LocalInteraction(APlayerCharacter * Target);
+	UFUNCTION(Server, Reliable)
+	void ServerInteraction(APlayerCharacter * Target);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastInteraction(APlayerCharacter * Target);
+	
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
 
 	UFUNCTION(NetMulticast, Reliable)
