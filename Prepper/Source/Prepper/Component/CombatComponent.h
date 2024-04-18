@@ -31,9 +31,7 @@ protected:
 
 	UFUNCTION(Server, Reliable)
 	void ServerSetAiming(bool bIsAiming);
-
-	UFUNCTION()
-	void OnRep_EquippedWeapon();
+	
 	void Fire();
 	void FireProjectileWeapon();
 	void FireHitScanWeapon();
@@ -68,7 +66,6 @@ protected:
 	
 	bool bLocallyReload = false;
 	
-private:
 	UPROPERTY()
 	class APlayerCharacter* Character;
 	UPROPERTY()
@@ -78,6 +75,9 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	class AWeapon* EquippedWeapon;
+
+	UFUNCTION()
+	void OnRep_EquippedWeapon();
 
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
