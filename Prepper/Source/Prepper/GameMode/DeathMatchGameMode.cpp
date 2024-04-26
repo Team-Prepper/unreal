@@ -31,6 +31,8 @@ void ADeathMatchGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
 
+	if(!GetWorld()->GetPlayerControllerIterator()) return;
+	
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
 		APrepperPlayerController* PrepperController = Cast<APrepperPlayerController>(*It);

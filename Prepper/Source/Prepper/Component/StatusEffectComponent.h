@@ -31,20 +31,32 @@ private:
 	
 
 public:
-	TMap<EStatusEffect, int32> StateEffectMap;
-
+	TMap<EStatusEffect, float> StateEffectMap;
+	FStatusEffect StatusFlags; // 현재 상태 이상 플래그
+	
 	void InitStateEffectMap();
 
-	UPROPERTY(EditAnywhere)
-	int32 HungryValue = 100;
-	UPROPERTY(EditAnywhere)
-	int32 ThirstyValue = 100;
-	
-	UFUNCTION()
-	EStatusEffect SetStatusEffect(EStatusEffect NewStatusEffect);
+	struct StatusEffectThreshold
+	{
+		EStatusEffect Effect;
+		float Threshold;
+		FString EffectName;
+	};
 
+	// 상태 효과와 임계값 배열
+	const StatusEffectThreshold EffectThresholds[2] = {
+		{ EStatusEffect::ESE_HUNGRY, 30.0f, "Hungry" }, 
+		{ EStatusEffect::ESE_THIRSTY, 20.0f, "Thirsty" }, 
+	};
+	
+	void UpdateStatusEffect();
+	
 	FTimerHandle StatusTimerHandle;
 	void StatusTimerStart();
 	void StatusTimerFinish();
-		
+
+	/*
+	UFUNCTION()
+	void ApplyStatusEffect();
+	*/
 };

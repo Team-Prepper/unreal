@@ -39,6 +39,7 @@ void UCombatComponent::BeginPlay()
 
 	if(Character)
 	{
+		UE_LOG(LogTemp,Warning,TEXT("CombatComponentReady"));
 		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 		if(Character->GetFollowCamera())

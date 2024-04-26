@@ -8,7 +8,7 @@
 
 UStatusEffectComponent::UStatusEffectComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 }
 
@@ -16,25 +16,26 @@ void UStatusEffectComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(Character && Character->IsLocallyControlled())
+	if(Character)
 	{
+		UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
+		StatusFlags.ClearAllEffects();
 		InitStateEffectMap();
+		StatusTimerStart();
 	}
 	
 }
 
 void UStatusEffectComponent::InitStateEffectMap()
 {
-	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, HungryValue);
-	StateEffectMap.Emplace(EStatusEffect::ESE_THIRSTY, ThirstyValue);
+	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, 100);
+	StateEffectMap.Emplace(EStatusEffect::ESE_THIRSTY, 100);
 }
-
 
 
 void UStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
 }
 
 void UStatusEffectComponent::StatusTimerStart()
@@ -45,7 +46,7 @@ void UStatusEffectComponent::StatusTimerStart()
 			StatusTimerHandle,
 			this,
 			&UStatusEffectComponent::StatusTimerFinish,
-			5.0f,
+			1.0f,
 			true);
 	}
 }
@@ -54,7 +55,36 @@ void UStatusEffectComponent::StatusTimerFinish()
 {
 	if(Character)
 	{
-		StateEffectMap[EStatusEffect::ESE_HUNGRY] -= 1;
-		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= 1;
+		StateEffectMap[EStatusEffect::ESE_HUNGRY] -= 1.f;
+		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= 1.f;
+		UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Hungry : %f"),StateEffectMap[EStatusEffect::ESE_HUNGRY]);
+		UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Thirsty : %f"),StateEffectMap[EStatusEffect::ESE_THIRSTY]);
+		UpdateStatusEffect();
+	}
+}
+
+void UStatusEffectComponent::UpdateStatusEffect()
+{
+	for (const auto& EffectThreshold : EffectThresholds)
+	{
+		const bool HasEffect = StatusFlags.HasEffect(EffectThreshold.Effect);
+		const float EffectValue = StateEffectMap[EffectThreshold.Effect];
+
+		if (!HasEffect && EffectValue <= EffectThreshold.Threshold)
+		{
+			StatusFlags.AddEffect(EffectThreshold.Effect);
+		}
+		else if (HasEffect && EffectValue > EffectThreshold.Threshold)
+		{
+			StatusFlags.RemoveEffect(EffectThreshold.Effect);
+		}
+	}
+
+	for (const auto& EffectThreshold : EffectThresholds)
+	{
+		if (StatusFlags.HasEffect(EffectThreshold.Effect))
+		{
+			UE_LOG(LogTemp, Log, TEXT("Current Status Effect: %s"), *EffectThreshold.EffectName);
+		}
 	}
 }

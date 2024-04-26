@@ -130,6 +130,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UCombatComponent* Combat;
+
+	/* 상태 이상 */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	class UStatusEffectComponent* StatusEffect;
 	
 	/* For Animation */
 	UPROPERTY(EditAnywhere, Category = Combat)
