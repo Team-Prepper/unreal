@@ -83,9 +83,7 @@ public:
 	void MulticastInteraction(APlayerCharacter * Target);
 	
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastTakeCar(APlayerCharacter* Target);
+	
 	
 	UFUNCTION()
 	void OnSphereOverlap(
@@ -146,6 +144,9 @@ protected:
 	/** Called when the brake lights are turned on or off */
 	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
 	void BrakeLights(bool bBraking);
+
+	void GetChassis();
+	
 
 public:
 	/** Returns the front spring arm subobject */

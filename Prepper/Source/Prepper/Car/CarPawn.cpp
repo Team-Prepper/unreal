@@ -141,7 +141,7 @@ void ACarPawn::EPressed()
 	Controller->Possess(Driver);
 	Driver->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Driver->SetActorLocation(GetActorLocation() + FVector(0, 0, 200));
-	Driver->SetState("Walk");
+	Driver->SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
 }
 void ACarPawn::RPressed() {}
 
@@ -169,12 +169,7 @@ void ACarPawn::LocalInteraction(APlayerCharacter* Target)
 {
 	Driver = Target;
 	Target->Controller->Possess(this);
-	const USkeletalMeshSocket* SeatSocket = GetMesh()->GetSocketByName(FName("SeatSocket"));
-	if (SeatSocket)
-	{
-		SeatSocket->AttachActor(Target,GetMesh());
-	}
-	Target->SetState("Seat");
+	Target->SetPlayerMovementState(EPlayerMovementState::EPMS_Seat);
 }
 
 void ACarPawn::ServerInteraction_Implementation(APlayerCharacter* Target)
@@ -189,22 +184,13 @@ void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
 {
 	if(IsLocallyControlled()) return;
 	Driver = Target;
-	const USkeletalMeshSocket* SeatSocket = GetMesh()->GetSocketByName(FName("SeatSocket"));
-	if (SeatSocket)
-	{
-		SeatSocket->AttachActor(Target,GetMesh());
-	}
-	Target->SetState("Seat");
+	Driver->SetActorEnableCollision(false);
+	
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)
 {
 	
-}
-
-void ACarPawn::MulticastTakeCar_Implementation(APlayerCharacter* Target)
-{
-	if (!IsLocallyControlled()) return;
 }
 
 void ACarPawn::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -275,8 +261,9 @@ void ACarPawn::ResetVehicle(const FInputActionValue& Value)
 
 	GetMesh()->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	GetMovementComponent()->ResetMoveState();
 
-	UE_LOG(LogTemplateVehicle, Error, TEXT("Reset Vehicle"));
+	UE_LOG(LogTemp, Error, TEXT("Reset Vehicle"));
 }
 
 #undef LOCTEXT_NAMESPACE

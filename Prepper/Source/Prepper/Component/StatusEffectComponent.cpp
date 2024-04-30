@@ -57,8 +57,8 @@ void UStatusEffectComponent::StatusTimerFinish()
 	{
 		StateEffectMap[EStatusEffect::ESE_HUNGRY] -= 1.f;
 		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= 1.f;
-		UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Hungry : %f"),StateEffectMap[EStatusEffect::ESE_HUNGRY]);
-		UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Thirsty : %f"),StateEffectMap[EStatusEffect::ESE_THIRSTY]);
+		//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Hungry : %f"),StateEffectMap[EStatusEffect::ESE_HUNGRY]);
+		//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Thirsty : %f"),StateEffectMap[EStatusEffect::ESE_THIRSTY]);
 		UpdateStatusEffect();
 	}
 }
@@ -84,7 +84,7 @@ void UStatusEffectComponent::UpdateStatusEffect()
 	{
 		if (StatusFlags.HasEffect(EffectThreshold.Effect))
 		{
-			UE_LOG(LogTemp, Log, TEXT("Current Status Effect: %s"), *EffectThreshold.EffectName);
+			//UE_LOG(LogTemp, Log, TEXT("Current Status Effect: %s"), *EffectThreshold.EffectName);
 		}
 	}
 }

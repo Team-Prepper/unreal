@@ -19,8 +19,8 @@ protected:
 	virtual void BeginPlay() override;
 
 	/* 기본 변수 */
-	float WalkSpeed;
-	float SprintSpeed;
+	float WalkSpeed = 600;
+	float SprintSpeed = 900;
 
 	UPROPERTY()
 	class APrepperPlayerController* PrepperPlayerController;

@@ -65,7 +65,7 @@ APlayerCharacter::APlayerCharacter()
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 
-	beforeSeat = false;
+	bBeforeSeat = false;
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -74,6 +74,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
 	DOREPLIFETIME(APlayerCharacter, bDisableGamePlay);
+	DOREPLIFETIME(APlayerCharacter, PlayerMovementState);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -145,15 +146,13 @@ void APlayerCharacter::RotateInPlace(float DeltaTime)
 void APlayerCharacter::ShiftPressed()
 {
 	if(bDisableGamePlay) return;
-	SetState("Sprint");
-	ServerSetState("Sprint"); // server
+	SetPlayerMovementState(EPlayerMovementState::EPMS_Sprint);
 }
 
 void APlayerCharacter::ShiftReleased()
 {
 	if(bDisableGamePlay) return;
-	SetState("Walk");
-	ServerSetState("Walk"); // server
+	SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
 }
 
 void APlayerCharacter::PlayFireMontage(bool bAiming)
@@ -655,49 +654,47 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 	}
 }
 
-void APlayerCharacter::SetState(const FString& state)
+void APlayerCharacter::OnRep_PlayerMovementState()
 {
-	LocalSetState(state);
-	ServerSetState(state);
+	ConvertPlayerMovementState();
 }
 
-void APlayerCharacter::LocalSetState(const FString& state)
+
+void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
 {
-	if (state.Compare("Seat") == 0)
+	PlayerMovementState = State;
+	ConvertPlayerMovementState();
+}
+
+void APlayerCharacter::ConvertPlayerMovementState()
+{
+	if(bBeforeSeat)
 	{
-		beforeSeat = true;
-		SetActorEnableCollision(false);
-		return;
-	}
-	if (beforeSeat)
-	{
-		beforeSeat = false;
+		bBeforeSeat = false;
 		SetActorEnableCollision(true);
-	}
-	if (state.Compare("Aim") == 0)
-	{
-		// 속도 바꾸기 추가해야 함	
-		return;	
-	}
-	if (state.Compare("Sprint") == 0)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
-		return;
+		SetActorHiddenInGame(false);
 	}
 	
-	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+	switch (PlayerMovementState)
+	{
+	case EPlayerMovementState::EPMS_Seat:
+		bBeforeSeat = true;
+		SetActorEnableCollision(false);
+		SetActorHiddenInGame(true);
+		break;
+	case EPlayerMovementState::EPMS_Aim:
+		break;
+	case EPlayerMovementState::EPMS_Sprint:
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		break;
+	case EPlayerMovementState::EPMS_Idle:
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		break;
+	default:
+		break;
+	}
 }
 
-void APlayerCharacter::ServerSetState_Implementation(const FString& state)
-{
-	MultiSetState(state);
-}
-
-void APlayerCharacter::MultiSetState_Implementation(const FString& state)
-{
-	if(IsLocallyControlled()) return;
-	LocalSetState(state);
-}
 
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
@@ -719,44 +716,12 @@ void APlayerCharacter::HideCamIfCharacterClose()
 	if (!IsLocallyControlled()) return;
 	if((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CamThreshold)
 	{
-		GetMesh()->SetVisibility(false);
-		TArray<USceneComponent*> AttachedComponents;
-		GetMesh()->GetChildrenComponents(true,  AttachedComponents);
-
-		// Loop through all found Static Mesh components
-		for (USceneComponent* SceneComponent : AttachedComponents)
-		{
-			UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
-			if(SMComp)
-			{
-				SMComp->SetVisibility(false);
-			}
-		}
-		/*
-		 * UTF-8
-		 * 벽에 가까이가서 자신 캐릭터가 시야를 가릴 때
-		 * 장비한 무기도 같이 가리기 위한 코드
-		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
-		{
-			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
-		}
-		*/
+		HidePlayerMesh(true);
+		
 	}
 	else
 	{
-		GetMesh()->SetVisibility(true);
-		TArray<USceneComponent*> AttachedComponents;
-		GetMesh()->GetChildrenComponents(true,  AttachedComponents);
-
-		// Loop through all found Static Mesh components
-		for (USceneComponent* SceneComponent : AttachedComponents)
-		{
-			UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
-			if(SMComp)
-			{
-				SMComp->SetVisibility(true);
-			}
-		}
+		HidePlayerMesh(false);
 		/*
 		if(Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
 		{
@@ -822,6 +787,68 @@ void APlayerCharacter::OnRep_OverlappingItem(TScriptInterface<IIInteractable> La
 		LastItem->ShowPickUpWidget(false);
 	}
 	
+}
+
+void APlayerCharacter::HideAllMeshComponent(bool Hide)
+{
+	HidePlayerMesh(Hide);
+	HidePlayerWeapon(Hide);
+}
+
+void APlayerCharacter::HidePlayerMesh(bool Hide)
+{
+	Hide = !Hide;
+	GetMesh()->SetVisibility(Hide);
+	TArray<USceneComponent*> AttachedComponents;
+	GetMesh()->GetChildrenComponents(true,  AttachedComponents);
+
+	// Loop through all found Static Mesh components
+	for (USceneComponent* SceneComponent : AttachedComponents)
+	{
+		UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
+		if(SMComp)
+		{
+			SMComp->SetVisibility(Hide);
+		}
+	}
+}
+
+void APlayerCharacter::HidePlayerWeapon(bool Hide)
+{
+	if(!Combat) return;
+	Hide = !Hide;
+	if(Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh())
+	{
+		Combat->EquippedWeapon->GetWeaponMesh()->SetVisibility(Hide);
+		TArray<USceneComponent*> AttachedComponents;
+		Combat->EquippedWeapon->GetWeaponMesh()->GetChildrenComponents(true,  AttachedComponents);
+
+		// Loop through all found Static Mesh components
+		for (USceneComponent* SceneComponent : AttachedComponents)
+		{
+			UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
+			if(SMComp)
+			{
+				SMComp->SetVisibility(Hide);
+			}
+		}
+	}
+	if(Combat->SecondaryWeapon && Combat->SecondaryWeapon->GetWeaponMesh())
+	{
+		Combat->SecondaryWeapon->GetWeaponMesh()->SetVisibility(Hide);
+		TArray<USceneComponent*> AttachedComponents;
+		Combat->SecondaryWeapon->GetWeaponMesh()->GetChildrenComponents(true,  AttachedComponents);
+
+		// Loop through all found Static Mesh components
+		for (USceneComponent* SceneComponent : AttachedComponents)
+		{
+			UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
+			if(SMComp)
+			{
+				SMComp->SetVisibility(Hide);
+			}
+		}
+	}
 }
 
 bool APlayerCharacter::IsWeaponEquipped()

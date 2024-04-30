@@ -9,9 +9,21 @@
 #include "Prepper/Item/Inventory.h"
 #include "PlayerCharacter.generated.h"
 
+class IIInteractable;
 class UInputAction;
 
 struct FInputActionValue;
+
+UENUM(BlueprintType)
+enum class EPlayerMovementState : uint8
+{
+	EPMS_Seat UMETA(DisplayName = "Seat"),
+	EPMS_Aim UMETA(DisplayName = "Aim"),
+	EPMS_Sprint UMETA(DisplayName = "Sprint"),
+	EPMS_Idle UMETA(DisplayName = "Idle"),
+    
+	EPMS_MAX UMETA(DisplayName = "Default Max")
+};
 
 UCLASS()
 class PREPPER_API APlayerCharacter : public ABaseCharacter, public IInteractWithCrosshairInterface, public IControllable
@@ -38,16 +50,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
 	
-	void SetState(const FString& state);
-
-	UFUNCTION()
-	void LocalSetState(const FString& state);
-
-	UFUNCTION(Server, Reliable)
-	void ServerSetState(const FString& state);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MultiSetState(const FString& state);
+	
 	
 private:
 	void ElimTimerFinished();
@@ -94,8 +97,6 @@ private:
 
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
-
-	bool beforeSeat;
 	
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed(AWeapon* Weapon);
@@ -137,6 +138,11 @@ private:
 	/* 상태 이상 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UStatusEffectComponent* StatusEffect;
+
+	/* 캐릭터 메쉬 숨기기 */
+	void HideAllMeshComponent(bool Hide);
+	void HidePlayerMesh(bool Hide);
+	void HidePlayerWeapon(bool Hide);
 	
 	/* For Animation */
 	UPROPERTY(EditAnywhere, Category = Combat)
@@ -150,6 +156,19 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* SwapMontage;
+
+	/* Player Movement State */
+	bool bBeforeSeat;
+	
+	UPROPERTY(ReplicatedUsing = OnRep_PlayerMovementState)
+	EPlayerMovementState PlayerMovementState;
+public:
+	void SetPlayerMovementState(const EPlayerMovementState State);
+	
+private:
+	void ConvertPlayerMovementState();
+	UFUNCTION()
+	void OnRep_PlayerMovementState();
 	
 	/* For Crouch Cam */
 	UPROPERTY(EditAnywhere, Category = CrouchMovement)
