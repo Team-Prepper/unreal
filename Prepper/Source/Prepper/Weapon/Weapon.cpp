@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Prepper/Prepper.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
@@ -84,17 +85,6 @@ void AWeapon::OnRep_Owner()
 		PlayerOwnerCharacter = nullptr;
 		PlayerOwnerController = nullptr;
 	}
-	/*
-	else
-	{
-		PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
-			Cast<APlayerCharacter>(Owner) : PlayerOwnerCharacter;
-		if (PlayerOwnerCharacter && PlayerOwnerCharacter->GetEquippedWeapon() && PlayerOwnerCharacter->GetEquippedWeapon())
-		{
-			SetHUDAmmo();
-		}
-	}
-	*/
 }
 
 void AWeapon::Dropped()

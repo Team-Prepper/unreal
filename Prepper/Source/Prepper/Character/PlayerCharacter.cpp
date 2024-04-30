@@ -16,6 +16,9 @@
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/Weapon.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Prepper/Item/ItemBackpack.h"
+#include "Sound/SoundCue.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -75,6 +78,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
 	DOREPLIFETIME(APlayerCharacter, bDisableGamePlay);
 	DOREPLIFETIME(APlayerCharacter, PlayerMovementState);
+	DOREPLIFETIME(APlayerCharacter, EquippedBackpack);
 }
 
 void APlayerCharacter::PostInitializeComponents()
@@ -523,6 +527,38 @@ float APlayerCharacter::CalculateSpeed()
 	FVector Velocity = GetVelocity();
 	Velocity.Z = 0.f;
 	return Velocity.Size();
+}
+
+void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
+{
+	if(BackpackToEquip == nullptr) return;
+
+	EquippedBackpack = BackpackToEquip;
+	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
+
+	const USkeletalMeshSocket* BackpackSocket = GetMesh()->GetSocketByName(FName("BackpackSocket"));
+	if(BackpackSocket)
+	{
+		BackpackSocket->AttachActor(EquippedBackpack, GetMesh());
+	}
+
+	if (EquippedBackpack->EquipSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+			this,
+			EquippedBackpack->EquipSound,
+			GetActorLocation()
+		);
+	}
+	
+}
+
+void APlayerCharacter::OnRep_EquippedBackpack()
+{
+	if(EquippedBackpack)
+	{
+		EquipBackpack(EquippedBackpack);
+	}
 }
 
 void APlayerCharacter::AimOffset(float DeltaTime)

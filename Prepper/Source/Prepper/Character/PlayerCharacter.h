@@ -50,7 +50,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
 	
-	
+	void EquipBackpack(class AItemBackpack* BackpackToEquip);
 	
 private:
 	void ElimTimerFinished();
@@ -196,6 +196,12 @@ private:
 	float ProxyYaw;
 	
 	float CalculateSpeed();
+	
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedBackpack)
+	AItemBackpack* EquippedBackpack;
+
+	UFUNCTION()
+	void OnRep_EquippedBackpack();
 
 	Inventory Inven;
 

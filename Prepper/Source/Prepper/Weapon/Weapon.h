@@ -67,8 +67,6 @@ protected:
 
 	UFUNCTION()
 	void OnRep_WeaponState();
-
-	
 	
 	UPROPERTY()
 	class APlayerCharacter* PlayerOwnerCharacter;
