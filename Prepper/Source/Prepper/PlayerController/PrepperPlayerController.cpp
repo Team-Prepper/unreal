@@ -82,6 +82,11 @@ void APrepperPlayerController::Tick(float DeltaTime)
 	
 }
 
+void APrepperPlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
+{
+	HighPingDelegate.Broadcast(bHighPing);
+}
+
 /* Input Binding */
 void APrepperPlayerController::SetupInputComponent()
 {

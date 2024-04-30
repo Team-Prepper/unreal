@@ -395,17 +395,7 @@ void APlayerCharacter::EPressed()
 	{
 		OverlappingItem->Interaction(this);
 	}
-}
-
-void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
-	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->EquipWeapon(Weapon);
-	}
-	else if (Combat->ShouldSwapWeapons())
+	else if (Combat && Combat->ShouldSwapWeapons())
 	{
 		Combat->SwapWeapons();
 	}
@@ -419,6 +409,16 @@ void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 		PlaySwapMontage();
 		Combat->CombatState = ECombatState::ECS_SwappingWeapons;
 		bFinishedSwapping = false;
+	}
+}
+
+void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
+	if(bDisableGamePlay) return;
+	if(Combat)
+	{
+		Combat->EquipWeapon(Weapon);
 	}
 }
 
@@ -642,6 +642,17 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 
 void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 {
+	if (Combat)
+	{
+		if (Weapon)
+		{
+			Combat->EquipWeapon(Weapon);
+		}
+		else if (Combat->ShouldSwapWeapons())
+		{
+			Combat->SwapWeapons();
+		}
+	}
 }
 
 void APlayerCharacter::SetState(const FString& state)

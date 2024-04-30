@@ -84,9 +84,6 @@ private:
 	bool bTransformRightHand;
 
 	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
-	bool bEquippedShoulderFireWeapon;
-
-	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	bool bEquippedMiniGun;
 
 	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))

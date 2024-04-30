@@ -39,6 +39,13 @@ protected:
 	void FireMeleeWeapon();
 	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
 	void ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
+
+	UFUNCTION(BlueprintCallable)
+	void FinishSwap();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishSwapAttachWeapons();
+	
 public:
 	void FireButtonPressed(bool bPressed);
 protected:

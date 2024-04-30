@@ -5,6 +5,8 @@
 #include "Prepper/Character/PlayerCharacter.h"
 #include "PrepperPlayerController.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
+
 class UInputAction;
 
 UCLASS()
@@ -49,6 +51,11 @@ private:
 public:
 	virtual float GetServerTime(); // Synced with server world clock
 	virtual void ReceivedPlayer() override; // Sync with server clock as soon as possible
+
+	FHighPingDelegate HighPingDelegate;
+
+	UFUNCTION(Server, Reliable)
+	void ServerReportPingStatus(bool bHighPing);
 
 protected:
 	UFUNCTION(Server, Reliable)

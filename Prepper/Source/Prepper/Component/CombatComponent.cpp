@@ -507,6 +507,7 @@ void UCombatComponent::EquipSecondaryWeapon(AWeapon* WeaponToEquip)
 	AttachActorToBackpack(WeaponToEquip);
 	PlayEquipWeaponSound(WeaponToEquip);
 	SecondaryWeapon->SetOwner(Character);
+	SecondaryWeapon->EnableCustomDepth(false);
 }
 
 void UCombatComponent::DropEquippedWeapon()
@@ -532,14 +533,30 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
 {
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
-	const USkeletalMeshSocket* BackpackSocket = Character->GetMesh()->GetSocketByName(FName("BackpackSocket"));
-	if (BackpackSocket)
+
+	AWeapon* AttachWeapon = Cast<AWeapon>(ActorToAttach);
+	if(AttachWeapon)
 	{
-		BackpackSocket->AttachActor(ActorToAttach, Character->GetMesh());
+		if(AttachWeapon->GetWeaponType() == EWeaponType::EWT_RocketLauncher)
+		{
+			const USkeletalMeshSocket* RocketLauncherSocket = Character->GetMesh()->GetSocketByName(FName("RocketLauncherSocket"));
+			if (RocketLauncherSocket)
+			{
+				RocketLauncherSocket->AttachActor(ActorToAttach, Character->GetMesh());
+			}
+		}
+		else
+		{
+			const USkeletalMeshSocket* HolsteredWeaponSocket = Character->GetMesh()->GetSocketByName(FName("HolsteredWeaponSocket"));
+			if (HolsteredWeaponSocket)
+			{
+				HolsteredWeaponSocket->AttachActor(ActorToAttach, Character->GetMesh());
+			}
+		}
 	}
+	
 }
 
-//TODO : change weapon 
 void UCombatComponent::SwapWeapons()
 {
 	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr || !Character->HasAuthority()) return;
@@ -548,6 +565,39 @@ void UCombatComponent::SwapWeapons()
 	CombatState = ECombatState::ECS_SwappingWeapons;
 	Character->bFinishedSwapping = false;
 	if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(false);
+
+	
+	FinishSwapAttachWeapons();
+	FinishSwap();
+}
+
+void UCombatComponent::FinishSwap()
+{
+	if (Character)
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
+		Character->bFinishedSwapping = true;
+	}
+}
+
+void UCombatComponent::FinishSwapAttachWeapons()
+{
+	PlayEquipWeaponSound(SecondaryWeapon);
+
+	if (Character == nullptr) return;
+	AWeapon* TempWeapon = EquippedWeapon;
+	EquippedWeapon = SecondaryWeapon;
+	SecondaryWeapon = TempWeapon;
+
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	SetWeaponType();
+	AttachActorToRightHand(EquippedWeapon);
+	EquippedWeapon->SetHUDAmmo();
+	UpdateCarriedAmmo();
+	ReloadEmptyWeapon();
+
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	AttachActorToBackpack(SecondaryWeapon);
 }
 
 void UCombatComponent::UpdateCarriedAmmo()

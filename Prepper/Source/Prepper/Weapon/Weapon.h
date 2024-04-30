@@ -39,6 +39,17 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnWeaponStateSet();
+	virtual void OnEquipped();
+	virtual void OnDropped();
+	virtual void OnEquippedSecondary();
+
+	UFUNCTION()
+	void OnPingTooHigh(bool bPingTooHigh);
+	
+	UPROPERTY(Replicated, EditAnywhere)
+	bool bUseServerSideRewind = false;
+
 	UPROPERTY(EditAnywhere)
 	int32 CustomDepthColor;
 

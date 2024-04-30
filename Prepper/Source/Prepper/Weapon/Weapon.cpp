@@ -84,75 +84,17 @@ void AWeapon::OnRep_Owner()
 		PlayerOwnerCharacter = nullptr;
 		PlayerOwnerController = nullptr;
 	}
-	
-}
-
-void AWeapon::SetWeaponState(EWeaponState State)
-{
-	WeaponState = State;
-	
-	switch (WeaponState)
+	/*
+	else
 	{
-		case EWeaponState::EWS_Equipped:
-			ShowPickUpWidget(false);
-			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			WeaponMesh->SetSimulatePhysics(false);
-			WeaponMesh->SetEnableGravity(false);
-			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			StaticWeaponMesh->SetSimulatePhysics(false);
-			StaticWeaponMesh->SetEnableGravity(false);
-			StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			EnableCustomDepth(false);
-			break;
-		case EWeaponState::EWS_Dropped:
-			if(HasAuthority())
-			{
-				AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-			}
-			WeaponMesh->SetSimulatePhysics(true);
-			WeaponMesh->SetEnableGravity(true);
-			WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
-			WeaponMesh->MarkRenderStateDirty();
-			StaticWeaponMesh->SetSimulatePhysics(true);
-			StaticWeaponMesh->SetEnableGravity(true);
-			StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
-			StaticWeaponMesh->MarkRenderStateDirty();
-			EnableCustomDepth(true);
-			break;
+		PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
+			Cast<APlayerCharacter>(Owner) : PlayerOwnerCharacter;
+		if (PlayerOwnerCharacter && PlayerOwnerCharacter->GetEquippedWeapon() && PlayerOwnerCharacter->GetEquippedWeapon())
+		{
+			SetHUDAmmo();
+		}
 	}
-}
-
-// client
-void AWeapon::OnRep_WeaponState()
-{
-	switch (WeaponState)
-	{
-	case EWeaponState::EWS_Equipped:
-		ShowPickUpWidget(false);
-		WeaponMesh->SetSimulatePhysics(false);
-		WeaponMesh->SetEnableGravity(false);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		StaticWeaponMesh->SetSimulatePhysics(false);
-		StaticWeaponMesh->SetEnableGravity(false);
-		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		EnableCustomDepth(false);
-		break;
-	case EWeaponState::EWS_Dropped:
-		WeaponMesh->SetSimulatePhysics(true);
-		WeaponMesh->SetEnableGravity(true);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
-		WeaponMesh->MarkRenderStateDirty();
-		StaticWeaponMesh->SetSimulatePhysics(true);
-		StaticWeaponMesh->SetEnableGravity(true);
-		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
-		StaticWeaponMesh->MarkRenderStateDirty();
-		EnableCustomDepth(true);
-		break;
-	}
+	*/
 }
 
 void AWeapon::Dropped()
@@ -171,4 +113,119 @@ void AWeapon::Interaction(APlayerCharacter* Target)
 	Target->EquipWeapon(this);
 }
 
+void AWeapon::SetWeaponState(EWeaponState State)
+{
+	WeaponState = State;
+	OnWeaponStateSet();
+}
 
+// client
+void AWeapon::OnRep_WeaponState()
+{
+	OnWeaponStateSet();
+}
+
+void AWeapon::OnWeaponStateSet()
+{
+	switch (WeaponState)
+	{
+		case EWeaponState::EWS_Equipped:
+			OnEquipped();
+			break;
+		case EWeaponState::EWS_Holstered:
+			OnEquippedSecondary();
+			break;
+		case EWeaponState::EWS_Dropped:
+			OnDropped();
+			break;
+	}
+}
+
+void AWeapon::OnEquipped()
+{
+	ShowPickUpWidget(false);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetSimulatePhysics(false);
+	WeaponMesh->SetEnableGravity(false);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticWeaponMesh->SetSimulatePhysics(false);
+	StaticWeaponMesh->SetEnableGravity(false);
+	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	EnableCustomDepth(false);
+
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	if (PlayerOwnerCharacter && bUseServerSideRewind)
+	{
+		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		if (PlayerOwnerController && HasAuthority() && !PlayerOwnerController->HighPingDelegate.IsBound())
+		{
+			PlayerOwnerController->HighPingDelegate.AddDynamic(this, &AWeapon::OnPingTooHigh);
+		}
+	}
+}
+
+void AWeapon::OnDropped()
+{
+	if (HasAuthority())
+	{
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+	WeaponMesh->SetSimulatePhysics(true);
+	WeaponMesh->SetEnableGravity(true);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	StaticWeaponMesh->SetSimulatePhysics(false);
+	StaticWeaponMesh->SetEnableGravity(false);
+	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+
+	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
+	WeaponMesh->MarkRenderStateDirty();
+	EnableCustomDepth(true);
+
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	if (PlayerOwnerCharacter)
+	{
+		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
+		{
+			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
+		}
+	}
+}
+
+void AWeapon::OnEquippedSecondary()
+{
+	ShowPickUpWidget(false);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetSimulatePhysics(false);
+	WeaponMesh->SetEnableGravity(false);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticWeaponMesh->SetSimulatePhysics(false);
+	StaticWeaponMesh->SetEnableGravity(false);
+	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	/* custom Depth 아이템 테두리 윤곽선 등에 있는 장비에 넣을것인가?
+	if (WeaponMesh)
+	{
+		WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
+		WeaponMesh->MarkRenderStateDirty();
+	}
+	*/
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	if (PlayerOwnerCharacter)
+	{
+		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
+		{
+			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
+		}
+	}
+}
+
+void AWeapon::OnPingTooHigh(bool bPingTooHigh)
+{
+	bUseServerSideRewind = !bPingTooHigh;
+}

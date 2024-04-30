@@ -42,7 +42,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bElimmed = PlayerCharacter->IsElimed();
 	bUseAimOffsets = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bTransformRightHand = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
-	bEquippedShoulderFireWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_RocketLauncher : false;
 	bEquippedMiniGun = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MiniGun : false;
 	bEquippedMeleeWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MeleeWeapon : false;
 
