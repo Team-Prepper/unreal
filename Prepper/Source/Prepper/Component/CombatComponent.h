@@ -93,6 +93,7 @@ protected:
 	void AttachActorToBackpack(AActor* ActorToAttach);
 	void UpdateCarriedAmmo();
 	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
+	void SwapWeapons();
 	
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
@@ -182,5 +183,5 @@ protected:
 	void UpdateAmmoValues();
 	void StartFireTimer();
 	void FireTimerFinished();
-	
+	bool ShouldSwapWeapons();
 };

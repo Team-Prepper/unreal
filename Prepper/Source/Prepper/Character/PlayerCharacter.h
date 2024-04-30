@@ -26,6 +26,9 @@ public:
 	//combatcomponent 에서 사용
 	void PlayFireMontage(bool bAiming); 
 	void PlayReloadMontage();
+	void PlaySwapMontage();
+	bool bFinishedSwapping = false;
+	
 	virtual void Elim() override;
 	virtual void MulticastElim() override;
 
@@ -144,6 +147,9 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ReloadMontage;
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* SwapMontage;
 	
 	/* For Crouch Cam */
 	UPROPERTY(EditAnywhere, Category = CrouchMovement)

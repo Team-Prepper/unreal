@@ -222,6 +222,15 @@ void APlayerCharacter::PlayReloadMontage()
 	}
 }
 
+void APlayerCharacter::PlaySwapMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && SwapMontage)
+	{
+		AnimInstance->Montage_Play(SwapMontage);
+	}
+}
+
 void APlayerCharacter::PlayHitReactMontage()
 {
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
@@ -395,6 +404,21 @@ void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 	if(Combat)
 	{
 		Combat->EquipWeapon(Weapon);
+	}
+	else if (Combat->ShouldSwapWeapons())
+	{
+		Combat->SwapWeapons();
+	}
+	bool bSwap = Combat->ShouldSwapWeapons() &&
+			!HasAuthority() &&
+			Combat->CombatState == ECombatState::ECS_Unoccupied &&
+			OverlappingItem == nullptr;
+
+	if (bSwap)
+	{
+		PlaySwapMontage();
+		Combat->CombatState = ECombatState::ECS_SwappingWeapons;
+		bFinishedSwapping = false;
 	}
 }
 
