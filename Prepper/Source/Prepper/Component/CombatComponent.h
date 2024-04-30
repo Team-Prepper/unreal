@@ -76,9 +76,24 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	class AWeapon* EquippedWeapon;
 
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	AWeapon* SecondaryWeapon;
+
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	UFUNCTION()
+	void OnRep_SecondaryWeapon();
+
+	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
+	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
+
+	void DropEquippedWeapon();
+	void AttachActorToRightHand(AActor* ActorToAttach);
+	void AttachActorToBackpack(AActor* ActorToAttach);
+	void UpdateCarriedAmmo();
+	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
+	
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
 

@@ -28,6 +28,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float AttackReach = 100.f;
 
+	virtual void SetHUDAmmo() override;
+
 private:
 	UFUNCTION()
 	void DamageTarget(const FHitResult& HitTarget);

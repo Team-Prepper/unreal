@@ -64,7 +64,7 @@ public:
 
 	void AddAmmo(int32 AmmoToAdd);
 	
-	void SetHUDAmmo();
+	virtual void SetHUDAmmo() override;
 
 	virtual void OnRep_Owner() override;
 

@@ -33,6 +33,9 @@ public:
 	void EnableCustomDepth(bool bEnable);
 
 	virtual void Fire(const FVector& HitTarget) PURE_VIRTUAL();
+
+	virtual void SetHUDAmmo() PURE_VIRTUAL();
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -53,6 +56,8 @@ protected:
 
 	UFUNCTION()
 	void OnRep_WeaponState();
+
+	
 	
 	UPROPERTY()
 	class APlayerCharacter* PlayerOwnerCharacter;

@@ -2,6 +2,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 
 
 void AMeleeWeapon::Fire(const FVector& HitTarget)
@@ -38,6 +39,19 @@ void AMeleeWeapon::FindActorsWithinRadius()
 		DrawDebugSphere(World, Hit.GetActor()->GetActorLocation(), 16.f, 12, FColor::Purple, false, 5.0f);
 	}
 	DrawDebugSphere(World, StartLocation, AttackRange, 24, FColor::Emerald, false, 5.0f);
+}
+
+void AMeleeWeapon::SetHUDAmmo()
+{
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	if(PlayerOwnerCharacter)
+	{
+		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		if(PlayerOwnerController)
+		{
+			PlayerOwnerController->SetHUDWeaponAmmo(-1);
+		}
+	}
 }
 
 void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
