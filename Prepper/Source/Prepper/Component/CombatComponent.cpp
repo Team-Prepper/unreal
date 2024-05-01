@@ -197,33 +197,29 @@ bool UCombatComponent::CanFire()
 // TODO
 void UCombatComponent::Fire()
 {
-	if (CanFire())
+	if (!CanFire()) return;
+	
+	bCanFire = false;
+	if (EquippedRangeWeapon)
 	{
-		bCanFire = false;
-		if (EquippedRangeWeapon)
+		CrosshairShootingFactor = .75f;
+		switch (EquippedRangeWeapon->FireType)
 		{
-			CrosshairShootingFactor = .75f;
-			switch (EquippedRangeWeapon->FireType)
-			{
-				case EFireType::EFT_Projectile:
-					FireProjectileWeapon();
-					break;
-				case EFireType::EFT_HitScan:
-					FireHitScanWeapon();
-					break;
-				case EFireType::EFT_Shotgun:
-					FireShotgun();
-					break;
-				default:
-					break;
-			}
+		case EFireType::EFT_Projectile:
+			FireProjectileWeapon();
+			break;
+		case EFireType::EFT_Shotgun:
+			FireShotgun();
+			break;
+		default:
+			break;
 		}
-		else
-		{
-			FireMeleeWeapon();
-		}
-		StartFireTimer();
 	}
+	else
+	{
+		FireMeleeWeapon();
+	}
+	StartFireTimer();
 }
 
 void UCombatComponent::FireProjectileWeapon()
@@ -719,7 +715,7 @@ void UCombatComponent::OnRep_CombatState()
 void UCombatComponent::HandleReload()
 {
 	if(Character){
-		Character->PlayReloadMontage();
+		Character->PlayReloadMontage(EquippedWeapon->ReloadActionName);
 	}
 }
 

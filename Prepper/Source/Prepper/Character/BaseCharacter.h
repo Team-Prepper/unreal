@@ -30,7 +30,6 @@ protected:
 	
 
 	/* 체력 관련 */
-protected:
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 	
@@ -42,7 +41,6 @@ protected:
 	void OnRep_Health();
 
 	/* 데미지 처리 */
-protected:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
 	
@@ -53,7 +51,6 @@ protected:
 	virtual void PlayHitReactMontage();
 
 	/* 사망 및 부활 처리 */
-protected:
 	bool bElimmed = false;
 	FTimerHandle ElimTimer;
 	UPROPERTY(EditDefaultsOnly)

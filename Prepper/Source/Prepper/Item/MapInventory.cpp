@@ -1,24 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Inventory.h"
+#include "MapInventory.h"
 #include "UObject/ConstructorHelpers.h"
 
-bool Inventory::TryCombineItem(const FString& Input1, const FString& Input2, FString& Result)
+bool MapInventory::TryCombineItem(const FString& Input1, const FString& Input2, FString& Result)
 {
 	return  ItemData.TryCombinationItem(Input1, Input2, Result);
 }
 
-Inventory::Inventory()
+MapInventory::MapInventory()
 {
 	BulletCount = 0;
 }
 
-Inventory::~Inventory()
+MapInventory::~MapInventory()
 {
 	
 }
 
-bool Inventory::TryAddItem(const FString& ItemCode)
+bool MapInventory::TryAddItem(const FString& ItemCode)
 {
 	FString retval;
 	
@@ -56,7 +56,7 @@ bool Inventory::TryAddItem(const FString& ItemCode)
 	return true;
 }
 
-bool Inventory::TryUseItem(const FString& ItemCode)
+bool MapInventory::TryUseItem(const FString& ItemCode)
 {
 	// 아이템이 존재하지 않는다면 return false
 	if (!ItemUnits.Contains(ItemCode))	return false;
@@ -78,12 +78,12 @@ bool Inventory::TryUseItem(const FString& ItemCode)
 	return true;
 }
 
-void Inventory::AddBullet(const uint8 Count)
+void MapInventory::AddBullet(const uint8 Count)
 {
 	BulletCount += Count;
 }
 
-uint8 Inventory::GetBulletCount() const
+uint8 MapInventory::GetBulletCount() const
 {
 	return BulletCount;
 }
