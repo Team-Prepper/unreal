@@ -50,9 +50,6 @@ protected:
 	UPROPERTY(Replicated, EditAnywhere)
 	bool bUseServerSideRewind = false;
 
-	UPROPERTY(EditAnywhere)
-	int32 CustomDepthColor;
-
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	UMeshComponent* WeaponMesh;
 

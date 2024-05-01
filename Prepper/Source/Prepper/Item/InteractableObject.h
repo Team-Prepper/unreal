@@ -17,7 +17,6 @@ class PREPPER_API AInteractableObject : public AInteractable
 public:	
 	// Sets default values for this actor's properties
 	AInteractableObject();
-	virtual void Tick(float DeltaTime) override;
 
 	virtual void Interaction(APlayerCharacter *Target) override;
 	

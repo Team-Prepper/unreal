@@ -36,9 +36,6 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditAnywhere)
-	int32 CustomDepthColor;
 
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	UStaticMeshComponent* BackpackMesh;

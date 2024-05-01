@@ -165,6 +165,11 @@ protected:
 	void OnRep_CarriedAmmo();
 
 	TMap<EWeaponType, int32> CarriedAmmoMap;
+public:
+	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
+protected:
+	UPROPERTY(EditAnywhere)
+	int32 MaxCarriedAmmo = 500;
 
 	UPROPERTY(EditAnywhere)
 	int32 StartingARAmmo = 30;

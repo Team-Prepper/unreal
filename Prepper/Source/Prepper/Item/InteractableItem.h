@@ -12,17 +12,24 @@ class PREPPER_API AInteractableItem : public AInteractable
 	
 public:	
 	AInteractableItem();
+	virtual void Tick(float DeltaTime) override;
 	virtual void Interaction(APlayerCharacter *Target) override;
-
+	virtual void Destroyed() override;
 protected:
 	virtual void BeginPlay() override;
-
-
-private:
-	UPROPERTY(EditAnywhere, Category = "Item Properties")
-	FString ItemCode;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Item Properties")
 	USkeletalMeshComponent* ItemMesh;
+	
+	UPROPERTY(EditAnywhere)
+	float BaseTurnRate = 45.f;
+	
+private:
+	UPROPERTY(EditAnywhere, Category = "Item Properties")
+	FString ItemCode;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* PickupSound;
+	
 
 };

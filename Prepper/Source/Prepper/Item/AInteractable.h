@@ -43,6 +43,7 @@ protected:
 	
 	virtual void BeginPlay() override;
 
-
+	UPROPERTY(EditAnywhere)
+	int32 CustomDepthColor;
 	
 };

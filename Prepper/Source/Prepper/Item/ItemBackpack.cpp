@@ -14,6 +14,8 @@ AItemBackpack::AItemBackpack()
 	BackpackMesh->SetCollisionResponseToAllChannels(ECR_Block);
 	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	BackpackMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BackpackMesh->SetRenderCustomDepth(true);
+	BackpackMesh->SetCustomDepthStencilValue(CustomDepthColor);
 
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);

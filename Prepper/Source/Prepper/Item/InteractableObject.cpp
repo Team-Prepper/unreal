@@ -2,6 +2,7 @@
 
 
 #include "InteractableObject.h"
+#include "Prepper/Prepper.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/Character/PlayerCharacter.h"
@@ -17,6 +18,8 @@ AInteractableObject::AInteractableObject()
 	ItemMesh->SetCollisionResponseToAllChannels(ECR_Block);
 	ItemMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ItemMesh->SetRenderCustomDepth(true);
+	ItemMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
 	
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);
@@ -31,19 +34,13 @@ AInteractableObject::AInteractableObject()
 void AInteractableObject::BeginPlay()
 {
 	Super::BeginPlay();
-	
-}
 
-// Called every frame
-void AInteractableObject::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	CustomDepthColor = CUSTOM_DEPTH_PURPLE;
 }
 
 // Called when the game starts or when spawned
 void AInteractableObject::Interaction(APlayerCharacter* Target)
 {
 	InteractAction();
-	UE_LOG(LogTemp, Warning, TEXT("Open Door"));
+	UE_LOG(LogTemp, Warning, TEXT("Interaction Object : Interaction"));
 }
