@@ -391,15 +391,8 @@ EWeaponType UCombatComponent::SetWeaponType()
 	if(EquippedWeapon)
 	{
 		EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
-		if(EquippedRangeWeapon)
-		{
-			return EquippedRangeWeapon->GetWeaponType();
-		}
 		EquippedMeleeWeapon = Cast<AMeleeWeapon>(EquippedWeapon);
-		if(EquippedMeleeWeapon)
-		{
-			return EquippedMeleeWeapon->GetWeaponType();
-		}
+		return EquippedWeapon->GetWeaponType();
 	}
 	return EWeaponType::EWT_MAX;
 }
@@ -532,6 +525,8 @@ void UCombatComponent::DropEquippedWeapon()
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->Dropped();
+		EquippedMeleeWeapon = nullptr;
+		EquippedRangeWeapon = nullptr;
 	}
 }
 

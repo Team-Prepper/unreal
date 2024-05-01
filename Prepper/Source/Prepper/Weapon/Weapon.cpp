@@ -92,7 +92,6 @@ void AWeapon::Dropped()
 	SetWeaponState(EWeaponState::EWS_Dropped);
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	WeaponMesh->DetachFromComponent(DetachRules);
-	StaticWeaponMesh->DetachFromComponent(DetachRules);
 	SetOwner(nullptr);
 	PlayerOwnerCharacter = nullptr;
 	PlayerOwnerController = nullptr;
