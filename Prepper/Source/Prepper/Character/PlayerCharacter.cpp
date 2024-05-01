@@ -188,39 +188,15 @@ void APlayerCharacter::PlayFireMontage(bool bAiming)
 	
 }
 
-void APlayerCharacter::PlayReloadMontage()
+void APlayerCharacter::PlayReloadMontage(const FName& SectionName)
 {
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	
 	if(AnimInstance && ReloadMontage)
 	{
 		AnimInstance->Montage_Play(ReloadMontage);
-		FName SectionName;
-		switch (Combat->EquippedWeapon->GetWeaponType())
-		{
-			case EWeaponType::EWT_AssaultRifle:
-				SectionName = FName("AssaultRifle");
-				break;
-			case EWeaponType::EWT_RocketLauncher:
-				SectionName = FName("AssaultRifle");
-				break;
-			case EWeaponType::EWT_Revolver:
-				SectionName = FName("AssaultRifle");
-				break;
-			case EWeaponType::EWT_SMG:
-				SectionName = FName("AssaultRifle");
-				break;
-			case EWeaponType::EWT_Shotgun:
-				SectionName = FName("AssaultRifle");
-				break;
-			case EWeaponType::EWT_SniperRifle:
-				SectionName = FName("AssaultRifle");
-				break;
-			case EWeaponType::EWT_MiniGun:
-				SectionName = FName("AssaultRifle");
-				break;
-		}
 		AnimInstance->Montage_JumpToSection(SectionName);
 	}
 }
@@ -254,16 +230,14 @@ void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const U
 	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
 
 	// DEATH MATCH
-	if(CurrentHealth == 0.f)
-	{
-		ADeathMatchGameMode* DeathMatchGameMode =  GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
-		if(DeathMatchGameMode)
-		{
-			PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
-			APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
-			DeathMatchGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
-		}
-	}
+	if(CurrentHealth != 0.f) return;
+	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	
+	if(PrepperGameMode == nullptr) return;
+	
+	PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
+	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 }
 
 void APlayerCharacter::UpdateHUDHealth()
@@ -362,7 +336,7 @@ void APlayerCharacter::ElimTimerFinished()
 	}
 	if(PrepperPlayerController)
 	{
-		PrepperPlayerController->TargetPlayer = nullptr;
+		PrepperPlayerController->TargetControllerable = nullptr;
 	}
 }
 

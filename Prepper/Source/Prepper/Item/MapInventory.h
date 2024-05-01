@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "ItemDataGetter.h"
+#include "Prepper/Interfaces/Inventory.h"
 
 #define MAX_ITEM_COUNT 16
 
-class PREPPER_API Inventory
+class PREPPER_API MapInventory : IInventory
 {
 private:
 	ItemDataGetter ItemData;
@@ -17,10 +18,10 @@ private:
 
 	bool TryCombineItem(const FString& Input1, const FString& Input2, FString& Result);
 public:
-	Inventory();
-	~Inventory();
-	bool TryAddItem(const FString& ItemCode);
-	bool TryUseItem(const FString& ItemCode);
+	MapInventory();
+	~MapInventory();
+	virtual bool TryAddItem(const FString& ItemCode) override;
+	virtual bool TryUseItem(const FString& ItemCode) override;
 	
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;

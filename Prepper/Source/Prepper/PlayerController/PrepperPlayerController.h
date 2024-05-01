@@ -102,7 +102,7 @@ protected:
 public:
 	virtual void SetupInputComponent() override;
 
-	TScriptInterface<IControllable> TargetPlayer = nullptr;
+	TScriptInterface<IControllable> TargetControllerable = nullptr;
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	class UInputMappingContext* PlayerMappingContext;

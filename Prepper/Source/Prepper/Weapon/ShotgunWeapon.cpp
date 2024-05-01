@@ -11,9 +11,19 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
-void AShotgunWeapon::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
+void AShotgunWeapon::Fire(const FVector& HitTarget)
 {
 	ARangeWeapon::Fire(FVector());
+	
+	TArray<FVector_NetQuantize> HitTargets;
+	
+	ShotgunTraceEndWithScatter(HitTarget, HitTargets);
+	FireShotgun(HitTargets);
+	
+}
+
+void AShotgunWeapon::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
+{
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();

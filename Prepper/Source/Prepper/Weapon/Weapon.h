@@ -26,6 +26,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float FireDelay = .15f;
 	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	FName ReloadActionName = FName("AssaultRifle");
+	
 	UPROPERTY()
 	class USoundCue* EquipSound;
 

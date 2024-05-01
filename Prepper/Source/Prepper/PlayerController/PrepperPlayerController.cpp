@@ -51,7 +51,7 @@ void APrepperPlayerController::PollInit()
 	}
 
 	if (Cast<IControllable>(GetPawn()))
-		TargetPlayer = GetPawn();
+		TargetControllerable = GetPawn();
 	
 }
 
@@ -61,7 +61,7 @@ void APrepperPlayerController::OnPossess(APawn* InPawn)
 	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(InPawn);
 	
 	if (Cast<IControllable>(GetPawn()))
-		TargetPlayer = GetPawn();
+		TargetControllerable = GetPawn();
 	UE_LOG(LogTemp, Warning, TEXT("Change Pawn"));
 	
 	if (PlayerCharacter)
@@ -130,33 +130,33 @@ void APrepperPlayerController::SetupInputComponent()
 
 void APrepperPlayerController::Move(const FInputActionValue& Value)
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->Move(Value);
+	if (!TargetControllerable) return;
+	TargetControllerable->Move(Value);
 }
 void APrepperPlayerController::Look(const FInputActionValue& Value)
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->Look(Value);
+	if (!TargetControllerable) return;
+	TargetControllerable->Look(Value);
 }
 void APrepperPlayerController::JumpButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->SpacePressed();
+	if (!TargetControllerable) return;
+	TargetControllerable->SpacePressed();
 }
 void APrepperPlayerController::JumpButtonReleased()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->SpaceReleased();
+	if (!TargetControllerable) return;
+	TargetControllerable->SpaceReleased();
 }
 void APrepperPlayerController::SprintButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->ShiftPressed();
+	if (!TargetControllerable) return;
+	TargetControllerable->ShiftPressed();
 }
 void APrepperPlayerController::SprintButtonReleased()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->ShiftReleased();
+	if (!TargetControllerable) return;
+	TargetControllerable->ShiftReleased();
 }
 void APrepperPlayerController::EquipButtonPressed()
 {
@@ -164,48 +164,48 @@ void APrepperPlayerController::EquipButtonPressed()
 }
 void APrepperPlayerController::CrouchButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->ControlPressed();
+	if (!TargetControllerable) return;
+	TargetControllerable->ControlPressed();
 	
 }
 void APrepperPlayerController::ReloadButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->RPressed();
+	if (!TargetControllerable) return;
+	TargetControllerable->RPressed();
 }
 void APrepperPlayerController::AimButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->MouseRightPressed();
+	if (!TargetControllerable) return;
+	TargetControllerable->MouseRightPressed();
 }
 void APrepperPlayerController::AimButtonReleased()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->MouseRightReleased();
+	if (!TargetControllerable) return;
+	TargetControllerable->MouseRightReleased();
 	
 }
 void APrepperPlayerController::FireButtonPressed()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->MouseLeftPressed();
+	if (!TargetControllerable) return;
+	TargetControllerable->MouseLeftPressed();
 }
 void APrepperPlayerController::FireButtonReleased()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->MouseLeftReleased();
+	if (!TargetControllerable) return;
+	TargetControllerable->MouseLeftReleased();
 }
 
 void APrepperPlayerController::ServerInteractionPressed_Implementation()
 {
-	if (!TargetPlayer) return;
-	TargetPlayer->EPressed();
+	if (!TargetControllerable) return;
+	TargetControllerable->EPressed();
 	
 }
 
 void APrepperPlayerController::BindPlayerAction()
 {
 	if (Cast<IControllable>(GetPawn()))
-		TargetPlayer = GetPawn();
+		TargetControllerable = GetPawn();
 }
 
 /* HUD Setting*/

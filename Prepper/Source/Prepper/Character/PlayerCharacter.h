@@ -6,7 +6,7 @@
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Interfaces/Controllable.h"
-#include "Prepper/Item/Inventory.h"
+#include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
 
 class IIInteractable;
@@ -37,7 +37,7 @@ public:
 
 	//combatcomponent 에서 사용
 	void PlayFireMontage(bool bAiming); 
-	void PlayReloadMontage();
+	void PlayReloadMontage(const FName& SectionName);
 	void PlaySwapMontage();
 	bool bFinishedSwapping = false;
 	
@@ -203,7 +203,7 @@ private:
 	UFUNCTION()
 	void OnRep_EquippedBackpack();
 
-	Inventory Inven;
+	MapInventory Inven;
 
 public:
 	void SetOverlappingItem(AActor* InteractableItem);
