@@ -142,7 +142,7 @@ private:
 	/* 캐릭터 메쉬 숨기기 */
 	void HideAllMeshComponent(bool Hide);
 	void HidePlayerMesh(bool Hide);
-	void HidePlayerWeapon(bool Hide);
+	void HidePlayerEquipment(bool Hide);
 	
 	/* For Animation */
 	UPROPERTY(EditAnywhere, Category = Combat)

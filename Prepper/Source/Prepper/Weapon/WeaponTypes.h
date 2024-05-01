@@ -12,7 +12,8 @@ enum class EWeaponType : uint8
 	EWT_Shotgun UMETA(DisplayName = "Shotgun"),
 	EWT_SniperRifle UMETA(DisplayName = "Sniper Rifle"),
 	EWT_MiniGun UMETA(DisplayName = "MiniGun"),
-	EWT_MeleeWeapon UMETA(DisplayName = "MeleeWeapon"),
+	EWT_MeleeWeaponBlunt UMETA(DisplayName = "MeleeWeaponBlunt"),
+	EWT_MeleeWeaponSword UMETA(DisplayName = "MeleeWeaponSword"),
 	
 	EWT_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -26,14 +27,4 @@ enum class EWeaponState : uint8
 	EWS_Dropped UMETA(DisplayName = "Dropped"),
 	
 	EWS_MAX UMETA(DisplayName = "Default MAX")
-};
-
-UENUM(BlueprintType)
-enum class EAmmoType : uint8
-{
-	EAT_Light   UMETA(DisplayName = "Light"),
-	EAT_Heavy   UMETA(DisplayName = "Heavy"),
-	EAT_Shotgun UMETA(DisplayName = "Shotgun"),
-	EAT_Sniper  UMETA(DisplayName = "Sniper"),
-	EAT_MAX     UMETA(DisplayName = "DefaultMAX")
 };

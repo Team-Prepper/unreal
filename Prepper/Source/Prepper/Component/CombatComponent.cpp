@@ -205,24 +205,22 @@ void UCombatComponent::Fire()
 		CrosshairShootingFactor = .75f;
 		switch (EquippedRangeWeapon->FireType)
 		{
-		case EFireType::EFT_Projectile:
-			FireProjectileWeapon();
-			break;
 		case EFireType::EFT_Shotgun:
 			FireShotgun();
 			break;
 		default:
+			FireRangeWeapon();
 			break;
 		}
 	}
 	else
-	{
+	{	
 		FireMeleeWeapon();
 	}
 	StartFireTimer();
 }
 
-void UCombatComponent::FireProjectileWeapon()
+void UCombatComponent::FireRangeWeapon()
 {
 	if(EquippedRangeWeapon)
 	{
@@ -234,15 +232,6 @@ void UCombatComponent::FireProjectileWeapon()
 	
 }
 
-void UCombatComponent::FireHitScanWeapon()
-{
-	if (EquippedRangeWeapon)
-	{
-		HitTarget = EquippedRangeWeapon->bUseScatter ? EquippedRangeWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
-		LocalFire(HitTarget);
-		ServerFire(HitTarget);
-	}
-}
 
 void UCombatComponent::FireShotgun()
 {
@@ -260,6 +249,16 @@ void UCombatComponent::FireMeleeWeapon()
 {
 	if(EquippedMeleeWeapon)
 	{
+		switch (EquippedMeleeWeapon->GetWeaponType())
+		{
+			case EWeaponType::EWT_MeleeWeaponBlunt:
+				IsBlunt = true;
+				break;
+			case EWeaponType::EWT_MeleeWeaponSword:
+				IsBlunt = false;
+				break;
+		}
+		
 		UE_LOG(LogTemp, Warning, TEXT("MELEE WEAPON ATTACK"));
 		LocalFire(HitTarget);
 		ServerFire(HitTarget);
@@ -273,7 +272,14 @@ void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
 	{
 		if (Character && (CombatState == ECombatState::ECS_Unoccupied))
         {
-        	Character->PlayFireMontage(bAiming);
+			if(EquippedRangeWeapon)
+			{
+				Character->PlayFireMontage(bAiming);
+			}
+			else
+			{
+				Character->PlayFireMontage(IsBlunt);
+			}
         	EquippedWeapon->Fire(TraceHitTarget);
         }
 	}
@@ -462,7 +468,10 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 		const USkeletalMeshSocket* HandSocket =
-			Character->GetMesh()->GetSocketByName( EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeapon ? FName("MeleeWeaponSocket") : FName("RightHandSocket"));
+			Character->GetMesh()->GetSocketByName(
+				(EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ||
+				EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponSword)
+				? FName("MeleeWeaponSocket") : FName("RightHandSocket"));
 		if (HandSocket)
 		{
 			HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
@@ -531,7 +540,9 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
 	const USkeletalMeshSocket* HandSocket;
 	HandSocket = Character->GetMesh()->GetSocketByName(
-		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeapon ? FName("MeleeWeaponSocket") : FName("RightHandSocket"));
+		(EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ||
+		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponSword) 
+		? FName("MeleeWeaponSocket") : FName("RightHandSocket"));
 	if (HandSocket)
 	{
 		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());

@@ -43,7 +43,8 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bUseAimOffsets = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bTransformRightHand = PlayerCharacter->GetCombatState() != ECombatState::ECS_Reloading && !PlayerCharacter->GetDisableGamePlay();
 	bEquippedMiniGun = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MiniGun : false;
-	bEquippedMeleeWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MeleeWeapon : false;
+	bEquippedMeleeWeapon = PlayerCharacter->GetEquippedWeapon() != nullptr ? (PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ||
+		PlayerCharacter->GetEquippedWeapon()->GetWeaponType() == EWeaponType::EWT_MeleeWeaponSword) : false;
 
 	bUseFABRIK = PlayerCharacter->GetCombatState() < ECombatState::ECS_Reloading;
 	if(PlayerCharacter->IsLocallyControlled())

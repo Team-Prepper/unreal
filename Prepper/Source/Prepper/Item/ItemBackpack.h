@@ -55,4 +55,5 @@ protected:
 
 public:
 	void SetBackpackState(EBackpackState NewBackpackState);
+	FORCEINLINE UStaticMeshComponent* GetItemMesh() const { return BackpackMesh; }
 };

@@ -20,25 +20,25 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	}
 	
 	TArray<FHitResult> HitResults;
-	FVector StartLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * AttackReach;
 	FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(AttackRange);
 	FCollisionObjectQueryParams ObjectQueryParams = FCollisionObjectQueryParams(ECollisionChannel::ECC_Pawn);
-
+	
 	GetWorld()->SweepMultiByObjectType(
-		HitResults,
-		StartLocation,
-		StartLocation, // End 위치는 시작 위치와 같음 (구체 검사)
-		FQuat::Identity, // 회전 없음
-		ObjectQueryParams,
-		SphereCollisionShape
-	);
+        	HitResults,
+        	Owner->GetActorLocation(),
+        	Owner->GetActorLocation() + Owner->GetActorForwardVector() * AttackReach,
+        	FQuat::Identity,
+        	ObjectQueryParams,
+        	SphereCollisionShape
+        );
+	
 	
 	for (const FHitResult& Hit : HitResults)
 	{
 		DamageTarget(Hit);
 		DrawDebugSphere(World, Hit.GetActor()->GetActorLocation(), 16.f, 12, FColor::Purple, false, 5.0f);
 	}
-	DrawDebugSphere(World, StartLocation, AttackRange, 24, FColor::Emerald, false, 5.0f);
+	
 }
 
 void AMeleeWeapon::SetHUDAmmo()
@@ -59,12 +59,13 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();
+	APlayerCharacter* DamagedCharacter = Cast<APlayerCharacter>(HitTarget.GetActor());
+	if(DamagedCharacter == Cast<APlayerCharacter>(GetOwner())) return;
 	
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(HitTarget.GetActor());
-	if (PlayerCharacter && HasAuthority() && InstigatorController)
+	if (DamagedCharacter && HasAuthority() && InstigatorController)
 	{
 		UGameplayStatics::ApplyDamage(
-			PlayerCharacter,
+			DamagedCharacter,
 			Damage,
 			InstigatorController,
 			this,

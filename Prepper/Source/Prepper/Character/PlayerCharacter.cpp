@@ -164,24 +164,22 @@ void APlayerCharacter::PlayFireMontage(bool bAiming)
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	FName SectionName;
 	if(Combat->EquippedRangeWeapon)
 	{
 		if(AnimInstance && FireWeaponMontage)
 		{
 			AnimInstance->Montage_Play(FireWeaponMontage);
-			FName SectionName;
 			SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
 			AnimInstance->Montage_JumpToSection(SectionName);
 		}
 	}
 	else
 	{
-		// TODO
 		if(AnimInstance && MeleeWeaponMontage)
 		{
 			AnimInstance->Montage_Play(MeleeWeaponMontage);
-			FName SectionName;
-			SectionName = FName("Attack1");
+			SectionName = bAiming ? FName("Attack1") : FName("Attack2");
 			AnimInstance->Montage_JumpToSection(SectionName);
 		}
 	}
@@ -683,6 +681,7 @@ void APlayerCharacter::ConvertPlayerMovementState()
 		bBeforeSeat = false;
 		SetActorEnableCollision(true);
 		SetActorHiddenInGame(false);
+		HidePlayerEquipment(false);
 	}
 	
 	switch (PlayerMovementState)
@@ -691,6 +690,7 @@ void APlayerCharacter::ConvertPlayerMovementState()
 		bBeforeSeat = true;
 		SetActorEnableCollision(false);
 		SetActorHiddenInGame(true);
+		HidePlayerEquipment(true);
 		break;
 	case EPlayerMovementState::EPMS_Aim:
 		break;
@@ -802,7 +802,7 @@ void APlayerCharacter::OnRep_OverlappingItem(TScriptInterface<IIInteractable> La
 void APlayerCharacter::HideAllMeshComponent(bool Hide)
 {
 	HidePlayerMesh(Hide);
-	HidePlayerWeapon(Hide);
+	HidePlayerEquipment(Hide);
 }
 
 void APlayerCharacter::HidePlayerMesh(bool Hide)
@@ -823,7 +823,7 @@ void APlayerCharacter::HidePlayerMesh(bool Hide)
 	}
 }
 
-void APlayerCharacter::HidePlayerWeapon(bool Hide)
+void APlayerCharacter::HidePlayerEquipment(bool Hide)
 {
 	if(!Combat) return;
 	Hide = !Hide;
@@ -858,6 +858,10 @@ void APlayerCharacter::HidePlayerWeapon(bool Hide)
 				SMComp->SetVisibility(Hide);
 			}
 		}
+	}
+	if(EquippedBackpack)
+	{
+		EquippedBackpack -> GetItemMesh() -> SetVisibility(Hide);
 	}
 }
 

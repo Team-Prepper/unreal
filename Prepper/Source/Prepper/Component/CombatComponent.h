@@ -33,8 +33,7 @@ protected:
 	void ServerSetAiming(bool bIsAiming);
 	
 	void Fire();
-	void FireProjectileWeapon();
-	void FireHitScanWeapon();
+	void FireRangeWeapon();
 	void FireShotgun();
 	void FireMeleeWeapon();
 	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
@@ -107,6 +106,8 @@ protected:
 
 	UPROPERTY(Replicated)
 	class AMeleeWeapon* EquippedMeleeWeapon;
+
+	 bool IsBlunt;
 
 	UFUNCTION()
 	EWeaponType SetWeaponType();
