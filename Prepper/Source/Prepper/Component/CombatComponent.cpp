@@ -621,6 +621,10 @@ void UCombatComponent::UpdateCarriedAmmo()
 	{
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 	}
+	else
+	{
+		CarriedAmmo = -1;
+	}
 
 	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
 	if (Controller)

@@ -21,6 +21,7 @@ AWeapon::AWeapon()
 
 	StaticWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
 	StaticWeaponMesh->SetupAttachment(RootComponent);
+	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
