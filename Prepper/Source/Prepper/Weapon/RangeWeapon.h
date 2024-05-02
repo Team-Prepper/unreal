@@ -35,6 +35,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = Crosshiar)
 	UTexture2D* CrosshairBottom;
 
+protected:
 	/* Zoom In - 줌 인 */
 	UPROPERTY(EditAnywhere)
 	float ZoomFOV = 30.f;
@@ -51,25 +52,27 @@ public:
 	
 	FVector TraceEndWithScatter(const FVector& HitTarget);
 	
-	UPROPERTY(EditAnywhere)
-	EFireType FireType;
-
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	bool bUseScatter = false;
 
-
+public:
+	UPROPERTY(EditAnywhere)
+	EFireType FireType;
+	
 	/* Ammo - 탄 */
 	UPROPERTY(EditAnywhere, Category = Combat)
 	bool bAutomatic = false;
 
 	void AddAmmo(int32 AmmoToAdd);
-	
+
 	virtual void SetHUDAmmo() override;
 
 	virtual void OnRep_Owner() override;
 
-	virtual void Fire(const FVector& HitTarget) override;
-	
+	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
+
+	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
+
 protected:
 	float TargetDistance;
 	

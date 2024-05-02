@@ -1,7 +1,5 @@
 #include "CombatComponent.h"
-
 #include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -181,6 +179,7 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
     }
 }
 
+
 // TODO
 bool UCombatComponent::CanFire()
 {
@@ -194,7 +193,6 @@ bool UCombatComponent::CanFire()
 			CombatState == ECombatState::ECS_Unoccupied;
 }
 
-// TODO
 void UCombatComponent::Fire()
 {
 	if (!CanFire()) return;
@@ -203,15 +201,7 @@ void UCombatComponent::Fire()
 	if (EquippedRangeWeapon)
 	{
 		CrosshairShootingFactor = .75f;
-		switch (EquippedRangeWeapon->FireType)
-		{
-		case EFireType::EFT_Shotgun:
-			FireShotgun();
-			break;
-		default:
-			FireRangeWeapon();
-			break;
-		}
+		FireWeapon();
 	}
 	else
 	{	
@@ -220,28 +210,14 @@ void UCombatComponent::Fire()
 	StartFireTimer();
 }
 
-void UCombatComponent::FireRangeWeapon()
+void UCombatComponent::FireWeapon()
 {
-	if(EquippedRangeWeapon)
-	{
-		HitTarget = EquippedRangeWeapon->bUseScatter ? EquippedRangeWeapon->TraceEndWithScatter(HitTarget) : HitTarget;
-			
-		LocalFire(HitTarget);
-		ServerFire(HitTarget);
-	}
-	
-}
-
-
-void UCombatComponent::FireShotgun()
-{
-	AShotgunWeapon* Shotgun = Cast<AShotgunWeapon>(EquippedWeapon);
-	if (Shotgun)
+	if (EquippedWeapon)
 	{
 		TArray<FVector_NetQuantize> HitTargets;
-		Shotgun->ShotgunTraceEndWithScatter(HitTarget, HitTargets);
-		ShotgunLocalFire(HitTargets);
-		ServerShotgunFire(HitTargets);
+		HitTargets = EquippedWeapon->GetTarget(HitTarget);
+		LocalFireWeapon(HitTargets);
+		ServerFireWeapon(HitTargets);
 	}
 }
 
@@ -259,64 +235,44 @@ void UCombatComponent::FireMeleeWeapon()
 				break;
 		}
 		
+		EquippedWeapon->GetTarget(HitTarget);
+		
 		UE_LOG(LogTemp, Warning, TEXT("MELEE WEAPON ATTACK"));
-		LocalFire(HitTarget);
-		ServerFire(HitTarget);
+		LocalFireWeapon(HitTargets);
+		ServerFireWeapon(HitTargets);
 	}
 }
 
-void UCombatComponent::LocalFire(const FVector_NetQuantize& TraceHitTarget)
-{
-	if (EquippedWeapon == nullptr) return;
-	if(EquippedWeapon)
-	{
-		if (Character && (CombatState == ECombatState::ECS_Unoccupied))
-        {
-			if(EquippedRangeWeapon)
-			{
-				Character->PlayFireMontage(bAiming);
-			}
-			else
-			{
-				Character->PlayFireMontage(IsBlunt);
-			}
-        	EquippedWeapon->Fire(TraceHitTarget);
-        }
-	}
-}
 
-void UCombatComponent::ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets)
+void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
-	AShotgunWeapon* ShotgunWeapon = Cast<AShotgunWeapon>(EquippedWeapon);
 	if(EquippedWeapon == nullptr || Character == nullptr) return;
 	if (CombatState == ECombatState::ECS_Unoccupied)
 	{
-		Character->PlayFireMontage(bAiming);
-		ShotgunWeapon->FireShotgun(TraceHitTargets);
+		if(EquippedRangeWeapon)
+		{
+			Character->PlayFireMontage(bAiming);
+		}
+		else
+		{
+			Character->PlayFireMontage(IsBlunt);
+		}
+		EquippedWeapon->Fire(TraceHitTargets);
 	}
 }
 
-void UCombatComponent::ServerFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
+
+void UCombatComponent::ServerFireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
-	MulticastFire(TraceHitTarget);
+	MulticastFireWeapon(TraceHitTargets);
 }
 
-void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& TraceHitTarget)
+void UCombatComponent::MulticastFireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
 	if (Character && Character->IsLocallyControlled()) return;
-	LocalFire(TraceHitTarget);
+	LocalFireWeapon(TraceHitTargets);
 }
 
-void UCombatComponent::ServerShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
-{
-	MulticastShotgunFire(TraceHitTargets);
-}
-
-void UCombatComponent::MulticastShotgunFire_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
-{
-	if (Character && Character->IsLocallyControlled()) return;
-	ShotgunLocalFire(TraceHitTargets);
-}
 
 void UCombatComponent::StartFireTimer()
 {
@@ -740,6 +696,8 @@ void UCombatComponent::HandleReload()
 		Character->PlayReloadMontage(EquippedWeapon->ReloadActionName);
 	}
 }
+
+
 
 void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 {

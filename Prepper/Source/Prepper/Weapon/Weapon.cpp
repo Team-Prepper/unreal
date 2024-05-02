@@ -38,6 +38,13 @@ AWeapon::AWeapon()
 	PickUpWidget->SetupAttachment(RootComponent);
 }
 
+TArray<FVector_NetQuantize> AWeapon::GetTarget(FVector& HitTarget)
+{
+	TArray<FVector_NetQuantize> HitTargets;
+	HitTargets.Add(HitTarget);
+	return HitTargets;
+}
+
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
@@ -196,14 +203,6 @@ void AWeapon::OnEquippedSecondary()
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	/* custom Depth 아이템 테두리 윤곽선 등에 있는 장비에 넣을것인가?
-	if (WeaponMesh)
-	{
-		WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
-		WeaponMesh->MarkRenderStateDirty();
-	}
-	*/
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
 	if (PlayerOwnerCharacter)
 	{

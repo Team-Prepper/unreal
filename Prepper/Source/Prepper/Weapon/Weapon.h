@@ -35,9 +35,11 @@ public:
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
 
-	virtual void Fire(const FVector& HitTarget) PURE_VIRTUAL();
+	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) PURE_VIRTUAL();
 
 	virtual void SetHUDAmmo() PURE_VIRTUAL();
+
+	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget);
 	
 protected:
 	virtual void BeginPlay() override;

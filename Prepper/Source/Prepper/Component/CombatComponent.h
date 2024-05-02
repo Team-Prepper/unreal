@@ -33,11 +33,9 @@ protected:
 	void ServerSetAiming(bool bIsAiming);
 	
 	void Fire();
-	void FireRangeWeapon();
-	void FireShotgun();
+	void FireWeapon();
 	void FireMeleeWeapon();
-	void LocalFire(const FVector_NetQuantize& TraceHitTarget);
-	void ShotgunLocalFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
+	void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	UFUNCTION(BlueprintCallable)
 	void FinishSwap();
@@ -48,17 +46,12 @@ protected:
 public:
 	void FireButtonPressed(bool bPressed);
 protected:
-	UFUNCTION(Server, Reliable)
-	void ServerFire(const FVector_NetQuantize& TraceHitTarget);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastFire(const FVector_NetQuantize& TraceHitTarget);
 
 	UFUNCTION(Server, Reliable)
-	void ServerShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
+	void ServerFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastShotgunFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
+	void MulticastFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 
@@ -134,7 +127,7 @@ protected:
 
 	FHUDPackage HUDPackage;
 	FVector HitTarget;
-
+	TArray<FVector_NetQuantize> HitTargets;
 	// Aiming FOV
 
 	float DefaultFOV;

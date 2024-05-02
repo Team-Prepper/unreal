@@ -14,12 +14,15 @@ class PREPPER_API AShotgunWeapon : public AHitScanWeapon
 {
 	GENERATED_BODY()
 public:
-	virtual void Fire(const FVector& HitTarget) override;
+	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 	
-	virtual void FireShotgun(const TArray<FVector_NetQuantize>& HitTargets);
-	void ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets); 
+	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
+	
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
 	uint32 NumberOfPellets = 10;
+
+	void ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets);
+
 };

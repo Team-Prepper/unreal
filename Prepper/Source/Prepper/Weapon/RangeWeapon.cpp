@@ -26,8 +26,9 @@ void ARangeWeapon::OnRep_Owner()
 	}
 }
 
-void ARangeWeapon::Fire(const FVector& HitTarget)
+void ARangeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
+	FVector HitTarget = HitTargets.Top();
 	TargetDistance = FVector::Distance(HitTarget, WeaponMesh->GetComponentLocation());
 	
 	if(FireAnimation)
@@ -95,6 +96,18 @@ void ARangeWeapon::ClientAddAmmo_Implementation(int32 AmmoToAdd)
 	SetHUDAmmo();
 }
 
+TArray<FVector_NetQuantize> ARangeWeapon::GetTarget(FVector& HitTarget)
+{
+	TArray<FVector_NetQuantize> HitTargets;
+	if(bUseScatter)
+	{
+		HitTarget = TraceEndWithScatter(HitTarget);
+	}
+	
+	HitTargets.Add(HitTarget);
+	return HitTargets;
+}
+
 FVector ARangeWeapon::TraceEndWithScatter(const FVector& HitTarget)
 {
 	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
@@ -109,15 +122,5 @@ FVector ARangeWeapon::TraceEndWithScatter(const FVector& HitTarget)
 	const FVector EndLoc = SphereCenter + RandVec;
 	const FVector ToEndLoc = EndLoc - TraceStart;
 
-	/*
-	DrawDebugSphere(GetWorld(), SphereCenter, SphereRadius, 12, FColor::Red, true);
-	DrawDebugSphere(GetWorld(), EndLoc, 4.f, 12, FColor::Orange, true);
-	DrawDebugLine(
-		GetWorld(),
-		TraceStart,
-		FVector(TraceStart + ToEndLoc * TRACE_LEN / ToEndLoc.Size()),
-		FColor::Cyan,
-		true);
-	*/
 	return FVector(TraceStart + ToEndLoc * TRACE_LEN / ToEndLoc.Size());
 }

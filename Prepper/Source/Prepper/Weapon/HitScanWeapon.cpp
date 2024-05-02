@@ -8,10 +8,11 @@
 
 #include "DrawDebugHelpers.h"
 
-void AHitScanWeapon::Fire(const FVector& HitTarget)
+void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
-	Super::Fire(HitTarget);
+	Super::Fire(HitTargets);
 
+	FVector HitTarget = HitTargets.Top();
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();

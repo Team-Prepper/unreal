@@ -5,24 +5,12 @@
 
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
-void AShotgunWeapon::Fire(const FVector& HitTarget)
-{
-	ARangeWeapon::Fire(FVector());
-	
-	TArray<FVector_NetQuantize> HitTargets;
-	
-	ShotgunTraceEndWithScatter(HitTarget, HitTargets);
-	FireShotgun(HitTargets);
-	
-}
-
-void AShotgunWeapon::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
+void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
@@ -87,6 +75,14 @@ void AShotgunWeapon::FireShotgun(const TArray<FVector_NetQuantize>& HitTargets)
 			}
 		}
 	}
+	
+}
+
+TArray<FVector_NetQuantize> AShotgunWeapon::GetTarget(FVector& HitTarget)
+{
+	TArray<FVector_NetQuantize> HitTargets;
+	ShotgunTraceEndWithScatter(HitTarget, HitTargets);
+	return HitTargets;
 }
 
 void AShotgunWeapon::ShotgunTraceEndWithScatter(const FVector& HitTarget, TArray<FVector_NetQuantize>& HitTargets)

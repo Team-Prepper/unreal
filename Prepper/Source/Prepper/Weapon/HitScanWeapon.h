@@ -16,7 +16,7 @@ class PREPPER_API AHitScanWeapon : public ARangeWeapon
 	GENERATED_BODY()
 	
 public:
-	virtual void Fire(const FVector& HitTarget) override;
+	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 
 protected:
 	bool WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit);

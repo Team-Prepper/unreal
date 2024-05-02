@@ -5,7 +5,7 @@
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
 
-void AMeleeWeapon::Fire(const FVector& HitTarget)
+void AMeleeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
 	FindActorsWithinRadius();
 }

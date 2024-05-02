@@ -6,11 +6,12 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Projectile.h"
 
-void AProjectileWeapon::Fire(const FVector& HitTarget)
+void AProjectileWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
-	Super::Fire(HitTarget);
+	Super::Fire(HitTargets);
 
 	if (!HasAuthority()) return;
+	FVector HitTarget = HitTargets.Top();
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetRangeWeaponMesh()->GetSocketByName(FName("Muzzle"));
