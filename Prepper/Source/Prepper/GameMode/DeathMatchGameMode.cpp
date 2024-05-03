@@ -2,7 +2,6 @@
 
 
 #include "DeathMatchGameMode.h"
-#include "Prepper/Character/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
 #include "Prepper/GameState/DeathMatchGameState.h"
@@ -73,9 +72,10 @@ void ADeathMatchGameMode::Tick(float DeltaSeconds)
 	}
 }
 
-void ADeathMatchGameMode::PlayerEliminated(APlayerCharacter* ElimmedCharacter,
+void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
                                            APrepperPlayerController* VictimController, APrepperPlayerController* AttackerController)
 {
+	/* for Score */
 	ADeathMatchPlayerState* AttackPlayerState = AttackerController ? Cast<ADeathMatchPlayerState>(AttackerController->PlayerState) : nullptr;
 	ADeathMatchPlayerState* VictimPlayerState = VictimController ? Cast<ADeathMatchPlayerState>(VictimController -> PlayerState) : nullptr;
 
@@ -90,10 +90,7 @@ void ADeathMatchGameMode::PlayerEliminated(APlayerCharacter* ElimmedCharacter,
 	{
 		VictimPlayerState->AddToDefeats(1);
 	}
-	if (ElimmedCharacter)
-	{
-		ElimmedCharacter->Elim();
-	}
+	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
 }
 
 void ADeathMatchGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)

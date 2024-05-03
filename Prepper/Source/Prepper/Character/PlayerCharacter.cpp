@@ -226,16 +226,6 @@ void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const U
 	AController* InstigatorController, AActor* DamageCauser)
 {
 	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
-
-	// DEATH MATCH
-	if(CurrentHealth != 0.f) return;
-	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
-	
-	if(PrepperGameMode == nullptr) return;
-	
-	PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
-	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
-	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 }
 
 void APlayerCharacter::UpdateHUDHealth()

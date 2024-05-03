@@ -2,15 +2,16 @@
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Prepper/Prepper.h"
 #include "Prepper/HUD/HealthBarComponent.h"
 
 AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
@@ -90,6 +91,12 @@ void AEnemyBaseCharacter::CheckCombatTarget()
 		EnemyState = EEnemyState::EES_Attacking;
 		// TODO: Attack montage
 	}
+}
+
+void AEnemyBaseCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatorController, AActor* DamageCauser)
+{
+	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
 }
 
 void AEnemyBaseCharacter::UpdateHUDHealth()

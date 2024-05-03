@@ -20,7 +20,7 @@ class PREPPER_API ADeathMatchGameMode : public APrepperGameMode
 public:
 	ADeathMatchGameMode();
 	virtual void Tick(float DeltaSeconds) override;
-	virtual void PlayerEliminated(class APlayerCharacter* ElimmedCharacter,
+	virtual void PlayerEliminated(class ABaseCharacter* ElimmedCharacter,
 									class APrepperPlayerController* VictimController,
 									APrepperPlayerController* AttackerController) override;
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);

@@ -14,9 +14,8 @@ class PREPPER_API APrepperGameMode : public AGameMode
 {
 	GENERATED_BODY()
 public:
-	virtual void PlayerEliminated(class APlayerCharacter* ElimmedCharacter,
+	virtual void PlayerEliminated(class ABaseCharacter* ElimmedCharacter,
 									class APrepperPlayerController* VictimController,
-									APrepperPlayerController* AttackerController)
-									PURE_VIRTUAL(APrepperGameMode::PlayerEliminated );
+									APrepperPlayerController* AttackerController);
 	
 };

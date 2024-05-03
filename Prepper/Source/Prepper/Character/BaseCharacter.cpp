@@ -60,6 +60,15 @@ void ABaseCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDa
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
 	PlayHitReactMontage();
+
+	if(CurrentHealth != 0.f) return;
+	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	
+	if(PrepperGameMode == nullptr) return;
+	
+	PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
+	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 }
 
 void ABaseCharacter::Elim()
