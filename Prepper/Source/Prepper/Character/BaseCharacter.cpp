@@ -122,16 +122,6 @@ void ABaseCharacter::StartDissolve()
 	}
 }
 
-void ABaseCharacter::UpdateHUDHealth()
-{
-	// 본인의 플레이어가 다른이로부터 피해를 받았을 때 내 화면의 GUI를 갱신하기 위한 코드
-	PrepperPlayerController = PrepperPlayerController == nullptr ?  Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
-	if(PrepperPlayerController)
-	{
-		PrepperPlayerController->SetHUDHealth(CurrentHealth, MaxHealth);
-	}
-}
-
 void ABaseCharacter::OnRep_Health()
 {
 	UpdateHUDHealth();
