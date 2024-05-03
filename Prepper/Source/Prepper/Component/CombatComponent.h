@@ -113,11 +113,6 @@ protected:
 	UFUNCTION()
 	void OnRep_Aiming();
 
-	UPROPERTY(EditAnywhere)
-	float BaseWalkSpeed;
-	UPROPERTY(EditAnywhere)
-	float AimWalkSpeed;
-
 	bool bFireButtonPressed;
 
 	float CrosshairVelocityFactor;

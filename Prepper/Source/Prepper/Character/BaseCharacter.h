@@ -19,7 +19,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	/* 기본 변수 */
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float WalkSpeed = 600;
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float SprintSpeed = 900;
 
 	UPROPERTY()

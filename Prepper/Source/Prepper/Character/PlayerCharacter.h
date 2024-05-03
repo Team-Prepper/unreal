@@ -90,6 +90,9 @@ private:
 	void CalculateAO_Pitch();
 	void AimOffset(float DeltaTime);
 
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
+	float AimMovementSpeed = 400.f;
+
 	float AO_Yaw;
 	float InterpAO_Yaw;
 	float AO_Pitch;

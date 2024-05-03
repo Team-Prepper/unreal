@@ -693,6 +693,7 @@ void APlayerCharacter::ConvertPlayerMovementState()
 		HidePlayerEquipment(true);
 		break;
 	case EPlayerMovementState::EPMS_Aim:
+		GetCharacterMovement()->MaxWalkSpeed = AimMovementSpeed;
 		break;
 	case EPlayerMovementState::EPMS_Sprint:
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;

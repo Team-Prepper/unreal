@@ -14,9 +14,6 @@
 UCombatComponent::UCombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
-	BaseWalkSpeed = 600.f;
-	AimWalkSpeed = 400.f;
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -39,7 +36,7 @@ void UCombatComponent::BeginPlay()
 	if(Character)
 	{
 		UE_LOG(LogTemp,Warning,TEXT("CombatComponentReady"));
-		Character->GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+		Character->SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
 
 		if(Character->GetFollowCamera())
 		{
@@ -214,7 +211,6 @@ void UCombatComponent::FireWeapon()
 {
 	if (EquippedWeapon)
 	{
-		TArray<FVector_NetQuantize> HitTargets;
 		HitTargets = EquippedWeapon->GetTarget(HitTarget);
 		LocalFireWeapon(HitTargets);
 		ServerFireWeapon(HitTargets);
@@ -369,18 +365,18 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
-	if(Character)
+	if(Character && Character->IsLocallyControlled())
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
-	}
-	if(Character->IsLocallyControlled() && EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
-	{
-		Character->ShowSniperScopeWidget(bIsAiming);
-	}
-	if(Character->IsLocallyControlled())
-	{
+		EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
+		Character->SetPlayerMovementState(NewState);
 		bAimButtonPressed = bIsAiming;
+		if(EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+		{
+			Character->ShowSniperScopeWidget(bIsAiming);
+		}
 	}
+	
+	
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
@@ -388,7 +384,8 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 	bAiming = bIsAiming;
 	if(Character)
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+		EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
+		Character->SetPlayerMovementState(NewState);
 	}
 }
 
