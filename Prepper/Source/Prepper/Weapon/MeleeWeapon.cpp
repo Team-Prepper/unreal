@@ -10,6 +10,26 @@ void AMeleeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	FindActorsWithinRadius();
 }
 
+TArray<FVector_NetQuantize> AMeleeWeapon::GetTarget(FVector& HitTarget)
+{
+	TArray<FVector_NetQuantize> HitTargets;
+	FVector MeleeTypeVector = FVector(0.f, 0.f, 0.f);
+	switch (WeaponType)
+	{
+	case EWeaponType::EWT_MeleeWeaponBlunt:
+		MeleeTypeVector = FVector(1.f, 1.f, 1.f);
+		break;
+	case EWeaponType::EWT_MeleeWeaponSword:
+		MeleeTypeVector = FVector(2.f, 2.f, 2.f);
+		break;
+		default:
+			break;
+	}
+	
+	HitTargets.Add(MeleeTypeVector);
+	return HitTargets;
+}
+
 void AMeleeWeapon::FindActorsWithinRadius()
 {
 	UWorld* World = Owner->GetWorld();
@@ -90,3 +110,4 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 		HitTarget.ImpactPoint);
 	}
 }
+

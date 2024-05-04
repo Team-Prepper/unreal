@@ -195,16 +195,11 @@ void UCombatComponent::Fire()
 	if (!CanFire()) return;
 	
 	bCanFire = false;
-	if (EquippedRangeWeapon)
-	{
-		CrosshairShootingFactor = .75f;
-		FireWeapon();
-	}
-	else
-	{	
-		FireMeleeWeapon();
-	}
+	
+	CrosshairShootingFactor = .75f;
+	FireWeapon();
 	StartFireTimer();
+	
 }
 
 void UCombatComponent::FireWeapon()
@@ -217,29 +212,6 @@ void UCombatComponent::FireWeapon()
 	}
 }
 
-void UCombatComponent::FireMeleeWeapon()
-{
-	if(EquippedMeleeWeapon)
-	{
-		switch (EquippedMeleeWeapon->GetWeaponType())
-		{
-			case EWeaponType::EWT_MeleeWeaponBlunt:
-				IsBlunt = true;
-				break;
-			case EWeaponType::EWT_MeleeWeaponSword:
-				IsBlunt = false;
-				break;
-		}
-		
-		EquippedWeapon->GetTarget(HitTarget);
-		
-		UE_LOG(LogTemp, Warning, TEXT("MELEE WEAPON ATTACK"));
-		LocalFireWeapon(HitTargets);
-		ServerFireWeapon(HitTargets);
-	}
-}
-
-
 void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
 	if(EquippedWeapon == nullptr || Character == nullptr) return;
@@ -251,6 +223,7 @@ void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceH
 		}
 		else
 		{
+			IsBlunt = EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt;
 			Character->PlayFireMontage(IsBlunt);
 		}
 		EquippedWeapon->Fire(TraceHitTargets);

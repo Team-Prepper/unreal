@@ -34,7 +34,6 @@ protected:
 	
 	void Fire();
 	void FireWeapon();
-	void FireMeleeWeapon();
 	void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	UFUNCTION(BlueprintCallable)

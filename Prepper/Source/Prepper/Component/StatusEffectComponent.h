@@ -27,7 +27,7 @@ private:
 	EStatusEffect CurrentStatusEffect;
 
 	UPROPERTY()
-	APlayerCharacter* Character;
+	class APlayerCharacter* Character;
 	
 
 public:

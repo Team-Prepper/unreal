@@ -38,13 +38,6 @@ AWeapon::AWeapon()
 	PickUpWidget->SetupAttachment(RootComponent);
 }
 
-TArray<FVector_NetQuantize> AWeapon::GetTarget(FVector& HitTarget)
-{
-	TArray<FVector_NetQuantize> HitTargets;
-	HitTargets.Add(HitTarget);
-	return HitTargets;
-}
-
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
@@ -217,4 +210,11 @@ void AWeapon::OnEquippedSecondary()
 void AWeapon::OnPingTooHigh(bool bPingTooHigh)
 {
 	bUseServerSideRewind = !bPingTooHigh;
+}
+
+TArray<FVector_NetQuantize> AWeapon::GetTarget(FVector& HitTarget)
+{
+	TArray<FVector_NetQuantize> HitTargets;
+	HitTargets.Add(HitTarget);
+	return HitTargets;
 }

@@ -13,6 +13,7 @@ class PREPPER_API AMeleeWeapon : public AWeapon
 
 public:
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
+	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget);
 
 	void FindActorsWithinRadius();
 protected:
