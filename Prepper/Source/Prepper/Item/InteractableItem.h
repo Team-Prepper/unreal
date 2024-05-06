@@ -2,11 +2,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AInteractable.h"
+#include "AInteractableActor.h"
 #include "InteractableItem.generated.h"
 
 UCLASS()
-class PREPPER_API AInteractableItem : public AInteractable
+class PREPPER_API AInteractableItem : public AInteractableActor
 {
 	GENERATED_BODY()
 	

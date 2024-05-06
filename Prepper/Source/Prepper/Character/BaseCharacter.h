@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/TimelineComponent.h"
+#include "Prepper/Interfaces/Damageable.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()
-class PREPPER_API ABaseCharacter : public ACharacter
+class PREPPER_API ABaseCharacter : public ACharacter, public IDamageable
 {
 	GENERATED_BODY()
 	
@@ -45,15 +46,16 @@ protected:
 	/* 데미지 처리 */
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
+
 	
 	UFUNCTION()
-	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser) override;
 	virtual void UpdateHUDHealth() PURE_VIRTUAL();
 
 	virtual void PlayHitReactMontage();
 
 	/* 사망 및 부활 처리 */
-	bool bElimmed = false;
+	bool bElimed = false;
 	FTimerHandle ElimTimer;
 	UPROPERTY(EditDefaultsOnly)
 	float ElimDelay = 3.f;
@@ -89,7 +91,7 @@ protected:
 	void StartDissolve();
 
 public:
-	FORCEINLINE bool IsElimed() const { return bElimmed; }
+	FORCEINLINE bool IsElimed() const { return bElimed; }
 	FORCEINLINE float GetCurrentHealth() const { return CurrentHealth; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 };

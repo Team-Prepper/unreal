@@ -12,7 +12,7 @@
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/Component/StatusEffectComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
-#include "Prepper/Item/AInteractable.h"
+#include "Prepper/Item/AInteractableActor.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/Weapon.h"
@@ -388,7 +388,7 @@ void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 	}
 }
 
-void APlayerCharacter::DestroyInteractionItem(AInteractable* InteractableItem)
+void APlayerCharacter::DestroyInteractionItem(AInteractableActor* InteractableItem)
 {
 	if(HasAuthority())
 	{
@@ -400,12 +400,12 @@ void APlayerCharacter::DestroyInteractionItem(AInteractable* InteractableItem)
 	}
 }
 
-void APlayerCharacter::ServerDestroyInteractionItem_Implementation(AInteractable* InteractableItem)
+void APlayerCharacter::ServerDestroyInteractionItem_Implementation(AInteractableActor* InteractableItem)
 {
 	MulticastDestroyInteractionItem(InteractableItem);
 }
 
-void APlayerCharacter::MulticastDestroyInteractionItem_Implementation(AInteractable* InteractableItem)
+void APlayerCharacter::MulticastDestroyInteractionItem_Implementation(AInteractableActor* InteractableItem)
 {
 	if(InteractableItem)
 	{
@@ -759,14 +759,14 @@ void APlayerCharacter::SetOverlappingItem(AActor* InteractableItem)
     	OverlappingItem->ShowPickUpWidget(false);
     }
 	
-    IIInteractable* TheInterface = Cast<IIInteractable>(InteractableItem);
+    IInteractable* TheInterface = Cast<IInteractable>(InteractableItem);
 	if (TheInterface == nullptr)
 	{
 		OverlappingItem = nullptr;
 		return;
 	}
 	
-	OverlappingItem = TScriptInterface<IIInteractable>(InteractableItem);
+	OverlappingItem = TScriptInterface<IInteractable>(InteractableItem);
 	
 	if(IsLocallyControlled())
 	{
@@ -778,7 +778,7 @@ void APlayerCharacter::SetOverlappingItem(AActor* InteractableItem)
 	
 }
 
-void APlayerCharacter::OnRep_OverlappingItem(TScriptInterface<IIInteractable> LastItem)
+void APlayerCharacter::OnRep_OverlappingItem(TScriptInterface<IInteractable> LastItem)
 {
 	if (OverlappingItem)
 	{

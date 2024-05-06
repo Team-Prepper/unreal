@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AInteractable.h"
+#include "AInteractableActor.h"
 #include "InteractableObject.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PREPPER_API AInteractableObject : public AInteractable
+class PREPPER_API AInteractableObject : public AInteractableActor
 {
 	GENERATED_BODY()
 	

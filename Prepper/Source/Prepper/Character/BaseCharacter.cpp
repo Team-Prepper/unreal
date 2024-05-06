@@ -78,7 +78,7 @@ void ABaseCharacter::Elim()
 
 void ABaseCharacter::MulticastElim_Implementation()
 {
-	bElimmed = true;
+	bElimed = true;
 	PlayElimMontage();
 
 	// Start Dissolve Effect

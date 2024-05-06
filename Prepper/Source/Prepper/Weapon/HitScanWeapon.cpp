@@ -26,11 +26,11 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 		FHitResult FireHit;
 		bool IsHit = WeaponTraceHit(Start, HitTarget, FireHit);
 		
-		APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(FireHit.GetActor());
-		if (PlayerCharacter && HasAuthority() && InstigatorController)
+		IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
+		if (DamagedTarget && HasAuthority() && InstigatorController)
 		{
 			UGameplayStatics::ApplyDamage(
-				PlayerCharacter,
+				FireHit.GetActor(),
 				Damage,
 				InstigatorController,
 				this,

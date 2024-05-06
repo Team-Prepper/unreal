@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
 #include "Prepper/Interfaces/Controllable.h"
-#include "Prepper/Interfaces/IInteractable.h"
+#include "Prepper/Interfaces/Interactable.h"
 
 #include "CarPawn.generated.h"
 
@@ -26,7 +26,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateVehicle, Log, All);
  *  Specific vehicle configurations are handled in subclasses.
  */
 UCLASS(abstract)
-class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IIInteractable
+class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IInteractable
 {
 private:
 	GENERATED_BODY()

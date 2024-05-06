@@ -3,12 +3,12 @@
 #include "CoreMinimal.h"
 #include "WeaponTypes.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/Item/AInteractable.h"
+#include "Prepper/Item/AInteractableActor.h"
 #include "Weapon.generated.h"
 
 
 UCLASS()
-class PREPPER_API AWeapon : public AInteractable
+class PREPPER_API AWeapon : public AInteractableActor
 {
 	GENERATED_BODY()
 	

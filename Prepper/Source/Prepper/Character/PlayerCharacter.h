@@ -9,7 +9,7 @@
 #include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
 
-class IIInteractable;
+class IInteractable;
 class UInputAction;
 
 struct FInputActionValue;
@@ -131,9 +131,9 @@ private:
 
 	/* 아이템 획득 */
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingItem)
-	TScriptInterface<IIInteractable> OverlappingItem;
+	TScriptInterface<IInteractable> OverlappingItem;
 	UFUNCTION()
-	void OnRep_OverlappingItem(TScriptInterface<IIInteractable> LastItem);
+	void OnRep_OverlappingItem(TScriptInterface<IInteractable> LastItem);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UCombatComponent* Combat;
@@ -211,11 +211,11 @@ private:
 public:
 	void SetOverlappingItem(AActor* InteractableItem);
 	void EquipWeapon(AWeapon* Weapon);
-	void DestroyInteractionItem(AInteractable* InteractableItem);
+	void DestroyInteractionItem(AInteractableActor* InteractableItem);
 	UFUNCTION(Server, Reliable)
-	void ServerDestroyInteractionItem(AInteractable* InteractableItem);
+	void ServerDestroyInteractionItem(AInteractableActor* InteractableItem);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastDestroyInteractionItem(AInteractable* InteractableItem);
+	void MulticastDestroyInteractionItem(AInteractableActor* InteractableItem);
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	bool IsLocallyReloading();

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AInteractable.h"
+#include "AInteractableActor.h"
 #include "ItemBackpack.generated.h"
 
 
@@ -17,7 +17,7 @@ enum class EBackpackState : uint8
 };
 
 UCLASS()
-class PREPPER_API AItemBackpack : public AInteractable
+class PREPPER_API AItemBackpack : public AInteractableActor
 {
 	GENERATED_BODY()
 	
