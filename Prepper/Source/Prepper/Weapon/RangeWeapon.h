@@ -75,6 +75,7 @@ public:
 
 protected:
 	float TargetDistance;
+	void SpendRound();
 	
 private:
 	UPROPERTY(EditAnywhere)
@@ -93,7 +94,7 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	bool bAutoReload = false;
-	void SpendRound();
+	
 
 	UPROPERTY()
 	USkeletalMeshComponent* RangeWeaponMesh;

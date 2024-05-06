@@ -56,7 +56,6 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	for (const FHitResult& Hit : HitResults)
 	{
 		DamageTarget(Hit);
-		DrawDebugSphere(World, Hit.GetActor()->GetActorLocation(), 16.f, 12, FColor::Purple, false, 5.0f);
 	}
 	
 }
@@ -79,20 +78,19 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
 	AController* InstigatorController = OwnerPawn->GetController();
-	APlayerCharacter* DamagedCharacter = Cast<APlayerCharacter>(HitTarget.GetActor());
-	if(DamagedCharacter == Cast<APlayerCharacter>(GetOwner())) return;
+	IDamageable* DamagedTarget = Cast<IDamageable>(HitTarget.GetActor());
+	if(DamagedTarget == Cast<IDamageable>(GetOwner())) return;
 	
-	if (DamagedCharacter && HasAuthority() && InstigatorController)
+	if (DamagedTarget && HasAuthority() && InstigatorController)
 	{
 		UGameplayStatics::ApplyDamage(
-			DamagedCharacter,
+			HitTarget.GetActor(),
 			Damage,
 			InstigatorController,
 			this,
 			UDamageType::StaticClass()
 		);
 	}
-	//DrawDebugSphere(GetWorld(), HitTarget.ImpactPoint, 16.f, 12, FColor::Purple, false, 5.0f);
 	if(ImpactParticles)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(

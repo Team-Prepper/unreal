@@ -4,9 +4,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
-#include "WeaponTypes.h"
-
-#include "DrawDebugHelpers.h"
 
 void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
@@ -96,7 +93,6 @@ bool AHitScanWeapon::WeaponTraceHit(const FVector& TraceStart, const FVector& Hi
 			BeamEnd = OutHit.ImpactPoint;
 			IsBlock = true;
 		}
-		DrawDebugSphere(GetWorld(), BeamEnd, 16.f, 12, FColor::Green, true);
 		if (BeamParticles)
 		{
 			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(

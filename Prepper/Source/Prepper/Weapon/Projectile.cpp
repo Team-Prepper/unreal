@@ -3,7 +3,6 @@
 #include "Components/BoxComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/Character/PlayerCharacter.h"
 #include "Sound/SoundCue.h"
 #include "Prepper/Prepper.h"
 

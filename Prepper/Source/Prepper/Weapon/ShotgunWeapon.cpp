@@ -14,6 +14,7 @@ void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
+	SpendRound();
 	AController* InstigatorController = OwnerPawn->GetController();
 
 	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
@@ -23,22 +24,22 @@ void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 		const FVector Start = SocketTransform.GetLocation();
 
 		// hit Character - number of hit
-		TMap<ABaseCharacter*, uint32> HitMap;
+		TMap<IDamageable*, uint32> HitMap;
 		for(FVector_NetQuantize HitTarget : HitTargets)
 		{
 			FHitResult FireHit;
 			WeaponTraceHit(Start, HitTarget, FireHit);
 
-			ABaseCharacter* DamagedCharacter = Cast<ABaseCharacter>(FireHit.GetActor());
-			if (DamagedCharacter)
+			IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
+			if (DamagedTarget)
 			{
-				if (HitMap.Contains(DamagedCharacter))
+				if (HitMap.Contains(DamagedTarget))
 				{
-					HitMap[DamagedCharacter]++;
+					HitMap[DamagedTarget]++;
 				}
 				else
 				{
-					HitMap.Emplace(DamagedCharacter, 1);
+					HitMap.Emplace(DamagedTarget, 1);
 				}
 				if(ImpactParticles)
 				{
@@ -63,10 +64,11 @@ void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 		}
 		for (auto HitPair : HitMap)
 		{
+			
 			if (HitPair.Key && HasAuthority() && InstigatorController)
 			{
 				UGameplayStatics::ApplyDamage(
-					HitPair.Key,
+					Cast<AActor>(HitPair.Key),
 					Damage * HitPair.Value,
 					InstigatorController,
 					this,

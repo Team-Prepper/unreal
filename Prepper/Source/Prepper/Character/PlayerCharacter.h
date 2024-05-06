@@ -9,7 +9,6 @@
 #include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
 
-class IInteractable;
 class UInputAction;
 
 struct FInputActionValue;
