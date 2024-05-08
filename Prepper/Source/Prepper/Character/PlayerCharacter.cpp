@@ -170,7 +170,7 @@ void APlayerCharacter::PlayFireMontage(bool bAiming)
 		if(AnimInstance && FireWeaponMontage)
 		{
 			AnimInstance->Montage_Play(FireWeaponMontage);
-			SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+			SectionName = bAiming ? FName("FireAim") : FName("FireHip");
 			AnimInstance->Montage_JumpToSection(SectionName);
 		}
 	}
