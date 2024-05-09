@@ -35,6 +35,7 @@ void AEnemyBaseCharacter::BeginPlay()
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyBaseCharacter::PawnSeen);
+		PawnSensing->OnHearNoise.AddDynamic(this, &AEnemyBaseCharacter::PawnHearn);
 	}
 }
 
@@ -150,6 +151,7 @@ AActor* AEnemyBaseCharacter::ChoosePatrolTarget()
 
 void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 {
+	UE_LOG(LogTemp, Display, TEXT("zombie SEE"));
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 	if (SeenPawn->ActorHasTag(FName("PlayerCharacter"))) // TODO : Set Player Actor HasTag
 	{	
@@ -163,4 +165,22 @@ void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 			MoveToTarget(CombatTarget);
 		}
 	}
+}
+
+void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume)
+{
+	UE_LOG(LogTemp, Display, TEXT("zombie HEAR"));
+	if (EnemyState == EEnemyState::EES_Chasing) return;
+	if (HearnPawn->ActorHasTag(FName("PlayerCharacter"))) // TODO : Set Player Actor HasTag
+	{	
+		GetWorldTimerManager().ClearTimer(PatrolTimer);
+		GetCharacterMovement()->MaxWalkSpeed = 100.f;
+		CombatTarget = HearnPawn;
+		
+		if (EnemyState != EEnemyState::EES_Attacking)
+		{
+			EnemyState = EEnemyState::EES_Chasing;
+			MoveToTarget(CombatTarget);
+		}
+	}  
 }
