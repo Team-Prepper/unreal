@@ -15,7 +15,7 @@ AWeapon::AWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
 
-	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Block);
+	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -31,8 +31,10 @@ AWeapon::AWeapon()
 	
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
+	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
@@ -127,6 +129,8 @@ void AWeapon::OnWeaponStateSet()
 		case EWeaponState::EWS_Dropped:
 			OnDropped();
 			break;
+		default:
+			break;
 	}
 }
 
@@ -159,14 +163,18 @@ void AWeapon::OnDropped()
 	if (HasAuthority())
 	{
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	}
 	WeaponMesh->SetSimulatePhysics(true);
 	WeaponMesh->SetEnableGravity(true);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
@@ -188,6 +196,7 @@ void AWeapon::OnDropped()
 void AWeapon::OnEquippedSecondary()
 {
 	ShowPickUpWidget(false);
+	EnableCustomDepth(false);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh->SetSimulatePhysics(false);
 	WeaponMesh->SetEnableGravity(false);
