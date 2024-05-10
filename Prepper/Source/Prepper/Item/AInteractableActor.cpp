@@ -2,6 +2,7 @@
 #include "AInteractableActor.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Prepper/Prepper.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
 
@@ -10,9 +11,8 @@ void AInteractableActor::BeginPlay()
 	Super::BeginPlay();
 	
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AInteractableActor::OnSphereOverlap);
-	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AInteractableActor::OnSphereEndOverlap);
 	
 	if(PickUpWidget)
 	{
@@ -28,22 +28,3 @@ void AInteractableActor::ShowPickUpWidget(bool bShowWidget)
 	}
 }
 
-void AInteractableActor::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                    UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(this);
-	}
-}
-
-void AInteractableActor::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(nullptr);
-	}
-}

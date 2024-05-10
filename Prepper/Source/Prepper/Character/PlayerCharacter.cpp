@@ -17,6 +17,7 @@
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/Weapon.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Prepper/Component/InteractionComponent.h"
 #include "Prepper/Item/ItemBackpack.h"
 #include "Sound/SoundCue.h"
 
@@ -53,6 +54,9 @@ APlayerCharacter::APlayerCharacter()
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
 
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
+	InteractionComponent->SetIsReplicated(true);
+
 	StatusEffect = CreateDefaultSubobject<UStatusEffectComponent>(TEXT("StatusEffectComponet"));
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
@@ -75,7 +79,6 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME_CONDITION(APlayerCharacter, OverlappingItem, COND_OwnerOnly);
 	DOREPLIFETIME(APlayerCharacter, bDisableGamePlay);
 	DOREPLIFETIME(APlayerCharacter, PlayerMovementState);
 	DOREPLIFETIME(APlayerCharacter, EquippedBackpack);
@@ -91,6 +94,10 @@ void APlayerCharacter::PostInitializeComponents()
 	if(StatusEffect)
 	{
 		StatusEffect->Character = this;
+	}
+	if(InteractionComponent)
+	{
+		InteractionComponent->Character = this;
 	}
 }
 
@@ -357,18 +364,28 @@ void APlayerCharacter::SpaceReleased()
 void APlayerCharacter::EPressed()
 {
 	if(bDisableGamePlay) return;
-	if(OverlappingItem)
+	TScriptInterface<IInteractable> InteractableItem;
+	if(InteractionComponent)
 	{
-		OverlappingItem->Interaction(this);
+		InteractableItem = InteractionComponent->CurInteractableItem;
 	}
-	else if (Combat && Combat->ShouldSwapWeapons())
+
+	/* Interaction */
+	if(InteractableItem)
+	{
+		InteractionComponent->CurInteractableItem->Interaction(this);
+		return;
+	}
+
+	/* Swap */
+	if (Combat && Combat->ShouldSwapWeapons())
 	{
 		Combat->SwapWeapons();
 	}
 	bool bSwap = Combat->ShouldSwapWeapons() &&
 			!HasAuthority() &&
 			Combat->CombatState == ECombatState::ECS_Unoccupied &&
-			OverlappingItem == nullptr;
+			InteractableItem == nullptr;
 
 	if (bSwap)
 	{
@@ -752,44 +769,6 @@ void APlayerCharacter::AddItem(FString ItemCode)
 	Inven.TryAddItem(ItemCode);
 }
 
-void APlayerCharacter::SetOverlappingItem(AActor* InteractableItem)
-{
-	if(OverlappingItem)
-    {
-    	OverlappingItem->ShowPickUpWidget(false);
-    }
-	
-    IInteractable* TheInterface = Cast<IInteractable>(InteractableItem);
-	if (TheInterface == nullptr)
-	{
-		OverlappingItem = nullptr;
-		return;
-	}
-	
-	OverlappingItem = TScriptInterface<IInteractable>(InteractableItem);
-	
-	if(IsLocallyControlled())
-	{
-		if(OverlappingItem)
-		{
-			OverlappingItem->ShowPickUpWidget(true);
-		}
-	}
-	
-}
-
-void APlayerCharacter::OnRep_OverlappingItem(TScriptInterface<IInteractable> LastItem)
-{
-	if (OverlappingItem)
-	{
-		OverlappingItem->ShowPickUpWidget(true);
-	}
-	if (LastItem)
-	{
-		LastItem->ShowPickUpWidget(false);
-	}
-	
-}
 
 void APlayerCharacter::HideAllMeshComponent(bool Hide)
 {

@@ -128,14 +128,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UWidgetComponent* OverheadWidget;
 
-	/* 아이템 획득 */
-	UPROPERTY(ReplicatedUsing = OnRep_OverlappingItem)
-	TScriptInterface<IInteractable> OverlappingItem;
-	UFUNCTION()
-	void OnRep_OverlappingItem(TScriptInterface<IInteractable> LastItem);
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UCombatComponent* Combat;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	class UInteractionComponent* InteractionComponent;
 
 	/* 상태 이상 */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
@@ -208,7 +204,6 @@ private:
 	MapInventory Inven;
 
 public:
-	void SetOverlappingItem(AActor* InteractableItem);
 	void EquipWeapon(AWeapon* Weapon);
 	void DestroyInteractionItem(AInteractableActor* InteractableItem);
 	UFUNCTION(Server, Reliable)
