@@ -8,7 +8,6 @@
 #include "Prepper/Prepper.h"
 #include "Prepper/Interfaces/Interactable.h"
 #include "Prepper/Item/AInteractableActor.h"
-#include "DrawDebugHelpers.h"
 
 UInteractionComponent::UInteractionComponent()
 {
@@ -62,22 +61,6 @@ void UInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 			CollisionChannel
 		);
 
-		//---
-		FColor TraceColor = bHitSomething ? FColor::Red : FColor::Green; // 충돌 시 빨강, 아니면 초록
-
-		// 디버그 라인 그리기
-		DrawDebugLine(
-			GetWorld(),
-			Start, // 시작 지점
-			End, // 끝 지점
-			TraceColor, // 라인의 색상
-			false, // 지속적으로 그릴 것인지
-			1.0f, // 라인이 화면에 유지되는 시간 (초 단위)
-			0, // 디버그 라인을 그릴 두께
-			.1f // 디버그 라인의 두께
-		);
-		//---
-
 		if (bHitSomething)
 		{
 			SetItemInteractable(TraceHitResult.GetActor());
@@ -91,15 +74,12 @@ void UInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 
 void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 {
-	AInteractableActor* LastInteractableItem = CurInteractableItem;
-	if(LastInteractableItem)
+	TScriptInterface<IInteractable> LastInteractableItem = CurInteractableItem;
+	
+	
+	if(LastInteractableItem && InteractableItem == nullptr)
 	{
 		LastInteractableItem->ShowPickUpWidget(false);
-	}
-	
-	IInteractable* TheInterface = Cast<IInteractable>(InteractableItem);
-	if (TheInterface == nullptr && LastInteractableItem != nullptr)
-	{
 		LastInteractableItem = nullptr;
 		if(!Character->HasAuthority())
 		{
@@ -108,12 +88,19 @@ void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 		return;
 	}
 	
-	CurInteractableItem = Cast<AInteractableActor>(InteractableItem);
+	CurInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
 	if(LastInteractableItem != CurInteractableItem)
 	{
-		ServerSetItemInteractable(InteractableItem);
+		if(!Character->HasAuthority())
+		{
+			ServerSetItemInteractable(InteractableItem);
+		}
 		if(Character->IsLocallyControlled())
 		{
+			if(LastInteractableItem)
+			{
+				LastInteractableItem->ShowPickUpWidget(false);
+			}
 			if(CurInteractableItem)
 			{
 				CurInteractableItem->ShowPickUpWidget(true);
@@ -130,5 +117,5 @@ void UInteractionComponent::ServerSetItemInteractable_Implementation(AActor* Int
 		CurInteractableItem = nullptr;
 		return;
 	}
-	CurInteractableItem = Cast<AInteractableActor>(InteractableItem);
+	CurInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
 }

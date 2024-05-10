@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/Interfaces/Interactable.h"
 #include "InteractionComponent.generated.h"
 
 
@@ -35,6 +36,6 @@ private:
 	float TraceRange = 500.f;
 
 	UPROPERTY(Replicated)
-	class AInteractableActor* CurInteractableItem;
+	TScriptInterface<IInteractable> CurInteractableItem;
 		
 };
