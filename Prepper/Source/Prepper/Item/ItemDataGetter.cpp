@@ -2,7 +2,6 @@
 
 
 #include "ItemDataGetter.h"
-
 #include "ItemCombinationData.h"
 
 FString ItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Code2)
@@ -13,7 +12,6 @@ FString ItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Cod
 	}
 
 	return Code2 + Code1;
-	
 }
 
 ItemDataGetter::ItemDataGetter()

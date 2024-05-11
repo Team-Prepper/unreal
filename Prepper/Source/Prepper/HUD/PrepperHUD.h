@@ -34,7 +34,7 @@ class PREPPER_API APrepperHUD : public AHUD
 public:
 	virtual void DrawHUD() override;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UUserWidget> CharacterOverlayClass;
 	void AddCharacterOverlay();
 
@@ -48,6 +48,11 @@ public:
 	class UAnnouncement* Announcement;
 
 	void AddAnnouncement();
+	
+	bool IsInventoryVisible = false;
+	UFUNCTION()
+	void ToggleInventory();
+	
 protected:
 	virtual void BeginPlay() override;
 	

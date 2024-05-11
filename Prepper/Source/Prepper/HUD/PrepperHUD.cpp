@@ -97,3 +97,20 @@ void APrepperHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
 		);
 }
 
+void APrepperHUD::ToggleInventory()
+{
+	if(!CharacterOverlay) return;
+
+	IsInventoryVisible = !IsInventoryVisible;
+	CharacterOverlay->SetInventoryVisible(IsInventoryVisible);
+	GetOwningPlayerController()->SetShowMouseCursor(IsInventoryVisible);
+	if(IsInventoryVisible)
+	{
+		GetOwningPlayerController()->SetInputMode(FInputModeGameAndUI());
+	}
+	else
+	{
+		GetOwningPlayerController()->SetInputMode(FInputModeGameOnly());
+	}
+	
+}

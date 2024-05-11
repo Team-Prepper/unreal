@@ -124,6 +124,8 @@ void APrepperPlayerController::SetupInputComponent()
 
 		// Reload
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APrepperPlayerController::ReloadButtonPressed);
+
+		EnhancedInputComponent->BindAction(OpenInventory, ETriggerEvent::Triggered, this, &APrepperPlayerController::OpenInventoryPressed);
 	}
 	
 }
@@ -195,11 +197,16 @@ void APrepperPlayerController::FireButtonReleased()
 	TargetControllerable->MouseLeftReleased();
 }
 
+void APrepperPlayerController::OpenInventoryPressed()
+{
+	if (!PrepperHUD) return;
+	PrepperHUD->ToggleInventory();
+}
+
 void APrepperPlayerController::ServerInteractionPressed_Implementation()
 {
 	if (!TargetControllerable) return;
 	TargetControllerable->EPressed();
-	
 }
 
 void APrepperPlayerController::BindPlayerAction()

@@ -125,7 +125,9 @@ private:
 	UInputAction* AimAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* FireAction;
-
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* OpenInventory;
+	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void JumpButtonPressed();
@@ -139,6 +141,7 @@ private:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
+	void OpenInventoryPressed();
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteractionPressed();
