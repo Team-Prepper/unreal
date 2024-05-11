@@ -79,6 +79,8 @@ protected:
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);
+	UFUNCTION()
+	void PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume);
 
 	UPROPERTY()
 	AActor* CombatTarget;
