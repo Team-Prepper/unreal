@@ -129,6 +129,13 @@ void AEnemyBaseCharacter::MoveToTarget(AActor* Target)
 	EnemyController->MoveToActor(Target, 15.f);
 }
 
+void AEnemyBaseCharacter::MoveToLocation(FVector& Location)
+{
+	if (EnemyController == nullptr || Location == FVector::ZeroVector) return;
+	EnemyController->MoveToLocation(Location, 1.5f);
+}
+
+
 AActor* AEnemyBaseCharacter::ChoosePatrolTarget()
 {
 	TArray<AActor*> ValidTargets;
@@ -152,8 +159,7 @@ AActor* AEnemyBaseCharacter::ChoosePatrolTarget()
 void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 {
 	UE_LOG(LogTemp, Display, TEXT("zombie SEE"));
-	if (EnemyState == EEnemyState::EES_Chasing) return;
-	if (SeenPawn->ActorHasTag(FName("PlayerCharacter"))) // TODO : Set Player Actor HasTag
+	if (SeenPawn->ActorHasTag(FName("PlayerCharacter"))) // 엑터의 태그가 플레이어일때만
 	{	
 		GetWorldTimerManager().ClearTimer(PatrolTimer);
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
@@ -162,7 +168,8 @@ void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 		if (EnemyState != EEnemyState::EES_Attacking)
 		{
 			EnemyState = EEnemyState::EES_Chasing;
-			MoveToTarget(CombatTarget);
+			FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
+			MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 		}
 	}
 }
@@ -171,16 +178,15 @@ void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, f
 {
 	UE_LOG(LogTemp, Display, TEXT("zombie HEAR"));
 	if (EnemyState == EEnemyState::EES_Chasing) return;
-	if (HearnPawn->ActorHasTag(FName("PlayerCharacter"))) // TODO : Set Player Actor HasTag
-	{	
-		GetWorldTimerManager().ClearTimer(PatrolTimer);
-		GetCharacterMovement()->MaxWalkSpeed = 100.f;
-		CombatTarget = HearnPawn;
-		
-		if (EnemyState != EEnemyState::EES_Attacking)
-		{
-			EnemyState = EEnemyState::EES_Chasing;
-			MoveToTarget(CombatTarget);
-		}
-	}  
+	
+	GetWorldTimerManager().ClearTimer(PatrolTimer);
+	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+	CombatTarget = HearnPawn;
+	
+	if (EnemyState != EEnemyState::EES_Attacking)
+	{
+		EnemyState = EEnemyState::EES_Chasing;
+		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
+		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
+	}
 }

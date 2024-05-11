@@ -75,6 +75,7 @@ protected:
 
 	bool InTargetRange(AActor* Target, float Radius);
 	void MoveToTarget(AActor* Target);
+	void MoveToLocation(FVector &Location);
 	AActor* ChoosePatrolTarget();
 
 	UFUNCTION()

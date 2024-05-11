@@ -20,6 +20,7 @@
 #include "Prepper/Component/InteractionComponent.h"
 #include "Prepper/Item/ItemBackpack.h"
 #include "Sound/SoundCue.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -73,6 +74,9 @@ APlayerCharacter::APlayerCharacter()
 	MinNetUpdateFrequency = 33.f;
 
 	bBeforeSeat = false;
+
+	// 노이즈 생성 컴포넌트 추가
+	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 }
 
 void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -279,6 +283,12 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
+
+		// 달리면 노이즈 발생
+		if (PlayerMovementState == EPlayerMovementState::EPMS_Sprint)
+		{
+			MakeNoise(1, nullptr, FVector::ZeroVector);
+		}
 	}
 }
 
