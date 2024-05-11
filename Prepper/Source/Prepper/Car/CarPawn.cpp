@@ -10,6 +10,7 @@
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Prepper/Character/PlayerCharacter.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 

@@ -160,13 +160,12 @@ void AWeapon::OnEquipped()
 
 void AWeapon::OnDropped()
 {
-	if (HasAuthority())
-	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-	}
+	
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
+	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	
 	WeaponMesh->SetSimulatePhysics(true);
 	WeaponMesh->SetEnableGravity(true);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
