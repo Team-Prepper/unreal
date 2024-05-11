@@ -108,6 +108,16 @@ TArray<FVector_NetQuantize> ARangeWeapon::GetTarget(FVector& HitTarget)
 	return HitTargets;
 }
 
+void ARangeWeapon::GetCrosshair(UTexture2D*& Center, UTexture2D*& Left, UTexture2D*& Right, UTexture2D*& Top,
+	UTexture2D*& Bottom)
+{
+	Center = CrosshairCenter;
+	Left   = CrosshairLeft;
+	Right  = CrosshairRight;
+	Top    = CrosshairTop;
+	Bottom = CrosshairBottom;
+}
+
 FVector ARangeWeapon::TraceEndWithScatter(const FVector& HitTarget)
 {
 	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");

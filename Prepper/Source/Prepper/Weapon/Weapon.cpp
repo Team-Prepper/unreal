@@ -220,6 +220,16 @@ void AWeapon::OnPingTooHigh(bool bPingTooHigh)
 	bUseServerSideRewind = !bPingTooHigh;
 }
 
+
+void AWeapon::GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom)
+{
+	Center = nullptr;
+	Left = nullptr;
+	Right = nullptr;
+	Top = nullptr;
+	Bottom = nullptr;
+}
+
 TArray<FVector_NetQuantize> AWeapon::GetTarget(FVector& HitTarget)
 {
 	TArray<FVector_NetQuantize> HitTargets;

@@ -20,6 +20,19 @@ public:
 	
 	void Dropped();
 
+	/* Custom Depth 아이템 윤곽선 효과 */
+	void EnableCustomDepth(bool bEnable);
+
+	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) PURE_VIRTUAL();
+
+	virtual void SetHUDAmmo() PURE_VIRTUAL();
+
+	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom);
+
+	virtual FName AttachSocketName() PURE_VIRTUAL(AWeapon::AttachSocketName(), return FName("ddd");)
+	
+	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget);
+	
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
 
@@ -30,16 +43,7 @@ public:
 	FName ReloadActionName = FName("AssaultRifle");
 	
 	UPROPERTY()
-	class USoundCue* EquipSound;
-
-	/* Custom Depth 아이템 윤곽선 효과 */
-	void EnableCustomDepth(bool bEnable);
-
-	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) PURE_VIRTUAL();
-
-	virtual void SetHUDAmmo() PURE_VIRTUAL();
-
-	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget);
+	USoundCue* EquipSound;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -62,7 +66,7 @@ protected:
 	UStaticMeshComponent* StaticWeaponMesh;
 
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
-	class UAnimationAsset* FireAnimation;
+	UAnimationAsset* FireAnimation;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
@@ -71,9 +75,9 @@ protected:
 	void OnRep_WeaponState();
 	
 	UPROPERTY()
-	class APlayerCharacter* PlayerOwnerCharacter;
+	APlayerCharacter* PlayerOwnerCharacter;
 	UPROPERTY()
-	class APrepperPlayerController* PlayerOwnerController;
+	APrepperPlayerController* PlayerOwnerController;
 
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
@@ -81,8 +85,8 @@ protected:
 public:
 	void SetWeaponState(EWeaponState State);
 	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
-	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
+	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
 };
 
 

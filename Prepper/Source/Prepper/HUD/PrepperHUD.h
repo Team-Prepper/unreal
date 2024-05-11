@@ -10,14 +10,17 @@ USTRUCT(BlueprintType)
 struct FHUDPackage
 {
 	GENERATED_BODY()
-public:
-	class UTexture2D* CrosshairCenter;
+	
+	UTexture2D* CrosshairCenter;
 	UTexture2D* CrosshairLeft;
 	UTexture2D* CrosshairRight;
 	UTexture2D* CrosshairTop;
 	UTexture2D* CrosshairBottom;
+	
 	float CrosshairSpread;
+
 	FLinearColor CrosshairColor;
+	
 };
 
 /**
