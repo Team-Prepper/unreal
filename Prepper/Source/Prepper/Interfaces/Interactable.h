@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/Character/PlayerCharacter.h"
 #include "UObject/Interface.h"
 #include "Interactable.generated.h"
 
@@ -18,8 +17,7 @@ class PREPPER_API IInteractable
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual void Interaction(APlayerCharacter* Target) PURE_VIRTUAL(IIInteractable::Interaction, );
-	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL(IIInteractable::ShowPickUpWidget, );
+	virtual void Interaction(class APlayerCharacter* Target) PURE_VIRTUAL();
+	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL();
 };

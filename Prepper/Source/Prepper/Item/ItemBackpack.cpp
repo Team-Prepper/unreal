@@ -45,8 +45,6 @@ void AItemBackpack::BeginPlay()
 	{
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AItemBackpack::OnSphereOverlap);
-		AreaSphere->OnComponentEndOverlap.AddDynamic(this, &AItemBackpack::OnSphereEndOverlap);
 	}
 }
 

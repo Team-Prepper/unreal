@@ -88,8 +88,6 @@ void ACarPawn::BeginPlay()
 	Super::BeginPlay();
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &ACarPawn::OnSphereOverlap);
-	AreaSphere->OnComponentEndOverlap.AddDynamic(this, &ACarPawn::OnSphereEndOverlap);
 	
 	// 게임 시작시 플레이어 UI 동기화(초기화)
 	
@@ -191,26 +189,6 @@ void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)
 {
 	
-}
-
-void ACarPawn::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                               UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(this);
-	}
-}
-
-void ACarPawn::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(OtherActor);
-	if(PlayerCharacter)
-	{
-		PlayerCharacter->SetOverlappingItem(nullptr);
-	}
 }
 
 void ACarPawn::StartBrake(const FInputActionValue& Value)
