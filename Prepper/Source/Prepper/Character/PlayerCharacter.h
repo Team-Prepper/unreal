@@ -158,7 +158,7 @@ private:
 	/* Player Movement State */
 	bool bBeforeSeat;
 	
-	UPROPERTY(ReplicatedUsing = OnRep_PlayerMovementState)
+	UPROPERTY(Replicated)
 	EPlayerMovementState PlayerMovementState;
 
 	UPROPERTY(VisibleAnywhere, Category = "Player Noise")
@@ -168,8 +168,10 @@ public:
 	
 private:
 	void ConvertPlayerMovementState();
-	UFUNCTION()
-	void OnRep_PlayerMovementState();
+	UFUNCTION(Server, Reliable)
+	void ServerConvertPlayerMovementState(const EPlayerMovementState State);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastConvertPlayerMovementState(const EPlayerMovementState State);
 	
 	/* For Crouch Cam */
 	UPROPERTY(EditAnywhere, Category = CrouchMovement)

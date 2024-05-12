@@ -132,6 +132,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 	CameraBoom->TargetArmLength = NewArmLength;
 	
 	PollInit();
+	if (PlayerMovementState == EPlayerMovementState::EPMS_Sprint)
+	{
+		MakeNoise(1, nullptr, FVector::ZeroVector);
+	}
 }
 
 void APlayerCharacter::RotateInPlace(float DeltaTime)
@@ -283,12 +287,6 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
-
-		// 달리면 노이즈 발생
-		if (PlayerMovementState == EPlayerMovementState::EPMS_Sprint)
-		{
-			MakeNoise(1, nullptr, FVector::ZeroVector);
-		}
 	}
 }
 
@@ -680,8 +678,15 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
 	}
 }
 
-void APlayerCharacter::OnRep_PlayerMovementState()
+void APlayerCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
 {
+	PlayerMovementState = State;
+	MulticastConvertPlayerMovementState(State);
+}
+
+void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
+{
+	PlayerMovementState = State;
 	ConvertPlayerMovementState();
 }
 
@@ -690,6 +695,7 @@ void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
 {
 	PlayerMovementState = State;
 	ConvertPlayerMovementState();
+	ServerConvertPlayerMovementState(State);
 }
 
 void APlayerCharacter::ConvertPlayerMovementState()

@@ -41,7 +41,7 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	
 	TArray<FHitResult> HitResults;
 	FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(AttackRange);
-	FCollisionObjectQueryParams ObjectQueryParams = FCollisionObjectQueryParams(ECollisionChannel::ECC_Pawn);
+	FCollisionObjectQueryParams ObjectQueryParams = FCollisionObjectQueryParams(ECC_Pawn);
 	
 	GetWorld()->SweepMultiByObjectType(
         	HitResults,
