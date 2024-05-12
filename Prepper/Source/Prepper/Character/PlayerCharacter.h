@@ -160,6 +160,9 @@ private:
 	
 	UPROPERTY(ReplicatedUsing = OnRep_PlayerMovementState)
 	EPlayerMovementState PlayerMovementState;
+
+	UPROPERTY(VisibleAnywhere, Category = "Player Noise")
+	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트
 public:
 	void SetPlayerMovementState(const EPlayerMovementState State);
 	

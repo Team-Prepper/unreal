@@ -1,4 +1,6 @@
 #include "Weapon.h"
+
+#include "Components/PawnNoiseEmitterComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -39,6 +41,9 @@ AWeapon::AWeapon()
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
+
+	// 노이즈 생성 컴포넌트 추가
+	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 }
 
 void AWeapon::BeginPlay()
