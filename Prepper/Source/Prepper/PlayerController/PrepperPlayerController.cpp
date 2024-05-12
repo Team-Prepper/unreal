@@ -275,19 +275,6 @@ void APrepperPlayerController::CheckPing(float DeltaTime)
 		HighPingRunningTime = 0.f;
 		
 	}
-	bool bHighPingAnimationPlaying =
-		PrepperHUD &&
-		PrepperHUD->CharacterOverlay &&
-		PrepperHUD->CharacterOverlay->HighPingAnim &&
-		PrepperHUD->CharacterOverlay->IsAnimationPlaying(PrepperHUD->CharacterOverlay->HighPingAnim);
-	if(bHighPingAnimationPlaying)
-	{
-		PingAnimationRunningTime += DeltaTime;
-		if(PingAnimationRunningTime > HighPingRunningTime)
-		{
-			StopHighPingWarningBP();
-		}
-	}
 }
 
 

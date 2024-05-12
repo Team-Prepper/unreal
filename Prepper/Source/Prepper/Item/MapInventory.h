@@ -25,5 +25,7 @@ public:
 	
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;
+
+	void UpdateUI(int index, FItemData ItemInfo, bool IsResetSlot);
 	
 };
