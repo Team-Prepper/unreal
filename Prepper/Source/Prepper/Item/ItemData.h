@@ -16,5 +16,8 @@ public:
 	FString ItemCode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
 	FString ItemName;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
+	UTexture2D* ItemIcon;
 
 };
