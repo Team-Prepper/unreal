@@ -18,12 +18,15 @@ class PREPPER_API UInventoryItemUI : public UUserWidget, public IUserObjectListE
 {
 	GENERATED_BODY()
 private:
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Icon;
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DisplayText;
 public:
+	FText ItemText = FText::FromString("");
+	UTexture2D* ItemIcon;
 	void SetUI(UTexture2D* ItemIcon, const FText& ItemName, uint8 Count);
 protected:
 	virtual void NativeOnInitialized() override;
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 };
