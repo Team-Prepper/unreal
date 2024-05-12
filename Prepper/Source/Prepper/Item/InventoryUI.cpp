@@ -4,6 +4,7 @@
 #include "InventoryUI.h"
 
 #include "InventoryItemUI.h"
+#include "ItemUIData.h"
 #include "DynamicMesh/DynamicMesh3.h"
 #include "Prepper/Interfaces/Inventory.h"
 
@@ -19,16 +20,13 @@ void UInventoryUI::SetVisibility(ESlateVisibility InVisibility)
 	if (TargetInventory == nullptr) return;
 
 	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();
-	
-	for (int i = 0; i < Items.Num() && i < ItemList->GetNumItems(); i++)
+	ItemList->ClearListItems();
+	for (int i = 0; i < Items.Num(); i++)
 	{
-		UInventoryItemUI* ItemUI = Cast<UInventoryItemUI>(ItemList->GetItemAt(i));
-		IInventory::InventoryItem Item = (Items)[i];
-		UTexture2D* Icon;
-		FText text;
-		if (!ItemData.GetItemData(Item.ItemCode, Icon, text)) continue;
-		
-		ItemUI->SetUI(Icon, text, Item.count);
+		UItemUIData* Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
+		IInventory::InventoryItem Item = Items[i];
+		if (!ItemData.GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
+		ItemList->AddItem(Data);
 	}
 }
 
@@ -39,8 +37,6 @@ void UInventoryUI::NativeOnInitialized()
 	ItemList = Cast<UListView>(GetWidgetFromName(TEXT("ItemList")));
 	for (int i = 0; i < 5; i++)
 	{
-		UInventoryItemUI* ItemUI = NewObject<UInventoryItemUI>(GetWorld(), ItemList->GetDefaultEntryClass());
-		ItemList->AddItem(ItemUI);
 	}
     
 }
