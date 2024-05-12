@@ -19,9 +19,11 @@ private:
 	bool TryCombineItem(const FString& Input1, const FString& Input2, FString& Result);
 public:
 	MapInventory();
-	~MapInventory();
+	virtual ~MapInventory() override;
 	virtual bool TryAddItem(const FString& ItemCode) override;
 	virtual bool TryUseItem(const FString& ItemCode) override;
+	virtual TArray<InventoryItem> GetIter() override;
+
 	
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;

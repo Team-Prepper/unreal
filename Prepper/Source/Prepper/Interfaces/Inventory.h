@@ -19,8 +19,17 @@ class UInventory : public UInterface
 class PREPPER_API IInventory
 {
 	GENERATED_BODY()
-	
+
 public:
+	class InventoryItem
+	{
+	public:
+		FString ItemCode;
+		uint8 count;
+	};
+	
 	virtual bool TryAddItem(const FString& ItemCode) PURE_VIRTUAL(IIInventory::TryAddItem, return 0; ); 
 	virtual bool TryUseItem(const FString& ItemCode) PURE_VIRTUAL(IIInventory::TryUseItem, return 0; );
+
+	virtual TArray<InventoryItem> GetIter() PURE_VIRTUAL(IIInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
 };

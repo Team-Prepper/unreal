@@ -53,6 +53,7 @@ public:
 	UFUNCTION()
 	void ToggleInventory();
 	
+	void SetInventory(IInventory *Target);
 protected:
 	virtual void BeginPlay() override;
 	

@@ -44,4 +44,6 @@ public:
 	UFUNCTION()
 	void SetInventoryVisible(bool IsVisible);
 	
+	void SetInventory(IInventory *Target);
+	
 };

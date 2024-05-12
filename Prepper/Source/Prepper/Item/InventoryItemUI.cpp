@@ -3,6 +3,8 @@
 
 #include "InventoryItemUI.h"
 
+#include "Blueprint/WidgetTree.h"
+
 /*
 UInventoryItemUI::UInventoryItemUI()
 {
@@ -11,16 +13,31 @@ UInventoryItemUI::UInventoryItemUI()
 void UInventoryItemUI::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
-	
-	// 위젯 블루프린트의 버튼을 이름을 통해 가져온다
-	Icon = Cast<UImage>(GetWidgetFromName(TEXT("ItemIcon")));
-    
-	// 위젯 블루프린트의 텍스트 블록을 이름을 통해 가져온다
-	DisplayText = Cast<UTextBlock>(GetWidgetFromName(TEXT("ItemName")));
+	Icon = Cast<UImage>(GetWidgetFromName("Icon"));
+	DisplayText = Cast<UTextBlock>(GetWidgetFromName("DisplayText"));
+
+	if (Icon == nullptr) UE_LOG(LogTemp, Warning, TEXT("NoIcon"));
+	if (DisplayText == nullptr) UE_LOG(LogTemp, Warning, TEXT("NoText"));
+	UE_LOG(LogTemp, Warning, TEXT("ITEM UI Set over"));
+
+	FText test = FText::FromString("Hello world");
+	DisplayText->SetText(test);
 }
 
-void UInventoryItemUI::SetUI(UTexture2D* ItemIcon, const FText& ItemName)
+void UInventoryItemUI::SetUI(UTexture2D* ItemIcon, const FText& ItemName, uint8 Count = 0)
 {
-	Icon->SetBrushFromTexture(ItemIcon);
+	UE_LOG(LogTemp, Warning, TEXT("Item: %s"), *ItemName.ToString());
+	
+	if (DisplayText == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NoText"));
+		return;
+	}
 	DisplayText->SetText(ItemName);
+	if (Icon == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NoIcon"));
+		return;
+	}
+	Icon->SetBrushFromTexture(ItemIcon);
 }

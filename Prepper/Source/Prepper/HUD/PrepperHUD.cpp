@@ -114,3 +114,8 @@ void APrepperHUD::ToggleInventory()
 	}
 	
 }
+
+void APrepperHUD::SetInventory(IInventory* Target)
+{
+	CharacterOverlay->SetInventory(Target);
+}

@@ -15,7 +15,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FString ItemCode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
-	FString ItemName;
+	FText ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	UTexture2D* ItemIcon;

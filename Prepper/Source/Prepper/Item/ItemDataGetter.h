@@ -20,5 +20,6 @@ public:
 	ItemDataGetter();
 	~ItemDataGetter();
 
+	bool GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName);
 	bool TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode);
 };

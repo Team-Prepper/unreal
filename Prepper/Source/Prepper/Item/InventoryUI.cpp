@@ -4,15 +4,31 @@
 #include "InventoryUI.h"
 
 #include "InventoryItemUI.h"
+#include "DynamicMesh/DynamicMesh3.h"
+#include "Prepper/Interfaces/Inventory.h"
 
-void UInventoryUI::Set(IInventory& TargetInventory)
+void UInventoryUI::Set(IInventory* Target)
 {
-	ItemList->ClearListItems();
-	for (int i = 0; i < 20; i++)
+	TargetInventory = Target;
+}
+
+void UInventoryUI::SetVisibility(ESlateVisibility InVisibility)
+{
+	Super::SetVisibility(InVisibility);
+	if (InVisibility != ESlateVisibility::Visible) return;
+	if (TargetInventory == nullptr) return;
+
+	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();
+	
+	for (int i = 0; i < Items.Num() && i < ItemList->GetNumItems(); i++)
 	{
-		UInventoryItemUI* Item = Cast<UInventoryItemUI>(ItemList->GetItemAt(i));
-		FText text = NSLOCTEXT("MyNamespace", "HelloWorld", "Hello World!");
-		Item->SetUI(nullptr, text);
+		UInventoryItemUI* ItemUI = Cast<UInventoryItemUI>(ItemList->GetItemAt(i));
+		IInventory::InventoryItem Item = (Items)[i];
+		UTexture2D* Icon;
+		FText text;
+		if (!ItemData.GetItemData(Item.ItemCode, Icon, text)) continue;
+		
+		ItemUI->SetUI(Icon, text, Item.count);
 	}
 }
 
@@ -20,7 +36,11 @@ void UInventoryUI::NativeOnInitialized()
 {
 	Super::NativeOnInitialized();
 	
-	// 위젯 블루프린트의 버튼을 이름을 통해 가져온다
 	ItemList = Cast<UListView>(GetWidgetFromName(TEXT("ItemList")));
+	for (int i = 0; i < 5; i++)
+	{
+		UInventoryItemUI* ItemUI = NewObject<UInventoryItemUI>(GetWorld(), ItemList->GetDefaultEntryClass());
+		ItemList->AddItem(ItemUI);
+	}
     
 }
