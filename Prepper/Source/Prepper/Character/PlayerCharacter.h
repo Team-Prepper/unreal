@@ -206,9 +206,9 @@ private:
 	UFUNCTION()
 	void OnRep_EquippedBackpack();
 
-	MapInventory Inven;
-
 public:
+	MapInventory Inven;
+	
 	void EquipWeapon(AWeapon* Weapon);
 	void DestroyInteractionItem(AInteractableActor* InteractableItem);
 	UFUNCTION(Server, Reliable)

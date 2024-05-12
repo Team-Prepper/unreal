@@ -52,6 +52,18 @@ ItemDataGetter::~ItemDataGetter()
     
 }
 
+bool ItemDataGetter::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName)
+{
+	if (!ItemData.Contains(ItemCode)) return false;
+
+	FItemData* data = ItemData.Find(ItemCode);
+
+	ItemIcon = data->ItemIcon;
+	ItemName = data->ItemName;
+	
+	return true;
+}
+
 bool ItemDataGetter::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
 {
 	const FString CombinationCode = ItemCombineCode(ItemCode1, ItemCode2);

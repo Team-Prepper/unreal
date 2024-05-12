@@ -77,6 +77,17 @@ bool MapInventory::TryUseItem(const FString& ItemCode)
 	return true;
 }
 
+TArray<MapInventory::InventoryItem> MapInventory::GetIter()
+{
+	TArray<InventoryItem> Retval;
+	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
+	{
+		Retval.Add(InventoryItem(Iter.Key(), Iter.Value()));
+	}
+	return Retval;
+	
+}
+
 void MapInventory::AddBullet(const uint8 Count)
 {
 	BulletCount += Count;

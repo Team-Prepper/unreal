@@ -113,6 +113,8 @@ void APlayerCharacter::BeginPlay()
 	if(PrepperPlayerController)
 	{
 		PrepperPlayerController->BindPlayerAction();
+		Inven.TryAddItem("Milk");
+		Inven.TryAddItem("Milgaru");
 	}
 }
 
