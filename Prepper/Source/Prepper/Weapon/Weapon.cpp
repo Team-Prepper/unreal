@@ -13,7 +13,7 @@ AWeapon::AWeapon()
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	SetReplicateMovement(true);
-	
+
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
 
@@ -169,6 +169,7 @@ void AWeapon::OnEquipped()
 void AWeapon::OnDropped()
 {
 	SetActorEnableCollision(true);
+	
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -176,17 +177,16 @@ void AWeapon::OnDropped()
 	
 	WeaponMesh->SetSimulatePhysics(true);
 	WeaponMesh->SetEnableGravity(true);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	
+	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
-	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
-	WeaponMesh->MarkRenderStateDirty();
 	EnableCustomDepth(true);
 
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
@@ -243,4 +243,9 @@ TArray<FVector_NetQuantize> AWeapon::GetTarget(FVector& HitTarget)
 	TArray<FVector_NetQuantize> HitTargets;
 	HitTargets.Add(HitTarget);
 	return HitTargets;
+}
+
+bool AWeapon::IsMeleeWeapon()
+{
+	return GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt || GetWeaponType() == EWeaponType::EWT_MeleeWeaponSword;
 }

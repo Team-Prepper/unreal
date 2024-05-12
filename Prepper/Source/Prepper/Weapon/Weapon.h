@@ -84,9 +84,11 @@ protected:
 	
 public:
 	void SetWeaponState(EWeaponState State);
+	bool IsMeleeWeapon();
 	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
 	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
+	
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트

@@ -64,8 +64,8 @@ APlayerCharacter::APlayerCharacter()
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
-	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 850.f);
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
@@ -294,7 +294,7 @@ void APlayerCharacter::Elim()
 {
 	if (Combat && Combat->EquippedWeapon)
 	{
-		if(Combat->EquippedWeapon())
+		if(Combat->EquippedWeapon)
 		{
 			Combat->EquippedWeapon->Dropped();
 			Combat->EquippedWeapon = nullptr;

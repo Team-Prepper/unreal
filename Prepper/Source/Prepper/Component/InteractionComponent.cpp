@@ -75,8 +75,6 @@ void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 		{
 			CurInteractableItem = nullptr;
 		}
-		// -> 해당 코드가 있으면 왜 클라이언트가 Interactable이 안되는지 이해못함
-		// -> 해당 코드가 없으면 무기 교채 불가 
 		if(!Character->HasAuthority() && Character->IsLocallyControlled())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Set Null Interaction"));
