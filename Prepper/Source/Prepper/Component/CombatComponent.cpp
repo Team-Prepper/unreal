@@ -200,7 +200,7 @@ void UCombatComponent::FireWeapon()
 	if (EquippedWeapon)
 	{
 		// 노이즈 발생
-		EquippedWeapon->MakeNoise(1, nullptr, FVector::ZeroVector);
+		EquippedWeapon->MakeNoise(1, Character, FVector::ZeroVector);
 		HitTargets = EquippedWeapon->GetTarget(HitTarget);
 		LocalFireWeapon(HitTargets);
 		ServerFireWeapon(HitTargets);
