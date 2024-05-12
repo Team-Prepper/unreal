@@ -18,14 +18,13 @@ public:
 	UInteractionComponent();
 	friend class APlayerCharacter;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+protected:
 	/* SetInteractable */
 	UFUNCTION()
 	void SetItemInteractable(AActor* InteractableItem);
 	UFUNCTION(Server, Reliable)
 	void ServerSetItemInteractable(AActor* InteractableItem);
 
-protected:
 	UPROPERTY()
 	class APlayerCharacter* Character;
 

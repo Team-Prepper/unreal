@@ -294,8 +294,17 @@ void APlayerCharacter::Elim()
 {
 	if (Combat && Combat->EquippedWeapon)
 	{
-		Combat->EquippedWeapon->Dropped();
-		Combat->EquippedWeapon = nullptr;
+		if(Combat->EquippedWeapon())
+		{
+			Combat->EquippedWeapon->Dropped();
+			Combat->EquippedWeapon = nullptr;
+		}
+		if(Combat->SecondaryWeapon)
+		{
+			Combat->SecondaryWeapon->Dropped();
+			Combat->SecondaryWeapon = nullptr;
+		}
+		
 	}
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(
@@ -381,6 +390,7 @@ void APlayerCharacter::EPressed()
 	/* Interaction */
 	if(InteractableItem)
 	{
+		UE_LOG(LogTemp, Warning , TEXT("INTERACTABLE ITEM"));
 		InteractionComponent->CurInteractableItem->Interaction(this);
 		return;
 	}
@@ -388,17 +398,16 @@ void APlayerCharacter::EPressed()
 	/* Swap */
 	if (Combat && Combat->ShouldSwapWeapons())
 	{
+		UE_LOG(LogTemp, Warning , TEXT("COMBAT COMP : SWAP"));
 		Combat->SwapWeapons();
 	}
 	bool bSwap = Combat->ShouldSwapWeapons() &&
-			!HasAuthority() &&
 			Combat->CombatState == ECombatState::ECS_Unoccupied &&
 			InteractableItem == nullptr;
 
 	if (bSwap)
 	{
 		PlaySwapMontage();
-		Combat->CombatState = ECombatState::ECS_SwappingWeapons;
 		bFinishedSwapping = false;
 	}
 }

@@ -174,14 +174,15 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 // TODO
 bool UCombatComponent::CanFire()
 {
+	if(CombatState != ECombatState::ECS_Unoccupied) return false;
 	if (EquippedMeleeWeapon) return bCanFire;
 
 	if (EquippedRangeWeapon == nullptr) return false;
 
 	if (bLocallyReload) return false;
 	return !EquippedRangeWeapon->IsAmmoEmpty() &&
-		bCanFire &&
-		CombatState == ECombatState::ECS_Unoccupied;
+		bCanFire;
+		
 }
 
 void UCombatComponent::Fire()
@@ -360,6 +361,7 @@ void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	WeaponToEquip->SetActorEnableCollision(false);
 
 	if (EquippedWeapon != nullptr && SecondaryWeapon == nullptr)
 	{
@@ -490,8 +492,9 @@ void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
 
 void UCombatComponent::SwapWeapons()
 {
+	UE_LOG(LogTemp, Warning , TEXT("Combatstate : %d"),CombatState);
 	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr || !Character->HasAuthority()) return;
-
+	UE_LOG(LogTemp, Warning , TEXT("WEAPON SWAP"));
 	Character->PlaySwapMontage();
 	CombatState = ECombatState::ECS_SwappingWeapons;
 	Character->bFinishedSwapping = false;

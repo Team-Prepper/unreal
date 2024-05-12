@@ -44,6 +44,12 @@ protected:
 	
 public:
 	void FireButtonPressed(bool bPressed);
+	
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
+	class AWeapon* EquippedWeapon;
+
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	AWeapon* SecondaryWeapon;
 protected:
 
 	UFUNCTION(Server, Reliable)
@@ -70,12 +76,6 @@ protected:
 	class APrepperPlayerController* Controller;
 	UPROPERTY()
 	class APrepperHUD* HUD;
-
-	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	class AWeapon* EquippedWeapon;
-
-	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
-	AWeapon* SecondaryWeapon;
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();

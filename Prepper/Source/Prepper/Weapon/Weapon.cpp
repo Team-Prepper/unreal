@@ -98,6 +98,7 @@ void AWeapon::Dropped()
 {
 	SetWeaponState(EWeaponState::EWS_Dropped);
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	SetActorEnableCollision(true);
 	WeaponMesh->DetachFromComponent(DetachRules);
 	SetOwner(nullptr);
 	PlayerOwnerCharacter = nullptr;
@@ -141,7 +142,9 @@ void AWeapon::OnWeaponStateSet()
 
 void AWeapon::OnEquipped()
 {
+	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON EQUIPPED"));
 	ShowPickUpWidget(false);
+	SetActorEnableCollision(false);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh->SetSimulatePhysics(false);
 	WeaponMesh->SetEnableGravity(false);
@@ -165,7 +168,7 @@ void AWeapon::OnEquipped()
 
 void AWeapon::OnDropped()
 {
-	
+	SetActorEnableCollision(true);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -201,6 +204,7 @@ void AWeapon::OnEquippedSecondary()
 {
 	ShowPickUpWidget(false);
 	EnableCustomDepth(false);
+	SetActorEnableCollision(false);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh->SetSimulatePhysics(false);
 	WeaponMesh->SetEnableGravity(false);

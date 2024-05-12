@@ -4,7 +4,6 @@
 #include "InteractionComponent.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Interfaces/Interactable.h"
 #include "Prepper/Item/AInteractableActor.h"
@@ -12,7 +11,6 @@
 UInteractionComponent::UInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -21,6 +19,7 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 	FHitResult HitResult;
 	TraceInteractionItem(HitResult);
 }
+
 
 void UInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 {
@@ -45,14 +44,15 @@ void UInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 		FVector Start = CrosshairWorldPosition;
 		FVector End = Start + CrosshairWorldDirection * TraceRange;
 
-		// USphereComponent 충돌 채널 설정
-		ECollisionChannel CollisionChannel = ECC_InteractMesh; 
-
-		bool bHitSomething = GetWorld()->LineTraceSingleByChannel(
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(Character);
+		
+		bool bHitSomething = GetWorld()->LineTraceSingleByObjectType(
 			TraceHitResult,
 			Start,
 			End,
-			CollisionChannel
+			FCollisionObjectQueryParams(ECC_InteractMesh), // 동적 물체와 충돌 검사
+			QueryParams
 		);
 
 		if (bHitSomething)
@@ -68,40 +68,44 @@ void UInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 
 void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 {
-	TScriptInterface<IInteractable> LastInteractableItem = CurInteractableItem;
-	
-	
-	if(LastInteractableItem && InteractableItem == nullptr)
+	if(CurInteractableItem != nullptr && InteractableItem == nullptr)
 	{
-		LastInteractableItem->ShowPickUpWidget(false);
-		LastInteractableItem = nullptr;
-		if(!Character->HasAuthority())
+		CurInteractableItem->ShowPickUpWidget(false);
+		if(Character->IsLocallyControlled())
 		{
+			CurInteractableItem = nullptr;
+		}
+		// -> 해당 코드가 있으면 왜 클라이언트가 Interactable이 안되는지 이해못함
+		// -> 해당 코드가 없으면 무기 교채 불가 
+		if(!Character->HasAuthority() && Character->IsLocallyControlled())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Set Null Interaction"));
 			ServerSetItemInteractable(nullptr);
 		}
 		return;
 	}
 	
-	CurInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
-	if(LastInteractableItem != CurInteractableItem)
+	TScriptInterface<IInteractable> NewInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
+	if(NewInteractableItem != CurInteractableItem)
 	{
-		if(!Character->HasAuthority())
+		if(!Character->HasAuthority() && Character->IsLocallyControlled())
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
 			ServerSetItemInteractable(InteractableItem);
 		}
 		if(Character->IsLocallyControlled())
 		{
-			if(LastInteractableItem)
+			if(CurInteractableItem)
 			{
-				LastInteractableItem->ShowPickUpWidget(false);
+				CurInteractableItem->ShowPickUpWidget(false);
 			}
+			CurInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
 			if(CurInteractableItem)
 			{
 				CurInteractableItem->ShowPickUpWidget(true);
 			}
 		}
 	}
-	
 }
 
 void UInteractionComponent::ServerSetItemInteractable_Implementation(AActor* InteractableItem)
