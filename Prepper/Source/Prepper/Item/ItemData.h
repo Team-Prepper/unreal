@@ -12,12 +12,15 @@ struct PREPPER_API FItemData : public FTableRowBase
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FString ItemCode;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FString ItemName;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
-	UTexture2D* ItemIcon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
+	UTexture2D* ItemIcon;
+	UPROPERTY()
+	bool IsStackable;
+	UPROPERTY()
+	int16 MaxStack;
 };
