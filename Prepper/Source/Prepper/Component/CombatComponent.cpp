@@ -8,7 +8,7 @@
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/ShotgunWeapon.h"
-#include "Prepper/Weapon/Weapon.h"
+#include "Prepper/Weapon/WeaponActor.h"
 #include "Sound/SoundCue.h"
 
 UCombatComponent::UCombatComponent()
@@ -357,7 +357,7 @@ void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 }
 
 
-void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
+void UCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 {
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
@@ -413,7 +413,7 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	}
 }
 
-void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
+void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
 	DropEquippedWeapon();
@@ -428,7 +428,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeapon* WeaponToEquip)
 	ReloadEmptyWeapon();
 }
 
-void UCombatComponent::EquipSecondaryWeapon(AWeapon* WeaponToEquip)
+void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
 	SecondaryWeapon = WeaponToEquip;
@@ -466,7 +466,7 @@ void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
 {
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
 
-	AWeapon* AttachWeapon = Cast<AWeapon>(ActorToAttach);
+	AWeaponActor* AttachWeapon = Cast<AWeaponActor>(ActorToAttach);
 	if (AttachWeapon)
 	{
 		if (AttachWeapon->GetWeaponType() == EWeaponType::EWT_RocketLauncher)
@@ -519,7 +519,7 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	PlayEquipWeaponSound(SecondaryWeapon);
 
 	if (Character == nullptr) return;
-	AWeapon* TempWeapon = EquippedWeapon;
+	AWeaponActor* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
 
@@ -553,7 +553,7 @@ void UCombatComponent::UpdateCarriedAmmo()
 	}
 }
 
-void UCombatComponent::PlayEquipWeaponSound(AWeapon* WeaponToEquip)
+void UCombatComponent::PlayEquipWeaponSound(AWeaponActor* WeaponToEquip)
 {
 	if (Character && WeaponToEquip && WeaponToEquip->EquipSound)
 	{

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AInteractableActor.h"
+#include "Prepper/Object/InteractableActor.h"
 #include "ItemBackpack.generated.h"
 
 

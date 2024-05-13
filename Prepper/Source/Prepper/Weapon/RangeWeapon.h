@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon.h"
+#include "WeaponActor.h"
 #include "RangeWeapon.generated.h"
 
 UENUM(BlueprintType)
@@ -17,7 +17,7 @@ enum class EFireType : uint8
 };
 
 UCLASS()
-class PREPPER_API ARangeWeapon : public AWeapon
+class PREPPER_API ARangeWeapon : public AWeaponActor
 {
 	GENERATED_BODY()
 

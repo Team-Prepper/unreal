@@ -32,7 +32,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
 	bool bWeaponEquipped;
 
-	class AWeapon* EquippedWeapon;
+	class AWeaponActor* EquippedWeapon;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = true))
 	bool bIsCrouch;

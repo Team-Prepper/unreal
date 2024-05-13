@@ -6,7 +6,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/Weapon/RangeWeapon.h"
-#include "Prepper/Weapon/Weapon.h"
+#include "Prepper/Weapon/WeaponActor.h"
 
 void UPlayerAnimInstance::NativeInitializeAnimation()
 {

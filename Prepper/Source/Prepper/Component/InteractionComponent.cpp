@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Interfaces/Interactable.h"
-#include "Prepper/Item/AInteractableActor.h"
+#include "Prepper/Object/InteractableActor.h"
 
 UInteractionComponent::UInteractionComponent()
 {

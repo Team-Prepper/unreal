@@ -5,7 +5,8 @@
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
-#include "Prepper/Interfaces/Controllable.h"
+#include "..\Interfaces\Controllable.h"
+#include "Prepper/Interfaces/PlayerAbility.h"
 #include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
 
@@ -25,7 +26,9 @@ enum class EPlayerMovementState : uint8
 };
 
 UCLASS()
-class PREPPER_API APlayerCharacter : public ABaseCharacter, public IInteractWithCrosshairInterface, public IControllable
+class PREPPER_API APlayerCharacter : public ABaseCharacter,
+									public IInteractWithCrosshairInterface,
+									public IControllable, public IPlayerAbility
 {
 	GENERATED_BODY()
 
@@ -77,7 +80,6 @@ protected:
 
 	/* 행동관련 */
 	virtual void Jump() override;
-	virtual void StopJumping() override;
 	
 	// 자연스러운 회전 - 멀티플레이 proxies
 	void SimProxiesTurn();
@@ -101,7 +103,7 @@ private:
 	void TurnInPlace(float DeltaTime);
 	
 	UFUNCTION(Server, Reliable)
-	void ServerEquipButtonPressed(AWeapon* Weapon);
+	void ServerEquipButtonPressed(AWeaponActor* Weapon);
 	
 protected:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
@@ -209,17 +211,13 @@ private:
 public:
 	MapInventory Inven;
 	
-	void EquipWeapon(AWeapon* Weapon);
-	void DestroyInteractionItem(AInteractableActor* InteractableItem);
-	UFUNCTION(Server, Reliable)
-	void ServerDestroyInteractionItem(AInteractableActor* InteractableItem);
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastDestroyInteractionItem(AInteractableActor* InteractableItem);
+	virtual void AddItem(FString ItemCode) override;
+	virtual void EquipWeapon(AWeaponActor* Weapon) override;
+	
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	bool IsLocallyReloading();
-	void AddItem(FString ItemCode);
-	AWeapon* GetEquippedWeapon();
+	AWeaponActor* GetEquippedWeapon();
 	FVector GetHitTarget() const;
 	ECombatState GetCombatState() const;
 

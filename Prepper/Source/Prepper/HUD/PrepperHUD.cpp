@@ -6,7 +6,7 @@
 #include "Announcement.h"
 #include "CharacterOverlay.h"
 #include "Prepper/Interfaces/Inventory.h"
-#include "Prepper/Item/InventoryUI.h"
+#include "Prepper/HUD/Item/InventoryUI.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "Prepper/Character/PlayerCharacter.h"

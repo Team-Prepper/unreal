@@ -12,10 +12,10 @@
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/Component/StatusEffectComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
-#include "Prepper/Item/AInteractableActor.h"
+#include "Prepper/Object/InteractableActor.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
-#include "Prepper/Weapon/Weapon.h"
+#include "Prepper/Weapon/WeaponActor.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Prepper/Component/InteractionComponent.h"
 #include "Prepper/Item/ItemBackpack.h"
@@ -414,7 +414,7 @@ void APlayerCharacter::EPressed()
 	}
 }
 
-void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
+void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
 	if(bDisableGamePlay) return;
@@ -423,32 +423,6 @@ void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 		Combat->EquipWeapon(Weapon);
 	}
 }
-
-void APlayerCharacter::DestroyInteractionItem(AInteractableActor* InteractableItem)
-{
-	if(HasAuthority())
-	{
-		MulticastDestroyInteractionItem(InteractableItem);
-	}
-	else
-	{
-		ServerDestroyInteractionItem(InteractableItem);
-	}
-}
-
-void APlayerCharacter::ServerDestroyInteractionItem_Implementation(AInteractableActor* InteractableItem)
-{
-	MulticastDestroyInteractionItem(InteractableItem);
-}
-
-void APlayerCharacter::MulticastDestroyInteractionItem_Implementation(AInteractableActor* InteractableItem)
-{
-	if(InteractableItem)
-	{
-		InteractableItem->Destroy();
-	}
-}
-
 
 void APlayerCharacter::ControlPressed()
 {
@@ -647,11 +621,6 @@ void APlayerCharacter::Jump()
 	}
 }
 
-void APlayerCharacter::StopJumping()
-{
-	Super::StopJumping();
-}
-
 void APlayerCharacter::TurnInPlace(float DeltaTime)
 {
 	if(AO_Yaw > 90.f)
@@ -674,7 +643,7 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
-void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
+void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeaponActor* Weapon)
 {
 	if (Combat)
 	{
@@ -879,7 +848,7 @@ bool APlayerCharacter::IsLocallyReloading()
 	return Combat->bLocallyReload;
 }
 
-AWeapon* APlayerCharacter::GetEquippedWeapon()
+AWeaponActor* APlayerCharacter::GetEquippedWeapon()
 {
 	if(Combat == nullptr) return nullptr;
 	return Combat->EquippedWeapon;

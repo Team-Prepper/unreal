@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ItemDataGetter.h"
+#include "Prepper/Item/ItemDataGetter.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ListView.h"
 #include "Prepper/Interfaces/Inventory.h"
