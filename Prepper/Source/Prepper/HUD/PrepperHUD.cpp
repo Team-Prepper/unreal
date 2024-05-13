@@ -5,8 +5,11 @@
 
 #include "Announcement.h"
 #include "CharacterOverlay.h"
+#include "Prepper/Interfaces/Inventory.h"
+#include "Prepper/Item/InventoryUI.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
+#include "Prepper/Character/PlayerCharacter.h"
 
 void APrepperHUD::BeginPlay()
 {
@@ -16,10 +19,19 @@ void APrepperHUD::BeginPlay()
 void APrepperHUD::AddCharacterOverlay()
 {
 	APlayerController* PlayerController = GetOwningPlayerController();
-	if(PlayerController && CharacterOverlayClass)
+	if(PlayerController)
 	{
-		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
-		CharacterOverlay->AddToViewport();
+		if(CharacterOverlayClass)
+		{
+			CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
+			CharacterOverlay->AddToViewport();
+		}
+		if(InventoryHUDClass)
+		{
+			InventoryHUD = CreateWidget<UInventoryUI>(PlayerController, InventoryHUDClass);
+			InventoryHUD->AddToViewport();
+			Cast<UInventoryUI>(InventoryHUD)->Set((IInventory*)&(Cast<APlayerCharacter>(GetOwningPawn())->Inven));
+		}
 	}
 }
 
@@ -99,10 +111,10 @@ void APrepperHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
 
 void APrepperHUD::ToggleInventory()
 {
-	if(!CharacterOverlay) return;
+	if(!InventoryHUD) return;
 
 	IsInventoryVisible = !IsInventoryVisible;
-	CharacterOverlay->SetInventoryVisible(IsInventoryVisible);
+	InventoryHUD->SetVisibility(IsInventoryVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	GetOwningPlayerController()->SetShowMouseCursor(IsInventoryVisible);
 	if(IsInventoryVisible)
 	{
@@ -113,9 +125,4 @@ void APrepperHUD::ToggleInventory()
 		GetOwningPlayerController()->SetInputMode(FInputModeGameOnly());
 	}
 	
-}
-
-void APrepperHUD::SetInventory(IInventory* Target)
-{
-	CharacterOverlay->SetInventory(Target);
 }

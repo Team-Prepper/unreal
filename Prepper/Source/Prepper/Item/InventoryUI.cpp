@@ -13,6 +13,7 @@ void UInventoryUI::Set(IInventory* Target)
 	TargetInventory = Target;
 }
 
+
 void UInventoryUI::SetVisibility(ESlateVisibility InVisibility)
 {
 	Super::SetVisibility(InVisibility);

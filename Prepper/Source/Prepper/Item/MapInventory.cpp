@@ -82,6 +82,7 @@ TArray<MapInventory::InventoryItem> MapInventory::GetIter()
 	TArray<InventoryItem> Retval;
 	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
 	{
+		
 		Retval.Add(InventoryItem(Iter.Key(), Iter.Value()));
 	}
 	return Retval;

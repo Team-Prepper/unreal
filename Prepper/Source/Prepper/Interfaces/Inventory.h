@@ -24,8 +24,9 @@ public:
 	class InventoryItem
 	{
 	public:
+		InventoryItem(const FString& InitItemCode, const uint8 InitCount) { ItemCode = InitItemCode; Count = InitCount;};
 		FString ItemCode;
-		uint8 count;
+		uint8 Count;
 	};
 	
 	virtual bool TryAddItem(const FString& ItemCode) PURE_VIRTUAL(IIInventory::TryAddItem, return 0; ); 

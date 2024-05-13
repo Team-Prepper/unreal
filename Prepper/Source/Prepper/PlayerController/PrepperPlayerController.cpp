@@ -201,7 +201,6 @@ void APrepperPlayerController::FireButtonReleased()
 void APrepperPlayerController::OpenInventoryPressed()
 {
 	if (!PrepperHUD) return;
-	PrepperHUD->SetInventory((IInventory*)&(Cast<APlayerCharacter>(GetPawn())->Inven));
 	PrepperHUD->ToggleInventory();
 }
 

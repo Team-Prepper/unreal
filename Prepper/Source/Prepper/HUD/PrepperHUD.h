@@ -36,10 +36,16 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UUserWidget> CharacterOverlayClass;
+
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> InventoryHUDClass;
+
 	void AddCharacterOverlay();
 
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
+	UPROPERTY()
+	class UInventoryUI* InventoryHUD;
 
 	UPROPERTY(EditAnywhere, Category = "Annoucement")
 	TSubclassOf<UUserWidget> AnnouncementClass;
@@ -53,7 +59,6 @@ public:
 	UFUNCTION()
 	void ToggleInventory();
 	
-	void SetInventory(IInventory *Target);
 protected:
 	virtual void BeginPlay() override;
 	
