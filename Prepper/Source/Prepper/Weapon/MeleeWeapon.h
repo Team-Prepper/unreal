@@ -1,13 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapon.h"
+#include "WeaponActor.h"
 #include "MeleeWeapon.generated.h"
 
 class UNiagaraSystem;
 
 UCLASS()
-class PREPPER_API AMeleeWeapon : public AWeapon
+class PREPPER_API AMeleeWeapon : public AWeaponActor
 {
 	GENERATED_BODY()
 

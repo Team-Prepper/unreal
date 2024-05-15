@@ -3,13 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ItemDataGetter.h"
+#include "ItemData/ItemDataGetter.h"
 #include "Prepper/Interfaces/Inventory.h"
+//#include "MapInventory.generated.h"
 
-#define MAX_ITEM_COUNT 16
-
-class PREPPER_API MapInventory : IInventory
+/**
+ * 
+ */
+//UCLASS()
+class PREPPER_API UMapInventory : public IInventory
 {
+	//GENERATED_BODY()
 private:
 	ItemDataGetter ItemData;
 	uint8 BulletCount;
@@ -18,8 +22,7 @@ private:
 
 	bool TryCombineItem(const FString& Input1, const FString& Input2, FString& Result);
 public:
-	MapInventory();
-	virtual ~MapInventory() override;
+	UMapInventory();
 	virtual bool TryAddItem(const FString& ItemCode) override;
 	virtual bool TryUseItem(const FString& ItemCode) override;
 	virtual TArray<InventoryItem> GetIter() override;
@@ -28,6 +31,4 @@ public:
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;
 
-	void UpdateUI(int index, FItemData ItemInfo, bool IsResetSlot);
-	
 };

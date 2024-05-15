@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Interfaces/Interactable.h"
-#include "AInteractableActor.generated.h"
+#include "InteractableActor.generated.h"
 
 UCLASS()
 class PREPPER_API AInteractableActor : public AActor, public IInteractable

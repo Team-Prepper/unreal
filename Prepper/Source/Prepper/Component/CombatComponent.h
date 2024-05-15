@@ -18,7 +18,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void EquipWeapon(class AWeapon* WeaponToEquip);
+	void EquipWeapon(class AWeaponActor* WeaponToEquip);
 	void Reload();
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
@@ -46,10 +46,10 @@ public:
 	void FireButtonPressed(bool bPressed);
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	class AWeapon* EquippedWeapon;
+	class AWeaponActor* EquippedWeapon;
 
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
-	AWeapon* SecondaryWeapon;
+	AWeaponActor* SecondaryWeapon;
 protected:
 
 	UFUNCTION(Server, Reliable)
@@ -83,14 +83,14 @@ protected:
 	UFUNCTION()
 	void OnRep_SecondaryWeapon();
 
-	void EquipPrimaryWeapon(AWeapon* WeaponToEquip);
-	void EquipSecondaryWeapon(AWeapon* WeaponToEquip);
+	void EquipPrimaryWeapon(AWeaponActor* WeaponToEquip);
+	void EquipSecondaryWeapon(AWeaponActor* WeaponToEquip);
 
 	void DropEquippedWeapon();
 	void AttachActorToRightHand(AActor* ActorToAttach);
 	void AttachActorToBackpack(AActor* ActorToAttach);
 	void UpdateCarriedAmmo();
-	void PlayEquipWeaponSound(AWeapon* WeaponToEquip);
+	void PlayEquipWeaponSound(AWeaponActor* WeaponToEquip);
 	void SwapWeapons();
 	
 	UPROPERTY(Replicated)

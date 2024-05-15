@@ -485,7 +485,7 @@ void APrepperPlayerController::HandleMatchHasStarted()
 	if(PrepperHUD)
 	{
 		if(PrepperHUD->CharacterOverlay == nullptr)
-		PrepperHUD->AddCharacterOverlay();
+			PrepperHUD->AddCharacterOverlay();
 		if(PrepperHUD->Announcement)
 		{
 			PrepperHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);

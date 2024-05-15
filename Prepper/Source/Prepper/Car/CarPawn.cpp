@@ -173,10 +173,7 @@ void ACarPawn::LocalInteraction(APlayerCharacter* Target)
 
 void ACarPawn::ServerInteraction_Implementation(APlayerCharacter* Target)
 {
-	if(HasAuthority())
-	{
-		MulticastInteraction(Target);
-	}
+	MulticastInteraction(Target);
 }
 
 void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)

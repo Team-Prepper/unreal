@@ -16,13 +16,12 @@ void UStatusEffectComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(Character)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
-		StatusFlags.ClearAllEffects();
-		InitStateEffectMap();
-		StatusTimerStart();
-	}
+	if(!Character) return;
+	
+	UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
+	StatusFlags.ClearAllEffects();
+	InitStateEffectMap();
+	StatusTimerStart();
 	
 }
 
@@ -40,27 +39,25 @@ void UStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void UStatusEffectComponent::StatusTimerStart()
 {
-	if(Character && Character->IsLocallyControlled())
-	{
-		GetWorld()->GetTimerManager().SetTimer(
-			StatusTimerHandle,
-			this,
-			&UStatusEffectComponent::StatusTimerFinish,
-			1.0f,
-			true);
-	}
+	if(!Character || !Character->IsLocallyControlled()) return;
+	
+	GetWorld()->GetTimerManager().SetTimer(
+		StatusTimerHandle,
+		this,
+		&UStatusEffectComponent::StatusTimerFinish,
+		1.0f,
+		true);
 }
 
 void UStatusEffectComponent::StatusTimerFinish()
 {
-	if(Character)
-	{
-		StateEffectMap[EStatusEffect::ESE_HUNGRY] -= 1.f;
-		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= 1.f;
-		//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Hungry : %f"),StateEffectMap[EStatusEffect::ESE_HUNGRY]);
-		//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Thirsty : %f"),StateEffectMap[EStatusEffect::ESE_THIRSTY]);
-		UpdateStatusEffect();
-	}
+	if(!Character) return;
+	
+	StateEffectMap[EStatusEffect::ESE_HUNGRY] -= 1.f;
+	StateEffectMap[EStatusEffect::ESE_THIRSTY] -= 1.f;
+	//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Hungry : %f"),StateEffectMap[EStatusEffect::ESE_HUNGRY]);
+	//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Thirsty : %f"),StateEffectMap[EStatusEffect::ESE_THIRSTY]);
+	UpdateStatusEffect();
 }
 
 void UStatusEffectComponent::UpdateStatusEffect()

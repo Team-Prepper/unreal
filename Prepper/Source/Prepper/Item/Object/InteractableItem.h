@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "AInteractableActor.h"
+#include "Prepper/Object/InteractableActor.h"
 #include "InteractableItem.generated.h"
 
 UCLASS()
@@ -13,7 +13,7 @@ class PREPPER_API AInteractableItem : public AInteractableActor
 public:	
 	AInteractableItem();
 	virtual void Tick(float DeltaTime) override;
-	virtual void Interaction(APlayerCharacter *Target) override;
+	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void Destroyed() override;
 protected:
 	virtual void BeginPlay() override;
@@ -31,5 +31,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	class USoundCue* PickupSound;
 	
-
+	void DestroyInteractionItem();
+	UFUNCTION(Server, Reliable)
+	void ServerDestroyInteractionItem();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDestroyInteractionItem();
 };

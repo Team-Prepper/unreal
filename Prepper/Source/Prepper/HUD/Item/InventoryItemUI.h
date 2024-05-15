@@ -24,8 +24,6 @@ private:
 	TObjectPtr<UTextBlock> DisplayText;
 public:
 	FText ItemText = FText::FromString("");
-	UTexture2D* ItemIcon;
-	void SetUI(UTexture2D* ItemIcon, const FText& ItemName, uint8 Count);
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;

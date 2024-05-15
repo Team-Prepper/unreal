@@ -6,7 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Interfaces/Interactable.h"
-#include "Prepper/Item/AInteractableActor.h"
+#include "Prepper/Object/InteractableActor.h"
 
 UInteractionComponent::UInteractionComponent()
 {
@@ -39,30 +39,29 @@ void UInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 		CrosshairWorldDirection
 	);
 
-	if (bScreenToWorld)
-	{
-		FVector Start = CrosshairWorldPosition;
-		FVector End = Start + CrosshairWorldDirection * TraceRange;
+	if (!bScreenToWorld) return;
+	
+	FVector Start = CrosshairWorldPosition;
+	FVector End = Start + CrosshairWorldDirection * TraceRange;
 
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(Character);
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(Character);
 		
-		bool bHitSomething = GetWorld()->LineTraceSingleByObjectType(
-			TraceHitResult,
-			Start,
-			End,
-			FCollisionObjectQueryParams(ECC_InteractMesh), // 동적 물체와 충돌 검사
-			QueryParams
-		);
+	bool bHitSomething = GetWorld()->LineTraceSingleByObjectType(
+		TraceHitResult,
+		Start,
+		End,
+		FCollisionObjectQueryParams(ECC_InteractMesh), // 동적 물체와 충돌 검사
+		QueryParams
+	);
 
-		if (bHitSomething)
-		{
-			SetItemInteractable(TraceHitResult.GetActor());
-		}
-		else
-		{
-			SetItemInteractable(nullptr);
-		}
+	if (bHitSomething)
+	{
+		SetItemInteractable(TraceHitResult.GetActor());
+	}
+	else
+	{
+		SetItemInteractable(nullptr);
 	}
 }
 
@@ -71,38 +70,41 @@ void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 	if(CurInteractableItem != nullptr && InteractableItem == nullptr)
 	{
 		CurInteractableItem->ShowPickUpWidget(false);
-		if(Character->IsLocallyControlled())
-		{
-			CurInteractableItem = nullptr;
-		}
-		if(!Character->HasAuthority() && Character->IsLocallyControlled())
+		if (!Character->IsLocallyControlled()) return;
+		
+		CurInteractableItem = nullptr;
+		
+		if(!Character->HasAuthority())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Set Null Interaction"));
 			ServerSetItemInteractable(nullptr);
 		}
+		
+		return;
+	}
+
+	const TScriptInterface<IInteractable> Interactable = TScriptInterface<IInteractable>(InteractableItem);
+	
+	if(Interactable == CurInteractableItem) return;
+	if (!Character->IsLocallyControlled()) return;
+	
+	if(!Character->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
+		ServerSetItemInteractable(InteractableItem);
 		return;
 	}
 	
-	TScriptInterface<IInteractable> NewInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
-	if(NewInteractableItem != CurInteractableItem)
+	if(CurInteractableItem)
 	{
-		if(!Character->HasAuthority() && Character->IsLocallyControlled())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
-			ServerSetItemInteractable(InteractableItem);
-		}
-		if(Character->IsLocallyControlled())
-		{
-			if(CurInteractableItem)
-			{
-				CurInteractableItem->ShowPickUpWidget(false);
-			}
-			CurInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
-			if(CurInteractableItem)
-			{
-				CurInteractableItem->ShowPickUpWidget(true);
-			}
-		}
+		CurInteractableItem->ShowPickUpWidget(false);
+	}
+	
+	CurInteractableItem = Interactable;
+	
+	if(CurInteractableItem)
+	{
+		CurInteractableItem->ShowPickUpWidget(true);
 	}
 }
 

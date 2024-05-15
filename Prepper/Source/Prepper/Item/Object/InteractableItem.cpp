@@ -53,7 +53,29 @@ void AInteractableItem::BeginPlay()
 void AInteractableItem::Interaction(APlayerCharacter* Target)
 {
 	Target->AddItem(ItemCode);
-	Target->DestroyInteractionItem(this);
+	DestroyInteractionItem();
+}
+
+void AInteractableItem::DestroyInteractionItem()
+{
+	if(HasAuthority())
+	{
+		MulticastDestroyInteractionItem();
+	}
+	else
+	{
+		ServerDestroyInteractionItem();
+	}
+}
+
+void AInteractableItem::ServerDestroyInteractionItem_Implementation()
+{
+	MulticastDestroyInteractionItem();
+}
+
+void AInteractableItem::MulticastDestroyInteractionItem_Implementation()
+{
+	Destroy();
 }
 
 void AInteractableItem::Destroyed()

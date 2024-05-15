@@ -5,7 +5,6 @@
 
 #include "InventoryItemUI.h"
 #include "ItemUIData.h"
-#include "DynamicMesh/DynamicMesh3.h"
 #include "Prepper/Interfaces/Inventory.h"
 
 void UInventoryUI::Set(IInventory* Target)

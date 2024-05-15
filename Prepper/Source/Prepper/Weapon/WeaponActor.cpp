@@ -1,4 +1,4 @@
-#include "Weapon.h"
+#include "WeaponActor.h"
 
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Components/SphereComponent.h"
@@ -8,7 +8,7 @@
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
-AWeapon::AWeapon()
+AWeaponActor::AWeaponActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
@@ -46,7 +46,7 @@ AWeapon::AWeapon()
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 }
 
-void AWeapon::BeginPlay()
+void AWeaponActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
@@ -65,14 +65,14 @@ void AWeapon::BeginPlay()
 	}
 }
 
-void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void AWeaponActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AWeapon, WeaponState);
+	DOREPLIFETIME(AWeaponActor, WeaponState);
 }
 
-void AWeapon::EnableCustomDepth(bool bEnable)
+void AWeaponActor::EnableCustomDepth(bool bEnable)
 {
 	if(WeaponMesh)
 	{
@@ -84,7 +84,7 @@ void AWeapon::EnableCustomDepth(bool bEnable)
 	}
 }
 
-void AWeapon::OnRep_Owner()
+void AWeaponActor::OnRep_Owner()
 {
 	Super::OnRep_Owner();
 	if(Owner == nullptr)
@@ -94,7 +94,7 @@ void AWeapon::OnRep_Owner()
 	}
 }
 
-void AWeapon::Dropped()
+void AWeaponActor::Dropped()
 {
 	SetWeaponState(EWeaponState::EWS_Dropped);
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
@@ -105,24 +105,24 @@ void AWeapon::Dropped()
 	PlayerOwnerController = nullptr;
 }
 
-void AWeapon::Interaction(APlayerCharacter* Target)
+void AWeaponActor::Interaction(APlayerCharacter* Target)
 {
 	Target->EquipWeapon(this);
 }
 
-void AWeapon::SetWeaponState(EWeaponState State)
+void AWeaponActor::SetWeaponState(EWeaponState State)
 {
 	WeaponState = State;
 	OnWeaponStateSet();
 }
 
 // client
-void AWeapon::OnRep_WeaponState()
+void AWeaponActor::OnRep_WeaponState()
 {
 	OnWeaponStateSet();
 }
 
-void AWeapon::OnWeaponStateSet()
+void AWeaponActor::OnWeaponStateSet()
 {
 	switch (WeaponState)
 	{
@@ -140,7 +140,7 @@ void AWeapon::OnWeaponStateSet()
 	}
 }
 
-void AWeapon::OnEquipped()
+void AWeaponActor::OnEquipped()
 {
 	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON EQUIPPED"));
 	ShowPickUpWidget(false);
@@ -161,12 +161,12 @@ void AWeapon::OnEquipped()
 		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
 		if (PlayerOwnerController && HasAuthority() && !PlayerOwnerController->HighPingDelegate.IsBound())
 		{
-			PlayerOwnerController->HighPingDelegate.AddDynamic(this, &AWeapon::OnPingTooHigh);
+			PlayerOwnerController->HighPingDelegate.AddDynamic(this, &AWeaponActor::OnPingTooHigh);
 		}
 	}
 }
 
-void AWeapon::OnDropped()
+void AWeaponActor::OnDropped()
 {
 	SetActorEnableCollision(true);
 	
@@ -195,12 +195,12 @@ void AWeapon::OnDropped()
 		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
 		if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 		{
-			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
+			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
 		}
 	}
 }
 
-void AWeapon::OnEquippedSecondary()
+void AWeaponActor::OnEquippedSecondary()
 {
 	ShowPickUpWidget(false);
 	EnableCustomDepth(false);
@@ -218,18 +218,18 @@ void AWeapon::OnEquippedSecondary()
 		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
 		if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 		{
-			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeapon::OnPingTooHigh);
+			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
 		}
 	}
 }
 
-void AWeapon::OnPingTooHigh(bool bPingTooHigh)
+void AWeaponActor::OnPingTooHigh(bool bPingTooHigh)
 {
 	bUseServerSideRewind = !bPingTooHigh;
 }
 
 
-void AWeapon::GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom)
+void AWeaponActor::GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom)
 {
 	Center = nullptr;
 	Left = nullptr;
@@ -238,14 +238,19 @@ void AWeapon::GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &
 	Bottom = nullptr;
 }
 
-TArray<FVector_NetQuantize> AWeapon::GetTarget(FVector& HitTarget)
+FName AWeaponActor::AttachSocketName()
+{
+	return FName("ddd");
+}
+
+TArray<FVector_NetQuantize> AWeaponActor::GetTarget(FVector& HitTarget)
 {
 	TArray<FVector_NetQuantize> HitTargets;
 	HitTargets.Add(HitTarget);
 	return HitTargets;
 }
 
-bool AWeapon::IsMeleeWeapon()
+bool AWeaponActor::IsMeleeWeapon()
 {
 	return GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt || GetWeaponType() == EWeaponType::EWT_MeleeWeaponSword;
 }

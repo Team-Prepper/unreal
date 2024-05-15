@@ -5,8 +5,7 @@
 
 #include "Announcement.h"
 #include "CharacterOverlay.h"
-#include "Prepper/Interfaces/Inventory.h"
-#include "Prepper/Item/InventoryUI.h"
+#include "Prepper/HUD/Item/InventoryUI.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
 #include "Prepper/Character/PlayerCharacter.h"
@@ -28,9 +27,10 @@ void APrepperHUD::AddCharacterOverlay()
 		}
 		if(InventoryHUDClass)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Setting"));
 			InventoryHUD = CreateWidget<UInventoryUI>(PlayerController, InventoryHUDClass);
 			InventoryHUD->AddToViewport();
-			Cast<UInventoryUI>(InventoryHUD)->Set((IInventory*)&(Cast<APlayerCharacter>(GetOwningPawn())->Inven));
+			Cast<UInventoryUI>(InventoryHUD)->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 		}
 	}
 }

@@ -12,15 +12,15 @@
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/Component/StatusEffectComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
-#include "Prepper/Item/AInteractableActor.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
-#include "Prepper/Weapon/Weapon.h"
+#include "Prepper/Weapon/WeaponActor.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Prepper/Component/InteractionComponent.h"
-#include "Prepper/Item/ItemBackpack.h"
+#include "Prepper/Item/Object/ItemBackpack.h"
 #include "Sound/SoundCue.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "Prepper/Item/MapInventory.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -110,9 +110,12 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
+	
 	if(PrepperPlayerController)
 	{
 		PrepperPlayerController->BindPlayerAction();
+	
+		//Inven = NewObject<UMapInventory>(GetWorld(), UMapInventory::StaticClass());
 		Inven.TryAddItem("Milk");
 		Inven.TryAddItem("Milgaru");
 	}
@@ -340,8 +343,6 @@ void APlayerCharacter::MulticastElim()
 	}
 }
 
-
-
 void APlayerCharacter::ElimTimerFinished()
 {
 	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
@@ -414,7 +415,7 @@ void APlayerCharacter::EPressed()
 	}
 }
 
-void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
+void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
 	if(bDisableGamePlay) return;
@@ -423,32 +424,6 @@ void APlayerCharacter::EquipWeapon(AWeapon* Weapon)
 		Combat->EquipWeapon(Weapon);
 	}
 }
-
-void APlayerCharacter::DestroyInteractionItem(AInteractableActor* InteractableItem)
-{
-	if(HasAuthority())
-	{
-		MulticastDestroyInteractionItem(InteractableItem);
-	}
-	else
-	{
-		ServerDestroyInteractionItem(InteractableItem);
-	}
-}
-
-void APlayerCharacter::ServerDestroyInteractionItem_Implementation(AInteractableActor* InteractableItem)
-{
-	MulticastDestroyInteractionItem(InteractableItem);
-}
-
-void APlayerCharacter::MulticastDestroyInteractionItem_Implementation(AInteractableActor* InteractableItem)
-{
-	if(InteractableItem)
-	{
-		InteractableItem->Destroy();
-	}
-}
-
 
 void APlayerCharacter::ControlPressed()
 {
@@ -514,8 +489,8 @@ void APlayerCharacter::CalculateAO_Pitch()
 	if(AO_Pitch > 90.f && !IsLocallyControlled())
 	{
 		// map pitch from [ 270, 360) -> [-90,0)
-		FVector2d InRange(270.f, 360.f);
-		FVector2d OutRange(-90.f,0.f);
+		const FVector2d InRange(270.f, 360.f);
+		const FVector2d OutRange(-90.f,0.f);
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
 		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
@@ -535,11 +510,7 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
 
-	const USkeletalMeshSocket* BackpackSocket = GetMesh()->GetSocketByName(FName("BackpackSocket"));
-	if(BackpackSocket)
-	{
-		BackpackSocket->AttachActor(EquippedBackpack, GetMesh());
-	}
+	AttachActorAtSocket(FName("BackpackSocket"), EquippedBackpack);
 
 	if (EquippedBackpack->EquipSound)
 	{
@@ -550,6 +521,15 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 		);
 	}
 	
+}
+
+void APlayerCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
+{
+	const USkeletalMeshSocket* TargetSocket = GetMesh()->GetSocketByName(SocketName);
+	if(TargetSocket)
+	{
+		TargetSocket->AttachActor(TargetActor, GetMesh());
+	}
 }
 
 void APlayerCharacter::OnRep_EquippedBackpack()
@@ -647,11 +627,6 @@ void APlayerCharacter::Jump()
 	}
 }
 
-void APlayerCharacter::StopJumping()
-{
-	Super::StopJumping();
-}
-
 void APlayerCharacter::TurnInPlace(float DeltaTime)
 {
 	if(AO_Yaw > 90.f)
@@ -674,7 +649,7 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 	}
 }
 
-void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeapon* Weapon)
+void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeaponActor* Weapon)
 {
 	if (Combat)
 	{
@@ -879,7 +854,7 @@ bool APlayerCharacter::IsLocallyReloading()
 	return Combat->bLocallyReload;
 }
 
-AWeapon* APlayerCharacter::GetEquippedWeapon()
+AWeaponActor* APlayerCharacter::GetEquippedWeapon()
 {
 	if(Combat == nullptr) return nullptr;
 	return Combat->EquippedWeapon;

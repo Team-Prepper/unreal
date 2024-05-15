@@ -5,8 +5,6 @@
 
 #include "InventoryUI.h"
 #include "ItemUIData.h"
-#include "Blueprint/WidgetTree.h"
-#include "Prepper/Interfaces/Inventory.h"
 
 /*
 UInventoryItemUI::UInventoryItemUI()
@@ -19,15 +17,6 @@ void UInventoryItemUI::NativeOnInitialized()
 	
 	Icon = Cast<UImage>(GetWidgetFromName("Icon"));
 	DisplayText = Cast<UTextBlock>(GetWidgetFromName("DisplayText"));
-
-	if (Icon == nullptr) UE_LOG(LogTemp, Warning, TEXT("NoIcon"));
-	if (DisplayText == nullptr) UE_LOG(LogTemp, Warning, TEXT("NoText"));
-	UE_LOG(LogTemp, Warning, TEXT("ITEM UI Set over"));
-
-	FText test = FText::FromString("Hello world");
-	
-	Icon->SetBrushFromTexture(ItemIcon);
-	DisplayText->SetText(ItemText);
 }
 
 void UInventoryItemUI::NativeOnListItemObjectSet(UObject* ListItemObject)
@@ -37,12 +26,4 @@ void UInventoryItemUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	Icon->SetBrushFromTexture(Object->TextureIcon);
 	DisplayText->SetText(Object->ItemName);
-}
-
-void UInventoryItemUI::SetUI(UTexture2D* TextureIcon, const FText& ItemName, uint8 Count = 0)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Item: %s"), *ItemName.ToString());
-
-	ItemIcon = TextureIcon;
-	ItemText = ItemName;
 }
