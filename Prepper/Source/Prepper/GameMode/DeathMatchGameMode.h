@@ -21,8 +21,8 @@ public:
 	ADeathMatchGameMode();
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void PlayerEliminated(class ABaseCharacter* ElimmedCharacter,
-									class APrepperPlayerController* VictimController,
-									APrepperPlayerController* AttackerController) override;
+									class ABasePlayerController* VictimController,
+									ABasePlayerController* AttackerController) override;
 	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 
 	UPROPERTY(EditDefaultsOnly)

@@ -23,9 +23,6 @@ struct FHUDPackage
 	
 };
 
-/**
- * 
- */
 UCLASS()
 class PREPPER_API APrepperHUD : public AHUD
 {

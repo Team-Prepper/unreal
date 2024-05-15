@@ -4,8 +4,8 @@
 #include "PrepperGameMode.h"
 #include "Prepper/Character/BaseCharacter.h"
 
-void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, APrepperPlayerController* VictimController,
-	APrepperPlayerController* AttackerController)
+void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABasePlayerController* VictimController,
+	ABasePlayerController* AttackerController)
 {
 	if (ElimmedCharacter)
 	{

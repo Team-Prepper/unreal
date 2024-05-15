@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
 #include "Prepper/GameState/DeathMatchGameState.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
+#include "Prepper/PlayerController/DeathMatchPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 
 namespace MatchState
@@ -34,7 +34,7 @@ void ADeathMatchGameMode::OnMatchStateSet()
 	
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
-		APrepperPlayerController* PrepperController = Cast<APrepperPlayerController>(*It);
+		ADeathMatchPlayerController* PrepperController = Cast<ADeathMatchPlayerController>(*It);
 		if (PrepperController)
 		{
 			PrepperController->OnMatchStateSet(MatchState);
@@ -73,7 +73,7 @@ void ADeathMatchGameMode::Tick(float DeltaSeconds)
 }
 
 void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
-                                           APrepperPlayerController* VictimController, APrepperPlayerController* AttackerController)
+                                           ABasePlayerController* VictimController, ABasePlayerController* AttackerController)
 {
 	/* for Score */
 	ADeathMatchPlayerState* AttackPlayerState = AttackerController ? Cast<ADeathMatchPlayerState>(AttackerController->PlayerState) : nullptr;

@@ -240,7 +240,7 @@ void AWeaponActor::GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture
 
 FName AWeaponActor::AttachSocketName()
 {
-	return FName("ddd");
+	return WeaponSocketName;
 }
 
 TArray<FVector_NetQuantize> AWeaponActor::GetTarget(FVector& HitTarget)

@@ -3,17 +3,18 @@
 #include "CoreMinimal.h"
 #include "WeaponTypes.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/Item/AInteractableActor.h"
-#include "Weapon.generated.h"
+#include "Prepper/Interfaces/Weapon.h"
+#include "Prepper/Object/InteractableActor.h"
+#include "WeaponActor.generated.h"
 
 
 UCLASS()
-class PREPPER_API AWeapon : public AInteractableActor
+class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
 {
 	GENERATED_BODY()
 	
 public:	
-	AWeapon();
+	AWeaponActor();
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void OnRep_Owner() override;
@@ -23,19 +24,14 @@ public:
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
 
-	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) PURE_VIRTUAL();
-
-	virtual void SetHUDAmmo() PURE_VIRTUAL();
-
-	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom);
+	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom)override;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	FName WeaponSocketName = FName("RightHandSocket");
 
-	UFUNCTION()
-	FName AttachSocketName() { return WeaponSocketName; }
+	virtual FName AttachSocketName() override;
 	
-	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget);
+	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 	
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
@@ -81,7 +77,7 @@ protected:
 	UPROPERTY()
 	APlayerCharacter* PlayerOwnerCharacter;
 	UPROPERTY()
-	APrepperPlayerController* PlayerOwnerController;
+	class APrepperPlayerController* PlayerOwnerController;
 
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
@@ -97,5 +93,3 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트
 };
-
-

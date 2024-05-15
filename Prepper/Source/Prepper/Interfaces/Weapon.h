@@ -33,7 +33,7 @@ public:
 	PURE_VIRTUAL();
 
 	virtual FName AttachSocketName()
-	PURE_VIRTUAL(AWeapon::AttachSocketName(), return FName("ddd");)
+	PURE_VIRTUAL(AWeapon::AttachSocketName(), return FName("RightHandSocket");)
 	
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget)
 	PURE_VIRTUAL( IWeapon::GetTarget(FVector& HitTarget) , TArray<FVector_NetQuantize> arr; return arr; );

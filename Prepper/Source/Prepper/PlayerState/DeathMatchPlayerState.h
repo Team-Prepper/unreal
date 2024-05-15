@@ -25,7 +25,7 @@ private:
 	UPROPERTY()
 	class APlayerCharacter* Character;
 	UPROPERTY()
-	class APrepperPlayerController* Controller;
+	class ADeathMatchPlayerController* Controller;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
