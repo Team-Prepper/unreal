@@ -677,12 +677,9 @@ void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const 
 
 void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
 {
-	if(IsLocallyControlled())
-	{
-		PlayerMovementState = State;
-		ConvertPlayerMovementState();
-		ServerConvertPlayerMovementState(State);
-	}
+	PlayerMovementState = State;
+	ConvertPlayerMovementState();
+	ServerConvertPlayerMovementState(State);
 }
 
 void APlayerCharacter::ConvertPlayerMovementState()
@@ -872,5 +869,3 @@ ECombatState APlayerCharacter::GetCombatState() const
 	if (Combat == nullptr) return ECombatState::ECS_MAX;
 	return Combat->CombatState;
 }
-
-

@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
-#include "..\Interfaces\Controllable.h"
+#include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/Interactable.h"
 
 #include "CarPawn.generated.h"

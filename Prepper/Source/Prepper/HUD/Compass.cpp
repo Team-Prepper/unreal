@@ -19,7 +19,7 @@ void UCompass::NativeConstruct()
 
 void UCompass::SetDirection()
 {
-	if(Cast<APrepperPlayerController>(GetOwningPlayer())) {
+	if(!Cast<APrepperPlayerController>(GetOwningPlayer())) {
 		GetWorld()->GetTimerManager().ClearTimer(SetDirectionTimerHandle);
 		PossessPlayer();
 		return;
@@ -41,15 +41,11 @@ void UCompass::SetDirection()
 
 void UCompass::PossessPlayer()
 {
-	if(GetOwningPlayer())
+	if(GetOwningPlayerPawn())
 	{
 		PlayerCam = Cast<APlayerCharacter>(GetOwningPlayerPawn())->GetFollowCamera();
 		if(PlayerCam)
 		{
-			if(GetWorld()->GetTimerManager().IsTimerActive(PlayerPossessTimerHandle))
-			{
-				GetWorld()->GetTimerManager().ClearTimer(PlayerPossessTimerHandle);
-			}
 			GetWorld()->GetTimerManager().SetTimer(
 				SetDirectionTimerHandle,
 				this,
@@ -60,24 +56,19 @@ void UCompass::PossessPlayer()
 			return;
 		}
 	}
-	
 	GetWorld()->GetTimerManager().SetTimer(
-		PlayerPossessTimerHandle,
-		this,
-		&UCompass::PossessPlayer,
-		1,
-		true
+	PlayerPossessTimerHandle,
+	this,
+	&UCompass::PossessPlayer,
+	1,
+	false
 	);
-	
-	
 }
 
 float UCompass::GetImageWidth() const
 {
 	if(CompassPoint)
 	{
-		
-		UE_LOG(LogTemp,Warning, TEXT("Level : 1"));
 		UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(CompassPoint->Slot);
 		if(CanvasSlot)
 		{
