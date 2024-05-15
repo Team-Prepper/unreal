@@ -31,12 +31,11 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* MatchCountDownText;
-	
-	UPROPERTY(meta = (BindWidget))
-	class UImage* HighPingImg;
 
-	UPROPERTY(meta = (BindWidgetAnim), Transient)
-	UWidgetAnimation* HighPingAnim;
+	UPROPERTY(meta = (BindWidget))
+	class UUserWidget* InventoryHUD;
 	
+	UFUNCTION()
+	void SetInventoryVisible(bool IsVisible);
 	
 };
