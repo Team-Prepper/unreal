@@ -5,6 +5,11 @@
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
 
+AMeleeWeapon::AMeleeWeapon()
+{
+	WeaponSocketName = FName("MeleeWeaponSocket");
+}
+
 void AMeleeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
 	FindActorsWithinRadius();

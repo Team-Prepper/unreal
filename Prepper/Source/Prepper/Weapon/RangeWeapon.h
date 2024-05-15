@@ -23,7 +23,6 @@ class PREPPER_API ARangeWeapon : public AWeapon
 
 public:
 	virtual void GetCrosshair(UTexture2D*& Center, UTexture2D*& Left, UTexture2D*& Right, UTexture2D*& Top, UTexture2D*& Bottom) override;
-	virtual FName AttachSocketName() override { return FName("RightHandSocket"); }
 	/* CROSS HAIRS - 조준선 */
 	UPROPERTY(EditAnywhere, Category = Crosshiar)
 	UTexture2D* CrosshairCenter;

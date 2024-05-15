@@ -12,8 +12,9 @@ class PREPPER_API AMeleeWeapon : public AWeapon
 	GENERATED_BODY()
 
 public:
+	AMeleeWeapon();
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
-	virtual FName AttachSocketName() override { return FName("MeleeWeaponSocket"); }
+	
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 
 	void FindActorsWithinRadius();

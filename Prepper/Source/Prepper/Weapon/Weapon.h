@@ -29,7 +29,11 @@ public:
 
 	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom);
 
-	virtual FName AttachSocketName() PURE_VIRTUAL(AWeapon::AttachSocketName(), return FName("ddd");)
+	UPROPERTY(EditAnywhere, Category = Combat)
+	FName WeaponSocketName = FName("RightHandSocket");
+
+	UFUNCTION()
+	FName AttachSocketName() { return WeaponSocketName; }
 	
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget);
 	
