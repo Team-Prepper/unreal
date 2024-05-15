@@ -113,8 +113,6 @@ void APlayerCharacter::BeginPlay()
 	
 	if(PrepperPlayerController)
 	{
-		PrepperPlayerController->BindPlayerAction();
-	
 		//Inven = NewObject<UMapInventory>(GetWorld(), UMapInventory::StaticClass());
 		Inven.TryAddItem("Milk");
 		Inven.TryAddItem("Milgaru");
@@ -679,9 +677,12 @@ void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const 
 
 void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
 {
-	PlayerMovementState = State;
-	ConvertPlayerMovementState();
-	ServerConvertPlayerMovementState(State);
+	if(IsLocallyControlled())
+	{
+		PlayerMovementState = State;
+		ConvertPlayerMovementState();
+		ServerConvertPlayerMovementState(State);
+	}
 }
 
 void APlayerCharacter::ConvertPlayerMovementState()

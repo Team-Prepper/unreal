@@ -15,13 +15,43 @@ void ABasePlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(PlayerMappingContext, 0);
 	}
+	SetPossessPawn();
+}
+
+void ABasePlayerController::SetPossessPawn()
+{
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABasePlayerController::PossessNewPawn, 0.1f, true);
+}
+
+void ABasePlayerController::PossessNewPawn()
+{
+	if (HasAuthority())
+	{
+		if (GetPawn())
+		{
+			if(GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
+			{
+				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+			}
+			PossessPawn();
+		}
+	}
+}
+
+void ABasePlayerController::PossessPawn()
+{
+	if (Cast<IControllable>(GetPawn()))
+	{
+		TargetControllerable = GetPawn();
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"), *GetPawn()->GetName(), *GetName());
 }
 
 void ABasePlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
-	
+	UE_LOG(LogTemp,Warning,TEXT("OnPossess : BaseCharacter Controller"));
 	if (Cast<IControllable>(GetPawn()))
 	{
 		TargetControllerable = GetPawn();
@@ -30,7 +60,8 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 
 void ABasePlayerController::PollInit()
 {
-	if (Cast<IControllable>(GetPawn()))
+	//UE_LOG(LogTemp,Warning,TEXT("Call Poll Init"));
+	if (TargetControllerable != GetPawn() && Cast<IControllable>(GetPawn()))
 	{
 		TargetControllerable = GetPawn();
 	}
@@ -197,12 +228,4 @@ void ABasePlayerController::ServerInteractionPressed_Implementation()
 {
 	if (!TargetControllerable) return;
 	TargetControllerable->EPressed();
-}
-
-void ABasePlayerController::BindPlayerAction()
-{
-	if (Cast<IControllable>(GetPawn()))
-	{
-		TargetControllerable = GetPawn();
-	}
 }
