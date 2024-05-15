@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "WeaponActor.h"
+#include "Prepper/Weapon/WeaponActor.h"
 #include "RangeWeapon.generated.h"
 
 UENUM(BlueprintType)

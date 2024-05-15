@@ -41,18 +41,22 @@ public:
 	void PlayFireMontage(bool bAiming); 
 	void PlayReloadMontage(const FName& SectionName);
 	void PlaySwapMontage();
-	bool bFinishedSwapping = false;
 	
 	virtual void Elim() override;
 	virtual void MulticastElim() override;
 
-	UPROPERTY(Replicated)
-	bool bDisableGamePlay = false;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
 	
 	void EquipBackpack(class AItemBackpack* BackpackToEquip);
+
+	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
+	
+	bool bFinishedSwapping = false;
+	
+	UPROPERTY(Replicated)
+	bool bDisableGamePlay = false;
 	
 private:
 	void ElimTimerFinished();
@@ -209,7 +213,7 @@ private:
 	void OnRep_EquippedBackpack();
 
 public:
-	MapInventory Inven;
+	UMapInventory Inven;
 	
 	virtual void AddItem(FString ItemCode) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;

@@ -12,15 +12,15 @@
 #include "Prepper/Component/CombatComponent.h"
 #include "Prepper/Component/StatusEffectComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
-#include "Prepper/Object/InteractableActor.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Prepper/Component/InteractionComponent.h"
-#include "Prepper/Item/ItemBackpack.h"
+#include "Prepper/Item/Object/ItemBackpack.h"
 #include "Sound/SoundCue.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "Prepper/Item/MapInventory.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -110,9 +110,12 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
+	
 	if(PrepperPlayerController)
 	{
 		PrepperPlayerController->BindPlayerAction();
+	
+		//Inven = NewObject<UMapInventory>(GetWorld(), UMapInventory::StaticClass());
 		Inven.TryAddItem("Milk");
 		Inven.TryAddItem("Milgaru");
 	}
@@ -340,8 +343,6 @@ void APlayerCharacter::MulticastElim()
 	}
 }
 
-
-
 void APlayerCharacter::ElimTimerFinished()
 {
 	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
@@ -488,8 +489,8 @@ void APlayerCharacter::CalculateAO_Pitch()
 	if(AO_Pitch > 90.f && !IsLocallyControlled())
 	{
 		// map pitch from [ 270, 360) -> [-90,0)
-		FVector2d InRange(270.f, 360.f);
-		FVector2d OutRange(-90.f,0.f);
+		const FVector2d InRange(270.f, 360.f);
+		const FVector2d OutRange(-90.f,0.f);
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
 		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 	}
@@ -509,11 +510,7 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
 
-	const USkeletalMeshSocket* BackpackSocket = GetMesh()->GetSocketByName(FName("BackpackSocket"));
-	if(BackpackSocket)
-	{
-		BackpackSocket->AttachActor(EquippedBackpack, GetMesh());
-	}
+	AttachActorAtSocket(FName("BackpackSocket"), EquippedBackpack);
 
 	if (EquippedBackpack->EquipSound)
 	{
@@ -524,6 +521,15 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 		);
 	}
 	
+}
+
+void APlayerCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
+{
+	const USkeletalMeshSocket* TargetSocket = GetMesh()->GetSocketByName(SocketName);
+	if(TargetSocket)
+	{
+		TargetSocket->AttachActor(TargetActor, GetMesh());
+	}
 }
 
 void APlayerCharacter::OnRep_EquippedBackpack()

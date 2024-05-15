@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/Item/ItemDataGetter.h"
+#include "Prepper/Item/ItemData/ItemDataGetter.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ListView.h"
 #include "Prepper/Interfaces/Inventory.h"
@@ -24,7 +24,7 @@ class PREPPER_API UInventoryUI : public UUserWidget
 	
 	IInventory* TargetInventory;
 public:
-	void Set(IInventory* TargetInventory);
+	void Set(IInventory * Target);
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 protected:
 	virtual void NativeOnInitialized() override;

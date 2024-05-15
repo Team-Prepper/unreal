@@ -7,8 +7,8 @@
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/MeleeWeapon.h"
-#include "Prepper/Weapon/ShotgunWeapon.h"
 #include "Prepper/Weapon/WeaponActor.h"
+#include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
 #include "Sound/SoundCue.h"
 
 UCombatComponent::UCombatComponent()
@@ -33,20 +33,19 @@ void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (Character)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("CombatComponentReady"));
-		Character->SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
+	if (!Character) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("CombatComponentReady"));
+	Character->SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
 
-		if (Character->GetFollowCamera())
-		{
-			DefaultFOV = Character->GetFollowCamera()->FieldOfView;
-			CurrentFOV = DefaultFOV;
-		}
-		if (Character->HasAuthority())
-		{
-			InitCarriedAmmo();
-		}
+	if (Character->GetFollowCamera())
+	{
+		DefaultFOV = Character->GetFollowCamera()->FieldOfView;
+		CurrentFOV = DefaultFOV;
+	}
+	if (Character->HasAuthority())
+	{
+		InitCarriedAmmo();
 	}
 }
 
@@ -80,6 +79,7 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 
 	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
 	if (!Controller) return;
+	
 	HUD = HUD == nullptr ? Cast<APrepperHUD>(Controller->GetHUD()) : HUD;
 	if (!HUD) return;
 	if (!EquippedWeapon) return;
@@ -137,6 +137,8 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 void UCombatComponent::InterpFOV(float DeltaTime)
 {
 	if (EquippedRangeWeapon == nullptr) return;
+	if (Character == nullptr) return;
+	if (Character->GetFollowCamera() == nullptr) return;
 
 	if (bAiming)
 	{
@@ -148,10 +150,7 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);
 	}
 
-	if (Character && Character->GetFollowCamera())
-	{
-		Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);
-	}
+	Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);
 }
 
 // TODO
@@ -381,14 +380,8 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	if (!EquippedWeapon || !Character) return;
 
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	
-	const USkeletalMeshSocket* HandSocket =
-		Character->GetMesh()->GetSocketByName(EquippedWeapon->AttachSocketName());
-	
-	if (HandSocket)
-	{
-		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-	}
+
+	Character->AttachActorAtSocket(EquippedWeapon->AttachSocketName(), EquippedWeapon);
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
@@ -453,13 +446,7 @@ void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
 {
 	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
 
-	const USkeletalMeshSocket* HandSocket =
-		Character->GetMesh()->GetSocketByName(EquippedWeapon->AttachSocketName());
-
-	if (HandSocket)
-	{
-		HandSocket->AttachActor(ActorToAttach, Character->GetMesh());
-	}
+	Character->AttachActorAtSocket(EquippedWeapon->AttachSocketName(), ActorToAttach);
 }
 
 void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
@@ -471,21 +458,11 @@ void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
 	{
 		if (AttachWeapon->GetWeaponType() == EWeaponType::EWT_RocketLauncher)
 		{
-			const USkeletalMeshSocket* RocketLauncherSocket = Character->GetMesh()->GetSocketByName(
-				FName("RocketLauncherSocket"));
-			if (RocketLauncherSocket)
-			{
-				RocketLauncherSocket->AttachActor(ActorToAttach, Character->GetMesh());
-			}
+			Character->AttachActorAtSocket(FName("RocketLauncherSocket"), ActorToAttach);
 		}
 		else
 		{
-			const USkeletalMeshSocket* HolsteredWeaponSocket = Character->GetMesh()->GetSocketByName(
-				FName("HolsteredWeaponSocket"));
-			if (HolsteredWeaponSocket)
-			{
-				HolsteredWeaponSocket->AttachActor(ActorToAttach, Character->GetMesh());
-			}
+			Character->AttachActorAtSocket(FName("HolsteredWeaponSocket"), ActorToAttach);
 		}
 	}
 }
@@ -671,49 +648,45 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 		GEngine->GameViewport->GetViewportSize(ViewportSize);
 	}
 
-	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
+	const FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
 	FVector CrosshairWorldPosition;
 	FVector CrosshairWorldDirection;
-	bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
+	const bool bScreenToWorld = UGameplayStatics::DeprojectScreenToWorld(
 		UGameplayStatics::GetPlayerController(this, 0),
 		CrosshairLocation,
 		CrosshairWorldPosition,
 		CrosshairWorldDirection
 	);
 
-	if (bScreenToWorld)
-	{
-		FVector Start = CrosshairWorldPosition;
-
-		if (Character)
-		{
-			float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
-			Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
-		}
+	if (!bScreenToWorld) return;
 	
-		FVector End = Start + CrosshairWorldDirection * TRACE_LEN;
-		ECollisionChannel CollisionChannel = ECC_Visibility;
+	FVector Start = CrosshairWorldPosition;
 
-		bool bHitSomething = GetWorld()->LineTraceSingleByChannel(
-			TraceHitResult,
-			Start,
-			End,
-			CollisionChannel
-		);
-		if (!bHitSomething)
-		{
-			// TraceHitResult의 Location에 End 좌표 설정
-			TraceHitResult.Location = End;
-		}
+	if (Character)
+	{
+		const float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
+		Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
+	}
+	
+	const FVector End = Start + CrosshairWorldDirection * TRACE_LEN;
+	const ECollisionChannel CollisionChannel = ECC_Visibility;
 
-		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
-		{
-			HUDPackage.CrosshairColor = FLinearColor::Red;
-		}
-		else
-		{
-			HUDPackage.CrosshairColor = FLinearColor::White;
-		}
+	const bool bHitSomething = GetWorld()->LineTraceSingleByChannel(
+		TraceHitResult, Start, End, CollisionChannel);
+	
+	if (!bHitSomething)
+	{
+		// TraceHitResult의 Location에 End 좌표 설정
+		TraceHitResult.Location = End;
+	}
+
+	if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
+	{
+		HUDPackage.CrosshairColor = FLinearColor::Red;
+	}
+	else
+	{
+		HUDPackage.CrosshairColor = FLinearColor::White;
 	}
 }
 

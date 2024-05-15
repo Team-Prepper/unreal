@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "Inventory.generated.h"
+#define MAX_ITEM_COUNT 16
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)

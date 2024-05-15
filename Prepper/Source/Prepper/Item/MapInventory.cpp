@@ -1,24 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MapInventory.h"
+#include "Prepper/Interfaces/Inventory.h"
 #include "UObject/ConstructorHelpers.h"
 
-bool MapInventory::TryCombineItem(const FString& Input1, const FString& Input2, FString& Result)
+bool UMapInventory::TryCombineItem(const FString& Input1, const FString& Input2, FString& Result)
 {
 	return  ItemData.TryCombinationItem(Input1, Input2, Result);
 }
 
-MapInventory::MapInventory()
+UMapInventory::UMapInventory()
 {
 	BulletCount = 0;
 }
 
-MapInventory::~MapInventory()
-{
-	
-}
-
-bool MapInventory::TryAddItem(const FString& ItemCode)
+bool UMapInventory::TryAddItem(const FString& ItemCode)
 {
 	FString retval;
 	
@@ -55,7 +51,7 @@ bool MapInventory::TryAddItem(const FString& ItemCode)
 	return true;
 }
 
-bool MapInventory::TryUseItem(const FString& ItemCode)
+bool UMapInventory::TryUseItem(const FString& ItemCode)
 {
 	// 아이템이 존재하지 않는다면 return false
 	if (!ItemUnits.Contains(ItemCode))	return false;
@@ -77,7 +73,7 @@ bool MapInventory::TryUseItem(const FString& ItemCode)
 	return true;
 }
 
-TArray<MapInventory::InventoryItem> MapInventory::GetIter()
+TArray<IInventory::InventoryItem> UMapInventory::GetIter()
 {
 	TArray<InventoryItem> Retval;
 	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
@@ -89,12 +85,12 @@ TArray<MapInventory::InventoryItem> MapInventory::GetIter()
 	
 }
 
-void MapInventory::AddBullet(const uint8 Count)
+void UMapInventory::AddBullet(const uint8 Count)
 {
 	BulletCount += Count;
 }
 
-uint8 MapInventory::GetBulletCount() const
+uint8 UMapInventory::GetBulletCount() const
 {
 	return BulletCount;
 }
