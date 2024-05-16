@@ -33,13 +33,19 @@ void ABasePlayerController::PossessNewPawn()
 			{
 				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 			}
-			PossessPawn();
+			MulticastPossessNewPawn();
 		}
 	}
 }
 
+void ABasePlayerController::MulticastPossessNewPawn_Implementation()
+{
+	PossessPawn();
+}
+
 void ABasePlayerController::PossessPawn()
 {
+	// 로컬에서도 동작하게 설계함
 	if (Cast<IControllable>(GetPawn()))
 	{
 		TargetControllerable = GetPawn();
@@ -49,23 +55,11 @@ void ABasePlayerController::PossessPawn()
 
 void ABasePlayerController::OnPossess(APawn* InPawn)
 {
+	// 서버에서만 동작하는 함수
 	Super::OnPossess(InPawn);
 	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
-	UE_LOG(LogTemp,Warning,TEXT("OnPossess : BaseCharacter Controller"));
-	if (Cast<IControllable>(GetPawn()))
-	{
-		TargetControllerable = GetPawn();
-	}
 }
 
-void ABasePlayerController::PollInit()
-{
-	//UE_LOG(LogTemp,Warning,TEXT("Call Poll Init"));
-	if (TargetControllerable != GetPawn() && Cast<IControllable>(GetPawn()))
-	{
-		TargetControllerable = GetPawn();
-	}
-}
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
 {
 	HighPingDelegate.Broadcast(bHighPing);
@@ -74,7 +68,6 @@ void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing
 void ABasePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	PollInit();
 	CheckPing(DeltaTime);
 }
 

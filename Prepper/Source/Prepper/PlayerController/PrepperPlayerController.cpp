@@ -3,6 +3,7 @@
 #include "Components/TextBlock.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/HUD/CharacterOverlay.h"
+#include "Prepper/HUD/Compass.h"
 #include "Prepper/HUD/PrepperHUD.h"
 
 void APrepperPlayerController::BeginPlay()
@@ -14,26 +15,40 @@ void APrepperPlayerController::BeginPlay()
 
 void APrepperPlayerController::PollInit()
 {
-	Super::PollInit();
-	if(CharacterOverlay == nullptr)
+	if(PrepperHUD && PrepperHUD->CharacterOverlay)
 	{
-		if(PrepperHUD && PrepperHUD->CharacterOverlay)
+		CharacterOverlay = PrepperHUD->CharacterOverlay;
+		if(CharacterOverlay)
 		{
-			CharacterOverlay = PrepperHUD->CharacterOverlay;
-			if(CharacterOverlay)
-			{
-				SetHUDHealth(HUDHealth,HUDMaxHealth);
-			}
+			UE_LOG(LogTemp,Warning,TEXT("Set CharacterOverlay"));
+			SetHUDHealth(HUDHealth,HUDMaxHealth);
 		}
 	}
+	
+	if(PrepperHUD && PrepperHUD->Compass)
+	{
+		Compass = PrepperHUD->Compass;
+		if(Compass)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Set Compass"));
+			SetCompass();
+		}
+	}
+	
 }
 
-void APrepperPlayerController::OnPossess(APawn* InPawn)
+void APrepperPlayerController::PossessPawn()
 {
-	Super::OnPossess(InPawn);
-	if (PlayerCharacter)
+	Super::PossessPawn();
+	PollInit();
+}
+
+void APrepperPlayerController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if(Compass)
 	{
-		SetHUDHealth(PlayerCharacter->GetCurrentHealth(), PlayerCharacter->GetMaxHealth());
+		Compass->SetDirection();
 	}
 }
 
@@ -85,4 +100,9 @@ void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
 		FString AmmoText = FString::Printf(TEXT("%d"),Value);
 		PrepperHUD->CharacterOverlay->CarriedAmmoValue->SetText(FText::FromString(AmmoText));
 	}
+}
+
+void APrepperPlayerController::SetCompass()
+{
+	Compass->PlayerCam = Cast<APlayerCharacter>(GetCharacter())->GetFollowCamera();
 }

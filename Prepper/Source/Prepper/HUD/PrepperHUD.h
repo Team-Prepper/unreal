@@ -37,13 +37,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UUserWidget> InventoryHUDClass;
 
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> CompassHUDClass;
+
 	void AddCharacterOverlay();
 
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 	UPROPERTY()
 	class UInventoryUI* InventoryHUD;
-
+	UPROPERTY()
+	class UCompass* Compass;
+	
 	UPROPERTY(EditAnywhere, Category = "Annoucement")
 	TSubclassOf<UUserWidget> AnnouncementClass;
 

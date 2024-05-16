@@ -16,16 +16,18 @@ class PREPPER_API ABasePlayerController : public APlayerController
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void PollInit();
+	virtual void PollInit() PURE_VIRTUAL();
 	void SetPossessPawn();
 protected:
 	virtual void BeginPlay() override;
 
-	void PossessPawn();
+	virtual void PossessPawn();
 	
 	FTimerHandle TimerHandle;
 	
 	void PossessNewPawn();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPossessNewPawn();
 
 	UPROPERTY()
 	class APlayerCharacter* PlayerCharacter;

@@ -14,17 +14,24 @@ void UCompass::NativeConstruct()
 	Super::NativeConstruct();
 	
 	CompassOffset = GetImageWidth();
-	PossessPlayer();
+}
+
+void UCompass::PossessPlayer()
+{
+	if(GetOwningPlayerPawn())
+	{
+		PlayerCam = Cast<APlayerCharacter>(GetOwningPlayerPawn())->GetFollowCamera();
+	}
 }
 
 void UCompass::SetDirection()
 {
-	if(!Cast<APrepperPlayerController>(GetOwningPlayer())) {
-		GetWorld()->GetTimerManager().ClearTimer(SetDirectionTimerHandle);
-		PossessPlayer();
+	if(PlayerCam == nullptr)
+	{
+		PlayerCam = Cast<APlayerCharacter>(GetOwningPlayerPawn())->GetFollowCamera();
+		UE_LOG(LogTemp,Warning,TEXT("Player Cam = nullptr"));
 		return;
 	}
-
 	float YawValue = PlayerCam->GetComponentRotation().Yaw;
 	YawValue *= -10;
 	YawValue -= (CompassOffset/2);
@@ -37,32 +44,6 @@ void UCompass::SetDirection()
 			CanvasSlot->SetPosition(FVector2D(YawValue,0));
 		}
 	}
-}
-
-void UCompass::PossessPlayer()
-{
-	if(GetOwningPlayerPawn())
-	{
-		PlayerCam = Cast<APlayerCharacter>(GetOwningPlayerPawn())->GetFollowCamera();
-		if(PlayerCam)
-		{
-			GetWorld()->GetTimerManager().SetTimer(
-				SetDirectionTimerHandle,
-				this,
-				&UCompass::SetDirection,
-				0.01,
-				true
-			);
-			return;
-		}
-	}
-	GetWorld()->GetTimerManager().SetTimer(
-	PlayerPossessTimerHandle,
-	this,
-	&UCompass::PossessPlayer,
-	1,
-	false
-	);
 }
 
 float UCompass::GetImageWidth() const

@@ -664,22 +664,31 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeaponActor* Wea
 
 void APlayerCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
 {
-	PlayerMovementState = State;
-	MulticastConvertPlayerMovementState(State);
+	if(HasAuthority())
+	{
+		PlayerMovementState = State;
+		MulticastConvertPlayerMovementState(State);
+	}
 }
 
 void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
 {
-	PlayerMovementState = State;
-	ConvertPlayerMovementState();
+	if(!IsLocallyControlled())
+	{
+		PlayerMovementState = State;
+		ConvertPlayerMovementState();
+	}
 }
 
 
 void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
 {
-	PlayerMovementState = State;
-	ConvertPlayerMovementState();
-	ServerConvertPlayerMovementState(State);
+	if(IsLocallyControlled())
+	{
+		PlayerMovementState = State;
+		ConvertPlayerMovementState();
+		ServerConvertPlayerMovementState(State);
+	}
 }
 
 void APlayerCharacter::ConvertPlayerMovementState()

@@ -5,7 +5,7 @@
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
-#include "..\Interfaces\Controllable.h"
+#include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
 #include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
