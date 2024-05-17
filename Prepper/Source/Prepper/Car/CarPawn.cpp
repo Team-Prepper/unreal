@@ -160,20 +160,20 @@ void ACarPawn::MouseRightReleased() {}
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
-	LocalInteraction(Target);
-	ServerInteraction(Target);
+	Driver = Target;
+
+	Target->Controller->Possess(this);
+	Target->SetPlayerMovementState(EPlayerMovementState::EPMS_Seat);
+	
+	MulticastInteraction(Target);
 }
 
 void ACarPawn::LocalInteraction(APlayerCharacter* Target)
 {
-	Driver = Target;
-	Target->Controller->Possess(this);
-	Target->SetPlayerMovementState(EPlayerMovementState::EPMS_Seat);
 }
 
 void ACarPawn::ServerInteraction_Implementation(APlayerCharacter* Target)
 {
-	MulticastInteraction(Target);
 }
 
 void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)

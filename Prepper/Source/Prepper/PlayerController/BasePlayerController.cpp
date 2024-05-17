@@ -25,17 +25,13 @@ void ABasePlayerController::SetPossessPawn()
 
 void ABasePlayerController::PossessNewPawn()
 {
-	if (HasAuthority())
+	if (!GetPawn()) return;
+	
+	if(GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
 	{
-		if (GetPawn())
-		{
-			if(GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
-			{
-				GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-			}
-			MulticastPossessNewPawn();
-		}
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 	}
+	MulticastPossessNewPawn();
 }
 
 void ABasePlayerController::MulticastPossessNewPawn_Implementation()
@@ -50,7 +46,6 @@ void ABasePlayerController::PossessPawn()
 	{
 		TargetControllerable = GetPawn();
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"), *GetPawn()->GetName(), *GetName());
 }
 
 void ABasePlayerController::OnPossess(APawn* InPawn)
@@ -58,6 +53,8 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 	// 서버에서만 동작하는 함수
 	Super::OnPossess(InPawn);
 	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+	PossessNewPawn();
+	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"), *GetPawn()->GetName(), *GetName());
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
@@ -74,31 +71,27 @@ void ABasePlayerController::Tick(float DeltaTime)
 void ABasePlayerController::CheckPing(float DeltaTime)
 {
 	HighPingRunningTime += DeltaTime;
-	if(HighPingRunningTime > CheckPingFrequency)
+	if(HighPingRunningTime <= CheckPingFrequency) return;
+	
+	if(!PlayerState)
 	{
-		if(!PlayerState)
-		{
-			PlayerState = GetPlayerState<APlayerState>();
-		}
-		UE_LOG(LogTemp,Warning,TEXT("Ping chk"));
-		FString ping = FString::SanitizeFloat(PlayerState->GetPingInMilliseconds());
-		UE_LOG(LogTemp,Warning,TEXT("PING : %s"), *ping);
-		
-		if(PlayerState)
-		{
-			if(PlayerState->GetPingInMilliseconds() > HighPingThreshold)
-			{
-				UE_LOG(LogTemp,Warning,TEXT("HIGH PING WARNING"));
-				if(IsLocalController())
-				{
-					HighPingWarningBP();
-					PingAnimationRunningTime = 0.f;
-				}
-			}
-		}
-		HighPingRunningTime = 0.f;
-		
+		PlayerState = GetPlayerState<APlayerState>();
 	}
+	
+	UE_LOG(LogTemp,Warning,TEXT("Ping chk"));
+	FString ping = FString::SanitizeFloat(PlayerState->GetPingInMilliseconds());
+	UE_LOG(LogTemp,Warning,TEXT("PING : %s"), *ping);
+		
+	if(PlayerState && PlayerState->GetPingInMilliseconds() > HighPingThreshold)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("HIGH PING WARNING"));
+		if(IsLocalController())
+		{
+			HighPingWarningBP();
+			PingAnimationRunningTime = 0.f;
+		}
+	}
+	HighPingRunningTime = 0.f;
 }
 
 void ABasePlayerController::SetupInputComponent()

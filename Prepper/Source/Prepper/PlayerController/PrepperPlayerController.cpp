@@ -95,14 +95,17 @@ void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
 	bool bHUDValid = PrepperHUD &&
 					 PrepperHUD->CharacterOverlay &&
 					 PrepperHUD->CharacterOverlay->CarriedAmmoValue;
-	if(bHUDValid)
-	{
-		FString AmmoText = FString::Printf(TEXT("%d"),Value);
-		PrepperHUD->CharacterOverlay->CarriedAmmoValue->SetText(FText::FromString(AmmoText));
-	}
+	if(!bHUDValid) return;
+	
+	FString AmmoText = FString::Printf(TEXT("%d"),Value);
+	PrepperHUD->CharacterOverlay->CarriedAmmoValue->SetText(FText::FromString(AmmoText));
 }
 
 void APrepperPlayerController::SetCompass()
 {
-	Compass->PlayerCam = Cast<APlayerCharacter>(GetCharacter())->GetFollowCamera();
+	if (APlayerCharacter* player = Cast<APlayerCharacter>(GetCharacter()))
+	{
+		Compass->PlayerCam = player->GetFollowCamera();
+	}
+	
 }

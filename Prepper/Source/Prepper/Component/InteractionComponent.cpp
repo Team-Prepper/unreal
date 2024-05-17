@@ -70,11 +70,11 @@ void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 	if(CurInteractableItem != nullptr && InteractableItem == nullptr)
 	{
 		CurInteractableItem->ShowPickUpWidget(false);
-		if(Character->IsLocallyControlled())
-		{
-			CurInteractableItem = nullptr;
-		}
-		if(!Character->HasAuthority() && Character->IsLocallyControlled())
+		if(!Character->IsLocallyControlled()) return;
+		
+		CurInteractableItem = nullptr;
+		
+		if(!Character->HasAuthority())
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Set Null Interaction"));
 			ServerSetItemInteractable(nullptr);
@@ -83,25 +83,22 @@ void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 	}
 	
 	TScriptInterface<IInteractable> NewInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
-	if(NewInteractableItem != CurInteractableItem)
+	
+	if (NewInteractableItem == CurInteractableItem) return;
+	if (!Character->IsLocallyControlled()) return;
+	if(!Character->HasAuthority())
 	{
-		if(!Character->HasAuthority() && Character->IsLocallyControlled())
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
-			ServerSetItemInteractable(InteractableItem);
-		}
-		if(Character->IsLocallyControlled())
-		{
-			if(CurInteractableItem)
-			{
-				CurInteractableItem->ShowPickUpWidget(false);
-			}
-			CurInteractableItem = TScriptInterface<IInteractable>(InteractableItem);
-			if(CurInteractableItem)
-			{
-				CurInteractableItem->ShowPickUpWidget(true);
-			}
-		}
+		UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
+		ServerSetItemInteractable(InteractableItem);
+	}
+	if(CurInteractableItem)
+	{
+		CurInteractableItem->ShowPickUpWidget(false);
+	}
+	CurInteractableItem = NewInteractableItem;
+	if(CurInteractableItem)
+	{
+		CurInteractableItem->ShowPickUpWidget(true);
 	}
 }
 

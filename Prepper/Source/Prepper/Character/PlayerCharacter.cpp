@@ -403,8 +403,7 @@ void APlayerCharacter::EPressed()
 		Combat->SwapWeapons();
 	}
 	bool bSwap = Combat->ShouldSwapWeapons() &&
-			Combat->CombatState == ECombatState::ECS_Unoccupied &&
-			InteractableItem == nullptr;
+			Combat->CombatState == ECombatState::ECS_Unoccupied;
 
 	if (bSwap)
 	{

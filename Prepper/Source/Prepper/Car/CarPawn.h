@@ -50,10 +50,10 @@ private:
 	TObjectPtr<UChaosWheeledVehicleMovementComponent> ChaosVehicleMovement;
 
 	TObjectPtr<APlayerCharacter> Driver;
-	
+
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	class USphereComponent* AreaSphere;
-	
+
 public:
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
@@ -76,16 +76,15 @@ public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 
 	UFUNCTION()
-	void LocalInteraction(APlayerCharacter * Target);
+	void LocalInteraction(APlayerCharacter* Target);
 	UFUNCTION(Server, Reliable)
-	void ServerInteraction(APlayerCharacter * Target);
+	void ServerInteraction(APlayerCharacter* Target);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastInteraction(APlayerCharacter * Target);
-	
+	void MulticastInteraction(APlayerCharacter* Target);
+
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
 
 protected:
-
 	virtual void BeginPlay() override;
 
 	/** Brake Action */
@@ -105,12 +104,11 @@ protected:
 
 public:
 	ACarPawn();
-	
+
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	virtual void Tick(float Delta) override;
 
 protected:
-
 	/** Handles brake start/stop inputs */
 	void StartBrake(const FInputActionValue& Value);
 	void StopBrake(const FInputActionValue& Value);
@@ -126,9 +124,6 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category="Vehicle")
 	void BrakeLights(bool bBraking);
 
-	void GetChassis();
-	
-
 public:
 	/** Returns the front spring arm subobject */
 	FORCEINLINE USpringArmComponent* GetFrontSpringArm() const { return FrontSpringArm; }
@@ -139,5 +134,8 @@ public:
 	/** Returns the back camera subobject */
 	FORCEINLINE UCameraComponent* GetBackCamera() const { return BackCamera; }
 	/** Returns the cast Chaos Vehicle Movement subobject */
-	FORCEINLINE const TObjectPtr<UChaosWheeledVehicleMovementComponent>& GetChaosVehicleMovement() const { return ChaosVehicleMovement; }
+	FORCEINLINE const TObjectPtr<UChaosWheeledVehicleMovementComponent>& GetChaosVehicleMovement() const
+	{
+		return ChaosVehicleMovement;
+	}
 };
