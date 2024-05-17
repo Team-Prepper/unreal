@@ -168,20 +168,11 @@ void ACarPawn::Interaction(APlayerCharacter* Target)
 	MulticastInteraction(Target);
 }
 
-void ACarPawn::LocalInteraction(APlayerCharacter* Target)
-{
-}
-
-void ACarPawn::ServerInteraction_Implementation(APlayerCharacter* Target)
-{
-}
-
 void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
 {
-	if(IsLocallyControlled()) return;
+	if(!IsLocallyControlled()) return;
 	Driver = Target;
 	Driver->SetActorEnableCollision(false);
-	
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)

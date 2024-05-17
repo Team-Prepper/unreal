@@ -53,7 +53,7 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 	// 서버에서만 동작하는 함수
 	Super::OnPossess(InPawn);
 	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
-	PossessNewPawn();
+	SetPossessPawn();
 	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"), *GetPawn()->GetName(), *GetName());
 }
 

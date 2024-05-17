@@ -18,13 +18,6 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateVehicle, Log, All);
 
-/**
- *  Vehicle Pawn class
- *  Handles common functionality for all vehicle types,
- *  including input handling and camera management.
- *  
- *  Specific vehicle configurations are handled in subclasses.
- */
 UCLASS(abstract)
 class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IInteractable
 {
@@ -75,10 +68,6 @@ public:
 
 	virtual void Interaction(APlayerCharacter* Target) override;
 
-	UFUNCTION()
-	void LocalInteraction(APlayerCharacter* Target);
-	UFUNCTION(Server, Reliable)
-	void ServerInteraction(APlayerCharacter* Target);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastInteraction(APlayerCharacter* Target);
 
