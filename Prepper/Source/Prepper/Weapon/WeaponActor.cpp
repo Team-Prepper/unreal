@@ -34,7 +34,7 @@ AWeaponActor::AWeaponActor()
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
+	AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);;
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
@@ -171,7 +171,7 @@ void AWeaponActor::OnDropped()
 	SetActorEnableCollision(true);
 	
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Block);
+	AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	
@@ -182,11 +182,14 @@ void AWeaponActor::OnDropped()
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
+	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
+
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-
+	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
 	EnableCustomDepth(true);
 
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;

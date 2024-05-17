@@ -18,6 +18,15 @@ void ABasePlayerController::BeginPlay()
 	SetPossessPawn();
 }
 
+void ABasePlayerController::OnPossess(APawn* InPawn)
+{
+	// 서버에서만 동작하는 함수
+	Super::OnPossess(InPawn);
+	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
+	SetPossessPawn();
+	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"), *GetPawn()->GetName(), *GetName());
+}
+
 void ABasePlayerController::SetPossessPawn()
 {
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABasePlayerController::PossessNewPawn, 0.1f, true);
@@ -46,15 +55,6 @@ void ABasePlayerController::PossessPawn()
 	{
 		TargetControllerable = GetPawn();
 	}
-}
-
-void ABasePlayerController::OnPossess(APawn* InPawn)
-{
-	// 서버에서만 동작하는 함수
-	Super::OnPossess(InPawn);
-	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
-	SetPossessPawn();
-	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"), *GetPawn()->GetName(), *GetName());
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)

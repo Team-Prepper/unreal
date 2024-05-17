@@ -1,6 +1,7 @@
 #include "PrepperPlayerController.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Prepper/Car/CarPawn.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/HUD/CharacterOverlay.h"
 #include "Prepper/HUD/Compass.h"
@@ -15,16 +16,18 @@ void APrepperPlayerController::BeginPlay()
 
 void APrepperPlayerController::PollInit()
 {
+	if(!IsLocalController()) return;
+	PlayerCharacter = PlayerCharacter == nullptr ? Cast<APlayerCharacter>(GetPawn()) : PlayerCharacter;
 	if(PrepperHUD && PrepperHUD->CharacterOverlay)
 	{
 		CharacterOverlay = PrepperHUD->CharacterOverlay;
-		if(CharacterOverlay)
+		if(CharacterOverlay && PlayerCharacter)
 		{
 			UE_LOG(LogTemp,Warning,TEXT("Set CharacterOverlay"));
-			SetHUDHealth(HUDHealth,HUDMaxHealth);
+			SetHUDHealth(PlayerCharacter->GetCurrentHealth(),PlayerCharacter->GetMaxHealth());
 		}
 	}
-	
+
 	if(PrepperHUD && PrepperHUD->Compass)
 	{
 		Compass = PrepperHUD->Compass;
@@ -34,8 +37,8 @@ void APrepperPlayerController::PollInit()
 			SetCompass();
 		}
 	}
-	
 }
+
 
 void APrepperPlayerController::PossessPawn()
 {
@@ -55,6 +58,9 @@ void APrepperPlayerController::Tick(float DeltaTime)
 
 void APrepperPlayerController::SetHUDHealth(float Health, float MaxHealth)
 {
+	if(!IsLocalController()) return;
+	// 주로 폰이 변경되었을 떄 사용 (init,차량 탑승, 부활 등)
+	// 데미지 처리시 HUD 갱신은 Player에서 처리중
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
 	bool bHUDValid = PrepperHUD &&
 					 PrepperHUD->CharacterOverlay &&
@@ -103,9 +109,14 @@ void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
 
 void APrepperPlayerController::SetCompass()
 {
-	if (APlayerCharacter* player = Cast<APlayerCharacter>(GetCharacter()))
+	if ((PlayerCharacter = Cast<APlayerCharacter>(GetCharacter())) != nullptr)
 	{
-		Compass->PlayerCam = player->GetFollowCamera();
+		Compass->PlayerCam = PlayerCharacter->GetFollowCamera();
+		return;
 	}
-	
+	if(ACarPawn* Car = Cast<ACarPawn>(GetPawn()))
+	{
+		Compass->PlayerCam = Car->GetBackCamera();
+		return;
+	}
 }

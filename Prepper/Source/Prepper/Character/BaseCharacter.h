@@ -38,7 +38,6 @@ protected:
 	
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float CurrentHealth = 100.f;
-
 	
 	UFUNCTION()
 	void OnRep_Health();

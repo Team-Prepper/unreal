@@ -10,7 +10,10 @@
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/GameMode/PrepperGameMode.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -89,7 +92,7 @@ void ACarPawn::BeginPlay()
 	Super::BeginPlay();
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	
+	CurrentHealth = MaxHealth;
 	// 게임 시작시 플레이어 UI 동기화(초기화)
 	
 }
@@ -168,11 +171,18 @@ void ACarPawn::Interaction(APlayerCharacter* Target)
 	MulticastInteraction(Target);
 }
 
+void ACarPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACarPawn, CurrentHealth);
+}
+
 void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
 {
 	if(!IsLocallyControlled()) return;
 	Driver = Target;
 	Driver->SetActorEnableCollision(false);
+	UpdateHUDHealth();
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)
@@ -231,6 +241,34 @@ void ACarPawn::ResetVehicle(const FInputActionValue& Value)
 	GetMovementComponent()->ResetMoveState();
 
 	UE_LOG(LogTemp, Error, TEXT("Reset Vehicle"));
+}
+
+void ACarPawn::OnRep_Health()
+{
+	UpdateHUDHealth();
+}
+
+void ACarPawn::UpdateHUDHealth()
+{
+	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(GetController());
+	if(!PrepperPlayerController) return;
+	PrepperPlayerController->SetHUDHealth(CurrentHealth,MaxHealth);
+}
+
+void ACarPawn::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatorController, AActor* DamageCauser)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+	UpdateHUDHealth();
+
+	if(CurrentHealth != 0.f) return;
+	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	
+	if(PrepperGameMode == nullptr) return;
+	
+	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(GetController());
+	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+	PrepperGameMode->PlayerEliminated(Driver, PrepperPlayerController, AttackerController);
 }
 
 #undef LOCTEXT_NAMESPACE

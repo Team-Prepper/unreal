@@ -57,6 +57,7 @@ public:
 	
 	UPROPERTY(Replicated)
 	bool bDisableGamePlay = false;
+
 	
 private:
 	void ElimTimerFinished();

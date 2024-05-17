@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
 #include "Prepper/Interfaces/Controllable.h"
+#include "Prepper/Interfaces/Damageable.h"
 #include "Prepper/Interfaces/Interactable.h"
 
 #include "CarPawn.generated.h"
@@ -19,9 +20,8 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateVehicle, Log, All);
 
 UCLASS(abstract)
-class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IInteractable
+class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IInteractable, public IDamageable
 {
-private:
 	GENERATED_BODY()
 	/** Spring Arm for the front camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -68,6 +68,8 @@ public:
 
 	virtual void Interaction(APlayerCharacter* Target) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastInteraction(APlayerCharacter* Target);
 
@@ -91,11 +93,27 @@ protected:
 	/** Keeps track of which camera is active */
 	bool bFrontCameraActive = false;
 
+	/* 체력 관련 */
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+	
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	float CurrentHealth = 100.f;
+	
+	UFUNCTION()
+	void OnRep_Health();
+
+	UFUNCTION()
+	void UpdateHUDHealth();
+
 public:
 	ACarPawn();
 
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	virtual void Tick(float Delta) override;
+
+	UFUNCTION()
+	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser) override;
 
 protected:
 	/** Handles brake start/stop inputs */
