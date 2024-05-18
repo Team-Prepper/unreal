@@ -182,7 +182,6 @@ void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
 	if(!IsLocallyControlled()) return;
 	Driver = Target;
 	Driver->SetActorEnableCollision(false);
-	UpdateHUDHealth();
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)
@@ -243,23 +242,10 @@ void ACarPawn::ResetVehicle(const FInputActionValue& Value)
 	UE_LOG(LogTemp, Error, TEXT("Reset Vehicle"));
 }
 
-void ACarPawn::OnRep_Health()
-{
-	UpdateHUDHealth();
-}
-
-void ACarPawn::UpdateHUDHealth()
-{
-	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(GetController());
-	if(!PrepperPlayerController) return;
-	PrepperPlayerController->SetHUDHealth(CurrentHealth,MaxHealth);
-}
-
 void ACarPawn::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-	UpdateHUDHealth();
 
 	if(CurrentHealth != 0.f) return;
 	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();

@@ -97,14 +97,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 	
-	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "Player Stats")
 	float CurrentHealth = 100.f;
-	
-	UFUNCTION()
-	void OnRep_Health();
-
-	UFUNCTION()
-	void UpdateHUDHealth();
 
 public:
 	ACarPawn();

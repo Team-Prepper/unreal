@@ -19,8 +19,4 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	UTexture2D* ItemIcon;
-	UPROPERTY()
-	bool IsStackable;
-	UPROPERTY()
-	int16 MaxStack;
 };

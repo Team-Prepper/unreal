@@ -17,13 +17,17 @@ void APrepperPlayerController::BeginPlay()
 void APrepperPlayerController::PollInit()
 {
 	if(!IsLocalController()) return;
-	PlayerCharacter = PlayerCharacter == nullptr ? Cast<APlayerCharacter>(GetPawn()) : PlayerCharacter;
+	if(Cast<APlayerCharacter>(GetPawn()))
+	{
+		PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	}
 	if(PrepperHUD && PrepperHUD->CharacterOverlay)
 	{
 		CharacterOverlay = PrepperHUD->CharacterOverlay;
 		if(CharacterOverlay && PlayerCharacter)
 		{
-			UE_LOG(LogTemp,Warning,TEXT("Set CharacterOverlay"));
+			UE_LOG(LogTemp,Warning,TEXT("-----Set CharacterOverlay"));
+			UE_LOG(LogTemp,Warning,TEXT("%f, %f"),PlayerCharacter->GetCurrentHealth(),PlayerCharacter->GetMaxHealth());
 			SetHUDHealth(PlayerCharacter->GetCurrentHealth(),PlayerCharacter->GetMaxHealth());
 		}
 	}

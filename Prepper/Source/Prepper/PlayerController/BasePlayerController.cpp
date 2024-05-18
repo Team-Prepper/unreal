@@ -32,6 +32,11 @@ void ABasePlayerController::SetPossessPawn()
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABasePlayerController::PossessNewPawn, 0.1f, true);
 }
 
+void ABasePlayerController::ResetPlayer()
+{
+	PlayerCharacter = nullptr;
+}
+
 void ABasePlayerController::PossessNewPawn()
 {
 	if (!GetPawn()) return;

@@ -144,10 +144,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UStatusEffectComponent* StatusEffect;
 
-	/* 캐릭터 메쉬 숨기기 */
-	void HideAllMeshComponent(bool Hide);
-	void HidePlayerMesh(bool Hide);
-	void HidePlayerEquipment(bool Hide);
+	
+	void SetPlayerEqiupmentHiddenInGame(bool visible);
 	
 	/* For Animation */
 	UPROPERTY(EditAnywhere, Category = Combat)

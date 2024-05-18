@@ -18,6 +18,7 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void PollInit() PURE_VIRTUAL();
 	void SetPossessPawn();
+	void ResetPlayer();
 protected:
 	virtual void BeginPlay() override;
 
