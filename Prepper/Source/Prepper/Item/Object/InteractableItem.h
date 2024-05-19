@@ -19,7 +19,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Item Properties")
-	USkeletalMeshComponent* ItemMesh;
+	UStaticMeshComponent* ItemMesh;
 	
 	UPROPERTY(EditAnywhere)
 	float BaseTurnRate = 45.f;
@@ -32,8 +32,6 @@ private:
 	class USoundCue* PickupSound;
 	
 	void DestroyInteractionItem();
-	UFUNCTION(Server, Reliable)
-	void ServerDestroyInteractionItem();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastDestroyInteractionItem();
 };

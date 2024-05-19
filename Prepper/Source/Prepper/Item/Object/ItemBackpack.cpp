@@ -13,6 +13,8 @@ AItemBackpack::AItemBackpack()
 
 	BackpackMesh->SetCollisionResponseToAllChannels(ECR_Block);
 	BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	BackpackMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	BackpackMesh->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
 	BackpackMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	BackpackMesh->SetRenderCustomDepth(true);
 	BackpackMesh->SetCustomDepthStencilValue(CustomDepthColor);

@@ -9,10 +9,12 @@
 void AInteractableActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
-	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	if(AreaSphere)
+	{
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	}
 	
 	if(PickUpWidget)
 	{

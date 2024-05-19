@@ -12,7 +12,7 @@ AInteractableObject::AInteractableObject()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 	
-	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("ObjectMesh"));
 	SetRootComponent(ItemMesh);
 	
 	ItemMesh->SetCollisionResponseToAllChannels(ECR_Block);
@@ -26,7 +26,7 @@ AInteractableObject::AInteractableObject()
 	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
+	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
 }
 

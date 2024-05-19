@@ -216,6 +216,9 @@ public:
 	
 	virtual void AddItem(FString ItemCode) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAddItem(const FString& ItemCode);
 	
 	bool IsWeaponEquipped();
 	bool IsAiming();

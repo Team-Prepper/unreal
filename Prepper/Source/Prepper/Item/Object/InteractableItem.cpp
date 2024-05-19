@@ -12,18 +12,20 @@ AInteractableItem::AInteractableItem()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	
-	ItemMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	ItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ItemMesh"));
 	SetRootComponent(ItemMesh);
 	
-	ItemMesh->SetCollisionResponseToAllChannels(ECR_Block);
+	ItemMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
 	ItemMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+	ItemMesh->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	ItemMesh->SetCollisionResponseToChannel(ECC_Vehicle, ECR_Ignore);
 	ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ItemMesh->SetRenderCustomDepth(true);
 	ItemMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
 	
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
@@ -62,15 +64,6 @@ void AInteractableItem::DestroyInteractionItem()
 	{
 		MulticastDestroyInteractionItem();
 	}
-	else
-	{
-		ServerDestroyInteractionItem();
-	}
-}
-
-void AInteractableItem::ServerDestroyInteractionItem_Implementation()
-{
-	MulticastDestroyInteractionItem();
 }
 
 void AInteractableItem::MulticastDestroyInteractionItem_Implementation()

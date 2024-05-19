@@ -20,7 +20,7 @@
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Sound/SoundCue.h"
 #include "Components/PawnNoiseEmitterComponent.h"
-#include "Prepper/Item/MapInventory.h"
+
 
 
 APlayerCharacter::APlayerCharacter()
@@ -110,13 +110,6 @@ void APlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 	
 	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
-	
-	if(PrepperPlayerController)
-	{
-		//Inven = NewObject<UMapInventory>(GetWorld(), UMapInventory::StaticClass());
-		Inven.TryAddItem("Milk");
-		Inven.TryAddItem("Milgaru");
-	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -387,14 +380,9 @@ void APlayerCharacter::SpaceReleased()
 void APlayerCharacter::EPressed()
 {
 	if(bDisableGamePlay) return;
-	TScriptInterface<IInteractable> InteractableItem;
-	if(InteractionComponent)
-	{
-		InteractableItem = InteractionComponent->CurInteractableItem;
-	}
 
 	/* Interaction */
-	if(InteractableItem)
+	if(InteractionComponent && InteractionComponent->CurInteractableItem)
 	{
 		UE_LOG(LogTemp, Warning , TEXT("INTERACTABLE ITEM"));
 		InteractionComponent->CurInteractableItem->Interaction(this);
@@ -426,6 +414,8 @@ void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
 		Combat->EquipWeapon(Weapon);
 	}
 }
+
+
 
 void APlayerCharacter::ControlPressed()
 {
@@ -780,6 +770,12 @@ void APlayerCharacter::SetPlayerEqiupmentHiddenInGame(bool visible)
 }
 
 void APlayerCharacter::AddItem(FString ItemCode)
+{
+	if(!HasAuthority()) return;
+	MulticastAddItem(ItemCode);
+}
+
+void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 {
 	Inven.TryAddItem(ItemCode);
 }
