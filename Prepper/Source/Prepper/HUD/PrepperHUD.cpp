@@ -131,3 +131,12 @@ void APrepperHUD::ToggleInventory()
 	}
 	
 }
+
+void APrepperHUD::ResetCrossHair()
+{
+	HUDPackage.CrosshairCenter = nullptr;
+	HUDPackage.CrosshairLeft = nullptr;
+	HUDPackage.CrosshairRight = nullptr;
+	HUDPackage.CrosshairTop = nullptr;
+	HUDPackage.CrosshairBottom = nullptr;
+}

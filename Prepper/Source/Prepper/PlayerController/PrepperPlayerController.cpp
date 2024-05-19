@@ -23,6 +23,7 @@ void APrepperPlayerController::PollInit()
 	}
 	if(PrepperHUD && PrepperHUD->CharacterOverlay)
 	{
+		PrepperHUD->ResetCrossHair();
 		CharacterOverlay = PrepperHUD->CharacterOverlay;
 		if(CharacterOverlay && PlayerCharacter)
 		{

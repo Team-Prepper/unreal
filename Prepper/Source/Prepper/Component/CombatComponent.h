@@ -92,7 +92,8 @@ protected:
 	void UpdateCarriedAmmo();
 	void PlayEquipWeaponSound(AWeaponActor* WeaponToEquip);
 	void SwapWeapons();
-	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSwapWeapon();
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
 

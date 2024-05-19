@@ -469,9 +469,12 @@ void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
 
 void UCombatComponent::SwapWeapons()
 {
-	UE_LOG(LogTemp, Warning , TEXT("Combatstate : %d"),CombatState);
 	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr || !Character->HasAuthority()) return;
-	UE_LOG(LogTemp, Warning , TEXT("WEAPON SWAP"));
+	MulticastSwapWeapon();
+}
+
+void UCombatComponent::MulticastSwapWeapon_Implementation()
+{
 	Character->PlaySwapMontage();
 	CombatState = ECombatState::ECS_SwappingWeapons;
 	Character->bFinishedSwapping = false;

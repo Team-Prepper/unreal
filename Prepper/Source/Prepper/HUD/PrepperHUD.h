@@ -60,6 +60,9 @@ public:
 	bool IsInventoryVisible = false;
 	UFUNCTION()
 	void ToggleInventory();
+
+	UFUNCTION()
+	void ResetCrossHair();
 	
 protected:
 	virtual void BeginPlay() override;
