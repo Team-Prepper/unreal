@@ -114,14 +114,9 @@ void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
 
 void APrepperPlayerController::SetCompass()
 {
-	if ((PlayerCharacter = Cast<APlayerCharacter>(GetCharacter())) != nullptr)
+	if (Cast<IControllable>(GetPawn()) != nullptr)
 	{
-		Compass->PlayerCam = PlayerCharacter->GetFollowCamera();
-		return;
+		Compass->PlayerCam = Cast<IControllable>(GetPawn())->GetFollowCamera();
 	}
-	if(ACarPawn* Car = Cast<ACarPawn>(GetPawn()))
-	{
-		Compass->PlayerCam = Car->GetBackCamera();
-		return;
-	}
+	
 }

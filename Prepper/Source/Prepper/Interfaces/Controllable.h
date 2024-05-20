@@ -5,6 +5,8 @@
 #include "UObject/Interface.h"
 #include "Controllable.generated.h"
 
+class UCameraComponent;
+
 UINTERFACE(MinimalAPI)
 class UControllable : public UInterface
 {
@@ -33,4 +35,5 @@ public:
 	virtual void MouseRightPressed() PURE_VIRTUAL(IControllable::MouseRightPressed, );
 	virtual void MouseRightReleased() PURE_VIRTUAL(IControllable::MouseRightReleased, );
 
+	virtual UCameraComponent* GetFollowCamera() PURE_VIRTUAL(IControllable::GetFollowCamera, return nullptr;);
 };

@@ -82,7 +82,10 @@ protected:
 	virtual void MouseLeftReleased() override;
 	virtual void MouseRightPressed() override;
 	virtual void MouseRightReleased() override;
-
+public:
+	UFUNCTION(BlueprintCallable)
+	virtual UCameraComponent* GetFollowCamera() override;
+protected:
 	/* 행동관련 */
 	virtual void Jump() override;
 	
@@ -230,8 +233,8 @@ public:
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch;}
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace;}
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	//UFUNCTION(BlueprintCallable)
+	//FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
 	FORCEINLINE bool GetDisableGamePlay() const { return bDisableGamePlay; }

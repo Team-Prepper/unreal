@@ -66,6 +66,8 @@ public:
 	virtual void MouseRightPressed() override;
 	virtual void MouseRightReleased() override;
 
+	virtual UCameraComponent* GetFollowCamera() override;
+
 	virtual void Interaction(APlayerCharacter* Target) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -129,7 +131,7 @@ public:
 	/** Returns the front spring arm subobject */
 	FORCEINLINE USpringArmComponent* GetFrontSpringArm() const { return FrontSpringArm; }
 	/** Returns the front camera subobject */
-	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FrontCamera; }
+	FORCEINLINE UCameraComponent* GetFrontCamera() const { return FrontCamera; }
 	/** Returns the back spring arm subobject */
 	FORCEINLINE USpringArmComponent* GetBackSpringArm() const { return BackSpringArm; }
 	/** Returns the back camera subobject */

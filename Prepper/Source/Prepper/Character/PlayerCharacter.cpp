@@ -457,6 +457,11 @@ void APlayerCharacter::MouseRightReleased()
 	}
 }
 
+UCameraComponent* APlayerCharacter::GetFollowCamera()
+{
+	return FollowCamera;
+}
+
 void APlayerCharacter::MouseLeftPressed()
 {
 	if(bDisableGamePlay) return;

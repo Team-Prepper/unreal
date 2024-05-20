@@ -161,6 +161,11 @@ void ACarPawn::MouseLeftReleased() {}
 void ACarPawn::MouseRightPressed() {}
 void ACarPawn::MouseRightReleased() {}
 
+UCameraComponent* ACarPawn::GetFollowCamera()
+{
+	return bFrontCameraActive ? FrontCamera : BackCamera;
+}
+
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
 	Driver = Target;
