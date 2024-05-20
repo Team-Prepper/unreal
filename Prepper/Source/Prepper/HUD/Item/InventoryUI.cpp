@@ -26,6 +26,7 @@ void UInventoryUI::SetVisibility(ESlateVisibility InVisibility)
 		UItemUIData* Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 		IInventory::InventoryItem Item = Items[i];
 		if (!ItemData.GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
+		Data->ItemCount = Items[i].Count;
 		ItemList->AddItem(Data);
 	}
 }

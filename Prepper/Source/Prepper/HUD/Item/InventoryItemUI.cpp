@@ -26,4 +26,5 @@ void UInventoryItemUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	Icon->SetBrushFromTexture(Object->TextureIcon);
 	DisplayText->SetText(Object->ItemName);
+	ItemCount->SetText(FText::FromString(FString::FromInt(Object->ItemCount)));
 }

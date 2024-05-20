@@ -22,6 +22,8 @@ private:
 	TObjectPtr<UImage> Icon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DisplayText;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ItemCount;
 public:
 	FText ItemText = FText::FromString("");
 protected:

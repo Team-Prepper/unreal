@@ -16,17 +16,6 @@ UMapInventory::UMapInventory()
 
 bool UMapInventory::TryAddItem(const FString& ItemCode)
 {
-	FString retval;
-	
-	if (TryCombineItem("Milk", "Milgaru", retval))
-	{
-		
-		UE_LOG(LogTemp, Warning, TEXT("Test Success: %s"), *retval);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Fail Test"));
-	}
 	
 	// 아이템이 존재한다면
 	// 그 아이템의 소지수를 1 늘리고 true 반환
@@ -35,7 +24,8 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 		const uint8 ItemCount = *ItemUnits.Find(ItemCode) + 1;
 		ItemUnits.Add(ItemCode, ItemCount);
 		
-		UE_LOG(LogTemp, Warning, TEXT("Add Item %s"), *ItemCode);
+		UE_LOG(LogTemp, Warning, TEXT("Add Item %s + 1"), *ItemCode);
+		return true;
 	}
 
 	// 새로운 아이템이 들어갈 공간이 없다면  false 반환
