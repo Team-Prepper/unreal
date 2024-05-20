@@ -114,9 +114,6 @@ void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
 
 void APrepperPlayerController::SetCompass()
 {
-	if (Cast<IControllable>(GetPawn()) != nullptr)
-	{
-		Compass->PlayerCam = Cast<IControllable>(GetPawn())->GetFollowCamera();
-	}
-	
+	if (Cast<IControllable>(GetPawn()) == nullptr) return;
+	Compass->PlayerCam = Cast<IControllable>(GetPawn())->GetFollowCamera();
 }

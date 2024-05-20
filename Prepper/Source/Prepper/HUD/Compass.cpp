@@ -18,10 +18,8 @@ void UCompass::NativeConstruct()
 
 void UCompass::PossessPlayer()
 {
-	if(GetOwningPlayerPawn())
-	{
-		PlayerCam = Cast<APlayerCharacter>(GetOwningPlayerPawn())->GetFollowCamera();
-	}
+	if(!GetOwningPlayerPawn()) return;
+	PlayerCam = Cast<IControllable>(GetOwningPlayerPawn())->GetFollowCamera();
 }
 
 void UCompass::SetDirection()

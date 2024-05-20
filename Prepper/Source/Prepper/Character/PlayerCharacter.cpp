@@ -664,13 +664,14 @@ void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeaponActor* Wea
 // public
 void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
 {
-	if(!HasAuthority()) return;
+	if(!(IsLocallyControlled() || HasAuthority())) return;
 	ServerConvertPlayerMovementState(State);
 }
 
 // private
 void APlayerCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
 {
+	if(!HasAuthority()) return;
 	PlayerMovementState = State;
 	MulticastConvertPlayerMovementState(State);
 }
