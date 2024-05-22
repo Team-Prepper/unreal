@@ -401,7 +401,6 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	if (SecondaryWeapon && Character)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
-		AttachActorToBackpack(SecondaryWeapon);
 		PlayEquipWeaponSound(EquippedWeapon);
 	}
 }
@@ -411,10 +410,9 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	SetWeaponType();
-	AttachActorToRightHand(EquippedWeapon);
-	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
 	PlayEquipWeaponSound(WeaponToEquip);
@@ -425,10 +423,9 @@ void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
 	SecondaryWeapon = WeaponToEquip;
-	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
-	AttachActorToBackpack(WeaponToEquip);
-	PlayEquipWeaponSound(WeaponToEquip);
 	SecondaryWeapon->SetOwner(Character);
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	PlayEquipWeaponSound(WeaponToEquip);
 	SecondaryWeapon->EnableCustomDepth(false);
 }
 
@@ -436,34 +433,9 @@ void UCombatComponent::DropEquippedWeapon()
 {
 	if (EquippedWeapon)
 	{
-		EquippedWeapon->Dropped();
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
 		EquippedMeleeWeapon = nullptr;
 		EquippedRangeWeapon = nullptr;
-	}
-}
-
-void UCombatComponent::AttachActorToRightHand(AActor* ActorToAttach)
-{
-	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
-
-	Character->AttachActorAtSocket(EquippedWeapon->AttachSocketName(), ActorToAttach);
-}
-
-void UCombatComponent::AttachActorToBackpack(AActor* ActorToAttach)
-{
-	if (Character == nullptr || Character->GetMesh() == nullptr || ActorToAttach == nullptr) return;
-
-	AWeaponActor* AttachWeapon = Cast<AWeaponActor>(ActorToAttach);
-	if (AttachWeapon)
-	{
-		if (AttachWeapon->GetWeaponType() == EWeaponType::EWT_RocketLauncher)
-		{
-			Character->AttachActorAtSocket(FName("RocketLauncherSocket"), ActorToAttach);
-		}
-		else
-		{
-			Character->AttachActorAtSocket(FName("HolsteredWeaponSocket"), ActorToAttach);
-		}
 	}
 }
 
@@ -479,7 +451,6 @@ void UCombatComponent::MulticastSwapWeapon_Implementation()
 	CombatState = ECombatState::ECS_SwappingWeapons;
 	Character->bFinishedSwapping = false;
 	if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(false);
-
 
 	FinishSwapAttachWeapons();
 	FinishSwap();
@@ -505,13 +476,11 @@ void UCombatComponent::FinishSwapAttachWeapons()
 
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	SetWeaponType();
-	AttachActorToRightHand(EquippedWeapon);
 	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
 
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
-	AttachActorToBackpack(SecondaryWeapon);
 }
 
 void UCombatComponent::UpdateCarriedAmmo()

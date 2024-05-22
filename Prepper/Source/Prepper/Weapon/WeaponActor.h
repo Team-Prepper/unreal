@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "Prepper/Interfaces/Weapon.h"
 #include "Prepper/Object/InteractableActor.h"
+#include "Sound/SoundCue.h"
 #include "WeaponActor.generated.h"
 
 
@@ -15,35 +16,43 @@ class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
 	
 public:	
 	AWeaponActor();
+	
+	virtual EWeaponType GetWeaponType() override { return WeaponType; };
+	virtual void SetWeaponState(EWeaponState State) override;
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void OnRep_Owner() override;
-	
-	void Dropped();
+	virtual void SetOwnerActor(AActor* NewOwner) override { 
+	SetWeaponState(WeaponState);;SetOwner(NewOwner); };
+
+	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom) override;
+	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
 
-	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom)override;
-
 	UPROPERTY(EditAnywhere, Category = Combat)
 	FName WeaponSocketName = FName("RightHandSocket");
+	UPROPERTY(EditAnywhere, Category = Combat)
+	FName HolsteredWeaponSocketName = FName("HolsteredWeaponSocket");
+	UPROPERTY(EditAnywhere, Category = Combat)
+	FName ReloadActionName = FName("AssaultRifle");
 
-	virtual FName AttachSocketName() override;
-	
-	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
+	virtual FName AttachSocketName() override { return WeaponSocketName; };
+	virtual FName GetReloadActionName() override { return ReloadActionName; };
 	
 	UPROPERTY(EditAnywhere)
 	float Damage = 20.f;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	float FireDelay = .15f;
-	
-	UPROPERTY(EditAnywhere, Category = Combat)
-	FName ReloadActionName = FName("AssaultRifle");
+
+	virtual float GetFireDelay() override { return FireDelay; };
 	
 	UPROPERTY()
 	USoundCue* EquipSound;
+	
+	void PlayEquipWeaponSound();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -83,13 +92,10 @@ protected:
 	EWeaponType WeaponType;
 	
 public:
-	void SetWeaponState(EWeaponState State);
 	bool IsMeleeWeapon();
 	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
-	FORCEINLINE EWeaponType GetWeaponType()				const { return WeaponType; }
 	
-
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트
 };

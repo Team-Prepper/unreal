@@ -24,4 +24,5 @@ class PREPPER_API IPlayerAbility
 public:
 	virtual void AddItem(FString ItemCode) PURE_VIRTUAL();
 	virtual void EquipWeapon(class AWeaponActor* Weapon) PURE_VIRTUAL();
+	virtual void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor) PURE_VIRTUAL();
 };

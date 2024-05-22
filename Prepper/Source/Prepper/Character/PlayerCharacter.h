@@ -7,6 +7,7 @@
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
+#include "Prepper/Interfaces/Weapon.h"
 #include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
 
@@ -51,7 +52,7 @@ public:
 	
 	void EquipBackpack(class AItemBackpack* BackpackToEquip);
 
-	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
+	virtual void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor) override;
 	
 	bool bFinishedSwapping = false;
 	

@@ -3,6 +3,7 @@
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Character/PlayerCharacter.h"
@@ -44,6 +45,17 @@ AWeaponActor::AWeaponActor()
 
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
+}
+
+void AWeaponActor::PlayEquipWeaponSound()
+{
+	if (!EquipSound) return;
+	if (!PlayerOwnerCharacter) return;
+	
+	UGameplayStatics::PlaySoundAtLocation(
+		PlayerOwnerCharacter, EquipSound,
+		PlayerOwnerCharacter->GetActorLocation()
+	);
 }
 
 void AWeaponActor::BeginPlay()
@@ -92,18 +104,9 @@ void AWeaponActor::OnRep_Owner()
 	{
 		PlayerOwnerCharacter = nullptr;
 		PlayerOwnerController = nullptr;
-	}
-}
 
-void AWeaponActor::Dropped()
-{
-	SetWeaponState(EWeaponState::EWS_Dropped);
-	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-	SetActorEnableCollision(true);
-	WeaponMesh->DetachFromComponent(DetachRules);
-	SetOwner(nullptr);
-	PlayerOwnerCharacter = nullptr;
-	PlayerOwnerController = nullptr;
+		return;
+	}
 }
 
 void AWeaponActor::Interaction(APlayerCharacter* Target)
@@ -143,7 +146,6 @@ void AWeaponActor::OnWeaponStateSet()
 
 void AWeaponActor::OnEquipped()
 {
-	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON EQUIPPED"));
 	ShowPickUpWidget(false);
 	SetActorEnableCollision(false);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -157,18 +159,31 @@ void AWeaponActor::OnEquipped()
 	EnableCustomDepth(false);
 
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
-	if (PlayerOwnerCharacter && bUseServerSideRewind)
+
+	if (!PlayerOwnerCharacter) return;
+
+	PlayerOwnerCharacter->AttachActorAtSocket(AttachSocketName(), this);
+	PlayEquipWeaponSound();
+	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON EQUIPPED"));
+		
+	if (!bUseServerSideRewind) return;
+	
+	PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+	if (PlayerOwnerController && HasAuthority() && !PlayerOwnerController->HighPingDelegate.IsBound())
 	{
-		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
-		if (PlayerOwnerController && HasAuthority() && !PlayerOwnerController->HighPingDelegate.IsBound())
-		{
-			PlayerOwnerController->HighPingDelegate.AddDynamic(this, &AWeaponActor::OnPingTooHigh);
-		}
+		PlayerOwnerController->HighPingDelegate.AddDynamic(this, &AWeaponActor::OnPingTooHigh);
 	}
 }
 
 void AWeaponActor::OnDropped()
 {
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	SetActorEnableCollision(true);
+	WeaponMesh->DetachFromComponent(DetachRules);
+	SetOwner(nullptr);
+	PlayerOwnerCharacter = nullptr;
+	PlayerOwnerController = nullptr;
+	
 	SetActorEnableCollision(true);
 	
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -194,13 +209,12 @@ void AWeaponActor::OnDropped()
 	EnableCustomDepth(true);
 
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
-	if (PlayerOwnerCharacter)
+	if (!PlayerOwnerCharacter) return;
+	
+	PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+	if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 	{
-		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
-		if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
-		{
-			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
-		}
+		PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
 	}
 }
 
@@ -217,13 +231,17 @@ void AWeaponActor::OnEquippedSecondary()
 	StaticWeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
-	if (PlayerOwnerCharacter)
+
+	if (!PlayerOwnerCharacter) return;
+	
+	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON SECONDARY"));
+	PlayerOwnerCharacter->AttachActorAtSocket(HolsteredWeaponSocketName, this);
+	PlayEquipWeaponSound();
+	
+	PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+	if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 	{
-		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
-		if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
-		{
-			PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
-		}
+		PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
 	}
 }
 
@@ -240,11 +258,6 @@ void AWeaponActor::GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture
 	Right = nullptr;
 	Top = nullptr;
 	Bottom = nullptr;
-}
-
-FName AWeaponActor::AttachSocketName()
-{
-	return WeaponSocketName;
 }
 
 TArray<FVector_NetQuantize> AWeaponActor::GetTarget(FVector& HitTarget)

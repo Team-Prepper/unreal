@@ -292,12 +292,12 @@ void APlayerCharacter::Elim()
 	{
 		if(Combat->EquippedWeapon)
 		{
-			Combat->EquippedWeapon->Dropped();
+			Combat->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
 			Combat->EquippedWeapon = nullptr;
 		}
 		if(Combat->SecondaryWeapon)
 		{
-			Combat->SecondaryWeapon->Dropped();
+			Combat->SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
 			Combat->SecondaryWeapon = nullptr;
 		}
 		
@@ -527,6 +527,7 @@ void APlayerCharacter::AttachActorAtSocket(const FName& SocketName, AActor* Targ
 	{
 		TargetSocket->AttachActor(TargetActor, GetMesh());
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
 void APlayerCharacter::OnRep_EquippedBackpack()
@@ -753,7 +754,7 @@ void APlayerCharacter::Destroyed()
 
 	if(Combat && Combat->EquippedWeapon && bMatchNotInProgress)
 	{
-		Combat->EquippedWeapon->Destroy();
+		//Combat->EquippedWeapon->Destroy();
 	}
 }
 
@@ -762,11 +763,11 @@ void APlayerCharacter::SetPlayerEqiupmentHiddenInGame(bool visible)
 	if(!Combat) return;
 	if(Combat->EquippedWeapon)
 	{
-		Combat->EquippedWeapon->SetActorHiddenInGame(visible);
+		//Combat->EquippedWeapon->SetActorHiddenInGame(visible);
 	}
 	if(Combat->SecondaryWeapon)
 	{
-		Combat->SecondaryWeapon->SetActorHiddenInGame(visible);
+		//Combat->SecondaryWeapon->SetActorHiddenInGame(visible);
 	}
 
 	if(EquippedBackpack)

@@ -87,8 +87,6 @@ protected:
 	void EquipSecondaryWeapon(AWeaponActor* WeaponToEquip);
 
 	void DropEquippedWeapon();
-	void AttachActorToRightHand(AActor* ActorToAttach);
-	void AttachActorToBackpack(AActor* ActorToAttach);
 	void UpdateCarriedAmmo();
 	void PlayEquipWeaponSound(AWeaponActor* WeaponToEquip);
 	void SwapWeapons();
