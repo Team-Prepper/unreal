@@ -25,11 +25,19 @@ public:
 	virtual void SetOwnerActor(AActor* NewOwner) override { 
 	SetWeaponState(WeaponState);;SetOwner(NewOwner); };
 
-	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom) override;
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
+
+	virtual void GetCrosshair(
+		float DeltaTime, bool bIsAiming, 
+		UTexture2D* &Center,
+		UTexture2D* &Left,
+		UTexture2D* &Right,
+		UTexture2D* &Top,
+		UTexture2D* &Bottom,
+		float &Spread) override;
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	FName WeaponSocketName = FName("RightHandSocket");

@@ -251,13 +251,15 @@ void AWeaponActor::OnPingTooHigh(bool bPingTooHigh)
 }
 
 
-void AWeaponActor::GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom)
+void AWeaponActor::GetCrosshair(float DeltaTime, bool bIsAiming, UTexture2D* &Center, UTexture2D* &Left,
+	UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom, float &Spread)
 {
 	Center = nullptr;
 	Left = nullptr;
 	Right = nullptr;
 	Top = nullptr;
 	Bottom = nullptr;
+	Spread = 0.5f;
 }
 
 TArray<FVector_NetQuantize> AWeaponActor::GetTarget(FVector& HitTarget)

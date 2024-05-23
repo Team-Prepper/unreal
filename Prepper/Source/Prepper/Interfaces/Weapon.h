@@ -30,7 +30,14 @@ public:
 	virtual void SetHUDAmmo()
 	PURE_VIRTUAL();
 
-	virtual void GetCrosshair(UTexture2D* &Center, UTexture2D* &Left, UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom)
+	virtual void GetCrosshair(
+		float DeltaTime, bool bIsAiming, 
+		UTexture2D* &Center,
+		UTexture2D* &Left,
+		UTexture2D* &Right,
+		UTexture2D* &Top,
+		UTexture2D* &Bottom,
+		float &Spread)
 	PURE_VIRTUAL();
 	
 	virtual void SetWeaponState(EWeaponState State)

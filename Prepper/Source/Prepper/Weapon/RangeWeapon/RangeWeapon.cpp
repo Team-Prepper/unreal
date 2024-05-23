@@ -1,5 +1,6 @@
 #include "RangeWeapon.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
@@ -108,14 +109,66 @@ TArray<FVector_NetQuantize> ARangeWeapon::GetTarget(FVector& HitTarget)
 	return HitTargets;
 }
 
-void ARangeWeapon::GetCrosshair(UTexture2D*& Center, UTexture2D*& Left, UTexture2D*& Right, UTexture2D*& Top,
-	UTexture2D*& Bottom)
+void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, UTexture2D*& Center, UTexture2D*& Left,
+	UTexture2D*& Right, UTexture2D*& Top, UTexture2D*& Bottom, float &Spread)
 {
 	Center = CrosshairCenter;
 	Left   = CrosshairLeft;
 	Right  = CrosshairRight;
 	Top    = CrosshairTop;
 	Bottom = CrosshairBottom;
+	Spread = 0.5f;
+
+	if (bUseScatter) {
+		return;
+	}
+	
+	FVector2D WalkSpeedRange(0.f, PlayerOwnerCharacter->GetCharacterMovement()->MaxWalkSpeed);
+	FVector2D VelocityMultiplierRange(0.f, 1.f);
+	FVector Velocity = PlayerOwnerCharacter->GetVelocity();
+	Velocity.Z = 0.f;
+
+	const float CrosshairVelocityFactor =
+		FMath::GetMappedRangeValueClamped(
+			WalkSpeedRange,
+			VelocityMultiplierRange,
+			Velocity.Size());
+
+	if (PlayerOwnerCharacter->GetCharacterMovement()->IsFalling())
+	{
+		CurCrosshairInAirFactor =
+			FMath::FInterpTo(
+				CurCrosshairInAirFactor,
+				MaxCrosshairInAirFactor,
+				DeltaTime, 2.25f);
+	}
+	else
+	{
+		CurCrosshairInAirFactor =
+			FMath::FInterpTo(
+				CurCrosshairInAirFactor,
+				0,DeltaTime, 2.25f);
+	}
+
+	if (bIsAiming)
+	{
+		CurCrosshairAimFactor =
+			FMath::FInterpTo(CurCrosshairAimFactor, MaxCrosshairAimFactor, DeltaTime, 30.f);
+	}
+	else
+	{
+		CurCrosshairAimFactor =
+			FMath::FInterpTo(CurCrosshairAimFactor, 0.f, DeltaTime, 30.f);
+	}
+
+	CurCrosshairShootingFactor =
+		FMath::FInterpTo(CurCrosshairShootingFactor, 0.f, DeltaTime, 40.f);
+
+	Spread += CrosshairVelocityFactor +
+		CurCrosshairInAirFactor -
+		CurCrosshairAimFactor +
+		CurCrosshairShootingFactor;
+	
 }
 
 FVector ARangeWeapon::TraceEndWithScatter(const FVector& HitTarget)

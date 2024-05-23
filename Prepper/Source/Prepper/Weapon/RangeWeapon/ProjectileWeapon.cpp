@@ -11,31 +11,31 @@ void AProjectileWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	Super::Fire(HitTargets);
 
 	if (!HasAuthority()) return;
-	FVector HitTarget = HitTargets.Top();
+	if (!ProjectileClass) return;
 	
-	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
 	const USkeletalMeshSocket* MuzzleFlashSocket = GetRangeWeaponMesh()->GetSocketByName(FName("Muzzle"));
 	if (!MuzzleFlashSocket) return;
 	
+	UWorld* World = GetWorld();
+	if (!World) return;
+	
+	MakeNoise(1, PlayerOwnerCharacter, FVector::ZeroVector);
+	
+	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
+	if (!InstigatorPawn) return;
+
+	FVector HitTarget = HitTargets.Top();
 	FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetRangeWeaponMesh());
 	FVector ToTarget = HitTarget - SocketTransform.GetLocation();
 	FRotator TargetRotation = ToTarget.Rotation();
-	
-	if (!ProjectileClass || !InstigatorPawn) return;
-	
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = GetOwner();
 	SpawnParams.Instigator = InstigatorPawn;
-	UWorld* World = GetWorld();
-	if (World)
-	{
-		World->SpawnActor<AProjectile>(
-			ProjectileClass,
-			SocketTransform.GetLocation(),
-			TargetRotation,
-			SpawnParams
-			);
-	}
-
-	MakeNoise(1, PlayerOwnerCharacter, FVector::ZeroVector);
+	
+	World->SpawnActor<AProjectile>(
+		ProjectileClass,
+		SocketTransform.GetLocation(),
+		TargetRotation,
+		SpawnParams
+		);
 }

@@ -22,7 +22,14 @@ class PREPPER_API ARangeWeapon : public AWeaponActor
 	GENERATED_BODY()
 
 public:
-	virtual void GetCrosshair(UTexture2D*& Center, UTexture2D*& Left, UTexture2D*& Right, UTexture2D*& Top, UTexture2D*& Bottom) override;
+	virtual void GetCrosshair(
+		float DeltaTime, bool bIsAiming, 
+		UTexture2D*& Center,
+		UTexture2D*& Left,
+		UTexture2D*& Right,
+		UTexture2D*& Top,
+		UTexture2D*& Bottom,
+		float &Spread) override;
 	/* CROSS HAIRS - 조준선 */
 	UPROPERTY(EditAnywhere, Category = Crosshiar)
 	UTexture2D* CrosshairCenter;
@@ -36,6 +43,16 @@ public:
 	UPROPERTY(EditAnywhere, Category = Crosshiar)
 	UTexture2D* CrosshairBottom;
 
+	UPROPERTY(EditAnywhere, Category = Crosshiar)
+	float MaxCrosshairInAirFactor = 2.25f;
+	UPROPERTY(EditAnywhere, Category = Crosshiar)
+	float MaxCrosshairAimFactor = 0.58f;
+	UPROPERTY(EditAnywhere, Category = Crosshiar)
+	float MaxCrosshairShootingFactor = .75f;
+	
+	float CurCrosshairInAirFactor;
+	float CurCrosshairAimFactor;
+	float CurCrosshairShootingFactor;
 protected:
 	/* Zoom In - 줌 인 */
 	UPROPERTY(EditAnywhere)
