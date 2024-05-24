@@ -92,6 +92,9 @@ protected:
 	void SwapWeapons();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSwapWeapon();
+	
+	FTimerHandle SwapDelayTimer;
+	
 	UPROPERTY(Replicated)
 	class ARangeWeapon* EquippedRangeWeapon;
 

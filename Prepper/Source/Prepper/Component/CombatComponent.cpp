@@ -415,7 +415,7 @@ void UCombatComponent::MulticastSwapWeapon_Implementation()
 	if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(false);
 
 	FinishSwapAttachWeapons();
-	FinishSwap();
+	GetWorld()->GetTimerManager().SetTimer(SwapDelayTimer, this, &UCombatComponent::FinishSwap, 1.5f, false);
 }
 
 void UCombatComponent::FinishSwap()
