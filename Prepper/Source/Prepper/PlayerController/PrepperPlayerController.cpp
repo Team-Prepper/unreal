@@ -3,6 +3,7 @@
 #include "Components/TextBlock.h"
 #include "Prepper/Car/CarPawn.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/CharacterOverlay.h"
 #include "Prepper/HUD/Compass.h"
 #include "Prepper/HUD/PrepperHUD.h"
@@ -12,6 +13,12 @@ void APrepperPlayerController::BeginPlay()
 	Super::BeginPlay();
 	PrepperHUD = Cast<APrepperHUD>(GetHUD());
 	
+}
+
+void APrepperPlayerController::PossessPawn()
+{
+	Super::PossessPawn();
+	PollInit();
 }
 
 void APrepperPlayerController::PollInit()
@@ -27,7 +34,7 @@ void APrepperPlayerController::PollInit()
 		CharacterOverlay = PrepperHUD->CharacterOverlay;
 		if(CharacterOverlay && PlayerCharacter)
 		{
-			UE_LOG(LogTemp,Warning,TEXT("-----Set CharacterOverlay"));
+			UE_LOG(LogTemp,Warning,TEXT("[PrepperPlayerController] : Set CharacterOverlay"));
 			UE_LOG(LogTemp,Warning,TEXT("%f, %f"),PlayerCharacter->GetCurrentHealth(),PlayerCharacter->GetMaxHealth());
 			SetHUDHealth(PlayerCharacter->GetCurrentHealth(),PlayerCharacter->GetMaxHealth());
 		}
@@ -38,17 +45,15 @@ void APrepperPlayerController::PollInit()
 		Compass = PrepperHUD->Compass;
 		if(Compass)
 		{
-			UE_LOG(LogTemp,Warning,TEXT("Set Compass"));
+			UE_LOG(LogTemp,Warning,TEXT("[PrepperPlayerController] : Set Compass"));
 			SetCompass();
 		}
 	}
-}
 
-
-void APrepperPlayerController::PossessPawn()
-{
-	Super::PossessPawn();
-	PollInit();
+	if(PlayerCharacter && PlayerCharacter->GetStatusEffectComponent())
+	{
+		PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
+	}
 }
 
 void APrepperPlayerController::Tick(float DeltaTime)
@@ -84,6 +89,24 @@ void APrepperPlayerController::SetHUDHealth(float Health, float MaxHealth)
 		bInitCharacterOverlay = true;
 		HUDHealth = Health;
 		HUDMaxHealth = MaxHealth;
+	}
+}
+
+void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, float Infection)
+{
+	if(!IsLocalController()) return;
+	
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	bool bHUDValid = PrepperHUD &&
+					 PrepperHUD->CharacterOverlay &&
+					 PrepperHUD->CharacterOverlay->HungerBar &&
+					 PrepperHUD->CharacterOverlay->ThirstBar &&
+					 PrepperHUD->CharacterOverlay->InfectionBar;
+	if(bHUDValid)
+	{
+		PrepperHUD->CharacterOverlay->HungerBar->SetPercent(Hunger / 100);
+		PrepperHUD->CharacterOverlay->ThirstBar->SetPercent(Thirst/ 100);
+		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection/ 100);
 	}
 }
 

@@ -113,6 +113,8 @@ private:
 	
 	UFUNCTION(Server, Reliable)
 	void ServerEquipButtonPressed(AWeaponActor* Weapon);
+
+	bool bIsSprint = false;
 	
 protected:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
@@ -234,9 +236,10 @@ public:
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch;}
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace;}
-	//UFUNCTION(BlueprintCallable)
-	//FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE EPlayerMovementState GetPlayerMovementState() const { return PlayerMovementState; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
+	FORCEINLINE UStatusEffectComponent* GetStatusEffectComponent() const { return StatusEffect; }
 	FORCEINLINE bool GetDisableGamePlay() const { return bDisableGamePlay; }
+	
 };

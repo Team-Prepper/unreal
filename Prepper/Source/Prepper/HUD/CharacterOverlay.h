@@ -31,5 +31,14 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* MatchCountDownText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* HungerBar;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* ThirstBar;
+
+	UPROPERTY(meta = (BindWidget))
+	class UProgressBar* InfectionBar;
 	
 };

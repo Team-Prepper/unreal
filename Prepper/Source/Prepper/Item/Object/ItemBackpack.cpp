@@ -2,6 +2,7 @@
 #include "Prepper/Prepper.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 AItemBackpack::AItemBackpack()
@@ -31,6 +32,7 @@ AItemBackpack::AItemBackpack()
 void AItemBackpack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AItemBackpack, BackpackState);
 }
 
 void AItemBackpack::BeginPlay()

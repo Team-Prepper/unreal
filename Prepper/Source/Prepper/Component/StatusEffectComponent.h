@@ -28,6 +28,8 @@ private:
 
 	UPROPERTY()
 	class APlayerCharacter* Character;
+	UPROPERTY()
+	class APrepperPlayerController* PrepperPlayerController;
 	
 
 public:
@@ -44,12 +46,14 @@ public:
 	};
 
 	// 상태 효과와 임계값 배열
-	const StatusEffectThreshold EffectThresholds[2] = {
+	const StatusEffectThreshold EffectThresholds[3] = {
 		{ EStatusEffect::ESE_HUNGRY, 30.0f, "Hungry" }, 
-		{ EStatusEffect::ESE_THIRSTY, 20.0f, "Thirsty" }, 
+		{ EStatusEffect::ESE_THIRSTY, 20.0f, "Thirsty" },
+		{ EStatusEffect::ESE_INFECTED, 20.0f, "Infected" }, 
 	};
 	
 	void UpdateStatusEffect();
+	void UpdateStatusEffectHUD();
 	
 	FTimerHandle StatusTimerHandle;
 	void StatusTimerStart();

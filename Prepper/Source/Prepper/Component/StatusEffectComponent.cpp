@@ -2,9 +2,8 @@
 
 
 #include "StatusEffectComponent.h"
-
-#include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 
 UStatusEffectComponent::UStatusEffectComponent()
 {
@@ -17,18 +16,19 @@ void UStatusEffectComponent::BeginPlay()
 	Super::BeginPlay();
 
 	if(!Character) return;
-	
 	UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
+	PrepperPlayerController = Cast<APrepperPlayerController>(Character->GetController());
 	StatusFlags.ClearAllEffects();
 	InitStateEffectMap();
 	StatusTimerStart();
-	
 }
 
 void UStatusEffectComponent::InitStateEffectMap()
 {
+	UE_LOG(LogTemp,Warning,TEXT("SET STATUS EFFECT LEVEL"));
 	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, 100);
 	StateEffectMap.Emplace(EStatusEffect::ESE_THIRSTY, 100);
+	StateEffectMap.Emplace(EStatusEffect::ESE_INFECTED, 0);
 }
 
 
@@ -40,7 +40,7 @@ void UStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UStatusEffectComponent::StatusTimerStart()
 {
 	if(!Character || !Character->IsLocallyControlled()) return;
-	
+	PrepperPlayerController = Cast<APrepperPlayerController>(Character->GetController());
 	GetWorld()->GetTimerManager().SetTimer(
 		StatusTimerHandle,
 		this,
@@ -55,8 +55,7 @@ void UStatusEffectComponent::StatusTimerFinish()
 	
 	StateEffectMap[EStatusEffect::ESE_HUNGRY] -= 1.f;
 	StateEffectMap[EStatusEffect::ESE_THIRSTY] -= 1.f;
-	//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Hungry : %f"),StateEffectMap[EStatusEffect::ESE_HUNGRY]);
-	//UE_LOG(LogTemp,Warning,TEXT("[StatusEffect] Thirsty : %f"),StateEffectMap[EStatusEffect::ESE_THIRSTY]);
+	UpdateStatusEffectHUD();
 	UpdateStatusEffect();
 }
 
@@ -84,4 +83,13 @@ void UStatusEffectComponent::UpdateStatusEffect()
 			//UE_LOG(LogTemp, Log, TEXT("Current Status Effect: %s"), *EffectThreshold.EffectName);
 		}
 	}
+}
+
+void UStatusEffectComponent::UpdateStatusEffectHUD()
+{
+	if(!PrepperPlayerController) return;
+	PrepperPlayerController->SetHUDStatusEffect(
+		StateEffectMap[EStatusEffect::ESE_HUNGRY],
+		StateEffectMap[EStatusEffect::ESE_THIRSTY],
+		StateEffectMap[EStatusEffect::ESE_INFECTED]);
 }

@@ -3,7 +3,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/Prepper.h"
-#include "Prepper/HUD/HealthBarComponent.h"
+#include "Prepper/HUD/GaugeBarComponent.h"
 
 AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
@@ -14,7 +14,7 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
 
-	HealthBarWidget = CreateDefaultSubobject<UHealthBarComponent>(TEXT("HealthBar"));
+	HealthBarWidget = CreateDefaultSubobject<UGaugeBarComponent>(TEXT("HealthBar"));
 	HealthBarWidget->SetupAttachment(GetRootComponent());
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -106,7 +106,7 @@ void AEnemyBaseCharacter::UpdateHUDHealth()
 	{
 		const float HealthPercent = CurrentHealth / MaxHealth;
 		HealthBarWidget->SetVisibility(true);
-		HealthBarWidget->SetHealthPercent(HealthPercent);
+		HealthBarWidget->SetGaugePercent(HealthPercent);
 	}
 	
 }

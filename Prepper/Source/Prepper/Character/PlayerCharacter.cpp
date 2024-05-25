@@ -161,12 +161,15 @@ void APlayerCharacter::RotateInPlace(float DeltaTime)
 void APlayerCharacter::ShiftPressed()
 {
 	if(bDisableGamePlay) return;
+	if(bIsSprint == true) return;
+	bIsSprint = true;
 	SetPlayerMovementState(EPlayerMovementState::EPMS_Sprint);
 }
 
 void APlayerCharacter::ShiftReleased()
 {
 	if(bDisableGamePlay) return;
+	bIsSprint = false;
 	SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
 }
 
@@ -674,11 +677,13 @@ void APlayerCharacter::ServerConvertPlayerMovementState_Implementation(const EPl
 {
 	if(!HasAuthority()) return;
 	PlayerMovementState = State;
+	ConvertPlayerMovementState();
 	MulticastConvertPlayerMovementState(State);
 }
 
 void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
 {
+	if(HasAuthority()) return;
 	PlayerMovementState = State;
 	ConvertPlayerMovementState();
 }
@@ -763,11 +768,11 @@ void APlayerCharacter::SetPlayerEqiupmentHiddenInGame(bool visible)
 	if(!Combat) return;
 	if(Combat->EquippedWeapon)
 	{
-		//Combat->EquippedWeapon->SetActorHiddenInGame(visible);
+		Combat->EquippedWeapon->SetActorHiddenInGame(visible);
 	}
 	if(Combat->SecondaryWeapon)
 	{
-		//Combat->SecondaryWeapon->SetActorHiddenInGame(visible);
+		Combat->SecondaryWeapon->SetActorHiddenInGame(visible);
 	}
 
 	if(EquippedBackpack)

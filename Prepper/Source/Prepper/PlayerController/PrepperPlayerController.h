@@ -19,6 +19,8 @@ public:
 
 	/* Set HUD*/
 	void SetHUDHealth(float Health, float MaxHealth);
+
+	void SetHUDStatusEffect(float Hunger, float Thirst, float Infection);
 	
 	void SetHUDWeaponAmmo(int32 Value);
 	void SetHUDCarriedAmmo(int32 Value);

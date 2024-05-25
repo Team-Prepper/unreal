@@ -30,7 +30,7 @@ public:
 protected:
 
 	UPROPERTY(VisibleAnywhere)
-	class UHealthBarComponent* HealthBarWidget;
+	class UGaugeBarComponent* HealthBarWidget;
 	
 	UPROPERTY(VisibleAnywhere)
 	class UPawnSensingComponent* PawnSensing;
