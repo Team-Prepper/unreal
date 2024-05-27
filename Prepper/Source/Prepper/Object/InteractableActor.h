@@ -19,7 +19,7 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	class USphereComponent* AreaSphere;
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	UPROPERTY(VisibleAnywhere, Category = "Pickup Properties")
 	class UWidgetComponent* PickUpWidget;
 	
 	virtual void BeginPlay() override;

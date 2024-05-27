@@ -44,12 +44,6 @@ void AItemBackpack::BeginPlay()
 	BackpackMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	BackpackMesh->MarkRenderStateDirty();
 	EnableCustomDepth(true);
-
-	if(HasAuthority())
-	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
-	}
 }
 
 void AItemBackpack::EnableCustomDepth(bool bEnable)
