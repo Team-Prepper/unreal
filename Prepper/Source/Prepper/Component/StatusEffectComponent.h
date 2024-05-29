@@ -43,13 +43,16 @@ public:
 		EStatusEffect Effect;
 		float Threshold;
 		FString EffectName;
+		float DebuffValue;
 	};
+
+	const float StatusEffectTickValue[3] = { 0.2f, 0.3f, 0.5f };
 
 	// 상태 효과와 임계값 배열
 	const StatusEffectThreshold EffectThresholds[3] = {
-		{ EStatusEffect::ESE_HUNGRY, 30.0f, "Hungry" }, 
-		{ EStatusEffect::ESE_THIRSTY, 20.0f, "Thirsty" },
-		{ EStatusEffect::ESE_INFECTED, 20.0f, "Infected" }, 
+		{ EStatusEffect::ESE_HUNGRY, 20.0f, "Hungry", 0.3f }, 
+		{ EStatusEffect::ESE_THIRSTY, 30.0f, "Thirsty", 0.3f},
+		{ EStatusEffect::ESE_INFECTED, 20.0f, "Infected", 1.0f }, 
 	};
 	
 	void UpdateStatusEffect();

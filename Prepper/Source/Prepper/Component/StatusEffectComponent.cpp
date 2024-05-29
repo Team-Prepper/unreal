@@ -2,6 +2,8 @@
 
 
 #include "StatusEffectComponent.h"
+
+#include "Kismet/GameplayStatics.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
@@ -53,8 +55,14 @@ void UStatusEffectComponent::StatusTimerFinish()
 {
 	if(!Character) return;
 	
-	StateEffectMap[EStatusEffect::ESE_HUNGRY] -= 1.f;
-	StateEffectMap[EStatusEffect::ESE_THIRSTY] -= 1.f;
+	StateEffectMap[EStatusEffect::ESE_HUNGRY] -= StatusEffectTickValue[0];
+	if(Character->GetPlayerMovementState() == EPlayerMovementState::EPMS_Sprint ||
+		Character->GetPlayerMovementState() == EPlayerMovementState::EPMS_Aim)
+	{
+		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
+	}
+	StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
+	
 	UpdateStatusEffectHUD();
 	UpdateStatusEffect();
 }
@@ -76,6 +84,28 @@ void UStatusEffectComponent::UpdateStatusEffect()
 		}
 	}
 
+	if(StatusFlags.HasEffect(EStatusEffect::ESE_HUNGRY))
+	{
+		UE_LOG(LogTemp,Warning,TEXT("HUNGRY"));
+		UGameplayStatics::ApplyDamage(
+			Character,
+			EffectThresholds[0].DebuffValue,
+			PrepperPlayerController,
+			Character,
+			UDamageType::StaticClass()
+		);
+	}
+
+	if(StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
+	{
+		UE_LOG(LogTemp,Warning,TEXT("THIRSTY"));
+		Character->CoefficientMovementSpeed = EffectThresholds[1].DebuffValue;
+	}else
+	{
+		Character->CoefficientMovementSpeed = 1.0f;
+	}
+
+	/*
 	for (const auto& EffectThreshold : EffectThresholds)
 	{
 		if (StatusFlags.HasEffect(EffectThreshold.Effect))
@@ -83,6 +113,7 @@ void UStatusEffectComponent::UpdateStatusEffect()
 			//UE_LOG(LogTemp, Log, TEXT("Current Status Effect: %s"), *EffectThreshold.EffectName);
 		}
 	}
+	*/
 }
 
 void UStatusEffectComponent::UpdateStatusEffectHUD()

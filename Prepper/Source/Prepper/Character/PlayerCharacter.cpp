@@ -161,6 +161,13 @@ void APlayerCharacter::RotateInPlace(float DeltaTime)
 void APlayerCharacter::ShiftPressed()
 {
 	if(bDisableGamePlay) return;
+	if(StatusEffect && StatusEffect->StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("THIRSTY : Can't Sprint"));
+		SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
+		bIsSprint = false;
+		return;
+	}
 	if(bIsSprint == true) return;
 	bIsSprint = true;
 	SetPlayerMovementState(EPlayerMovementState::EPMS_Sprint);
@@ -707,13 +714,13 @@ void APlayerCharacter::ConvertPlayerMovementState()
 		SetPlayerEqiupmentHiddenInGame(true);
 		break;
 	case EPlayerMovementState::EPMS_Aim:
-		GetCharacterMovement()->MaxWalkSpeed = AimMovementSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = AimMovementSpeed * CoefficientMovementSpeed;
 		break;
 	case EPlayerMovementState::EPMS_Sprint:
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * CoefficientMovementSpeed;
 		break;
 	case EPlayerMovementState::EPMS_Idle:
-		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed * CoefficientMovementSpeed;
 		break;
 	default:
 		break;

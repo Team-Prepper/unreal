@@ -176,6 +176,8 @@ private:
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트
 public:
 	void SetPlayerMovementState(const EPlayerMovementState State);
+
+	float CoefficientMovementSpeed = 1;
 	
 private:
 	void ConvertPlayerMovementState();

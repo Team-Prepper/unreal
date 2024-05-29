@@ -12,7 +12,7 @@ void APrepperPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 	PrepperHUD = Cast<APrepperHUD>(GetHUD());
-	
+	SetInputMode(FInputModeGameOnly());
 }
 
 void APrepperPlayerController::PossessPawn()
