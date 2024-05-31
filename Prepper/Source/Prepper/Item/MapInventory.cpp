@@ -38,6 +38,8 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 	ItemUnits.Add(ItemCode, 1);
 	UE_LOG(LogTemp, Warning, TEXT("Add Item %s"), *ItemCode);
 	
+	ItemData.GetItem(ItemCode)->Use(nullptr);
+	
 	return true;
 }
 

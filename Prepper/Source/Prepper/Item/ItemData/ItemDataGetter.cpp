@@ -26,7 +26,7 @@ ItemDataGetter::ItemDataGetter()
 		
 		for (int i = 0; i < arr.Num(); ++i)
 		{
-			ItemData.Add(arr[i]->ItemCode, *arr[i]);
+			ItemData.Add(arr[i]->ItemCode, arr[i]->GetItem());
 		}
 		
 	}
@@ -56,12 +56,18 @@ bool ItemDataGetter::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon,
 {
 	if (!ItemData.Contains(ItemCode)) return false;
 
-	FItemData* data = ItemData.Find(ItemCode);
+	FItem* data = ItemData.Find(ItemCode);
 
 	ItemIcon = data->ItemIcon;
 	ItemName = data->ItemName;
 	
 	return true;
+}
+FItem* ItemDataGetter::GetItem(const FString& ItemCode)
+{
+	if (!ItemData.Contains(ItemCode)) return nullptr;
+
+	return ItemData.Find(ItemCode);
 }
 
 bool ItemDataGetter::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
