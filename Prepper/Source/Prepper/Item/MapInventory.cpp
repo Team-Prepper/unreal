@@ -14,6 +14,11 @@ UMapInventory::UMapInventory()
 	BulletCount = 0;
 }
 
+void UMapInventory::SetOwner(IPlayerAbility* Target)
+{
+	Owner = Target;
+}
+
 bool UMapInventory::TryAddItem(const FString& ItemCode)
 {
 	
@@ -38,8 +43,6 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 	ItemUnits.Add(ItemCode, 1);
 	UE_LOG(LogTemp, Warning, TEXT("Add Item %s"), *ItemCode);
 	
-	ItemData.GetItem(ItemCode)->Use(nullptr);
-	
 	return true;
 }
 
@@ -49,6 +52,7 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	if (!ItemUnits.Contains(ItemCode))	return false;
 
 	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - 1;
+	ItemData.GetItem(ItemCode)->Use(Owner);
 
 	// 아이템 사용 후의 개수가 0인 경우 삭제
 	if (ItemCount == 0)

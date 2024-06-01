@@ -224,6 +224,10 @@ public:
 	
 	virtual void AddItem(FString ItemCode) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
+	
+	virtual void Heal(int Amount) override;
+	virtual void Eat(int Amount) override;
+	virtual void Drink(int Amount) override;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAddItem(const FString& ItemCode);

@@ -2,6 +2,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
+#include "AnimNodes/AnimNode_RandomPlayer.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -108,7 +109,8 @@ void APlayerCharacter::PostInitializeComponents()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	Inven.SetOwner(this);
 	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 }
 
@@ -425,7 +427,23 @@ void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
 	}
 }
 
+void APlayerCharacter::Heal(int Amount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Heal:%d"), Amount);
+	CurrentHealth += Amount;
+	if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+	UpdateHUDHealth();
+}
 
+void APlayerCharacter::Eat(int Amount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Eat:%d"), Amount);
+}
+
+void APlayerCharacter::Drink(int Amount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Drink:%d"), Amount);
+}
 
 void APlayerCharacter::ControlPressed()
 {

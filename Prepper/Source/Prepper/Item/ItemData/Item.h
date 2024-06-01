@@ -18,8 +18,7 @@ public:
 	}
 	virtual void Action(IPlayerAbility* Target) override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Heal:%d"), Value);
-		//Target.
+		Target->Heal(Value);
 	}
 };
 
@@ -33,8 +32,7 @@ public:
 	}
 	virtual void Action(IPlayerAbility* Target) override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Eat:%d"), Value);
-		//
+		Target->Eat(Value);
 	} 
 };
 
@@ -48,8 +46,7 @@ public:
 	}
 	virtual void Action(IPlayerAbility* Target) override
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Drink:%d"), Value);
-		//
+		Target->Drink(Value);
 	} 
 };
 
