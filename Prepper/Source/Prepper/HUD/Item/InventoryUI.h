@@ -17,10 +17,12 @@ class PREPPER_API UInventoryUI : public UUserWidget
 {
 	GENERATED_BODY()
 	
-	ItemDataGetter ItemData;
 	UPROPERTY(meta = (BindWidget))
 	UListView* ItemList;
+	
 	IInventory* TargetInventory;
+	ItemDataGetter ItemData;
+	
 	void UpdateData();
 public:
 	void Set(IInventory * Target);

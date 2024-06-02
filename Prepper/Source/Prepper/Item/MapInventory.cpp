@@ -69,6 +69,19 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	return true;
 }
 
+void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx)
+{
+	if (Idx >= MAX_QUICK_SLOT) return;
+	QuickSlotItem[Idx] = ItemCode;
+
+	UE_LOG(LogTemp, Warning, TEXT("Add Item To QuickSlot:%s"), *ItemCode)
+}
+
+void UMapInventory::UseItemAtQuickSlot(const int Idx)
+{
+	TryUseItem(QuickSlotItem[Idx]);
+}
+
 TArray<IInventory::InventoryItem> UMapInventory::GetIter()
 {
 	TArray<InventoryItem> Retval;

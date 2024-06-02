@@ -90,6 +90,8 @@ protected:
 	UInputAction* FireAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* OpenInventory;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* Button1;
 	
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
@@ -105,6 +107,8 @@ protected:
 	void FireButtonPressed();
 	void FireButtonReleased();
 	void OpenInventoryPressed();
+
+	void QuickSlot1Use();
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteractionPressed();

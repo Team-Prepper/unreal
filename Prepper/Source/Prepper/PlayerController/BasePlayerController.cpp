@@ -137,6 +137,8 @@ void ABasePlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ABasePlayerController::ReloadButtonPressed);
 
 		EnhancedInputComponent->BindAction(OpenInventory, ETriggerEvent::Triggered, this, &ABasePlayerController::OpenInventoryPressed);
+
+		EnhancedInputComponent->BindAction(Button1, ETriggerEvent::Started, this, &ABasePlayerController::QuickSlot1Use);
 	}
 }
 
@@ -213,6 +215,13 @@ void ABasePlayerController::OpenInventoryPressed()
 {
 	if (!PrepperHUD) return;
 	PrepperHUD->ToggleInventory();
+}
+
+void ABasePlayerController::QuickSlot1Use()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Button1Pressed"));
+	if (!PlayerCharacter) return;
+	PlayerCharacter->UseQuickSlotItem(0);
 }
 
 void ABasePlayerController::ServerInteractionPressed_Implementation()

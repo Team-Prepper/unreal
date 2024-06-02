@@ -223,6 +223,7 @@ public:
 	UMapInventory Inven;
 	
 	virtual void AddItem(FString ItemCode) override;
+	virtual void UseQuickSlotItem(int Idx) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
 	
 	virtual void Heal(int Amount) override;
