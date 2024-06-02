@@ -15,6 +15,8 @@ class PREPPER_API UMapInventory : public IInventory
 {
 	//GENERATED_BODY()
 private:
+	IPlayerAbility * Owner;
+	
 	ItemDataGetter ItemData;
 	uint8 BulletCount;
 	
@@ -23,6 +25,7 @@ private:
 	bool TryCombineItem(const FString& Input1, const FString& Input2, FString& Result);
 public:
 	UMapInventory();
+	virtual void SetOwner(IPlayerAbility* Target) override;
 	virtual bool TryAddItem(const FString& ItemCode) override;
 	virtual bool TryUseItem(const FString& ItemCode) override;
 	virtual TArray<InventoryItem> GetIter() override;

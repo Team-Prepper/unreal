@@ -3,11 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InventoryUI.h"
 #include "Blueprint/IUserListEntry.h"
 #include "Blueprint/IUserObjectListEntry.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Prepper/Interfaces/Inventory.h"
 #include "InventoryItemUI.generated.h"
 
 /**
@@ -18,15 +21,24 @@ class PREPPER_API UInventoryItemUI : public UUserWidget, public IUserObjectListE
 {
 	GENERATED_BODY()
 private:
+	UInventoryUI* TargetInventoryUI;
+	FString ItemCode;
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Icon;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DisplayText;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemCount;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> UseButton;
+	
 public:
 	FText ItemText = FText::FromString("");
 protected:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+
+	UFUNCTION()
+	void ItemUse();
 };

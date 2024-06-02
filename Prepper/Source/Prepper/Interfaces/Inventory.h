@@ -29,9 +29,11 @@ public:
 		FString ItemCode;
 		uint8 Count;
 	};
-	
-	virtual bool TryAddItem(const FString& ItemCode) PURE_VIRTUAL(IIInventory::TryAddItem, return 0; ); 
-	virtual bool TryUseItem(const FString& ItemCode) PURE_VIRTUAL(IIInventory::TryUseItem, return 0; );
 
-	virtual TArray<InventoryItem> GetIter() PURE_VIRTUAL(IIInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
+	virtual void SetOwner(IPlayerAbility* Target) PURE_VIRTUAL(IInventory::SetOwner, ; ); 
+	
+	virtual bool TryAddItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryAddItem, return 0; ); 
+	virtual bool TryUseItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryUseItem, return 0; );
+
+	virtual TArray<InventoryItem> GetIter() PURE_VIRTUAL(IInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
 };
