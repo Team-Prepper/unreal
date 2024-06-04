@@ -45,9 +45,3 @@ void UInventoryUI::UseItem(const FString& ItemCode)
 	TargetInventory->TryUseItem(ItemCode);
 	UpdateData();
 }
-
-void UInventoryUI::NativeOnInitialized()
-{
-	Super::NativeOnInitialized();
-    
-}

@@ -20,14 +20,13 @@ class PREPPER_API UInventoryUI : public UUserWidget
 	UPROPERTY(meta = (BindWidget))
 	UListView* ItemList;
 	
-	IInventory* TargetInventory;
 	ItemDataGetter ItemData;
+	IInventory* TargetInventory;
 	
 	void UpdateData();
+	
 public:
-	void Set(IInventory * Target);
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
+	void Set(IInventory * Target);
 	void UseItem(const FString& ItemCode);
-protected:
-	virtual void NativeOnInitialized() override;
 };
