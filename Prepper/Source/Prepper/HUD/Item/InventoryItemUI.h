@@ -21,7 +21,7 @@ class PREPPER_API UInventoryItemUI : public UUserWidget, public IUserObjectListE
 {
 	GENERATED_BODY()
 private:
-	UInventoryUI* TargetInventoryUI;
+	IInventory* TargetInventory;
 	FString ItemCode;
 	
 	UPROPERTY(meta = (BindWidget))
@@ -32,6 +32,8 @@ private:
 	TObjectPtr<UTextBlock> ItemCount;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> UseButton;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> QuickSlotAddButton;
 	
 public:
 	FText ItemText = FText::FromString("");
@@ -41,4 +43,6 @@ protected:
 
 	UFUNCTION()
 	void ItemUse();
+	UFUNCTION()
+	void AddToQuickSlot();
 };

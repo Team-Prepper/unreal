@@ -19,6 +19,7 @@ void UInventoryItemUI::NativeOnInitialized()
 	DisplayText = Cast<UTextBlock>(GetWidgetFromName("DisplayText"));
 	
 	UseButton->OnClicked.AddDynamic(this, &UInventoryItemUI::ItemUse);
+	QuickSlotAddButton->OnClicked.AddDynamic(this, &UInventoryItemUI::AddToQuickSlot);
 }
 
 void UInventoryItemUI::NativeOnListItemObjectSet(UObject* ListItemObject)
@@ -30,13 +31,17 @@ void UInventoryItemUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	Icon->SetBrushFromTexture(Object->TextureIcon);
 	DisplayText->SetText(Object->ItemName);
 	ItemCount->SetText(FText::FromString(FString::FromInt(Object->ItemCount)));
-	TargetInventoryUI = Object->TargetInventoryUI;
+	TargetInventory = Object->TargetInventory;
 }
 
 void UInventoryItemUI::ItemUse()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ItemUSE"));
-	if (TargetInventoryUI == nullptr) return;
-	UE_LOG(LogTemp, Warning, TEXT("ItemUSE:%s"), *ItemCode);
-	TargetInventoryUI->UseItem(ItemCode);
+	if (TargetInventory == nullptr) return;
+	TargetInventory->TryUseItem(ItemCode);
+}
+
+void UInventoryItemUI::AddToQuickSlot()
+{
+	if (TargetInventory == nullptr) return;
+	TargetInventory->QuickSlotAdd(ItemCode, 0);
 }

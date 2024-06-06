@@ -30,7 +30,7 @@ void APrepperHUD::AddCharacterOverlay()
 		{
 			InventoryHUD = CreateWidget<UInventoryUI>(PlayerController, InventoryHUDClass);
 			InventoryHUD->AddToViewport();
-			Cast<UInventoryUI>(InventoryHUD)->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
+			InventoryHUD->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 		}
 		if(CompassHUDClass)
 		{
@@ -118,6 +118,7 @@ void APrepperHUD::ToggleInventory()
 {
 	if(!InventoryHUD) return;
 
+	InventoryHUD->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 	IsInventoryVisible = !IsInventoryVisible;
 	InventoryHUD->SetVisibility(IsInventoryVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	GetOwningPlayerController()->SetShowMouseCursor(IsInventoryVisible);

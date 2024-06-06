@@ -21,7 +21,7 @@ void UInventoryUI::UpdateData()
 		if (!ItemData.GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
 		Data->ItemCount = Items[i].Count;
 		Data->ItemCode = Items[i].ItemCode;
-		Data->TargetInventoryUI = this;
+		Data->TargetInventory = TargetInventory;
 		
 		ItemList->AddItem(Data);
 	}
@@ -44,10 +44,4 @@ void UInventoryUI::UseItem(const FString& ItemCode)
 {
 	TargetInventory->TryUseItem(ItemCode);
 	UpdateData();
-}
-
-void UInventoryUI::NativeOnInitialized()
-{
-	Super::NativeOnInitialized();
-    
 }

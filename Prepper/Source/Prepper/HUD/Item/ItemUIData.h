@@ -16,7 +16,7 @@ class PREPPER_API UItemUIData : public UObject
 public:
 	UItemUIData()
 	{
-		TargetInventoryUI = nullptr;
+		TargetInventory = nullptr;
 		
 		TextureIcon = nullptr;
 		ItemCode = "";
@@ -24,9 +24,9 @@ public:
 		ItemCount = 0;
 		
 	}
-	UItemUIData(UTexture2D* Icon, const FString& Code, const FText& Name, int Count, UInventoryUI* InventoryUI)
+	UItemUIData(UTexture2D* Icon, const FString& Code, const FText& Name, int Count, IInventory* InventoryUI)
 	{
-		TargetInventoryUI = InventoryUI;
+		TargetInventory = InventoryUI;
 		
 		TextureIcon = Icon;
 		ItemCode = Code;
@@ -34,7 +34,7 @@ public:
 		ItemCount = Count;
 	}
 
-	UInventoryUI* TargetInventoryUI;
+	IInventory* TargetInventory;
 	
 	UTexture2D* TextureIcon;
 	FString ItemCode;

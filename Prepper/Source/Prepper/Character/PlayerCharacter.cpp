@@ -812,6 +812,11 @@ void APlayerCharacter::AddItem(FString ItemCode)
 	MulticastAddItem(ItemCode);
 }
 
+void APlayerCharacter::UseQuickSlotItem(int Idx)
+{
+	Inven.UseItemAtQuickSlot(Idx);
+}
+
 void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 {
 	Inven.TryAddItem(ItemCode);
