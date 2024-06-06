@@ -28,13 +28,7 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
 	if (DamagedTarget && HasAuthority() && InstigatorController)
 	{
-		UGameplayStatics::ApplyDamage(
-			FireHit.GetActor(),
-			Damage,
-			InstigatorController,
-			this,
-			UDamageType::StaticClass()
-		);
+		DamagedTarget->ReceiveDamage(FireHit.GetActor(), Damage, InstigatorController, this, UDamageType::StaticClass());
 	}
 	if(ImpactParticles && IsHit)
 	{

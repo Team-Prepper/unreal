@@ -244,11 +244,10 @@ void APlayerCharacter::PlayHitReactMontage()
 	}
 }
 
-
-void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatorController, AActor* DamageCauser)
+void APlayerCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, 
+AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType)
 {
-	Super::ReceiveDamage(DamagedActor, Damage, DamageType, InstigatorController, DamageCauser);
+	Super::ReceiveDamage(DamagedActor, Damage, InstigatorController, DamageCauser, DamageType);
 }
 
 void APlayerCharacter::UpdateHUDHealth()

@@ -5,6 +5,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Prepper/Interfaces/Damageable.h"
 
 AProjectileBullet::AProjectileBullet()
 {
@@ -15,13 +16,15 @@ AProjectileBullet::AProjectileBullet()
 
 void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	IDamageable* Target = Cast<IDamageable>(GetOwner());
 	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
-	if (OwnerCharacter)
+	
+	if (Target)
 	{
-		AController* OwnerController = OwnerCharacter->Controller;			
+		AController* OwnerController = OwnerCharacter->Controller;
 		if (OwnerController)
 		{
-			UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
+			Target->ReceiveDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
 		}
 	}
 

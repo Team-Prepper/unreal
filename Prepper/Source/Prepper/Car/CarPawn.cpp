@@ -247,8 +247,8 @@ void ACarPawn::ResetVehicle(const FInputActionValue& Value)
 	UE_LOG(LogTemp, Error, TEXT("Reset Vehicle"));
 }
 
-void ACarPawn::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatorController, AActor* DamageCauser)
+void ACarPawn::ReceiveDamage(AActor* DamagedActor, float Damage,
+	AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageTypeClass)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 

@@ -1,6 +1,7 @@
 #include "MeleeWeapon.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prepper/Prepper.h"
 #include "Sound/SoundCue.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
@@ -47,6 +48,11 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	TArray<FHitResult> HitResults;
 	FCollisionShape SphereCollisionShape = FCollisionShape::MakeSphere(AttackRange);
 	FCollisionObjectQueryParams ObjectQueryParams = FCollisionObjectQueryParams(ECC_Pawn);
+
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_Visibility);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_PhysicsBody);
 	
 	GetWorld()->SweepMultiByObjectType(
         	HitResults,
@@ -80,22 +86,17 @@ void AMeleeWeapon::SetHUDAmmo()
 
 void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s, %f"), *HitTarget.GetActor()->GetName(), Damage)
+	
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
+	if(!HitTarget.GetActor()) return;
+	if(HitTarget.GetActor() == GetOwner()) return;
+
+	
 	AController* InstigatorController = OwnerPawn->GetController();
 	IDamageable* DamagedTarget = Cast<IDamageable>(HitTarget.GetActor());
-	if(DamagedTarget == Cast<IDamageable>(GetOwner())) return;
 	
-	if (DamagedTarget && HasAuthority() && InstigatorController)
-	{
-		UGameplayStatics::ApplyDamage(
-			HitTarget.GetActor(),
-			Damage,
-			InstigatorController,
-			this,
-			UDamageType::StaticClass()
-		);
-	}
 	if(ImpactParticles)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
@@ -111,6 +112,16 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 		this,
 		HitSound,
 		HitTarget.ImpactPoint);
+	}
+	if (DamagedTarget && HasAuthority() && InstigatorController)
+	{
+		DamagedTarget->ReceiveDamage(
+			HitTarget.GetActor(),
+			Damage,
+			InstigatorController,
+			this,
+			UDamageType::StaticClass()
+		);
 	}
 }
 

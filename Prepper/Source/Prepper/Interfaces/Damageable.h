@@ -23,7 +23,7 @@ public:
 	virtual void ReceiveDamage(
 	AActor* DamagedActor,
 	 float Damage,
-	 const UDamageType* DamageType,
-	 class AController* InstigatorController,
-	 AActor* DamageCauser) PURE_VIRTUAL();
+	 AController* InstigatorController,
+	 AActor* DamageCauser,
+	 TSubclassOf<UDamageType> DamageTypeClass) PURE_VIRTUAL();
 };

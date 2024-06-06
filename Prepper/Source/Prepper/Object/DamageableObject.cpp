@@ -33,17 +33,18 @@ void ADamageableObject::BeginPlay()
 
 	if(HasAuthority())
 	{
-		OnTakeAnyDamage.AddDynamic(this, &ADamageableObject::ReceiveDamage);
+		//OnTakeAnyDamage.AddDynamic(this, &ADamageableObject::ReceiveDamage);
 	}
 }
 
-void ADamageableObject::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-                                      AController* InstigatorController, AActor* DamageCauser)
+void ADamageableObject::ReceiveDamage(AActor* DamagedActor, float Damage,
+	AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType)
 {
+	ServerDestroyObject();
+	return;
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	if(CurrentHealth == 0)
 	{
-		ServerDestroyObject();
 	}
 }
 

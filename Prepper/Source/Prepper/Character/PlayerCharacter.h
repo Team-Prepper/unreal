@@ -117,7 +117,7 @@ private:
 	bool bIsSprint = false;
 	
 protected:
-	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
+	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageTypeClass) override;
 	virtual void UpdateHUDHealth() override;
 	
 	// init 되었는지 확인하고 init함 _ DeathMatch

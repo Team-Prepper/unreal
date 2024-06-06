@@ -18,64 +18,61 @@ void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	AController* InstigatorController = OwnerPawn->GetController();
 
 	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
-	if (MuzzleSocket)
+	if (!MuzzleSocket) return;
+	
+	const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
+	const FVector Start = SocketTransform.GetLocation();
+
+	// hit Character - number of hit
+	TMap<IDamageable*, uint32> HitMap;
+	
+	for(FVector_NetQuantize HitTarget : HitTargets)
 	{
-		const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
-		const FVector Start = SocketTransform.GetLocation();
+		FHitResult FireHit;
+		WeaponTraceHit(Start, HitTarget, FireHit);
 
-		// hit Character - number of hit
-		TMap<IDamageable*, uint32> HitMap;
-		for(FVector_NetQuantize HitTarget : HitTargets)
-		{
-			FHitResult FireHit;
-			WeaponTraceHit(Start, HitTarget, FireHit);
+		IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
+		if (!DamagedTarget) continue;
 
-			IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
-			if (DamagedTarget)
-			{
-				if (HitMap.Contains(DamagedTarget))
-				{
-					HitMap[DamagedTarget]++;
-				}
-				else
-				{
-					HitMap.Emplace(DamagedTarget, 1);
-				}
-				if(ImpactParticles)
-				{
-					UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-						GetWorld(),
-						ImpactParticles,
-						FireHit.ImpactPoint,
-						FireHit.ImpactNormal.Rotation()
-					);
-				}
-				if (HitSound)
-				{
-					UGameplayStatics::PlaySoundAtLocation(
-						this,
-						HitSound,
-						FireHit.ImpactPoint,
-						.5f,
-						FMath::FRandRange(-.5f, .5f)
-					);
-				}
-			}
-		}
-		for (auto HitPair : HitMap)
+		if (HitMap.Contains(DamagedTarget))
 		{
-			
-			if (HitPair.Key && HasAuthority() && InstigatorController)
-			{
-				UGameplayStatics::ApplyDamage(
-					Cast<AActor>(HitPair.Key),
-					Damage * HitPair.Value,
-					InstigatorController,
-					this,
-					UDamageType::StaticClass()
-				);
-			}
+			HitMap[DamagedTarget]++;
 		}
+		else
+		{
+			HitMap.Emplace(DamagedTarget, 1);
+		}
+		if(ImpactParticles)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+				GetWorld(),
+				ImpactParticles,
+				FireHit.ImpactPoint,
+				FireHit.ImpactNormal.Rotation()
+			);
+		}
+		if (HitSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(
+				this,
+				HitSound,
+				FireHit.ImpactPoint,
+				.5f,
+				FMath::FRandRange(-.5f, .5f)
+			);
+		}
+	}
+	for (auto HitPair : HitMap)
+	{
+		if (!HitPair.Key || !HasAuthority() || !InstigatorController) continue;
+		
+		HitPair.Key->ReceiveDamage(
+				Cast<AActor>(HitPair.Key),
+				Damage * HitPair.Value,
+				InstigatorController,
+				this,
+				UDamageType::StaticClass()
+			);
 	}
 	
 }
