@@ -18,6 +18,7 @@ void UInventoryUI::UpdateData()
 		UItemUIData* Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 		IInventory::InventoryItem Item = Items[i];
 		
+		/* 아래부분 이해가 잘 안됨 */
 		if (!ItemData.GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
 		Data->ItemCount = Items[i].Count;
 		Data->ItemCode = Items[i].ItemCode;
