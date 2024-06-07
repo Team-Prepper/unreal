@@ -5,9 +5,7 @@
 #include "CoreMinimal.h"
 #include "ItemUIData.generated.h"
 
-/**
- * 
- */
+class IInventory;
 UCLASS()
 class PREPPER_API UItemUIData : public UObject
 {

@@ -7,16 +7,13 @@
 #include "Inventory.generated.h"
 #define MAX_ITEM_COUNT 16
 
-// This class does not need to be modified.
+class IPlayerAbility;
 UINTERFACE(MinimalAPI)
 class UInventory : public UInterface
 {
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class PREPPER_API IInventory
 {
 	GENERATED_BODY()
@@ -29,6 +26,8 @@ public:
 		FString ItemCode;
 		uint8 Count;
 	};
+
+	int Capacity = 30;
 
 	virtual void SetOwner(IPlayerAbility* Target) PURE_VIRTUAL(); 
 	
