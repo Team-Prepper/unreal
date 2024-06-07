@@ -28,9 +28,6 @@ class PREPPER_API UItemGrid : public UUserWidget
 	void UpdateData();
 public:
 	virtual void NativeConstruct() override;
-
-	
-	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 	void Set(IInventory* Target);
 
 protected:

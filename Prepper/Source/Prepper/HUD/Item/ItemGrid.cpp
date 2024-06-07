@@ -9,19 +9,14 @@
 void UItemGrid::NativeConstruct()
 {
 	Super::NativeConstruct();
+	UE_LOG(LogTemp, Warning, TEXT("GRID INIT"));
 	AddSlot(30);
-	SetVisibility(ESlateVisibility::Hidden);
-}
-
-void UItemGrid::SetVisibility(ESlateVisibility InVisibility)
-{
-	Super::SetVisibility(InVisibility);
-	
 }
 
 void UItemGrid::Set(IInventory* Target)
 {
 	TargetInventory = Target;
+	UpdateData();
 }
 
 void UItemGrid::AddSlot(int Capacity)
@@ -45,7 +40,7 @@ void UItemGrid::AddSlotsToGrid(int Index, UItemGridSlot* NewSlot)
 void UItemGrid::UpdateData()
 {
 	if (TargetInventory == nullptr) return;
-
+	UE_LOG(LogTemp, Warning, TEXT("ui update"));
 	UPrepperGameInstance* PrepperGameInstance = Cast<UPrepperGameInstance>(GetGameInstance());
 
 	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();
@@ -61,5 +56,6 @@ void UItemGrid::UpdateData()
 		Data->TargetInventory = TargetInventory;
 
 		//TODO
+		GridSlots[i]->SetIcon(Data->TextureIcon, Data->ItemName, Data->ItemCount);
 	}
 }

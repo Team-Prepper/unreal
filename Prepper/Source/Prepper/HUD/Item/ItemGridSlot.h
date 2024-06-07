@@ -24,4 +24,6 @@ private:
 	UTextBlock* ItemCount;
 
 	class UItemGridSlotInfo* ItemInfo;
+public:
+	void SetIcon(UTexture2D*& SetIconImg, FText SetItemName, uint32 SetItemCount);
 };

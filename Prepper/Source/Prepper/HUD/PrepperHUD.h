@@ -47,7 +47,7 @@ public:
 	//UPROPERTY()
 	//class UInventoryUI* InventoryHUD;
 	UPROPERTY()
-	class UItemGrid* InventoryHUD;
+	class UMainInventoryHUD* InventoryHUD;
 	UPROPERTY()
 	class UCompass* Compass;
 	

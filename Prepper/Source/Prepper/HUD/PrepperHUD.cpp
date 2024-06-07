@@ -7,9 +7,11 @@
 #include "CharacterOverlay.h"
 #include "Compass.h"
 //#include "Prepper/HUD/Item/InventoryUI.h"
+#include "ImaginaryBlueprintData.h"
 #include "Prepper/HUD/Item/ItemGrid.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
+#include "Item/MainInventoryHUD.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
 void APrepperHUD::BeginPlay()
@@ -29,10 +31,11 @@ void APrepperHUD::AddCharacterOverlay()
 		}
 		if(InventoryHUDClass)
 		{
-			InventoryHUD = CreateWidget<UItemGrid>(PlayerController, InventoryHUDClass);
+			InventoryHUD = CreateWidget<UMainInventoryHUD>(PlayerController, InventoryHUDClass);
 			InventoryHUD->AddToViewport();
-			InventoryHUD->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
-			
+			InventoryHUD->SetVisibility(ESlateVisibility::Hidden);
+			if(InventoryHUD->ItemGrid)
+				InventoryHUD->ItemGrid->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 		}
 		if(CompassHUDClass)
 		{
@@ -119,8 +122,15 @@ void APrepperHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
 void APrepperHUD::ToggleInventory()
 {
 	if(!InventoryHUD) return;
-
-	InventoryHUD->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
+	if(InventoryHUD->ItemGrid)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("YES ITEM GIRD"));
+		InventoryHUD->ItemGrid->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
+	}else
+	{
+		UE_LOG(LogTemp,Warning,TEXT("NO ITEM GIRD"));
+	}
+		
 	IsInventoryVisible = !IsInventoryVisible;
 	InventoryHUD->SetVisibility(IsInventoryVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	GetOwningPlayerController()->SetShowMouseCursor(IsInventoryVisible);
