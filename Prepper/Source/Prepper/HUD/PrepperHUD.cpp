@@ -1,13 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "PrepperHUD.h"
 
 #include "Announcement.h"
 #include "CharacterOverlay.h"
 #include "Compass.h"
-//#include "Prepper/HUD/Item/InventoryUI.h"
-#include "ImaginaryBlueprintData.h"
 #include "Prepper/HUD/Item/ItemGrid.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
@@ -122,15 +117,7 @@ void APrepperHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
 void APrepperHUD::ToggleInventory()
 {
 	if(!InventoryHUD) return;
-	if(InventoryHUD->ItemGrid)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("YES ITEM GIRD"));
-		InventoryHUD->ItemGrid->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
-	}else
-	{
-		UE_LOG(LogTemp,Warning,TEXT("NO ITEM GIRD"));
-	}
-		
+	InventoryHUD->SetInventory(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 	IsInventoryVisible = !IsInventoryVisible;
 	InventoryHUD->SetVisibility(IsInventoryVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	GetOwningPlayerController()->SetShowMouseCursor(IsInventoryVisible);

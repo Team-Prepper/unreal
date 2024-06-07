@@ -28,20 +28,10 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ItemDescription;
 
-	UPROPERTY(meta = (BindWidget))
-	UButton* UseButton;
-	UPROPERTY(meta = (BindWidget))
-	UButton* QuickSlotAddButton;
-	UPROPERTY(meta = (BindWidget))
-	UButton* DiscardButton;
-
 public:
 	virtual void NativeConstruct() override;
 	
 	void InspectItem(const FString& ItemCode);
 	
-	UFUNCTION()
-	void ItemUse();
-	UFUNCTION()
-	void AddToQuickSlot();
+	
 };

@@ -1,20 +1,37 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "MainInventoryHUD.h"
-
 #include "ItemGrid.h"
+#include "Components/Button.h"
+#include "Prepper/Interfaces/Inventory.h"
 
 void UMainInventoryHUD::NativeConstruct()
 {
 	Super::NativeConstruct();
 	ItemGrid = Cast<UItemGrid>(GetWidgetFromName("WBP_InvenGrid"));
-	UE_LOG(LogTemp, Warning, TEXT("MAIN HUD Construct"));
+	ItemGrid->MainHUD = this;
+	
+	UseButton->OnClicked.AddDynamic(this, &UMainInventoryHUD::ItemUse);
 }
 
-void UMainInventoryHUD::NativeOnInitialized()
+void UMainInventoryHUD::ItemUse()
 {
-	Super::NativeOnInitialized();
-	ItemGrid = Cast<UItemGrid>(GetWidgetFromName("WBP_InvenGrid"));
-	UE_LOG(LogTemp, Warning, TEXT("MAIN HUD INIT"));
+	if (TargetInventory == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("USE ITEM : NO INVETORY"));
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("ITEM CODE : %s"),*SelectItemCode);
+	TargetInventory->TryUseItem(SelectItemCode);
 }
+
+void UMainInventoryHUD::AddToQuickSlot()
+{
+	if (TargetInventory == nullptr) return;
+	TargetInventory->QuickSlotAdd(SelectItemCode, 0);
+}
+
+void UMainInventoryHUD::SetInventory(IInventory* Target)
+{
+	TargetInventory = Target;
+	ItemGrid->Set(Target);
+}
+

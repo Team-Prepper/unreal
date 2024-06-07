@@ -18,6 +18,9 @@ class PREPPER_API UPrepperGameInstance : public UGameInstance
 public:
 	ItemDataGetter ItemData;
 
+	UPROPERTY()
+	class UItemGridSlotInfo* ItemInfo;
+
 public:
 	FORCEINLINE const ItemDataGetter& GetItemData() const {return ItemData;}
 	

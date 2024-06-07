@@ -7,14 +7,11 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Prepper/GameInstance/PrepperGameInstance.h"
-#include "Prepper/Interfaces/Inventory.h"
+
 
 void UItemGridSlotInfo::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	UseButton->OnClicked.AddDynamic(this, &UItemGridSlotInfo::ItemUse);
-	QuickSlotAddButton->OnClicked.AddDynamic(this, &UItemGridSlotInfo::AddToQuickSlot);
 }
 
 void UItemGridSlotInfo::InspectItem(const FString& ItemCode)
@@ -29,16 +26,4 @@ void UItemGridSlotInfo::InspectItem(const FString& ItemCode)
 		SlotItemCode = ItemCode;
 	}
 	
-}
-
-void UItemGridSlotInfo::ItemUse()
-{
-	if (TargetInventory == nullptr) return;
-	TargetInventory->TryUseItem(SlotItemCode);
-}
-
-void UItemGridSlotInfo::AddToQuickSlot()
-{
-	if (TargetInventory == nullptr) return;
-	TargetInventory->QuickSlotAdd(SlotItemCode, 0);
 }
