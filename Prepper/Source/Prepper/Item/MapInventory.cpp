@@ -69,6 +69,21 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	return true;
 }
 
+void UMapInventory::TakeOutItem(const FString& ItemCode, int Count)
+{
+	if (!ItemUnits.Contains(ItemCode))	return;
+	
+	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - Count;
+	// 아이템 사용 후의 개수가 0인 경우 삭제
+	if (ItemCount <= 0)
+	{
+		ItemUnits.Remove(ItemCode);
+		return;
+	}
+
+	ItemUnits.Add(ItemCode, ItemCount);
+}
+
 void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx)
 {
 	if (Idx >= MAX_QUICK_SLOT) return;

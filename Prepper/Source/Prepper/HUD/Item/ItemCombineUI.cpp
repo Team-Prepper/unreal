@@ -3,6 +3,7 @@
 
 #include "ItemCombineUI.h"
 
+#include "ItemCombineUIData.h"
 #include "ItemUIData.h"
 
 void UItemCombineUI::UpdateData()
@@ -13,13 +14,14 @@ void UItemCombineUI::UpdateData()
 	ItemList->ClearListItems();
 	for (int i = 0; i < Items.Num(); i++)
 	{
-		UItemUIData* Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
+		UItemCombineUIData* Data = NewObject<UItemCombineUIData>(GetWorld(), UItemCombineUIData::StaticClass());
 		IInventory::InventoryItem Item = Items[i];
 		
 		if (!ItemData.GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
 
 		Data->ItemCount = Items[i].Count;
 		Data->ItemCode = Items[i].ItemCode;
+		Data->ActionUI = this;
 		
 		ItemList->AddItem(Data);
 	}
@@ -48,7 +50,7 @@ void UItemCombineUI::SetTargetInventory(IInventory* Target)
 
 void UItemCombineUI::SetTargetItem(const FString& Target)
 {
-	if (!TargetInventory->TryUseItem(Target1Code)) return;
+	TargetInventory->TakeOutItem(Target, 1);
 	
 	if (Target1Code.Compare("") == 0)
 	{

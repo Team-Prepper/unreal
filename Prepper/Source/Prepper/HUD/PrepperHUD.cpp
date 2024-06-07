@@ -9,6 +9,7 @@
 #include "Prepper/HUD/Item/InventoryUI.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
+#include "Item/ItemCombineUI.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
 void APrepperHUD::BeginPlay()
@@ -25,6 +26,12 @@ void APrepperHUD::AddCharacterOverlay()
 		{
 			CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
 			CharacterOverlay->AddToViewport();
+		}
+		if (ItemCombineUIClass)
+		{
+			ItemCombineUI = CreateWidget<UItemCombineUI>(PlayerController, ItemCombineUIClass);
+			ItemCombineUI->AddToViewport();
+			ItemCombineUI->SetTargetInventory(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 		}
 		if(InventoryHUDClass)
 		{

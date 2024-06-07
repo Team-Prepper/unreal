@@ -34,6 +34,7 @@ public:
 	virtual bool TryAddItem(const FString& ItemCode) override;
 	virtual bool TryUseItem(const FString& ItemCode) override;
 	
+	virtual void TakeOutItem(const FString& ItemCode, int Count) override;
 	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) override;
 	virtual void UseItemAtQuickSlot(const int Idx) override;
 	
