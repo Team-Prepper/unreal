@@ -115,13 +115,7 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 	}
 	if (DamagedTarget && HasAuthority() && InstigatorController)
 	{
-		DamagedTarget->ReceiveDamage(
-			HitTarget.GetActor(),
-			Damage,
-			InstigatorController,
-			this,
-			UDamageType::StaticClass()
-		);
+		DamagedTarget->ReceiveDamage(Damage, InstigatorController, this);
 	}
 }
 

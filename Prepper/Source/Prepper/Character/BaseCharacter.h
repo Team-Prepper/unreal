@@ -48,7 +48,7 @@ protected:
 
 	
 	UFUNCTION()
-	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageTypeClass) override;
+	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 	virtual void UpdateHUDHealth() PURE_VIRTUAL();
 
 	virtual void PlayHitReactMontage();

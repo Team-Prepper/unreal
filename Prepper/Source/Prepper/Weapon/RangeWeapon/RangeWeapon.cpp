@@ -119,7 +119,7 @@ void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, UTexture2D*& Ce
 	Bottom = CrosshairBottom;
 	Spread = 0.5f;
 
-	if (bUseScatter) {
+	if (bUseScatter || PlayerOwnerCharacter == nullptr) {
 		return;
 	}
 	

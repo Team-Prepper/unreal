@@ -109,7 +109,7 @@ public:
 	virtual void Tick(float Delta) override;
 
 	UFUNCTION()
-	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageTypeClass) override;
+	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
 protected:
 	/** Handles brake start/stop inputs */

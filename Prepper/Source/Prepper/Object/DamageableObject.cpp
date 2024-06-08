@@ -33,18 +33,17 @@ void ADamageableObject::BeginPlay()
 
 	if(HasAuthority())
 	{
-		//OnTakeAnyDamage.AddDynamic(this, &ADamageableObject::ReceiveDamage);
+		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
 	}
 }
 
-void ADamageableObject::ReceiveDamage(AActor* DamagedActor, float Damage,
-	AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType)
+void ADamageableObject::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
-	ServerDestroyObject();
-	return;
+	UE_LOG(LogTemp, Warning, TEXT("%f"), Damage)
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-	if(CurrentHealth == 0)
+	if(CurrentHealth <= 0)
 	{
+		ServerDestroyObject();
 	}
 }
 

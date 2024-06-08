@@ -66,13 +66,7 @@ void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	{
 		if (!HitPair.Key || !HasAuthority() || !InstigatorController) continue;
 		
-		HitPair.Key->ReceiveDamage(
-				Cast<AActor>(HitPair.Key),
-				Damage * HitPair.Value,
-				InstigatorController,
-				this,
-				UDamageType::StaticClass()
-			);
+		HitPair.Key->ReceiveDamage(Damage, InstigatorController, this);
 	}
 	
 }

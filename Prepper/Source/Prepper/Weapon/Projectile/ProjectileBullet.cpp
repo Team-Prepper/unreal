@@ -24,7 +24,7 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		AController* OwnerController = OwnerCharacter->Controller;
 		if (OwnerController)
 		{
-			Target->ReceiveDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
+			Target->ReceiveDamage(Damage, OwnerController, this);
 		}
 	}
 

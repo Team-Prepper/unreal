@@ -94,10 +94,9 @@ void AEnemyBaseCharacter::CheckCombatTarget()
 	}
 }
 
-void AEnemyBaseCharacter::ReceiveDamage(AActor* DamagedActor, float Damage,
-	AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType)
+void AEnemyBaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
-	Super::ReceiveDamage(DamagedActor, Damage, InstigatorController, DamageCauser, DamageType);
+	Super::ReceiveDamage(Damage, InstigatorController, DamageCauser);
 }
 
 void AEnemyBaseCharacter::UpdateHUDHealth()

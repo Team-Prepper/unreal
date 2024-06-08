@@ -30,7 +30,7 @@ void ABaseCharacter::BeginPlay()
 	UpdateHUDHealth();
 	if(HasAuthority())
 	{
-		//OnTakeAnyDamage.AddDynamic(this, &ABaseCharacter::ReceiveDamage);
+		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
 	}
 }
 
@@ -54,8 +54,7 @@ void ABaseCharacter::PlayHitReactMontage()
 	}
 }
 
-void ABaseCharacter::ReceiveDamage(AActor* DamagedActor, float Damage,
-	AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageTypeClass)
+void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();

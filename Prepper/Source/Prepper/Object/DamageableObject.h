@@ -17,8 +17,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
-	virtual void ReceiveDamage(AActor* DamagedActor, float Damage,
-	AController* InstigatorController, AActor* DamageCauser, TSubclassOf<UDamageType> DamageType) override;
+	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
 	virtual void Destroyed() override;
 

@@ -20,10 +20,17 @@ class PREPPER_API IDamageable
 {
 	GENERATED_BODY()
 public:
-	virtual void ReceiveDamage(
-	AActor* DamagedActor,
-	 float Damage,
-	 AController* InstigatorController,
-	 AActor* DamageCauser,
-	 TSubclassOf<UDamageType> DamageTypeClass) PURE_VIRTUAL();
+	
+	UFUNCTION()
+	virtual void DynamicDamage(AActor* DamagedActor,
+		float Damage,
+		const UDamageType* DamageTypeClass,
+		AController* InstigatorController,
+		AActor* DamageCauser)
+	{
+		ReceiveDamage(Damage, InstigatorController, DamageCauser);
+		
+	}
+	
+	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) PURE_VIRTUAL();
 };
