@@ -4,6 +4,7 @@
 #include "ItemCombineUI.h"
 
 #include "ItemUIData.h"
+#include "Prepper/Item/ItemData/ItemManager.h"
 
 void UItemCombineUI::UpdateData()
 {
@@ -16,7 +17,7 @@ void UItemCombineUI::UpdateData()
 		UItemUIData* Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 		IInventory::InventoryItem Item = Items[i];
 		
-		if (!ItemData.GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
+		if (!ItemManager::GetInstance()->GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
 
 		Data->ItemCount = Items[i].Count;
 		Data->ItemCode = Items[i].ItemCode;
@@ -30,7 +31,7 @@ void UItemCombineUI::CombineButtonAction()
 	if (Target1Code.Compare("") == 0 || Target2Code.Compare("") == 0) return;
 
 	FString ItemCode;
-	if (!ItemData.TryCombinationItem(Target1Code, Target2Code, ItemCode)) return;
+	if (!ItemManager::GetInstance()->TryCombinationItem(Target1Code, Target2Code, ItemCode)) return;
 	TargetInventory->TryAddItem(ItemCode);
 	
 }
