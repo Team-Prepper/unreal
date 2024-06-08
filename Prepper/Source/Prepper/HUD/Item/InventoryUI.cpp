@@ -5,6 +5,7 @@
 
 #include "InventoryItemUI.h"
 #include "ItemUIData.h"
+#include "Prepper/Item/ItemData/ItemManager.h"
 #include "Prepper/Interfaces/Inventory.h"
 
 void UInventoryUI::UpdateData()
@@ -18,11 +19,12 @@ void UInventoryUI::UpdateData()
 		UItemUIData* Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 		IInventory::InventoryItem Item = Items[i];
 		
-		/* 아래부분 이해가 잘 안됨 */
-		if (!ItemData.GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
+		if (!ItemManager::GetInstance()->GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
 		Data->ItemCount = Items[i].Count;
 		Data->ItemCode = Items[i].ItemCode;
 		Data->TargetInventory = TargetInventory;
+
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Item.ItemCode);
 		
 		ItemList->AddItem(Data);
 	}

@@ -9,7 +9,6 @@
 #include "Components/ListView.h"
 #include "Components/TextBlock.h"
 #include "Prepper/Interfaces/Inventory.h"
-#include "Prepper/Item/ItemData/ItemDataGetter.h"
 #include "ItemCombineUI.generated.h"
 
 /**
@@ -36,7 +35,6 @@ class PREPPER_API UItemCombineUI : public UUserWidget
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> CombineButton;
 	
-	ItemDataGetter ItemData;
 	IInventory* TargetInventory;
 
 	FString Target1Code;

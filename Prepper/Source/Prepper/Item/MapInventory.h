@@ -5,7 +5,7 @@
 #define MAX_QUICK_SLOT 5
 
 #include "CoreMinimal.h"
-#include "ItemData/ItemDataGetter.h"
+#include "ItemData/ItemManager.h"
 #include "Prepper/Interfaces/Inventory.h"
 //#include "MapInventory.generated.h"
 
@@ -20,14 +20,12 @@ class PREPPER_API UMapInventory : public IInventory
 private:
 	IPlayerAbility * Owner;
 	
-	ItemDataGetter ItemData;
 	uint8 BulletCount;
 	
 	TMap<FString, uint8> ItemUnits;
 
 	FString QuickSlotItem[MAX_QUICK_SLOT];
 
-	bool TryCombineItem(const FString& Input1, const FString& Input2, FString& Result);
 public:
 	UMapInventory();
 	virtual void SetOwner(IPlayerAbility* Target) override;

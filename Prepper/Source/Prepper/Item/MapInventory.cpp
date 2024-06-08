@@ -1,13 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "MapInventory.h"
+#include "ItemData/ItemManager.h"
 #include "Prepper/Interfaces/Inventory.h"
 #include "UObject/ConstructorHelpers.h"
-
-bool UMapInventory::TryCombineItem(const FString& Input1, const FString& Input2, FString& Result)
-{
-	return  ItemData.TryCombinationItem(Input1, Input2, Result);
-}
 
 UMapInventory::UMapInventory()
 {
@@ -52,7 +48,7 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	if (!ItemUnits.Contains(ItemCode))	return false;
 
 	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - 1;
-	ItemData.GetItem(ItemCode)->Use(Owner);
+	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Owner);
 
 	// 아이템 사용 후의 개수가 0인 경우 삭제
 	if (ItemCount == 0)

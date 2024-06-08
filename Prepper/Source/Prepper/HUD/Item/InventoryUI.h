@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/Item/ItemData/ItemDataGetter.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ListView.h"
 #include "Prepper/Interfaces/Inventory.h"
@@ -20,7 +19,6 @@ class PREPPER_API UInventoryUI : public UUserWidget
 	UPROPERTY(meta = (BindWidget))
 	UListView* ItemList;
 	
-	ItemDataGetter ItemData;
 	IInventory* TargetInventory;
 	
 	void UpdateData();

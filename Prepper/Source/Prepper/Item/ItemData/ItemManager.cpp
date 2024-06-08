@@ -1,10 +1,12 @@
+﻿#include "ItemManager.h"
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "ItemDataGetter.h"
 #include "ItemCombinationData.h"
+#include "UObject/ConstructorHelpers.h"
+#include "ItemData.h"
+#include "Prepper/_Base/DataTableGetter.h"
 
-FString ItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Code2)
+FString ItemManager::ItemCombineCode(const FString& Code1, const FString& Code2)
 {
 	if (Code1.Compare(Code2) > 0)
 	{
@@ -14,29 +16,29 @@ FString ItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Cod
 	return Code2 + Code1;
 }
 
-ItemDataGetter::ItemDataGetter()
+ItemManager::ItemManager()
 {
-	static ConstructorHelpers::FObjectFinder<UDataTable>
-	ItemDataTable(TEXT("/Game/Data/ItemDataTable"));
-	if (ItemDataTable.Succeeded())
+	UDataTable* ItemDataTable;
+	
+	if (DataTableGetter::GetDataTable("ItemDataTable", ItemDataTable))
 	{
 		TArray<FItemData*> arr;
-		ItemDataTable.Object->GetAllRows(TEXT("GetAllRows"), arr);
+		ItemDataTable->GetAllRows(TEXT("GetAllRows"), arr);
 		
 		for (int i = 0; i < arr.Num(); ++i)
 		{
 			ItemData.Add(arr[i]->ItemCode, arr[i]->GetItem());
 		}
+		UE_LOG(LogTemp, Warning, TEXT("ItemDataTableLoad: %d"), arr.Num());
 		
 	}
 	
-	static ConstructorHelpers::FObjectFinder<UDataTable> CombinationDataTable(
-	TEXT("/Game/Data/ItemCombinationDataTable"));
+	UDataTable* ItemCombinationDataTable;
 	
-	if (CombinationDataTable.Succeeded())
+	if (DataTableGetter::GetDataTable("ItemCombinationDataTable", ItemCombinationDataTable))
 	{
 		TArray<FItemCombinationData*> arr;
-		CombinationDataTable.Object->GetAllRows(TEXT("GetAllRows"), arr);
+		ItemCombinationDataTable->GetAllRows(TEXT("GetAllRows"), arr);
 		
 		for (int i = 0; i < arr.Num(); ++i)
 		{;
@@ -46,12 +48,11 @@ ItemDataGetter::ItemDataGetter()
 	}
 }
 
-ItemDataGetter::~ItemDataGetter()
+ItemManager::~ItemManager()
 {
-    
 }
 
-bool ItemDataGetter::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName)
+bool ItemManager::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName)
 {
 	if (!ItemData.Contains(ItemCode)) return false;
 
@@ -62,14 +63,14 @@ bool ItemDataGetter::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon,
 	
 	return true;
 }
-FItem* ItemDataGetter::GetItem(const FString& ItemCode)
+FItem* ItemManager::GetItem(const FString& ItemCode)
 {
 	if (!ItemData.Contains(ItemCode)) return nullptr;
 
 	return ItemData.Find(ItemCode);
 }
 
-bool ItemDataGetter::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
+bool ItemManager::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
 {
 	const FString CombinationCode = ItemCombineCode(ItemCode1, ItemCode2);
 	
