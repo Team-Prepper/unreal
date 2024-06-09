@@ -21,7 +21,7 @@
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Sound/SoundCue.h"
 #include "Components/PawnNoiseEmitterComponent.h"
-
+#include "Prepper/HUD/Item/ItemCombineUI.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -801,6 +801,18 @@ void APlayerCharacter::SetPlayerEqiupmentHiddenInGame(bool visible)
 	if(EquippedBackpack)
 	{
 		EquippedBackpack->SetActorHiddenInGame(visible);
+	}
+}
+
+void APlayerCharacter::OpenCraftingTable()
+{
+	PrepperPlayerController->SetInputMode(FInputModeGameAndUI());
+	PrepperPlayerController->SetShowMouseCursor(true);
+	APrepperHUD* PrepperHUD = Cast<APrepperHUD>(PrepperPlayerController->GetHUD());
+	if(PrepperHUD && PrepperHUD->ItemCombineUI)
+	{
+		PrepperHUD->ItemCombineUI->SetTargetInventory(&Inven);
+		PrepperHUD->ItemCombineUI->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 

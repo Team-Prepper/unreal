@@ -37,7 +37,8 @@ void UItemGridSlot::SetInventory(IInventory* Target)
 void UItemGridSlot::SlotButtonPressed()
 {
 	if(!MainHUD) return;
-	
+
+	MainHUD->ItemInfoIcon->SetBrushFromTexture(Data->TextureIcon);
 	MainHUD->ItemInfoName->SetText(Data->ItemName);
 	MainHUD->SelectItemCode = ItemCode;
 }

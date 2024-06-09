@@ -48,6 +48,7 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	if (!ItemUnits.Contains(ItemCode))	return false;
 
 	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - 1;
+	
 	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Owner);
 
 	// 아이템 사용 후의 개수가 0인 경우 삭제

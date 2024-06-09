@@ -221,7 +221,8 @@ private:
 
 public:
 	UMapInventory Inven;
-	
+
+	virtual void OpenCraftingTable() override;
 	virtual void AddItem(FString ItemCode) override;
 	virtual void UseQuickSlotItem(int Idx) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;

@@ -6,6 +6,7 @@
 #include "Prepper/HUD/Item/ItemGrid.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
+#include "Item/ItemCombineUI.h"
 #include "Item/MainInventoryHUD.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
@@ -31,6 +32,12 @@ void APrepperHUD::AddCharacterOverlay()
 			InventoryHUD->SetVisibility(ESlateVisibility::Hidden);
 			if(InventoryHUD->ItemGrid)
 				InventoryHUD->ItemGrid->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
+		}
+		if(CraftingHUDClass)
+		{
+			ItemCombineUI = CreateWidget<UItemCombineUI>(PlayerController, CraftingHUDClass);
+			ItemCombineUI->AddToViewport();
+			ItemCombineUI->SetVisibility(ESlateVisibility::Hidden);
 		}
 		if(CompassHUDClass)
 		{

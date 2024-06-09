@@ -36,6 +36,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UUserWidget> InventoryHUDClass;
+
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> CraftingHUDClass;
 	
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UUserWidget> CompassHUDClass;
@@ -44,8 +47,8 @@ public:
 
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
-	//UPROPERTY()
-	//class UInventoryUI* InventoryHUD;
+	UPROPERTY()
+	class UItemCombineUI* ItemCombineUI;
 	UPROPERTY()
 	class UMainInventoryHUD* InventoryHUD;
 	UPROPERTY()

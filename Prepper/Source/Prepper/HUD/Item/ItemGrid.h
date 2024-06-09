@@ -18,6 +18,7 @@ public:
 
 	TArray<UItemGridSlot*> GridSlots;
 	
+	void UpdateData();
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UUniformGridPanel* GridPanel;
@@ -32,7 +33,7 @@ protected:
 
 	IInventory* TargetInventory;
 	
-	void UpdateData();
+	
 	
 public:
 	virtual void NativeConstruct() override;

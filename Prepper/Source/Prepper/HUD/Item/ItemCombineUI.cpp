@@ -3,27 +3,14 @@
 
 #include "ItemCombineUI.h"
 
+#include "ItemGrid.h"
 #include "ItemUIData.h"
 #include "Prepper/Item/ItemData/ItemManager.h"
 
-void UItemCombineUI::UpdateData()
+void UItemCombineUI::NativeConstruct()
 {
-	if (TargetInventory == nullptr) return;
-
-	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();
-	ItemList->ClearListItems();
-	for (int i = 0; i < Items.Num(); i++)
-	{
-		UItemUIData* Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
-		IInventory::InventoryItem Item = Items[i];
-		
-		if (!ItemManager::GetInstance()->GetItemData(Item.ItemCode, Data->TextureIcon, Data->ItemName)) continue;
-
-		Data->ItemCount = Items[i].Count;
-		Data->ItemCode = Items[i].ItemCode;
-		
-		ItemList->AddItem(Data);
-	}
+	Super::NativeConstruct();
+	ItemGrid = Cast<UItemGrid>(GetWidgetFromName("WBP_InvenGrid"));
 }
 
 void UItemCombineUI::CombineButtonAction()
@@ -33,18 +20,22 @@ void UItemCombineUI::CombineButtonAction()
 	FString ItemCode;
 	if (!ItemManager::GetInstance()->TryCombinationItem(Target1Code, Target2Code, ItemCode)) return;
 	TargetInventory->TryAddItem(ItemCode);
-	
 }
+
+
 
 void UItemCombineUI::SetVisibility(ESlateVisibility InVisibility)
 {
 	Super::SetVisibility(InVisibility);
-	UpdateData();
+	if(!ItemGrid) return;
+	ItemGrid->UpdateData();
 }
 
 void UItemCombineUI::SetTargetInventory(IInventory* Target)
 {
 	TargetInventory = Target;
+	if(!ItemGrid) return;
+	ItemGrid->Set(Target);
 }
 
 void UItemCombineUI::SetTargetItem(const FString& Target)

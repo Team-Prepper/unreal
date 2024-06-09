@@ -9,10 +9,6 @@
 #include "Prepper/Interfaces/Inventory.h"
 //#include "MapInventory.generated.h"
 
-
-/**
- * 
- */
 //UCLASS()
 class PREPPER_API UMapInventory : public IInventory
 {
