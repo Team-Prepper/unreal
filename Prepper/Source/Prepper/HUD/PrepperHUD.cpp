@@ -31,7 +31,7 @@ void APrepperHUD::AddCharacterOverlay()
 			InventoryHUD->AddToViewport();
 			InventoryHUD->SetVisibility(ESlateVisibility::Hidden);
 			if(InventoryHUD->ItemGrid)
-				InventoryHUD->ItemGrid->Set(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
+				InventoryHUD->ItemGrid->Set(Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 		}
 		if(CraftingHUDClass)
 		{
@@ -124,7 +124,7 @@ void APrepperHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, F
 void APrepperHUD::ToggleInventory()
 {
 	if(!InventoryHUD) return;
-	InventoryHUD->SetInventory(&Cast<APlayerCharacter>(GetOwningPawn())->Inven);
+	InventoryHUD->SetInventory(Cast<APlayerCharacter>(GetOwningPawn())->Inven);
 	IsInventoryVisible = !IsInventoryVisible;
 	InventoryHUD->SetVisibility(IsInventoryVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 	GetOwningPlayerController()->SetShowMouseCursor(IsInventoryVisible);

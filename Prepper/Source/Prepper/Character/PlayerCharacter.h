@@ -220,7 +220,8 @@ private:
 	void OnRep_EquippedBackpack();
 
 public:
-	UMapInventory Inven;
+	UPROPERTY()
+	class UMapInventory* Inven;
 
 	virtual void OpenCraftingTable() override;
 	virtual void AddItem(FString ItemCode) override;

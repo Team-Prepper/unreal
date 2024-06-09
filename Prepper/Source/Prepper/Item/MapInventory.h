@@ -5,14 +5,15 @@
 #define MAX_QUICK_SLOT 5
 
 #include "CoreMinimal.h"
+#include "Components/ActorComponent.h"
 #include "ItemData/ItemManager.h"
 #include "Prepper/Interfaces/Inventory.h"
-//#include "MapInventory.generated.h"
+#include "MapInventory.generated.h"
 
-//UCLASS()
-class PREPPER_API UMapInventory : public IInventory
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class PREPPER_API UMapInventory : public UActorComponent, public IInventory
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 private:
 	IPlayerAbility * Owner;
 	

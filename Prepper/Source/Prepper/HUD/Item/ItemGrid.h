@@ -22,6 +22,9 @@ public:
 protected:
 	UPROPERTY(meta = (BindWidget))
 	class UUniformGridPanel* GridPanel;
+
+	UPROPERTY(EditAnywhere)
+	int InventoryCapacity = 30;
 	
 	UPROPERTY(EditAnywhere)
 	int SlotsPerRow = 5;

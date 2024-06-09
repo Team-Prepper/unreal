@@ -9,7 +9,7 @@ void UItemGrid::NativeConstruct()
 {
 	Super::NativeConstruct();
 	UE_LOG(LogTemp, Warning, TEXT("GRID INIT"));
-	AddSlot(30);
+	AddSlot(InventoryCapacity);
 }
 
 void UItemGrid::Set(IInventory* Target)
@@ -20,6 +20,8 @@ void UItemGrid::Set(IInventory* Target)
 
 void UItemGrid::AddSlot(int Capacity)
 {
+	GridSlots.Empty();
+	GridPanel->ClearChildren();
 	for(int i = 0; i < Capacity; i++)
 	{
 		UItemGridSlot* NewSlot = CreateWidget<UItemGridSlot>(this,ItemSlotClass);
@@ -38,6 +40,9 @@ void UItemGrid::AddSlotsToGrid(int Index, UItemGridSlot* NewSlot)
 
 void UItemGrid::UpdateData()
 {
+	GridSlots.Empty();
+	GridPanel->ClearChildren();
+	AddSlot(InventoryCapacity);
 	if (TargetInventory == nullptr) return;
 	UE_LOG(LogTemp, Warning, TEXT("ui update"));
 	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();

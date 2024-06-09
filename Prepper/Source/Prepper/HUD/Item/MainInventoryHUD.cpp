@@ -21,6 +21,7 @@ void UMainInventoryHUD::ItemUse()
 	}
 	UE_LOG(LogTemp, Warning, TEXT("ITEM CODE : %s"),*SelectItemCode);
 	TargetInventory->TryUseItem(SelectItemCode);
+	ItemGrid->UpdateData();
 }
 
 void UMainInventoryHUD::AddToQuickSlot()

@@ -59,6 +59,9 @@ APlayerCharacter::APlayerCharacter()
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
 	InteractionComponent->SetIsReplicated(true);
 
+	Inven = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
+	Inven->SetIsReplicated(true);
+
 	StatusEffect = CreateDefaultSubobject<UStatusEffectComponent>(TEXT("StatusEffectComponet"));
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
@@ -110,7 +113,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Inven.SetOwner(this);
+	Inven->SetOwner(this);
 	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 }
 
@@ -811,7 +814,7 @@ void APlayerCharacter::OpenCraftingTable()
 	APrepperHUD* PrepperHUD = Cast<APrepperHUD>(PrepperPlayerController->GetHUD());
 	if(PrepperHUD && PrepperHUD->ItemCombineUI)
 	{
-		PrepperHUD->ItemCombineUI->SetTargetInventory(&Inven);
+		PrepperHUD->ItemCombineUI->SetTargetInventory(Inven);
 		PrepperHUD->ItemCombineUI->SetVisibility(ESlateVisibility::Visible);
 	}
 }
@@ -824,12 +827,12 @@ void APlayerCharacter::AddItem(FString ItemCode)
 
 void APlayerCharacter::UseQuickSlotItem(int Idx)
 {
-	Inven.UseItemAtQuickSlot(Idx);
+	Inven->UseItemAtQuickSlot(Idx);
 }
 
 void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 {
-	Inven.TryAddItem(ItemCode);
+	Inven->TryAddItem(ItemCode);
 }
 
 bool APlayerCharacter::IsWeaponEquipped()
