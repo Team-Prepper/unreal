@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "Prepper/Item/ItemData/ItemDataGetter.h"
+#include "Prepper/_Base/UISystem/UIManager.h"
 #include "PrepperGameInstance.generated.h"
 
 /**
@@ -17,6 +18,10 @@ class PREPPER_API UPrepperGameInstance : public UGameInstance
 
 public:
 	ItemDataGetter ItemData;
+
+	virtual void Init() override {
+		UIManager::Initialize();
+	};	
 
 	UPROPERTY()
 	class UItemGridSlotInfo* ItemInfo;

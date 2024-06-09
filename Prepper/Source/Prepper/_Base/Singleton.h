@@ -7,7 +7,9 @@ public:
 	static T* GetInstance()
 	{
 		if (Instance == nullptr)
+		{
 			Instance = new T;
+		}
 		return Instance;
 	}
 	Singleton() {}

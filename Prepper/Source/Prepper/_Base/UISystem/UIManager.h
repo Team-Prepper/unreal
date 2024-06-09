@@ -1,26 +1,24 @@
 ﻿#pragma once
 
 #include "GUIFullScreen.h"
-#include "../Singleton.h"
+#include "../USingleton.h"
 
-class UIManager : public Singleton<UIManager>
+class UIManager : public USingleton<UIManager>
 {
 private:
-	TMap<FString, UUserWidget*> UIDataMap;
+	TMap<FString, TSubclassOf<UUserWidget>> UIDataMap;
 	TArray<IGUIFullScreen*> FullScreenStack;
 	IGUIFullScreen* NowDisplay;
-protected:
 public:
 	UIManager();
-	virtual ~UIManager() override;
+	
 	IGUIFullScreen* GetNowDisplay() { return NowDisplay;}
 	
 	void EnrollmentGUI(IGUIFullScreen* NewFullScreen);
 	void Pop();
 	
 	template <typename T>
-	T* OpenGUI(const FString& GuiName);
-
+	T* OpenGUI(APlayerController* Controller, const FString& GuiName);
 
 };
 
