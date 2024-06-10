@@ -13,7 +13,6 @@ void UGUIFullScreenWidget::SetOn()
 void UGUIFullScreenWidget::SetOff()
 {
 	SetVisibility(ESlateVisibility::Hidden);
-	
 }
 
 void UGUIFullScreenWidget::Open()

@@ -12,9 +12,9 @@ struct PREPPER_API FUIData : public FTableRowBase
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	FString UIName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
-	UUserWidget* TargetClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> TargetClass;
 	
 };
