@@ -4,6 +4,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
@@ -23,11 +24,19 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABaseCharacter, CurrentHealth);
 }
 
+void ABaseCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
+{
+	const USkeletalMeshSocket* TargetSocket = GetMesh()->GetSocketByName(SocketName);
+	if(TargetSocket)
+	{
+		TargetSocket->AttachActor(TargetActor, GetMesh());
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
+}
+
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UpdateHUDHealth();
 	if(HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
@@ -57,7 +66,6 @@ void ABaseCharacter::PlayHitReactMontage()
 void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-	UpdateHUDHealth();
 	PlayHitReactMontage();
 
 	if(CurrentHealth != 0.f) return;
@@ -133,6 +141,5 @@ void ABaseCharacter::StartDissolve()
 
 void ABaseCharacter::OnRep_Health()
 {
-	UpdateHUDHealth();
 	PlayHitReactMontage();
 }

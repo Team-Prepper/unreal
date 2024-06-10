@@ -34,6 +34,10 @@ protected:
 	virtual void SetHUDAmmo() override;
 
 private:
+	FTimerHandle TimerHandle;
+	
+	void CallDamageTargetAfterDelay(const FHitResult& HitTarget);
+	
 	UFUNCTION()
 	void DamageTarget(const FHitResult& HitTarget);
 	

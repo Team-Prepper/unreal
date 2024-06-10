@@ -16,7 +16,6 @@
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/WeaponActor.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "Prepper/Component/InteractionComponent.h"
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Sound/SoundCue.h"
@@ -250,6 +249,7 @@ void APlayerCharacter::PlayHitReactMontage()
 void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
 	Super::ReceiveDamage(Damage, InstigatorController, DamageCauser);
+	UpdateHUDHealth();
 }
 
 void APlayerCharacter::UpdateHUDHealth()
@@ -260,6 +260,12 @@ void APlayerCharacter::UpdateHUDHealth()
 	{
 		PrepperPlayerController->SetHUDHealth(CurrentHealth, MaxHealth);
 	}
+}
+
+void APlayerCharacter::OnRep_Health()
+{
+	Super::OnRep_Health();
+	UpdateHUDHealth();
 }
 
 void APlayerCharacter::PollInit()
@@ -547,16 +553,6 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 		);
 	}
 	
-}
-
-void APlayerCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
-{
-	const USkeletalMeshSocket* TargetSocket = GetMesh()->GetSocketByName(SocketName);
-	if(TargetSocket)
-	{
-		TargetSocket->AttachActor(TargetActor, GetMesh());
-	}
-	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
 void APlayerCharacter::OnRep_EquippedBackpack()

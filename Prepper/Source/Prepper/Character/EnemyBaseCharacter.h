@@ -6,6 +6,8 @@
 #include "BaseCharacter.h"
 #include "EnemyBaseCharacter.generated.h"
 
+class AWeaponActor;
+
 UENUM(BlueprintType)
 enum class EEnemyState : uint8
 {
@@ -26,7 +28,7 @@ public:
 	void CheckPatrolTarget();
 	void CheckCombatTarget();
 
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 
 	UPROPERTY(VisibleAnywhere)
@@ -42,8 +44,6 @@ protected:
 	float AttackRadius = 150.f;
 
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-
-	virtual void UpdateHUDHealth() override;
 
 	/** 
 	* Navigation
@@ -83,7 +83,46 @@ protected:
 	UFUNCTION()
 	void PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume);
 
+	/*
+	 * Attack 
+	 */
+
+	UPROPERTY()
+	bool bCanAttack = true;
+	
+	UFUNCTION()
+	void PawnAttack();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage* AttackMontage;
+
+	UFUNCTION()
+	void PlayAttackMontage();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayAttackMontage();
+	
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void SpawnWeaponActor();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<AWeaponActor> WeaponActorClass;
+
+	UPROPERTY(Replicated)
+	AWeaponActor* EquippedWeapon;
+
+	FVector HitTarget;
+	TArray<FVector_NetQuantize> HitTargets;
+
 	UPROPERTY()
 	AActor* CombatTarget;
+
+	FTimerHandle AttackTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+	float AttackCoolTime = 2.f;
+
+	UFUNCTION()
+	void AttackCoolDown();
 	
 };

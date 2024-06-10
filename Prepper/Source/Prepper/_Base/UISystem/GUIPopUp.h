@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "GUI.h"
 #include "GUIPopUp.generated.h"
 
 // This class does not need to be modified.
@@ -13,9 +14,6 @@ class UGUIPopUp : public UInterface
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
 class PREPPER_API IGUIPopUp : public IGUI
 {
 	GENERATED_BODY()

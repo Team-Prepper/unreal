@@ -16,6 +16,8 @@ public:
 	// 네트워크 동기화 변수 설정
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -40,7 +42,7 @@ protected:
 	float CurrentHealth = 100.f;
 	
 	UFUNCTION()
-	void OnRep_Health();
+	virtual void OnRep_Health();
 
 	/* 데미지 처리 */
 	UPROPERTY(EditAnywhere, Category = Combat)
@@ -49,7 +51,6 @@ protected:
 	
 	UFUNCTION()
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-	virtual void UpdateHUDHealth() PURE_VIRTUAL();
 
 	virtual void PlayHitReactMontage();
 
