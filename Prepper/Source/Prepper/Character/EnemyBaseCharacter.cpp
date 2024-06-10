@@ -1,9 +1,11 @@
 #include "EnemyBaseCharacter.h"
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/HUD/GaugeBarComponent.h"
+#include "TimerManager.h"
 
 AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
@@ -26,6 +28,9 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
+	AttackCoolTime = 1.0f;
+	AttackDamage = 10.0f;
+	AttackTarget = nullptr;
 }
 
 void AEnemyBaseCharacter::BeginPlay()
@@ -70,7 +75,11 @@ void AEnemyBaseCharacter::CheckPatrolTarget()
 
 void AEnemyBaseCharacter::CheckCombatTarget()
 {
-	if (!InTargetRange(CombatTarget, CombatRadius))
+	if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState == EEnemyState::EES_Attacking)
+	{
+		StopAttack();
+	}
+	else if (!InTargetRange(CombatTarget, CombatRadius))
 	{
 		CombatTarget = nullptr;
 		if (HealthBarWidget)
@@ -89,9 +98,35 @@ void AEnemyBaseCharacter::CheckCombatTarget()
 	}
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
 	{
-		EnemyState = EEnemyState::EES_Attacking;
-		// TODO: Attack montage
+		StartAttack(CombatTarget);
+		
 	}
+}
+
+
+void AEnemyBaseCharacter::StartAttack(AActor* Target)
+{
+	EnemyState = EEnemyState::EES_Attacking;
+	AttackTarget = Target;
+	Attack(); // 첫 타 먼저 치고 시작
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemyBaseCharacter::Attack, AttackCoolTime, true);
+}
+void AEnemyBaseCharacter::StopAttack()
+{
+	GetWorldTimerManager().ClearTimer(AttackTimerHandle);
+	AttackTarget = nullptr;
+	EnemyState = EEnemyState::EES_Patrolling;
+}
+void AEnemyBaseCharacter::Attack()
+{
+	AController* InstigatorController = this->GetController(); // 좀비 공격은 항상 직접 공격
+	UGameplayStatics::ApplyDamage(
+		AttackTarget,
+		AttackDamage,
+		InstigatorController,
+		this,
+		UDamageType::StaticClass()
+	);
 }
 
 void AEnemyBaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)

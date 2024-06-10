@@ -25,7 +25,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void CheckPatrolTarget();
 	void CheckCombatTarget();
-
+	void Attack();
+	void StartAttack(AActor* Target);
+	void StopAttack();
 
 protected:
 
@@ -40,6 +42,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float AttackRadius = 150.f;
+	AActor* AttackTarget;
+	FTimerHandle AttackTimerHandle;
+	float AttackCoolTime;
+	float AttackDamage;
 
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
