@@ -29,6 +29,9 @@ public:
 	void StartAttack(AActor* Target);
 	void StopAttack();
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere)
@@ -46,6 +49,9 @@ protected:
 	FTimerHandle AttackTimerHandle;
 	float AttackCoolTime;
 	float AttackDamage;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* AttackMontage;
 
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
@@ -77,7 +83,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
 
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+	
 
 	bool InTargetRange(AActor* Target, float Radius);
 	void MoveToTarget(AActor* Target);
