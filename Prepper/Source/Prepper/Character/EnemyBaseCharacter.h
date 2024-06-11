@@ -27,8 +27,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void CheckPatrolTarget();
 	void CheckCombatTarget();
+	UFUNCTION(BlueprintCallable)
+	void EnemyAttack();
+	void CheckEnemyMove();
 
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+	FTimerHandle CheckTimer;
+	bool IsCheckingEnemyMove = false;
+
 protected:
 
 	UPROPERTY(VisibleAnywhere)
@@ -38,10 +45,21 @@ protected:
 	class UPawnSensingComponent* PawnSensing;
 
 	UPROPERTY(EditAnywhere)
+	float SmallRadius = 200.f; // 후각 범위
+	
+	UPROPERTY(EditAnywhere)
 	float CombatRadius = 500.f;
 
 	UPROPERTY(EditAnywhere)
 	float AttackRadius = 150.f;
+	FTimerHandle AttackTimerHandle;
+	float AttackCoolTime;
+	float AttackDamage;
+
+	FVector PreLocation; // 이동하는지 알기위한 직전 위치 정보
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+	UAnimMontage* AttackMontage;
 
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
@@ -60,7 +78,7 @@ protected:
 	TArray<AActor*> PatrolTargets;
 
 	UPROPERTY(EditAnywhere)
-	double PatrolRadius = 200.f;
+	double PatrolRadius = 500.f;
 
 	FTimerHandle PatrolTimer;
 	void PatrolTimerFinished();
@@ -71,7 +89,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI Navigation")
 	float WaitMax = 10.f;
 
-	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+	
 
 	bool InTargetRange(AActor* Target, float Radius);
 	void MoveToTarget(AActor* Target);
@@ -95,8 +113,6 @@ protected:
 	UFUNCTION()
 	void PawnAttack();
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	UAnimMontage* AttackMontage;
 
 	UFUNCTION()
 	void PlayAttackMontage();
@@ -119,10 +135,6 @@ protected:
 	UPROPERTY()
 	AActor* CombatTarget;
 
-	FTimerHandle AttackTimerHandle;
-
-	UPROPERTY(EditAnywhere)
-	float AttackCoolTime = 2.f;
 
 	UFUNCTION()
 	void AttackCoolDown();

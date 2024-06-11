@@ -1,6 +1,8 @@
 #include "EnemyBaseCharacter.h"
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/Prepper.h"
@@ -23,7 +25,10 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 4000.f;
-	PawnSensing->SetPeripheralVisionAngle(100.f);
+	PawnSensing->SetPeripheralVisionAngle(90.f);
+
+	AttackCoolTime = 1.0f;
+	AttackDamage = 10.0f;
 }
 
 void AEnemyBaseCharacter::BeginPlay()
@@ -59,43 +64,100 @@ void AEnemyBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AEnemyBaseCharacter::CheckPatrolTarget()
 {
-	if(bElimed) return;
-	if (InTargetRange(PatrolTarget, PatrolRadius))
+	if (InTargetRange(CombatTarget, SmallRadius))
 	{
-		PatrolTarget = ChoosePatrolTarget();
-		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyBaseCharacter::PatrolTimerFinished, WaitTime);
+		// 후각 감지
+		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
+		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
+		UE_LOG(LogTemp, Log, TEXT("후각 감지"));
 	}
+	
+	if (InTargetRange(PatrolTarget, PatrolRadius))
+    {
+     	PatrolTarget = ChoosePatrolTarget();
+     	const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
+     	GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyBaseCharacter::PatrolTimerFinished, WaitTime);
+    }
 }
 
 void AEnemyBaseCharacter::CheckCombatTarget()
 {
-	if(bElimed) return;
-	/* ees가 attack이거나 chase 일때만 실행 */
-
-	// 공격사거리 안에서 공격이 아닐떄 -> 공격!
-	if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+	if (!IsCheckingEnemyMove)
 	{
-		EnemyState = EEnemyState::EES_Attacking;
-		UE_LOG(LogTemp, Warning, TEXT("CODE : zombie Attack"));
-		PawnAttack();
+		IsCheckingEnemyMove = true;
+		GetWorldTimerManager().SetTimer(CheckTimer, this, &AEnemyBaseCharacter::CheckEnemyMove, 1, true);
 	}
-	// 공격사거리보다는 멀고 탐지사거리보다는 가까운데 
-	// 감지 사거리 내에서 순찰중일때
-	else if (!InTargetRange(CombatTarget, AttackRadius) && InTargetRange(CombatTarget, CombatRadius) && EnemyState < EEnemyState::EES_Chasing)
+	
+	if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState == EEnemyState::EES_Attacking)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
-		EnemyState = EEnemyState::EES_Chasing;
-		GetCharacterMovement()->MaxWalkSpeed = 600.f;
-		MoveToTarget(CombatTarget);
-	}
-	else if (!InTargetRange(CombatTarget, CombatRadius))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
-		CombatTarget = nullptr;
+		// Stop Attack
+		PatrolTarget = CombatTarget;
+		// CombatTarget = nullptr;
 		EnemyState = EEnemyState::EES_Patrolling;
+		
+		UE_LOG(LogTemp, Log, TEXT("어택종료"));
+	}
+	/*
+	else if (!InTargetRange(CombatTarget, SmallRadius) && EnemyState == EEnemyState::EES_Chasing)
+	{
+		// 쫒는 상태 초기화
+		UE_LOG(LogTemp, Log, TEXT("쫒는 상태 초기화"));
+		
+		CombatTarget = nullptr;
+		if (HealthBarWidget)
+		{
+			HealthBarWidget->SetVisibility(false);
+		}
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetCharacterMovement()->MaxWalkSpeed = 150.f;
+		//MoveToTarget(PatrolTarget);
+	}
+	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing)
+	{
+		EnemyState = EEnemyState::EES_Chasing;
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-		MoveToTarget(PatrolTarget);
+		//MoveToTarget(CombatTarget);
+	}*/
+	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+
+	{
+		// StartAttack
+		EnemyState = EEnemyState::EES_Attacking;
+		
+		UE_LOG(LogTemp, Log, TEXT("어택 시작"));
+	}
+}
+
+
+// 애니메이션 노티파이에서 호출
+void AEnemyBaseCharacter::EnemyAttack()
+{
+	AController* InstigatorController = this->GetController(); // 좀비 공격은 항상 직접 공격
+	UGameplayStatics::ApplyDamage(
+		CombatTarget,
+		AttackDamage,
+		InstigatorController,
+		this,
+		UDamageType::StaticClass()
+	);
+}
+void AEnemyBaseCharacter::CheckEnemyMove()
+{
+	UE_LOG(LogTemp, Log, TEXT("움직임 체크"));
+		
+	FVector NowLocation = this->GetActorLocation();
+	if (PreLocation == NowLocation && EnemyState != EEnemyState::EES_Attacking)
+	{
+		//공격 중이 아닌데 안 움직임
+		UE_LOG(LogTemp, Log, TEXT("안 움직임!!"));
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetWorldTimerManager().ClearTimer(CheckTimer);
+		IsCheckingEnemyMove = false;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("움직임"));
+		PreLocation = NowLocation;
 	}
 	
 	
@@ -163,36 +225,37 @@ AActor* AEnemyBaseCharacter::ChoosePatrolTarget()
 
 void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 {
-	if(bElimed) return;
-	if (!SeenPawn->ActorHasTag(FName("PlayerCharacter"))) return; 
-	// 엑터의 태그가 플레이어일때만
-	UE_LOG(LogTemp, Warning, TEXT("zombie SEE -> chasing"));
-	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	CombatTarget = SeenPawn;
-	
-	if (EnemyState != EEnemyState::EES_Attacking)
+	if (SeenPawn->ActorHasTag(FName("PlayerCharacter"))) // 엑터의 태그가 플레이어일때만
 	{
+		if (EnemyState != EEnemyState::EES_Chasing)
+		{
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		EnemyState = EEnemyState::EES_Chasing;
-		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
-		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
+		}
+		
+		GetWorldTimerManager().ClearTimer(PatrolTimer);
+		CombatTarget = SeenPawn;
+		
+		if (EnemyState != EEnemyState::EES_Attacking)
+		{
+			FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
+			MoveToLocation(TargetLocation); // 플레이어 위치로 이동
+		}
 	}
 	
 }
 
 void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume)
 {
-	if(bElimed) return;
-	UE_LOG(LogTemp, Display, TEXT("CODE : zombie HEAR"));
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 	
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+	GetCharacterMovement()->MaxWalkSpeed = 150.f;
 	CombatTarget = HearnPawn;
 	
 	if (EnemyState != EEnemyState::EES_Attacking)
 	{
-		EnemyState = EEnemyState::EES_Chasing;
+		EnemyState = EEnemyState::EES_Patrolling;
 		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
 		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 	}
