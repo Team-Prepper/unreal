@@ -28,8 +28,8 @@ enum class EPlayerMovementState : uint8
 
 UCLASS()
 class PREPPER_API APlayerCharacter : public ABaseCharacter,
-									public IInteractWithCrosshairInterface,
-									public IControllable, public IPlayerAbility
+									 public IInteractWithCrosshairInterface,
+									 public IControllable, public IPlayerAbility
 {
 	GENERATED_BODY()
 
@@ -51,8 +51,6 @@ public:
 	void ShowSniperScopeWidget(bool bShowScope);
 	
 	void EquipBackpack(class AItemBackpack* BackpackToEquip);
-
-	virtual void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor) override;
 	
 	bool bFinishedSwapping = false;
 	
@@ -118,7 +116,9 @@ private:
 	
 protected:
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-	virtual void UpdateHUDHealth() override;
+	virtual void UpdateHUDHealth();
+
+	virtual void OnRep_Health() override;
 	
 	// init 되었는지 확인하고 init함 _ DeathMatch
 	void PollInit();

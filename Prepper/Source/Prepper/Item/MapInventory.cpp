@@ -67,6 +67,30 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	return true;
 }
 
+bool UMapInventory::TryDiscardItem(const FString& ItemCode)
+{
+	if (!ItemUnits.Contains(ItemCode))	return false;
+	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - 1;
+	if (ItemCount == 0)
+	{
+		ItemUnits.Remove(ItemCode);	
+	}
+	// 아닌 경우 아이템의 소지 수 -1
+	else
+	{
+		ItemUnits.Add(ItemCode, ItemCount);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
+	// 아이템 사용에 성공했으므로 true 반환
+	return true;
+}
+
+bool UMapInventory::CheckOwnItem(const FString& ItemCode)
+{
+	if (ItemUnits.Contains(ItemCode)) return true;
+	return false;
+}
+
 void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx)
 {
 	if (Idx >= MAX_QUICK_SLOT) return;

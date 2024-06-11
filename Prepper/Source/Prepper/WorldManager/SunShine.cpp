@@ -1,5 +1,5 @@
 #include "SunShine.h"
-
+#include "Net/UnrealNetwork.h"
 #include "Components/DirectionalLightComponent.h"
 
 ASunShine::ASunShine()
@@ -9,6 +9,10 @@ ASunShine::ASunShine()
 
 	DirectionalLightComponent = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("DirectionalLightComponent"));
 	RootComponent = DirectionalLightComponent;
+	SetReplicates(true);
+
+	// Initialize the replicated direction
+	LightDirection = DirectionalLightComponent->GetComponentRotation();
 }
 
 void ASunShine::BeginPlay()
@@ -19,7 +23,18 @@ void ASunShine::BeginPlay()
 void ASunShine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	UpdateLightRotation(DeltaTime);
+    
+	if (HasAuthority()) // Only update on the server
+	{
+		UpdateLightRotation(DeltaTime);
+	}
+}
+
+void ASunShine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASunShine, LightDirection);
 }
 
 void ASunShine::UpdateLightRotation(float DeltaTime)
@@ -38,10 +53,18 @@ void ASunShine::UpdateLightRotation(float DeltaTime)
 		FQuat RotationQuat = FQuat(RotationAxis, RotationAngle);
 
 		// Apply the rotation to the light's direction vector
-		FVector NewDirection = RotationQuat.RotateVector(DirectionalLightComponent->GetDirection());
+		FVector NewDirection = RotationQuat.RotateVector(DirectionalLightComponent->GetForwardVector());
 
 		// Set the new direction of the directional light
-		DirectionalLightComponent->SetWorldRotation(NewDirection.Rotation());
+		LightDirection = NewDirection.Rotation();
+		DirectionalLightComponent->SetWorldRotation(LightDirection);
 	}
 }
 
+void ASunShine::OnRep_LightDirection()
+{
+	if (DirectionalLightComponent)
+	{
+		DirectionalLightComponent->SetWorldRotation(LightDirection);
+	}
+}

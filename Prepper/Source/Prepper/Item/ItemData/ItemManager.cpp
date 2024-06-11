@@ -41,11 +41,14 @@ ItemManager::ItemManager()
 		ItemCombinationDataTable->GetAllRows(TEXT("GetAllRows"), arr);
 		
 		for (int i = 0; i < arr.Num(); ++i)
-		{;
+		{
 			CombinationData.Add(ItemCombineCode(arr[i]->InputItemCode1, arr[i]->InputItemCode2), *arr[i]);
+			FCombinedItems Ingredients = FCombinedItems(arr[i]->InputItemCode1, arr[i]->InputItemCode2);
+			CombinationResultToIngredients.Add(*arr[i]->OutputItemCode,Ingredients);
 		}
-		
 	}
+
+	
 }
 
 ItemManager::~ItemManager()
@@ -82,4 +85,9 @@ bool ItemManager::TryCombinationItem(const FString& ItemCode1, const FString& It
 	ResultCode = CombinationData.Find(CombinationCode)->OutputItemCode;
 
 	return true;
+}
+
+int ItemManager::CountCombinationData()
+{
+	return CombinationData.Num();
 }

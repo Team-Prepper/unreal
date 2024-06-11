@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Item.h"
-#include "ItemData.h"
+#include "CombinedItems.h"
 #include "ItemCombinationData.h"
 
 /**
@@ -13,9 +13,9 @@
 class PREPPER_API ItemDataGetter
 {
 private:
-	
 	TMap<FString, FItem> ItemData;
 	TMap<FString, FItemCombinationData> CombinationData;
+	TMap<FString, FCombinedItems> CombinationResultToIngredients;
 	FString ItemCombineCode(const FString& Code1, const FString& Code2);
 public:
 	ItemDataGetter();

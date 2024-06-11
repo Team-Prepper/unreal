@@ -3,6 +3,7 @@
 
 #include "ItemDataGetter.h"
 #include "ItemCombinationData.h"
+#include "ItemData.h"
 
 FString ItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Code2)
 {
@@ -31,7 +32,7 @@ ItemDataGetter::ItemDataGetter()
 	}
 	
 	static ConstructorHelpers::FObjectFinder<UDataTable> CombinationDataTable(
-	TEXT("/Game/Data/ItemCombinationDataTable"));
+		TEXT("/Game/Data/ItemCombinationDataTable"));
 	
 	if (CombinationDataTable.Succeeded())
 	{
@@ -39,10 +40,11 @@ ItemDataGetter::ItemDataGetter()
 		CombinationDataTable.Object->GetAllRows(TEXT("GetAllRows"), arr);
 		
 		for (int i = 0; i < arr.Num(); ++i)
-		{;
+		{
 			CombinationData.Add(ItemCombineCode(arr[i]->InputItemCode1, arr[i]->InputItemCode2), *arr[i]);
+			FCombinedItems Ingredients = FCombinedItems(arr[i]->InputItemCode1, arr[i]->InputItemCode2);
+			CombinationResultToIngredients.Add(*arr[i]->OutputItemCode,Ingredients);
 		}
-		
 	}
 }
 

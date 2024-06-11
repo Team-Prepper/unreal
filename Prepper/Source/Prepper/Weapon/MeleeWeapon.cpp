@@ -66,9 +66,9 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	
 	for (const FHitResult& Hit : HitResults)
 	{
+		//CallDamageTargetAfterDelay(Hit); <- 현재 뭔가 오류 발생의 원인
 		DamageTarget(Hit);
 	}
-	
 }
 
 void AMeleeWeapon::SetHUDAmmo()
@@ -84,6 +84,15 @@ void AMeleeWeapon::SetHUDAmmo()
 	}
 }
 
+// 애니메이션을 위해서 1초 뒤에 데미지 처리
+void AMeleeWeapon::CallDamageTargetAfterDelay(const FHitResult& HitTarget)
+{
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this, HitTarget]()
+	{
+		DamageTarget(HitTarget);
+	}, 1.0f, false);
+}
+
 void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s, %f"), *HitTarget.GetActor()->GetName(), Damage)
@@ -96,7 +105,7 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 	
 	AController* InstigatorController = OwnerPawn->GetController();
 	IDamageable* DamagedTarget = Cast<IDamageable>(HitTarget.GetActor());
-	
+	if(!DamagedTarget) return;
 	if(ImpactParticles)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
@@ -113,7 +122,7 @@ void AMeleeWeapon::DamageTarget(const FHitResult& HitTarget)
 		HitSound,
 		HitTarget.ImpactPoint);
 	}
-	if (DamagedTarget && HasAuthority() && InstigatorController)
+	if (HasAuthority() && InstigatorController)
 	{
 		DamagedTarget->ReceiveDamage(Damage, InstigatorController, this);
 	}

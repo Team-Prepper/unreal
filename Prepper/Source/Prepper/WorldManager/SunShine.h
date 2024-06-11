@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -10,26 +8,39 @@ UCLASS()
 class PREPPER_API ASunShine : public AActor
 {
 	GENERATED_BODY()
-	
+    
 public:	
+	// Sets default values for this actor's properties
 	ASunShine();
 
 protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Directional Light reference
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "DayNight")
-	class UDirectionalLightComponent* DirectionalLightComponent;
-
-	// Length of a full day in seconds
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DayNight")
-	float DayLength;
+	// Replicate properties
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
-	// Function to update light rotation
+	// Update the light rotation
 	void UpdateLightRotation(float DeltaTime);
 
+	// Function called when LightDirection is replicated
+	UFUNCTION()
+	void OnRep_LightDirection();
+
+	// Directional light component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Light", meta = (AllowPrivateAccess = "true"))
+	class UDirectionalLightComponent* DirectionalLightComponent;
+
+	// Direction of the light, replicated to clients
+	UPROPERTY(ReplicatedUsing = OnRep_LightDirection)
+	FRotator LightDirection;
+
+	// Length of a day in seconds
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time", meta = (AllowPrivateAccess = "true"))
+	float DayLength;
 };

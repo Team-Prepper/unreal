@@ -6,6 +6,8 @@
 #include "BaseCharacter.h"
 #include "EnemyBaseCharacter.generated.h"
 
+class AWeaponActor;
+
 UENUM(BlueprintType)
 enum class EEnemyState : uint8
 {
@@ -61,8 +63,6 @@ protected:
 
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
-	virtual void UpdateHUDHealth() override;
-
 	/** 
 	* Navigation
 	*/
@@ -101,7 +101,48 @@ protected:
 	UFUNCTION()
 	void PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume);
 
+	virtual void Elim() override;
+
+	/*
+	 * Attack 
+	 */
+
+	UPROPERTY()
+	bool bCanAttack = true;
+	
+	UFUNCTION()
+	void PawnAttack();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage* AttackMontage;
+
+	UFUNCTION()
+	void PlayAttackMontage();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastPlayAttackMontage();
+	
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void SpawnWeaponActor();
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	TSubclassOf<AWeaponActor> WeaponActorClass;
+
+	UPROPERTY(Replicated)
+	AWeaponActor* EquippedWeapon;
+
+	FVector HitTarget;
+	TArray<FVector_NetQuantize> HitTargets;
+
 	UPROPERTY()
 	AActor* CombatTarget;
+
+	FTimerHandle AttackTimerHandle;
+
+	UPROPERTY(EditAnywhere)
+	float AttackCoolTime = 2.f;
+
+	UFUNCTION()
+	void AttackCoolDown();
 	
 };

@@ -2,23 +2,23 @@
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Perception/PawnSensingComponent.h"
-#include "Prepper/Prepper.h"
 #include "Prepper/HUD/GaugeBarComponent.h"
 #include "TimerManager.h"
+#include "Net/UnrealNetwork.h"
+#include "Perception/PawnSensingComponent.h"
+#include "Prepper/Prepper.h"
+#include "Prepper/Weapon/WeaponActor.h"
 
 AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	GetMesh()->SetGenerateOverlapEvents(true);
-
-	HealthBarWidget = CreateDefaultSubobject<UGaugeBarComponent>(TEXT("HealthBar"));
-	HealthBarWidget->SetupAttachment(GetRootComponent());
-
+	
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -36,6 +36,7 @@ void AEnemyBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	EnemyController = Cast<AAIController>(GetController());
+	SpawnWeaponActor();
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyBaseCharacter::PawnSeen);
@@ -46,7 +47,7 @@ void AEnemyBaseCharacter::BeginPlay()
 void AEnemyBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if(bElimed) return;
 	if (EnemyState > EEnemyState::EES_Patrolling)
 	{
 		CheckCombatTarget();
@@ -119,6 +120,7 @@ void AEnemyBaseCharacter::CheckCombatTarget()
 		//MoveToTarget(CombatTarget);
 	}*/
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
+
 	{
 		// StartAttack
 		EnemyState = EEnemyState::EES_Attacking;
@@ -158,6 +160,32 @@ void AEnemyBaseCharacter::CheckEnemyMove()
 		UE_LOG(LogTemp, Log, TEXT("움직임"));
 		PreLocation = NowLocation;
 	}
+	// 공격사거리보다는 멀고 탐지사거리보다는 가까운데 
+	// 감지 사거리 내에서 순찰중일때
+	else if (!InTargetRange(CombatTarget, AttackRadius) && InTargetRange(CombatTarget, CombatRadius) && EnemyState < EEnemyState::EES_Chasing)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
+		EnemyState = EEnemyState::EES_Chasing;
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		MoveToTarget(CombatTarget);
+	}
+	else if (!InTargetRange(CombatTarget, CombatRadius))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
+		CombatTarget = nullptr;
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		MoveToTarget(PatrolTarget);
+	}
+	
+	
+}
+
+void AEnemyBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEnemyBaseCharacter, EquippedWeapon);
 }
 
 void AEnemyBaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
@@ -165,16 +193,6 @@ void AEnemyBaseCharacter::ReceiveDamage(float Damage, AController* InstigatorCon
 	Super::ReceiveDamage(Damage, InstigatorController, DamageCauser);
 }
 
-void AEnemyBaseCharacter::UpdateHUDHealth()
-{
-	if (HealthBarWidget)
-	{
-		const float HealthPercent = CurrentHealth / MaxHealth;
-		HealthBarWidget->SetVisibility(true);
-		HealthBarWidget->SetGaugePercent(HealthPercent);
-	}
-	
-}
 
 void AEnemyBaseCharacter::PatrolTimerFinished()
 {
@@ -190,12 +208,14 @@ bool AEnemyBaseCharacter::InTargetRange(AActor* Target, float Radius)
 
 void AEnemyBaseCharacter::MoveToTarget(AActor* Target)
 {
+	if(bElimed) return;
 	if (EnemyController == nullptr || Target == nullptr) return;
 	EnemyController->MoveToActor(Target, 15.f);
 }
 
 void AEnemyBaseCharacter::MoveToLocation(FVector& Location)
 {
+	if(bElimed) return;
 	if (EnemyController == nullptr || Location == FVector::ZeroVector) return;
 	EnemyController->MoveToLocation(Location, 1.5f);
 }
@@ -240,6 +260,7 @@ void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 			MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 		}
 	}
+	
 }
 
 void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume)
@@ -256,4 +277,76 @@ void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, f
 		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
 		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 	}
+}
+
+void AEnemyBaseCharacter::Elim()
+{
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	}
+	Super::Elim();
+}
+
+void AEnemyBaseCharacter::PawnAttack()
+{
+	if(bElimed) return;
+	if(!bCanAttack) return;
+	UE_LOG(LogTemp, Warning, TEXT("zombie Attack"));
+	bCanAttack = false;
+	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemyBaseCharacter::AttackCoolDown, AttackCoolTime);
+	PlayAttackMontage();
+	
+	if(EquippedWeapon)
+	{
+		HitTargets = EquippedWeapon->GetTarget(HitTarget);
+		EquippedWeapon->Fire(HitTargets);
+	}else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Weapon"));
+	}
+}
+
+void AEnemyBaseCharacter::PlayAttackMontage()
+{
+	MulticastPlayAttackMontage();
+}
+
+void AEnemyBaseCharacter::MulticastPlayAttackMontage_Implementation()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		AnimInstance->Montage_Play(AttackMontage);
+	}
+}
+
+void AEnemyBaseCharacter::SpawnWeaponActor()
+{
+	if(!HasAuthority()) return;
+	if (WeaponActorClass == nullptr) return;
+	
+	UWorld* World = GetWorld();
+	if (World == nullptr) return;
+	
+	FVector Location = GetActorLocation();
+	FRotator Rotation = GetActorRotation();
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this; // Setting the owner
+	EquippedWeapon = World->SpawnActor<AWeaponActor>(WeaponActorClass, Location, Rotation, SpawnParams);
+
+	if (!EquippedWeapon) return;
+	UE_LOG(LogTemp, Warning, TEXT("Spawned Weapon Actor: %s"), *EquippedWeapon->GetName());
+
+	EquippedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
+	EquippedWeapon->SetOwner(this);
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	AttachActorAtSocket(FName("MeleeWeaponSocket"),EquippedWeapon);
+}
+
+void AEnemyBaseCharacter::AttackCoolDown()
+{
+	bCanAttack = true;
+	EnemyState = EEnemyState::EES_Patrolling;
+	CheckCombatTarget();
 }

@@ -28,6 +28,8 @@ public:
 	virtual void SetOwner(IPlayerAbility* Target) override;
 	virtual bool TryAddItem(const FString& ItemCode) override;
 	virtual bool TryUseItem(const FString& ItemCode) override;
+	virtual bool TryDiscardItem(const FString& ItemCode) override;
+	virtual bool CheckOwnItem(const FString& ItemCode) override;
 	
 	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) override;
 	virtual void UseItemAtQuickSlot(const int Idx) override;
