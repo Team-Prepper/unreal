@@ -2,7 +2,6 @@
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/HUD/GaugeBarComponent.h"
 #include "TimerManager.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
@@ -159,23 +158,6 @@ void AEnemyBaseCharacter::CheckEnemyMove()
 	{
 		UE_LOG(LogTemp, Log, TEXT("움직임"));
 		PreLocation = NowLocation;
-	}
-	// 공격사거리보다는 멀고 탐지사거리보다는 가까운데 
-	// 감지 사거리 내에서 순찰중일때
-	else if (!InTargetRange(CombatTarget, AttackRadius) && InTargetRange(CombatTarget, CombatRadius) && EnemyState < EEnemyState::EES_Chasing)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
-		EnemyState = EEnemyState::EES_Chasing;
-		GetCharacterMovement()->MaxWalkSpeed = 600.f;
-		MoveToTarget(CombatTarget);
-	}
-	else if (!InTargetRange(CombatTarget, CombatRadius))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
-		CombatTarget = nullptr;
-		EnemyState = EEnemyState::EES_Patrolling;
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-		MoveToTarget(PatrolTarget);
 	}
 	
 	

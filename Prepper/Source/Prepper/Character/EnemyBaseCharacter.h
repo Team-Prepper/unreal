@@ -113,8 +113,6 @@ protected:
 	UFUNCTION()
 	void PawnAttack();
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	UAnimMontage* AttackMontage;
 
 	UFUNCTION()
 	void PlayAttackMontage();
@@ -137,10 +135,6 @@ protected:
 	UPROPERTY()
 	AActor* CombatTarget;
 
-	FTimerHandle AttackTimerHandle;
-
-	UPROPERTY(EditAnywhere)
-	float AttackCoolTime = 2.f;
 
 	UFUNCTION()
 	void AttackCoolDown();
