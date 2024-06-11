@@ -69,6 +69,7 @@ void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorControll
 	PlayHitReactMontage();
 
 	if(CurrentHealth != 0.f) return;
+	// 해당 캐릭터가 사망했다면 
 	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
 	
 	if(PrepperGameMode == nullptr) return;

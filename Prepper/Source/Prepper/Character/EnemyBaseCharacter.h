@@ -83,6 +83,8 @@ protected:
 	UFUNCTION()
 	void PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume);
 
+	virtual void Elim() override;
+
 	/*
 	 * Attack 
 	 */

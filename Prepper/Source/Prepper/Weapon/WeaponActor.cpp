@@ -30,7 +30,7 @@ AWeaponActor::AWeaponActor()
 	StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	WeaponMesh->MarkRenderStateDirty();
 	StaticWeaponMesh->MarkRenderStateDirty();
-	EnableCustomDepth(true);
+	EnableCustomDepth(false);
 	
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);
@@ -68,12 +68,12 @@ void AWeaponActor::BeginPlay()
 	StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	WeaponMesh->MarkRenderStateDirty();
 	StaticWeaponMesh->MarkRenderStateDirty();
-	EnableCustomDepth(true);
 	
 	if(HasAuthority())
 	{
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
         AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		SetWeaponState(EWeaponState::EWS_Dropped);
 	}
 }
 

@@ -332,6 +332,7 @@ void APlayerCharacter::Elim()
 
 void APlayerCharacter::MulticastElim()
 {
+	// 클라이언트가 죽었을 때 자기자신 화면 조정
 	if(PrepperPlayerController)
 	{
 		PrepperPlayerController->SetHUDWeaponAmmo(0);

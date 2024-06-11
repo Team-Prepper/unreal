@@ -9,6 +9,7 @@
 AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
@@ -47,7 +48,7 @@ void AEnemyBaseCharacter::Tick(float DeltaTime)
 	}
 	else
 	{
-			CheckPatrolTarget();
+		CheckPatrolTarget();
 	}
 }
 
@@ -191,6 +192,14 @@ void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, f
 	}
 }
 
+void AEnemyBaseCharacter::Elim()
+{
+	Super::Elim();
+	if(!EquippedWeapon) return;
+	// TODO 버그 발생 
+	//EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+}
+
 void AEnemyBaseCharacter::PawnAttack()
 {
 	if(!bCanAttack) return;
@@ -225,6 +234,7 @@ void AEnemyBaseCharacter::MulticastPlayAttackMontage_Implementation()
 
 void AEnemyBaseCharacter::SpawnWeaponActor()
 {
+	if(!HasAuthority()) return;
 	if (WeaponActorClass == nullptr) return;
 	
 	UWorld* World = GetWorld();
