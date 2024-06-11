@@ -31,9 +31,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> ItemSlotClass;
-
 	
-
 	IInventory* TargetInventory;
 	
 	

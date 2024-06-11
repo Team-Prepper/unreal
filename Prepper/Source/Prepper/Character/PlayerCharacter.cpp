@@ -813,6 +813,7 @@ void APlayerCharacter::OpenCraftingTable()
 	{
 		PrepperHUD->ItemCombineUI->SetTargetInventory(Inven);
 		PrepperHUD->ItemCombineUI->SetVisibility(ESlateVisibility::Visible);
+		PrepperHUD->ItemCombineUI->InteractionPlayer = this;
 	}
 }
 

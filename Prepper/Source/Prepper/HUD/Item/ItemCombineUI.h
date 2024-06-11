@@ -11,13 +11,21 @@
 #include "Prepper/Interfaces/Inventory.h"
 #include "ItemCombineUI.generated.h"
 
+
 UCLASS()
 class PREPPER_API UItemCombineUI : public UUserWidget
 {
 	GENERATED_BODY()
+
+	
+public:
+	UPROPERTY()
+	class APlayerCharacter* InteractionPlayer;
 	
 	UPROPERTY()
-	class UItemGrid* ItemGrid;
+	class UItemGrid* InvenItemGrid;
+	UPROPERTY()
+	class UCombinationItemGrid* CombinationItemGrid;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Target1Icon;
@@ -36,11 +44,11 @@ class PREPPER_API UItemCombineUI : public UUserWidget
 
 	FString Target1Code;
 	FString Target2Code;
+	FString TargetCombinedCode;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void CombineButtonAction();
 
-public:
 	virtual void NativeConstruct() override;
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 	void SetTargetInventory(IInventory* Target);
