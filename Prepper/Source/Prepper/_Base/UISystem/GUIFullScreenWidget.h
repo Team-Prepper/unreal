@@ -22,6 +22,8 @@ public:
 	virtual void SetOff() override;
 
 	virtual void Open() override;
+
+	UFUNCTION()
 	virtual void Close() override;
 	
 	virtual void AddPopUp(IGUIPopUp* PopUp) override;

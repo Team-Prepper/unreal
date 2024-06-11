@@ -6,7 +6,7 @@
 #include "Prepper/HUD/Item/ItemGrid.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
-#include "Item/ItemCombineUI.h"
+#include "Item/CraftUI.h"
 #include "Item/MainInventoryHUD.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
@@ -35,7 +35,7 @@ void APrepperHUD::AddCharacterOverlay()
 		}
 		if(CraftingHUDClass)
 		{
-			ItemCombineUI = CreateWidget<UItemCombineUI>(PlayerController, CraftingHUDClass);
+			ItemCombineUI = CreateWidget<UCraftUI>(PlayerController, CraftingHUDClass);
 			ItemCombineUI->AddToViewport();
 			ItemCombineUI->SetVisibility(ESlateVisibility::Hidden);
 		}

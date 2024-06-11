@@ -2,26 +2,8 @@
 
 #include "EnhancedInputSubsystemInterface.h"
 #include "UIData.h"
-#include "Blueprint/UserWidget.h"
 #include "../DataTableGetter.h"
 #include "UObject/ConstructorHelpers.h"
-
-template <typename T>
-T* UIManager::OpenGUI(APlayerController* Controller, const FString& GuiName)
-{
-	
-	if (UIDataMap.Num() == 0) return nullptr;
-	if (!UIDataMap.Contains(GuiName)) return nullptr;
-
-	TSubclassOf<UUserWidget> TargetUI = UIDataMap[GuiName];
-	if (TargetUI == nullptr) return nullptr;
-	
-	T* Retval = CreateWidget<T>(Controller, TargetUI);
-	Retval->AddToViewport();
-	Retval->Open();
-	
-	return Cast<T>(Retval);
-}
 
 UIManager::UIManager()
 {
