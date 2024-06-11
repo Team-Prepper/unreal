@@ -25,12 +25,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void CheckPatrolTarget();
 	void CheckCombatTarget();
-	void Attack();
-	void StartAttack(AActor* Target);
-	void StopAttack();
+	UFUNCTION(BlueprintCallable)
+	void EnemyAttack();
+	void CheckEnemyMove();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
+	FTimerHandle CheckTimer;
+	bool IsCheckingEnemyMove = false;
 
 protected:
 
@@ -41,14 +43,18 @@ protected:
 	class UPawnSensingComponent* PawnSensing;
 
 	UPROPERTY(EditAnywhere)
+	float SmallRadius = 200.f; // 후각 범위
+	
+	UPROPERTY(EditAnywhere)
 	float CombatRadius = 500.f;
 
 	UPROPERTY(EditAnywhere)
 	float AttackRadius = 150.f;
-	AActor* AttackTarget;
 	FTimerHandle AttackTimerHandle;
 	float AttackCoolTime;
 	float AttackDamage;
+
+	FVector PreLocation; // 이동하는지 알기위한 직전 위치 정보
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
 	UAnimMontage* AttackMontage;
@@ -72,7 +78,7 @@ protected:
 	TArray<AActor*> PatrolTargets;
 
 	UPROPERTY(EditAnywhere)
-	double PatrolRadius = 200.f;
+	double PatrolRadius = 500.f;
 
 	FTimerHandle PatrolTimer;
 	void PatrolTimerFinished();

@@ -26,11 +26,10 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 4000.f;
-	PawnSensing->SetPeripheralVisionAngle(45.f);
+	PawnSensing->SetPeripheralVisionAngle(90.f);
 
 	AttackCoolTime = 1.0f;
 	AttackDamage = 10.0f;
-	AttackTarget = nullptr;
 }
 
 void AEnemyBaseCharacter::BeginPlay()
@@ -65,68 +64,100 @@ void AEnemyBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AEnemyBaseCharacter::CheckPatrolTarget()
 {
-	if (InTargetRange(PatrolTarget, PatrolRadius))
+	if (InTargetRange(CombatTarget, SmallRadius))
 	{
-		PatrolTarget = ChoosePatrolTarget();
-		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyBaseCharacter::PatrolTimerFinished, WaitTime);
+		// 후각 감지
+		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
+		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
+		UE_LOG(LogTemp, Log, TEXT("후각 감지"));
 	}
+	
+	if (InTargetRange(PatrolTarget, PatrolRadius))
+    {
+     	PatrolTarget = ChoosePatrolTarget();
+     	const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
+     	GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyBaseCharacter::PatrolTimerFinished, WaitTime);
+    }
 }
 
 void AEnemyBaseCharacter::CheckCombatTarget()
 {
+	if (!IsCheckingEnemyMove)
+	{
+		IsCheckingEnemyMove = true;
+		GetWorldTimerManager().SetTimer(CheckTimer, this, &AEnemyBaseCharacter::CheckEnemyMove, 1, true);
+	}
+	
 	if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState == EEnemyState::EES_Attacking)
 	{
-		StopAttack();
+		// Stop Attack
+		PatrolTarget = CombatTarget;
+		// CombatTarget = nullptr;
+		EnemyState = EEnemyState::EES_Patrolling;
+		
+		UE_LOG(LogTemp, Log, TEXT("어택종료"));
 	}
-	else if (!InTargetRange(CombatTarget, CombatRadius))
+	/*
+	else if (!InTargetRange(CombatTarget, SmallRadius) && EnemyState == EEnemyState::EES_Chasing)
 	{
+		// 쫒는 상태 초기화
+		UE_LOG(LogTemp, Log, TEXT("쫒는 상태 초기화"));
+		
 		CombatTarget = nullptr;
 		if (HealthBarWidget)
 		{
 			HealthBarWidget->SetVisibility(false);
 		}
 		EnemyState = EEnemyState::EES_Patrolling;
-		GetCharacterMovement()->MaxWalkSpeed = 125.f;
-		MoveToTarget(PatrolTarget);
+		GetCharacterMovement()->MaxWalkSpeed = 150.f;
+		//MoveToTarget(PatrolTarget);
 	}
 	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Chasing)
 	{
 		EnemyState = EEnemyState::EES_Chasing;
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-		MoveToTarget(CombatTarget);
-	}
+		//MoveToTarget(CombatTarget);
+	}*/
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
 	{
-		StartAttack(CombatTarget);
+		// StartAttack
+		EnemyState = EEnemyState::EES_Attacking;
 		
+		UE_LOG(LogTemp, Log, TEXT("어택 시작"));
 	}
 }
 
 
-void AEnemyBaseCharacter::StartAttack(AActor* Target)
-{
-	EnemyState = EEnemyState::EES_Attacking;
-	AttackTarget = Target;
-	Attack(); // 첫 타 먼저 치고 시작
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemyBaseCharacter::Attack, AttackCoolTime, true);
-}
-void AEnemyBaseCharacter::StopAttack()
-{
-	GetWorldTimerManager().ClearTimer(AttackTimerHandle);
-	AttackTarget = nullptr;
-	EnemyState = EEnemyState::EES_Patrolling;
-}
-void AEnemyBaseCharacter::Attack()
+// 애니메이션 노티파이에서 호출
+void AEnemyBaseCharacter::EnemyAttack()
 {
 	AController* InstigatorController = this->GetController(); // 좀비 공격은 항상 직접 공격
 	UGameplayStatics::ApplyDamage(
-		AttackTarget,
+		CombatTarget,
 		AttackDamage,
 		InstigatorController,
 		this,
 		UDamageType::StaticClass()
 	);
+}
+void AEnemyBaseCharacter::CheckEnemyMove()
+{
+	UE_LOG(LogTemp, Log, TEXT("움직임 체크"));
+		
+	FVector NowLocation = this->GetActorLocation();
+	if (PreLocation == NowLocation && EnemyState != EEnemyState::EES_Attacking)
+	{
+		//공격 중이 아닌데 안 움직임
+		UE_LOG(LogTemp, Log, TEXT("안 움직임!!"));
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetWorldTimerManager().ClearTimer(CheckTimer);
+		IsCheckingEnemyMove = false;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("움직임"));
+		PreLocation = NowLocation;
+	}
 }
 
 void AEnemyBaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
@@ -192,16 +223,19 @@ AActor* AEnemyBaseCharacter::ChoosePatrolTarget()
 
 void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 {
-	UE_LOG(LogTemp, Display, TEXT("zombie SEE"));
 	if (SeenPawn->ActorHasTag(FName("PlayerCharacter"))) // 엑터의 태그가 플레이어일때만
-	{	
-		GetWorldTimerManager().ClearTimer(PatrolTimer);
+	{
+		if (EnemyState != EEnemyState::EES_Chasing)
+		{
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		EnemyState = EEnemyState::EES_Chasing;
+		}
+		
+		GetWorldTimerManager().ClearTimer(PatrolTimer);
 		CombatTarget = SeenPawn;
 		
 		if (EnemyState != EEnemyState::EES_Attacking)
 		{
-			EnemyState = EEnemyState::EES_Chasing;
 			FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
 			MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 		}
@@ -210,16 +244,15 @@ void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 
 void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume)
 {
-	UE_LOG(LogTemp, Display, TEXT("zombie HEAR"));
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 	
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	GetCharacterMovement()->MaxWalkSpeed = 100.f;
+	GetCharacterMovement()->MaxWalkSpeed = 150.f;
 	CombatTarget = HearnPawn;
 	
 	if (EnemyState != EEnemyState::EES_Attacking)
 	{
-		EnemyState = EEnemyState::EES_Chasing;
+		EnemyState = EEnemyState::EES_Patrolling;
 		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
 		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 	}
