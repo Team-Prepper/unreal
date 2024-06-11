@@ -41,7 +41,7 @@ void AEnemyBaseCharacter::BeginPlay()
 void AEnemyBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	if(bElimed) return;
 	if (EnemyState > EEnemyState::EES_Patrolling)
 	{
 		CheckCombatTarget();
@@ -59,6 +59,7 @@ void AEnemyBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 void AEnemyBaseCharacter::CheckPatrolTarget()
 {
+	if(bElimed) return;
 	if (InTargetRange(PatrolTarget, PatrolRadius))
 	{
 		PatrolTarget = ChoosePatrolTarget();
@@ -69,6 +70,7 @@ void AEnemyBaseCharacter::CheckPatrolTarget()
 
 void AEnemyBaseCharacter::CheckCombatTarget()
 {
+	if(bElimed) return;
 	/* ees가 attack이거나 chase 일때만 실행 */
 
 	// 공격사거리 안에서 공격이 아닐떄 -> 공격!
@@ -126,12 +128,14 @@ bool AEnemyBaseCharacter::InTargetRange(AActor* Target, float Radius)
 
 void AEnemyBaseCharacter::MoveToTarget(AActor* Target)
 {
+	if(bElimed) return;
 	if (EnemyController == nullptr || Target == nullptr) return;
 	EnemyController->MoveToActor(Target, 15.f);
 }
 
 void AEnemyBaseCharacter::MoveToLocation(FVector& Location)
 {
+	if(bElimed) return;
 	if (EnemyController == nullptr || Location == FVector::ZeroVector) return;
 	EnemyController->MoveToLocation(Location, 1.5f);
 }
@@ -159,6 +163,7 @@ AActor* AEnemyBaseCharacter::ChoosePatrolTarget()
 
 void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 {
+	if(bElimed) return;
 	if (!SeenPawn->ActorHasTag(FName("PlayerCharacter"))) return; 
 	// 엑터의 태그가 플레이어일때만
 	UE_LOG(LogTemp, Warning, TEXT("zombie SEE -> chasing"));
@@ -177,6 +182,7 @@ void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 
 void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume)
 {
+	if(bElimed) return;
 	UE_LOG(LogTemp, Display, TEXT("CODE : zombie HEAR"));
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 	
@@ -194,14 +200,16 @@ void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, f
 
 void AEnemyBaseCharacter::Elim()
 {
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	}
 	Super::Elim();
-	if(!EquippedWeapon) return;
-	// TODO 버그 발생 
-	//EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
 }
 
 void AEnemyBaseCharacter::PawnAttack()
 {
+	if(bElimed) return;
 	if(!bCanAttack) return;
 	UE_LOG(LogTemp, Warning, TEXT("zombie Attack"));
 	bCanAttack = false;

@@ -177,6 +177,7 @@ void AWeaponActor::OnEquipped()
 
 void AWeaponActor::OnDropped()
 {
+	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON DROPPED"));
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
 	SetActorEnableCollision(true);
 	WeaponMesh->DetachFromComponent(DetachRules);
@@ -191,10 +192,6 @@ void AWeaponActor::OnDropped()
 	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	
-	WeaponMesh->SetSimulatePhysics(true);
-	WeaponMesh->SetEnableGravity(true);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -202,6 +199,9 @@ void AWeaponActor::OnDropped()
 	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
 
+	WeaponMesh->SetSimulatePhysics(true);
+	WeaponMesh->SetEnableGravity(true);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
