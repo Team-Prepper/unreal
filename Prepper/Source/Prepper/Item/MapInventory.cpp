@@ -46,10 +46,9 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 {
 	// 아이템이 존재하지 않는다면 return false
 	if (!ItemUnits.Contains(ItemCode))	return false;
-	UPrepperGameInstance* PrepperGameInstance = Cast<UPrepperGameInstance>(GetWorld()->GetGameInstance());
 	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - 1;
 	
-	PrepperGameInstance->ItemData.GetItem(ItemCode)->Use(Owner);
+	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Owner);
 
 	// 아이템 사용 후의 개수가 0인 경우 삭제
 	if (ItemCount == 0)

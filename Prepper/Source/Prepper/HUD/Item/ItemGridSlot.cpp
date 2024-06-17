@@ -6,14 +6,13 @@
 #include "Components/TextBlock.h"
 #include "MainInventoryHUD.h"
 #include "Prepper/GameInstance/PrepperGameInstance.h"
+#include "Prepper/Item/ItemData/ItemManager.h"
 
 void UItemGridSlot::SetupSlot(FString TargetItemCode, uint32 SetItemCount)
 {
-	PrepperGameInstance = Cast<UPrepperGameInstance>(GetGameInstance());
-
 	Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 	
-	if (!PrepperGameInstance->ItemData.GetItemData(TargetItemCode, Data->TextureIcon, Data->ItemName))
+	if (!ItemManager::GetInstance()->GetItemData(TargetItemCode, Data->TextureIcon, Data->ItemName))
 	{
 		UE_LOG(LogTemp,Warning, TEXT("No Item Data"));
 		return;
