@@ -85,6 +85,8 @@ protected:
 
 	virtual void Elim() override;
 
+	virtual void MulticastElim() override;
+
 	/*
 	 * Attack 
 	 */

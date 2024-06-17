@@ -207,6 +207,15 @@ void AEnemyBaseCharacter::Elim()
 	Super::Elim();
 }
 
+void AEnemyBaseCharacter::MulticastElim()
+{
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	}
+	Super::MulticastElim();
+}
+
 void AEnemyBaseCharacter::PawnAttack()
 {
 	if(bElimed) return;

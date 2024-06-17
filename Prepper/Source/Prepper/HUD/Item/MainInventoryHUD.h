@@ -29,20 +29,19 @@ public:
 	UTextBlock* ItemInfoName;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* ItemInfoDescription;
-	
 	UPROPERTY(meta = (BindWidget))
-	UButton* UseButton;
-	UPROPERTY(meta = (BindWidget))
-	UButton* QuickSlotAddButton;
-	UPROPERTY(meta = (BindWidget))
-	UButton* DiscardButton;
+	UTextBlock* InfoItemCountText;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ItemUse();
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void AddToQuickSlot();
+	UFUNCTION(BlueprintCallable)
+	void ItemDiscard();
 
 	void SetInventory(IInventory* Target);
 	
 	virtual void NativeConstruct() override;
+
+	void DecrementFText(FText& Text);
 };

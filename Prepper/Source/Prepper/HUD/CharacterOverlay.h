@@ -10,6 +10,9 @@ class PREPPER_API UCharacterOverlay : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPROPERTY(meta = (BindWidget))
+	class UImage* WeaponTier;
+	
+	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* HealthBar;
 
 	UPROPERTY(meta = (BindWidget))

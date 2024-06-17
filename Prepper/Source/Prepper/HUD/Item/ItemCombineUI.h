@@ -26,6 +26,9 @@ public:
 	class UItemGrid* InvenItemGrid;
 	UPROPERTY()
 	class UCombinationItemGrid* CombinationItemGrid;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> CombinedItemName;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> Target1Icon;

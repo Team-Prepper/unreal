@@ -30,11 +30,15 @@ void UCombinationItemSlot::SlotButtonPressed()
 	}
 	CombineUI->TargetCombinedCode = ItemCode;
 	FCombinedItems Ingredients = ItemManager::GetInstance()->CombinationResultToIngredients[ItemCode];
+
+	CombineUI->CombinedItemName->SetText(Data->ItemName);
+	
 	UItemUIData* IngredientsData1 = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 	ItemManager::GetInstance()->GetItemData(Ingredients.CombinedItem1, IngredientsData1->TextureIcon, IngredientsData1->ItemName);
 	CombineUI->Target1Icon->SetBrushFromTexture(IngredientsData1->TextureIcon);
 	CombineUI->Target1Name->SetText(IngredientsData1->ItemName);
 	CombineUI->Target1Code = Ingredients.CombinedItem1;
+	
 	UItemUIData* IngredientsData2 = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 	ItemManager::GetInstance()->GetItemData(Ingredients.CombinedItem2, IngredientsData2->TextureIcon, IngredientsData2->ItemName);
 	CombineUI->Target2Icon->SetBrushFromTexture(IngredientsData2->TextureIcon);

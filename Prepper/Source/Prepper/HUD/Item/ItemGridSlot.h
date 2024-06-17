@@ -22,7 +22,7 @@ private:
 	UPROPERTY()
 	class UPrepperGameInstance* PrepperGameInstance;
 	
-
+	FString CountStr;
 	UPROPERTY()
 	class UItemUIData* Data;
 

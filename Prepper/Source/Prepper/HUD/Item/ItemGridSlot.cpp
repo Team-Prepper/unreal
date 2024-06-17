@@ -22,7 +22,6 @@ void UItemGridSlot::SetupSlot(FString TargetItemCode, uint32 SetItemCount)
 	ItemIcon->SetBrushFromTexture(Data->TextureIcon);
 	ItemName->SetText(Data->ItemName);
 	ItemCode = TargetItemCode;
-	FString CountStr;
 	CountStr = FString::Printf(TEXT("%d"),SetItemCount);
 	ItemCount->SetText(FText::FromString(CountStr));
 	ItemCountBar->SetVisibility(ESlateVisibility::Visible);
@@ -40,5 +39,7 @@ void UItemGridSlot::SlotButtonPressed()
 
 	MainHUD->ItemInfoIcon->SetBrushFromTexture(Data->TextureIcon);
 	MainHUD->ItemInfoName->SetText(Data->ItemName);
+	MainHUD->InfoItemCountText->SetText(FText::FromString(CountStr));
 	MainHUD->SelectItemCode = ItemCode;
+	
 }

@@ -461,6 +461,7 @@ void UCombatComponent::UpdateCarriedAmmo()
 	if (Controller)
 	{
 		Controller->SetHUDCarriedAmmo(CarriedAmmo);
+		Controller->SetHUDWeaponTier(static_cast<uint8>(EquippedWeapon->GetWeaponType()));
 	}
 }
 

@@ -24,13 +24,6 @@ void UItemCombineUI::NativeConstruct()
 
 void UItemCombineUI::CombineButtonAction()
 {
-	/*
-	if (Target1Code.Compare("") == 0 || Target2Code.Compare("") == 0) return;
-
-	FString ItemCode;
-	if (!ItemManager::GetInstance()->TryCombinationItem(Target1Code, Target2Code, ItemCode)) return;
-	TargetInventory->TryAddItem(ItemCode);
-	*/
 	UE_LOG(LogTemp, Warning, TEXT("TargetItem1 : %s"),*Target1Code);
 	UE_LOG(LogTemp, Warning, TEXT("TargetItem2 : %s"),*Target2Code);
 

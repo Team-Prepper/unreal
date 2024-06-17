@@ -1,4 +1,6 @@
 #include "PrepperPlayerController.h"
+
+#include "Components/Image.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Prepper/Car/CarPawn.h"
@@ -107,6 +109,18 @@ void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, fl
 		PrepperHUD->CharacterOverlay->HungerBar->SetPercent(Hunger / 100);
 		PrepperHUD->CharacterOverlay->ThirstBar->SetPercent(Thirst/ 100);
 		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection/ 100);
+	}
+}
+
+void APrepperPlayerController::SetHUDWeaponTier(uint8 Value)
+{
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	bool bHUDValid = PrepperHUD &&
+					 PrepperHUD->CharacterOverlay &&
+					 PrepperHUD->CharacterOverlay->WeaponTier;
+	if(bHUDValid)
+	{
+		PrepperHUD->CharacterOverlay->WeaponTier->SetBrushFromTexture(WeaponTierTextures[Value]);
 	}
 }
 

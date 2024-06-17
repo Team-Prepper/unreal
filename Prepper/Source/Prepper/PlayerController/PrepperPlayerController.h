@@ -4,6 +4,8 @@
 #include "BasePlayerController.h"
 #include "PrepperPlayerController.generated.h"
 
+class UTexture2D;
+
 UCLASS()
 class PREPPER_API APrepperPlayerController : public ABasePlayerController
 {
@@ -21,7 +23,10 @@ public:
 	void SetHUDHealth(float Health, float MaxHealth);
 
 	void SetHUDStatusEffect(float Hunger, float Thirst, float Infection);
-	
+
+	UPROPERTY(EditAnywhere)
+	TArray<UTexture2D*> WeaponTierTextures;
+	void SetHUDWeaponTier(uint8 Value);
 	void SetHUDWeaponAmmo(int32 Value);
 	void SetHUDCarriedAmmo(int32 Value);
 	void SetCompass();
