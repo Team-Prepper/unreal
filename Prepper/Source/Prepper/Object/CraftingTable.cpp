@@ -28,19 +28,13 @@ ACraftingTable::ACraftingTable()
 
 void ACraftingTable::Interaction(APlayerCharacter* Target)
 {
-	// On Server
 	MulticastInteraction(Target);
 }
 
 void ACraftingTable::MulticastInteraction_Implementation(APlayerCharacter* Target)
 {
 	if(!Target->IsLocallyControlled()) return;
-	ShowCraftingWidget(Target);
-	//Target->OpenCraftingTable();
-}
-
-void ACraftingTable::ShowCraftingWidget(APlayerCharacter* Target)
-{
+	
 	UCraftUI* CraftUI = UIManager::GetInstance()->OpenGUI<UCraftUI>(Cast<APlayerController>(Target->GetController()), TEXT("CraftUI"));
 	CraftUI->SetTargetInventory(Target->Inven);
 }

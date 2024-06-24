@@ -104,17 +104,17 @@ void UCraftUI::SetTargetItem(const FString& Target)
 	if (Target1Code.Compare("") == 0)
 	{
 		Target1Code = Target;
-		ItemGrid->UpdateData();
+		InvenItemGrid->UpdateData();
 		return;
 	}
 	if (Target2Code.Compare("") == 0)
 	{
 		Target2Code = Target;
-		ItemGrid->UpdateData();
+		InvenItemGrid->UpdateData();
 		return;
 	}
 
 	TargetInventory->TryAddItem(Target1Code);
 	Target1Code = Target;
-	ItemGrid->UpdateData();
+	InvenItemGrid->UpdateData();
 }

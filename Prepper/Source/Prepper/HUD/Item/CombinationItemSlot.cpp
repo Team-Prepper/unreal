@@ -1,12 +1,12 @@
 #include "CombinationItemSlot.h"
 
-#include "ItemCombineUI.h"
+#include "CraftUI.h"
 #include "ItemUIData.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Prepper/Item/ItemData/ItemManager.h"
 
-void UCombinationItemSlot::SetSlot(const FString& CombinedItemCode, UItemCombineUI* CombineMainHUD)
+void UCombinationItemSlot::SetSlot(const FString& CombinedItemCode, UCraftUI* CombineMainHUD)
 {
 	Data = NewObject<UItemUIData>(GetWorld(), UItemUIData::StaticClass());
 	

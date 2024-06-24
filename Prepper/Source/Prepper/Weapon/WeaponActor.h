@@ -13,6 +13,9 @@ UCLASS()
 class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
 {
 	GENERATED_BODY()
+private:
+	/* Custom Depth 아이템 윤곽선 효과 */
+	void EnableCustomDepth(bool bEnable);
 	
 public:	
 	AWeaponActor();
@@ -26,9 +29,6 @@ public:
 	SetWeaponState(WeaponState);;SetOwner(NewOwner); };
 
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
-
-	/* Custom Depth 아이템 윤곽선 효과 */
-	void EnableCustomDepth(bool bEnable);
 
 	virtual void GetCrosshair(
 		float DeltaTime, bool bIsAiming, 

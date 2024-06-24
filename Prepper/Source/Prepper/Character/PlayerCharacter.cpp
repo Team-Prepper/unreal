@@ -169,68 +169,17 @@ void APlayerCharacter::ShiftPressed()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("THIRSTY : Can't Sprint"));
 		SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
-		bIsSprint = false;
 		return;
 	}
-	if(bIsSprint == true) return;
-	bIsSprint = true;
+	if(PlayerMovementState == EPlayerMovementState::EPMS_Sprint) return;
+	
 	SetPlayerMovementState(EPlayerMovementState::EPMS_Sprint);
 }
 
 void APlayerCharacter::ShiftReleased()
 {
 	if(bDisableGamePlay) return;
-	bIsSprint = false;
 	SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
-}
-
-void APlayerCharacter::PlayFireMontage(bool bAiming)
-{
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	FName SectionName;
-	if(Combat->EquippedRangeWeapon)
-	{
-		if(AnimInstance && FireWeaponMontage)
-		{
-			AnimInstance->Montage_Play(FireWeaponMontage);
-			SectionName = bAiming ? FName("FireAim") : FName("FireHip");
-			AnimInstance->Montage_JumpToSection(SectionName);
-		}
-	}
-	else
-	{
-		if(AnimInstance && MeleeWeaponMontage)
-		{
-			AnimInstance->Montage_Play(MeleeWeaponMontage);
-			SectionName = bAiming ? FName("Attack1") : FName("Attack2");
-			AnimInstance->Montage_JumpToSection(SectionName);
-		}
-	}
-	
-}
-
-void APlayerCharacter::PlayReloadMontage(const FName& SectionName)
-{
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	
-	if(AnimInstance && ReloadMontage)
-	{
-		AnimInstance->Montage_Play(ReloadMontage);
-		AnimInstance->Montage_JumpToSection(SectionName);
-	}
-}
-
-void APlayerCharacter::PlaySwapMontage()
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && SwapMontage)
-	{
-		AnimInstance->Montage_Play(SwapMontage);
-	}
 }
 
 void APlayerCharacter::PlayHitReactMontage()
@@ -418,11 +367,6 @@ void APlayerCharacter::EPressed()
 	bool bSwap = Combat->ShouldSwapWeapons() &&
 			Combat->CombatState == ECombatState::ECS_Unoccupied;
 
-	if (bSwap)
-	{
-		PlaySwapMontage();
-		bFinishedSwapping = false;
-	}
 }
 
 void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
@@ -669,21 +613,6 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 		{
 			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
-		}
-	}
-}
-
-void APlayerCharacter::ServerEquipButtonPressed_Implementation(AWeaponActor* Weapon)
-{
-	if (Combat)
-	{
-		if (Weapon)
-		{
-			Combat->EquipWeapon(Weapon);
-		}
-		else if (Combat->ShouldSwapWeapons())
-		{
-			Combat->SwapWeapons();
 		}
 	}
 }

@@ -1,6 +1,5 @@
 #include "CombatComponent.h"
 #include "Camera/CameraComponent.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -9,7 +8,6 @@
 #include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
-#include "Sound/SoundCue.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -135,14 +133,11 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 // TODO
 bool UCombatComponent::CanFire()
 {
-	if(CombatState != ECombatState::ECS_Unoccupied) return false;
-	if (EquippedMeleeWeapon) return bCanFire;
+	if (!EquippedWeapon) return false;
+	if (CombatState != ECombatState::ECS_Unoccupied) return false;
 
-	if (EquippedRangeWeapon == nullptr) return false;
-
-	if (bLocallyReload) return false;
-	return !EquippedRangeWeapon->IsAmmoEmpty() &&
-		bCanFire;
+	if (EquippedMeleeWeapon) return true;
+	return !EquippedRangeWeapon->IsAmmoEmpty();
 		
 }
 
@@ -150,39 +145,47 @@ void UCombatComponent::Fire()
 {
 	if (!CanFire()) return;
 
-	bCanFire = false;
-
+	if (!EquippedWeapon) return;
+		
 	CrosshairShootingFactor = .75f;
-	FireWeapon();
-	StartFireTimer();
-}
+	HitTargets = EquippedWeapon->GetTarget(HitTarget);
+	LocalFireWeapon(HitTargets);
+	ServerFireWeapon(HitTargets);
 
-void UCombatComponent::FireWeapon()
-{
-	if (EquippedWeapon)
-	{
-		HitTargets = EquippedWeapon->GetTarget(HitTarget);
-		LocalFireWeapon(HitTargets);
-		ServerFireWeapon(HitTargets);
-	}
+	CombatState = ECombatState::ECS_Fire;
+	StartFireTimer();
 }
 
 void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
+
 	if (EquippedWeapon == nullptr || Character == nullptr) return;
-	if (CombatState == ECombatState::ECS_Unoccupied)
+	
+	if (CombatState != ECombatState::ECS_Unoccupied) return;
+	
+	EquippedWeapon->Fire(TraceHitTargets);	
+
+	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+	if (!AnimInstance) return;
+	
+	if (EquippedRangeWeapon)
 	{
-		if (EquippedRangeWeapon)
-		{
-			Character->PlayFireMontage(bAiming);
-		}
-		else
-		{
-			IsBlunt = EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt;
-			Character->PlayFireMontage(IsBlunt);
-		}
-		EquippedWeapon->Fire(TraceHitTargets);
+		if(!FireWeaponMontage) return;
+		
+		AnimInstance->Montage_Play(FireWeaponMontage);
+		FName SectionName = bAiming ? FName("FireAim") : FName("FireHip");
+		AnimInstance->Montage_JumpToSection(SectionName);
+		
 	}
+	else
+	{
+		if(!MeleeWeaponMontage) return;
+	
+		AnimInstance->Montage_Play(MeleeWeaponMontage);
+		FName SectionName = EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2");
+		AnimInstance->Montage_JumpToSection(SectionName);
+	}
+	
 }
 
 
@@ -214,7 +217,9 @@ void UCombatComponent::StartFireTimer()
 void UCombatComponent::FireTimerFinished()
 {
 	if (EquippedWeapon == nullptr) return;
-	bCanFire = true;
+
+	CombatState = ECombatState::ECS_Unoccupied;
+	
 	if (!EquippedRangeWeapon) return;
 	if (bFireButtonPressed && EquippedRangeWeapon->bAutomatic)
 	{
@@ -347,15 +352,6 @@ void UCombatComponent::OnRep_EquippedWeapon()
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
-
-	if (EquippedWeapon->EquipSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			EquippedWeapon->EquipSound,
-			Character->GetActorLocation()
-		);
-	}
 }
 
 void UCombatComponent::OnRep_SecondaryWeapon()
@@ -363,7 +359,6 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	if (SecondaryWeapon && Character)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
-		PlayEquipWeaponSound(EquippedWeapon);
 	}
 }
 
@@ -377,7 +372,6 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	SetWeaponType();
 	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
-	PlayEquipWeaponSound(WeaponToEquip);
 	ReloadEmptyWeapon();
 }
 
@@ -387,18 +381,15 @@ void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
 	SecondaryWeapon = WeaponToEquip;
 	SecondaryWeapon->SetOwner(Character);
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
-	PlayEquipWeaponSound(WeaponToEquip);
-	SecondaryWeapon->EnableCustomDepth(false);
 }
 
 void UCombatComponent::DropEquippedWeapon()
 {
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-		EquippedMeleeWeapon = nullptr;
-		EquippedRangeWeapon = nullptr;
-	}
+	if (!EquippedWeapon) return;
+	
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	EquippedMeleeWeapon = nullptr;
+	EquippedRangeWeapon = nullptr;
 }
 
 void UCombatComponent::SwapWeapons()
@@ -409,13 +400,16 @@ void UCombatComponent::SwapWeapons()
 
 void UCombatComponent::MulticastSwapWeapon_Implementation()
 {
-	Character->PlaySwapMontage();
 	CombatState = ECombatState::ECS_SwappingWeapons;
-	Character->bFinishedSwapping = false;
-	if (SecondaryWeapon) SecondaryWeapon->EnableCustomDepth(false);
 
 	FinishSwapAttachWeapons();
 	GetWorld()->GetTimerManager().SetTimer(SwapDelayTimer, this, &UCombatComponent::FinishSwap, 1.5f, false);
+	
+	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+	
+	if (!AnimInstance || !SwapMontage) return;
+	AnimInstance->Montage_Play(SwapMontage);
+	
 }
 
 void UCombatComponent::FinishSwap()
@@ -423,13 +417,11 @@ void UCombatComponent::FinishSwap()
 	if (Character)
 	{
 		CombatState = ECombatState::ECS_Unoccupied;
-		Character->bFinishedSwapping = true;
 	}
 }
 
 void UCombatComponent::FinishSwapAttachWeapons()
 {
-	PlayEquipWeaponSound(SecondaryWeapon);
 
 	if (Character == nullptr) return;
 	AWeaponActor* TempWeapon = EquippedWeapon;
@@ -464,38 +456,24 @@ void UCombatComponent::UpdateCarriedAmmo()
 	}
 }
 
-void UCombatComponent::PlayEquipWeaponSound(AWeaponActor* WeaponToEquip)
-{
-	if (Character && WeaponToEquip && WeaponToEquip->EquipSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			WeaponToEquip->EquipSound,
-			Character->GetActorLocation()
-		);
-	}
-}
-
 void UCombatComponent::Reload()
 {
 	if (CarriedAmmo > 0 &&
 		CombatState != ECombatState::ECS_Reloading &&
 		EquippedRangeWeapon &&
-		!EquippedRangeWeapon->IsAmmoFull() &&
-		!bLocallyReload)
+		!EquippedRangeWeapon->IsAmmoFull())
 	{
 		ServerReload();
 		HandleReload();
-		bLocallyReload = true;
 	}
 }
 
 void UCombatComponent::ServerReload_Implementation()
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
-	CombatState = ECombatState::ECS_Reloading;
 	if (!Character->IsLocallyControlled())
 	{
+		CombatState = ECombatState::ECS_Reloading;
 		HandleReload();
 	}
 }
@@ -503,7 +481,6 @@ void UCombatComponent::ServerReload_Implementation()
 void UCombatComponent::FinishReloading()
 {
 	if (Character == nullptr) return;
-	bLocallyReload = false;
 	CombatState = ECombatState::ECS_Unoccupied;
 	if (Character->HasAuthority())
 	{
@@ -567,10 +544,15 @@ void UCombatComponent::OnRep_CombatState()
 
 void UCombatComponent::HandleReload()
 {
-	if (Character)
-	{
-		Character->PlayReloadMontage(EquippedWeapon->ReloadActionName);
-	}
+	if (!Character) return;
+	
+	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+	
+	if(!AnimInstance || !ReloadMontage) return;
+	
+	AnimInstance->Montage_Play(ReloadMontage);
+	AnimInstance->Montage_JumpToSection(EquippedWeapon->ReloadActionName);
+	
 }
 
 

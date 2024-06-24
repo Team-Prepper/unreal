@@ -16,7 +16,7 @@ class PREPPER_API UCombinationItemGrid : public UUserWidget
 	
 public:
 	UPROPERTY()
-	class UItemCombineUI* CombineUI;
+	class UCraftUI* CombineUI;
 	
 	TArray<UCombinationItemSlot*> GridSlots;
 

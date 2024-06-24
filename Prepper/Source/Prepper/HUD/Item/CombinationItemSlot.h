@@ -14,9 +14,9 @@ class PREPPER_API UCombinationItemSlot : public UUserWidget
 	GENERATED_BODY()
 public:
 	UPROPERTY()
-	class UItemCombineUI* CombineUI;
+	class UCraftUI* CombineUI;
 
-	void SetSlot(const FString& CombinedItemCode, UItemCombineUI* CombineMainHUD);
+	void SetSlot(const FString& CombinedItemCode, UCraftUI* CombineMainHUD);
 private:
 	FString ItemCode;
 	UPROPERTY()

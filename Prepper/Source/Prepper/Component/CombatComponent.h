@@ -23,6 +23,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* MeleeWeaponMontage;
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ReloadMontage;
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* SwapMontage;
+	
 protected:
 	virtual void BeginPlay() override;
 	void SetAiming(bool bIsAiming);
@@ -33,7 +45,6 @@ protected:
 	void ServerSetAiming(bool bIsAiming);
 	
 	void Fire();
-	void FireWeapon();
 	void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	UFUNCTION(BlueprintCallable)
@@ -88,8 +99,8 @@ protected:
 
 	void DropEquippedWeapon();
 	void UpdateCarriedAmmo();
-	void PlayEquipWeaponSound(AWeaponActor* WeaponToEquip);
 	void SwapWeapons();
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSwapWeapon();
 	
@@ -100,8 +111,6 @@ protected:
 
 	UPROPERTY(Replicated)
 	class AMeleeWeapon* EquippedMeleeWeapon;
-
-	 bool IsBlunt;
 
 	UFUNCTION()
 	EWeaponType SetWeaponType();
@@ -141,8 +150,6 @@ protected:
 	//Auto Fire
 	FTimerHandle FireTimer;
 
-	// State
-	bool bCanFire = true;
 
 	// chk Ammo
 	bool CanFire();

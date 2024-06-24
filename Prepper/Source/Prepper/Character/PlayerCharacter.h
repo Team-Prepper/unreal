@@ -39,8 +39,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	//combatcomponent 에서 사용
-	void PlayFireMontage(bool bAiming); 
-	void PlayReloadMontage(const FName& SectionName);
 	void PlaySwapMontage();
 	
 	virtual void Elim() override;
@@ -108,9 +106,6 @@ private:
 
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
-	
-	UFUNCTION(Server, Reliable)
-	void ServerEquipButtonPressed(AWeaponActor* Weapon);
 
 	bool bIsSprint = false;
 	

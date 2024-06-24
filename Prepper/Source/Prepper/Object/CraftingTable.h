@@ -19,7 +19,5 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastInteraction(APlayerCharacter* Target);
-
-	void ShowCraftingWidget(APlayerCharacter* Target);
 	
 };
