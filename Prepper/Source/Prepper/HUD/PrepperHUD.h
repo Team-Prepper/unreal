@@ -48,7 +48,7 @@ public:
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 	UPROPERTY()
-	class UItemCombineUI* ItemCombineUI;
+	class UCraftUI* ItemCombineUI;
 	UPROPERTY()
 	class UMainInventoryHUD* InventoryHUD;
 	UPROPERTY()

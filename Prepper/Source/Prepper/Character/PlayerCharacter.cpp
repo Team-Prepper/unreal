@@ -20,7 +20,7 @@
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Sound/SoundCue.h"
 #include "Components/PawnNoiseEmitterComponent.h"
-#include "Prepper/HUD/Item/ItemCombineUI.h"
+#include "Prepper/HUD/Item/CraftUI.h"
 
 
 APlayerCharacter::APlayerCharacter()
