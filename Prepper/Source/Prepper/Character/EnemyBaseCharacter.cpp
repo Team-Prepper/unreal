@@ -220,7 +220,8 @@ void AEnemyBaseCharacter::PawnAttack()
 	{
 		HitTargets = EquippedWeapon->GetTarget(HitTarget);
 		EquippedWeapon->Fire(HitTargets);
-	}else
+	}
+	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No Weapon"));
 	}

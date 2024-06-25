@@ -26,6 +26,8 @@ public:
 	
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	PURE_VIRTUAL();
+	virtual void FireEnd(bool Trigger)
+	PURE_VIRTUAL();
 
 	virtual void SetHUDAmmo()
 	PURE_VIRTUAL();

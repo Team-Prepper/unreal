@@ -88,6 +88,8 @@ public:
 	virtual void OnRep_Owner() override;
 
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
+	
+	virtual void FireEnd(bool Trigger) override;
 
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 
@@ -123,7 +125,6 @@ public:
 	USkeletalMeshComponent* GetRangeWeaponMesh();
 	FORCEINLINE int32 GetAmmo()							const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }
-	FORCEINLINE bool GetAutoReload()					const { return bAutoReload; }
 	FORCEINLINE float GetZoomedFOV()					const { return ZoomFOV; }
 	FORCEINLINE float GetZoomedInterpSpeed()			const { return ZoomInterpSpeed; }
 };

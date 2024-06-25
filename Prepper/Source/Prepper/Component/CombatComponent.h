@@ -4,11 +4,12 @@
 #include "Components/ActorComponent.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/HUD/PrepperHUD.h"
+#include "Prepper/Interfaces/WeaponHandler.h"
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UCombatComponent : public UActorComponent
+class PREPPER_API UCombatComponent : public UActorComponent, public IWeaponHandler
 {
 	GENERATED_BODY()
 
@@ -18,8 +19,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	void EquipWeapon(class AWeaponActor* WeaponToEquip);
-	void Reload();
+	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) override;
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 	
@@ -44,7 +44,9 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerSetAiming(bool bIsAiming);
 	
-	void Fire();
+	virtual void Reload() override;
+	
+	virtual void Fire() override;
 	void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	UFUNCTION(BlueprintCallable)

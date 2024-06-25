@@ -4,6 +4,7 @@
 #include "WeaponTypes.h"
 #include "GameFramework/Actor.h"
 #include "Prepper/Interfaces/Weapon.h"
+#include "Prepper/Interfaces/WeaponHandler.h"
 #include "Prepper/Object/InteractableActor.h"
 #include "Sound/SoundCue.h"
 #include "WeaponActor.generated.h"
@@ -95,9 +96,14 @@ protected:
 	APlayerCharacter* PlayerOwnerCharacter;
 	UPROPERTY()
 	class APrepperPlayerController* PlayerOwnerController;
+	UPROPERTY()
+	TScriptInterface<IWeaponHandler> WeaponHandler;
 
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
+
+private:
+	void WeaponPhysicsActive(bool active);
 	
 public:
 	bool IsMeleeWeapon();

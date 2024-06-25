@@ -104,7 +104,7 @@ void AWeaponActor::OnRep_Owner()
 	{
 		PlayerOwnerCharacter = nullptr;
 		PlayerOwnerController = nullptr;
-
+		WeaponHandler = nullptr;
 		return;
 	}
 }
@@ -147,18 +147,12 @@ void AWeaponActor::OnWeaponStateSet()
 void AWeaponActor::OnEquipped()
 {
 	ShowPickUpWidget(false);
-	SetActorEnableCollision(false);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh->SetSimulatePhysics(false);
-	WeaponMesh->SetEnableGravity(false);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StaticWeaponMesh->SetSimulatePhysics(false);
-	StaticWeaponMesh->SetEnableGravity(false);
-	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	EnableCustomDepth(false);
+	WeaponHandler = TScriptInterface<IInteractable>(Owner);
+	WeaponPhysicsActive(false);
 
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
+		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
 
 	if (!PlayerOwnerCharacter) return;
 
@@ -168,7 +162,8 @@ void AWeaponActor::OnEquipped()
 		
 	if (!bUseServerSideRewind) return;
 	
-	PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+	PlayerOwnerController = PlayerOwnerController == nullptr ?
+		Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
 	if (PlayerOwnerController && HasAuthority() && !PlayerOwnerController->HighPingDelegate.IsBound())
 	{
 		PlayerOwnerController->HighPingDelegate.AddDynamic(this, &AWeaponActor::OnPingTooHigh);
@@ -179,58 +174,33 @@ void AWeaponActor::OnDropped()
 {
 	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON DROPPED"));
 	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-	SetActorEnableCollision(true);
+
+	WeaponPhysicsActive(true);
 	WeaponMesh->DetachFromComponent(DetachRules);
-	SetOwner(nullptr);
-	PlayerOwnerCharacter = nullptr;
-	PlayerOwnerController = nullptr;
-	
-	SetActorEnableCollision(true);
-	
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
-	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-	AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-	
-	StaticWeaponMesh->SetSimulatePhysics(false);
-	StaticWeaponMesh->SetEnableGravity(false);
-	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
 
-	WeaponMesh->SetSimulatePhysics(true);
-	WeaponMesh->SetEnableGravity(true);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
-	EnableCustomDepth(true);
-
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
+		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
 	if (!PlayerOwnerCharacter) return;
 	
-	PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+	PlayerOwnerController = PlayerOwnerController == nullptr ?
+		Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
 	if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 	{
 		PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
 	}
+	
+	SetOwner(nullptr);
+	PlayerOwnerCharacter = nullptr;
+	PlayerOwnerController = nullptr;
 }
 
 void AWeaponActor::OnEquippedSecondary()
 {
 	ShowPickUpWidget(false);
-	EnableCustomDepth(false);
-	SetActorEnableCollision(false);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh->SetSimulatePhysics(false);
-	WeaponMesh->SetEnableGravity(false);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StaticWeaponMesh->SetSimulatePhysics(false);
-	StaticWeaponMesh->SetEnableGravity(false);
-	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	WeaponPhysicsActive(false);
+	
+	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
+		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
 
 	if (!PlayerOwnerCharacter) return;
 	
@@ -238,7 +208,8 @@ void AWeaponActor::OnEquippedSecondary()
 	PlayerOwnerCharacter->AttachActorAtSocket(HolsteredWeaponSocketName, this);
 	PlayEquipWeaponSound();
 	
-	PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+	PlayerOwnerController = PlayerOwnerController == nullptr ?
+		Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
 	if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 	{
 		PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
@@ -267,6 +238,43 @@ TArray<FVector_NetQuantize> AWeaponActor::GetTarget(FVector& HitTarget)
 	TArray<FVector_NetQuantize> HitTargets;
 	HitTargets.Add(HitTarget);
 	return HitTargets;
+}
+
+void AWeaponActor::WeaponPhysicsActive(bool active)
+{
+	SetActorEnableCollision(active);
+	WeaponMesh->SetSimulatePhysics(active);
+	WeaponMesh->SetEnableGravity(active);
+	StaticWeaponMesh->SetSimulatePhysics(false);
+	StaticWeaponMesh->SetEnableGravity(false);
+	EnableCustomDepth(active);
+
+	if (active)
+	{
+	
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+	
+		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
+
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
+		
+	}
+	else
+	{
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 bool AWeaponActor::IsMeleeWeapon()

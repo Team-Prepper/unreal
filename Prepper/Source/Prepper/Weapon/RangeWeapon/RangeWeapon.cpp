@@ -40,6 +40,19 @@ void ARangeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	SpendRound();
 }
 
+void ARangeWeapon::FireEnd(bool Trigger)
+{
+	if (WeaponHandler == nullptr) return;
+	if (Trigger && bAutomatic)
+	{
+		WeaponHandler->Fire();
+	}
+	if (bAutoReload)
+	{
+		WeaponHandler->Reload();
+	}
+}
+
 bool ARangeWeapon::IsAmmoEmpty()
 {
 	return Ammo <= 0;

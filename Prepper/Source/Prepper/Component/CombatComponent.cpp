@@ -219,16 +219,7 @@ void UCombatComponent::FireTimerFinished()
 	if (EquippedWeapon == nullptr) return;
 
 	CombatState = ECombatState::ECS_Unoccupied;
-	
-	if (!EquippedRangeWeapon) return;
-	if (bFireButtonPressed && EquippedRangeWeapon->bAutomatic)
-	{
-		Fire();
-	}
-	if (EquippedRangeWeapon->GetAutoReload())
-	{
-		ReloadEmptyWeapon();
-	}
+	EquippedWeapon->FireEnd(bFireButtonPressed);
 }
 
 void UCombatComponent::ReloadEmptyWeapon()
