@@ -121,7 +121,7 @@ private:
 
 public:
 	bool IsAmmoEmpty();
-	bool IsAmmoFull();
+	virtual bool CanReload() override;
 	USkeletalMeshComponent* GetRangeWeaponMesh();
 	FORCEINLINE int32 GetAmmo()							const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }

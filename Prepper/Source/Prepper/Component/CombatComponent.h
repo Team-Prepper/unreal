@@ -63,6 +63,10 @@ public:
 
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	AWeaponActor* SecondaryWeapon;
+private:
+	void PlayAnim(UAnimMontage* Montage, const FName& Name);
+	void SetHUDCarriedAmmo();
+	
 protected:
 
 	UFUNCTION(Server, Reliable)
@@ -192,7 +196,6 @@ protected:
 	UFUNCTION()
 	void OnRep_CombatState();
 	void UpdateAmmoValues();
-	void StartFireTimer();
 	void FireTimerFinished();
 	bool ShouldSwapWeapons();
 };

@@ -74,13 +74,13 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 {
 	if (Character == nullptr || Character->Controller == nullptr) return;
+	if (!EquippedWeapon) return;
 
 	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
 	if (!Controller) return;
 	
 	HUD = HUD == nullptr ? Cast<APrepperHUD>(Controller->GetHUD()) : HUD;
 	if (!HUD) return;
-	if (!EquippedWeapon) return;
 	
 	EquippedWeapon->GetCrosshair(DeltaTime, bAiming,
 								HUDPackage.CrosshairCenter,
@@ -129,6 +129,27 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 	}
 }
 
+void UCombatComponent::PlayAnim(UAnimMontage* Montage, const FName& SectionName = "")
+{
+	if (Montage == nullptr) return;
+	
+	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
+	if (!AnimInstance) return;
+	
+	AnimInstance->Montage_Play(Montage);
+	if (SectionName.Compare("") == 0) return;
+	
+	AnimInstance->Montage_JumpToSection(SectionName);
+}
+
+void UCombatComponent::SetHUDCarriedAmmo()
+{
+	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
+	if (Controller)
+	{
+		Controller->SetHUDCarriedAmmo(CarriedAmmo);
+	}
+}
 
 // TODO
 bool UCombatComponent::CanFire()
@@ -153,41 +174,34 @@ void UCombatComponent::Fire()
 	ServerFireWeapon(HitTargets);
 
 	CombatState = ECombatState::ECS_Fire;
-	StartFireTimer();
+	
+	Character->GetWorldTimerManager().SetTimer(
+		FireTimer,
+		this,
+		&UCombatComponent::FireTimerFinished,
+		EquippedWeapon->FireDelay
+	);
 }
 
 void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
-
 	if (EquippedWeapon == nullptr || Character == nullptr) return;
 	
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	
 	EquippedWeapon->Fire(TraceHitTargets);	
-
-	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-	if (!AnimInstance) return;
 	
 	if (EquippedRangeWeapon)
 	{
-		if(!FireWeaponMontage) return;
-		
-		AnimInstance->Montage_Play(FireWeaponMontage);
-		FName SectionName = bAiming ? FName("FireAim") : FName("FireHip");
-		AnimInstance->Montage_JumpToSection(SectionName);
+		PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
 		
 	}
 	else
 	{
-		if(!MeleeWeaponMontage) return;
-	
-		AnimInstance->Montage_Play(MeleeWeaponMontage);
-		FName SectionName = EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2");
-		AnimInstance->Montage_JumpToSection(SectionName);
+		PlayAnim(MeleeWeaponMontage, EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
 	}
 	
 }
-
 
 void UCombatComponent::ServerFireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
@@ -200,18 +214,6 @@ void UCombatComponent::MulticastFireWeapon_Implementation(const TArray<FVector_N
 {
 	if (Character && Character->IsLocallyControlled()) return;
 	LocalFireWeapon(TraceHitTargets);
-}
-
-
-void UCombatComponent::StartFireTimer()
-{
-	if (EquippedWeapon == nullptr || Character == nullptr) return;
-	Character->GetWorldTimerManager().SetTimer(
-		FireTimer,
-		this,
-		&UCombatComponent::FireTimerFinished,
-		EquippedWeapon->FireDelay
-	);
 }
 
 void UCombatComponent::FireTimerFinished()
@@ -233,11 +235,7 @@ void UCombatComponent::ReloadEmptyWeapon()
 
 void UCombatComponent::OnRep_CarriedAmmo()
 {
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if (Controller)
-	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);
-	}
+	SetHUDCarriedAmmo();
 }
 
 void UCombatComponent::InitCarriedAmmo()
@@ -395,11 +393,8 @@ void UCombatComponent::MulticastSwapWeapon_Implementation()
 
 	FinishSwapAttachWeapons();
 	GetWorld()->GetTimerManager().SetTimer(SwapDelayTimer, this, &UCombatComponent::FinishSwap, 1.5f, false);
-	
-	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-	
-	if (!AnimInstance || !SwapMontage) return;
-	AnimInstance->Montage_Play(SwapMontage);
+
+	PlayAnim(SwapMontage);
 	
 }
 
@@ -439,24 +434,18 @@ void UCombatComponent::UpdateCarriedAmmo()
 	{
 		CarriedAmmo = -1;
 	}
-
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if (Controller)
-	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);
-	}
+	
+	SetHUDCarriedAmmo();
 }
 
 void UCombatComponent::Reload()
 {
-	if (CarriedAmmo > 0 &&
-		CombatState != ECombatState::ECS_Reloading &&
-		EquippedRangeWeapon &&
-		!EquippedRangeWeapon->IsAmmoFull())
-	{
-		ServerReload();
-		HandleReload();
-	}
+	if (CarriedAmmo <= 0) return;
+	if (CombatState == ECombatState::ECS_Reloading) return;
+	if (!EquippedWeapon->CanReload()) return;
+	
+	ServerReload();
+	HandleReload();
 }
 
 void UCombatComponent::ServerReload_Implementation()
@@ -492,11 +481,7 @@ void UCombatComponent::UpdateAmmoValues()
 		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 	}
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if (Controller)
-	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);
-	}
+	SetHUDCarriedAmmo();
 	EquippedRangeWeapon->AddAmmo(ReloadAmount);
 }
 
@@ -536,14 +521,8 @@ void UCombatComponent::OnRep_CombatState()
 void UCombatComponent::HandleReload()
 {
 	if (!Character) return;
-	
-	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-	
-	if(!AnimInstance || !ReloadMontage) return;
-	
-	AnimInstance->Montage_Play(ReloadMontage);
-	AnimInstance->Montage_JumpToSection(EquippedWeapon->ReloadActionName);
-	
+
+	PlayAnim(ReloadMontage, EquippedWeapon->ReloadActionName);
 }
 
 

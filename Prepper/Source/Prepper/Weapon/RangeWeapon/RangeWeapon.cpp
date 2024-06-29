@@ -58,9 +58,9 @@ bool ARangeWeapon::IsAmmoEmpty()
 	return Ammo <= 0;
 }
 
-bool ARangeWeapon::IsAmmoFull()
+bool ARangeWeapon::CanReload()
 {
-	return Ammo == MagCapacity;
+	return Ammo != MagCapacity;
 }
 
 USkeletalMeshComponent* ARangeWeapon::GetRangeWeaponMesh()

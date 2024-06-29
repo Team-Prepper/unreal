@@ -62,4 +62,7 @@ public:
 
 	virtual EWeaponType GetWeaponType()
 	PURE_VIRTUAL(IWeapon::GetWeaponType , return EWeaponType::EWT_AssaultRifle; );
+
+	virtual bool CanReload()
+	PURE_VIRTUAL(IWeapon::CanReload, return false; );
 };
