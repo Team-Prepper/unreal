@@ -42,7 +42,10 @@ void ARangeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 
 void ARangeWeapon::FireEnd(bool Trigger)
 {
+	WeaponHandler = GetWeaponHandler();
+	
 	if (WeaponHandler == nullptr) return;
+	
 	if (Trigger && bAutomatic)
 	{
 		WeaponHandler->Fire();

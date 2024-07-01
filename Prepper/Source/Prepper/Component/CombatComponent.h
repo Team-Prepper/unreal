@@ -12,17 +12,7 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UCombatComponent : public UActorComponent, public IWeaponHandler
 {
 	GENERATED_BODY()
-
-public:	
-	UCombatComponent();
-	friend class APlayerCharacter;
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) override;
-	UFUNCTION(BlueprintCallable)
-	void FinishReloading();
-	
+private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* FireWeaponMontage;
 
@@ -34,6 +24,16 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* SwapMontage;
+	
+public:	
+	UCombatComponent();
+	friend class APlayerCharacter;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) override;
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -143,19 +143,8 @@ protected:
 
 	float DefaultFOV;
 
-	UPROPERTY(EditAnywhere, Category = Combat)
-	float ZoomFOV = 30.f;
-
-	float CurrentFOV;
-	
-	UPROPERTY(EditAnywhere, Category = Combat)
-	float ZoomInterpSpeed = 20.f;
-
-	void InterpFOV(float DeltaTime);
-
 	//Auto Fire
 	FTimerHandle FireTimer;
-
 
 	// chk Ammo
 	bool CanFire();

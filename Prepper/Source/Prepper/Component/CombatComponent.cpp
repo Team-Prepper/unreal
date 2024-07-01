@@ -39,7 +39,6 @@ void UCombatComponent::BeginPlay()
 	if (Character->GetFollowCamera())
 	{
 		DefaultFOV = Character->GetFollowCamera()->FieldOfView;
-		CurrentFOV = DefaultFOV;
 	}
 	if (Character->HasAuthority())
 	{
@@ -68,7 +67,6 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	}
 
 	SetHUDCrosshair(DeltaTime);
-	InterpFOV(DeltaTime);
 }
 
 void UCombatComponent::SetHUDCrosshair(float DeltaTime)
@@ -93,34 +91,12 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 	HUD->SetHUDPackage(HUDPackage);
 }
 
-
-void UCombatComponent::InterpFOV(float DeltaTime)
-{
-	if (EquippedRangeWeapon == nullptr) return;
-	if (Character == nullptr) return;
-	if (Character->GetFollowCamera() == nullptr) return;
-
-	if (bAiming)
-	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, EquippedRangeWeapon->GetZoomedFOV(), DeltaTime,
-		                              EquippedRangeWeapon->GetZoomedInterpSpeed());
-	}
-	else
-	{
-		CurrentFOV = FMath::FInterpTo(CurrentFOV, DefaultFOV, DeltaTime, ZoomInterpSpeed);
-	}
-
-	Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);
-}
-
 // TODO
 // Fire Start
 void UCombatComponent::FireButtonPressed(bool bPressed)
 {
-	if (EquippedRangeWeapon && EquippedRangeWeapon->bAutomatic == false)
-	{
-		if (bFireButtonPressed == bPressed) return;
-	}
+	if (bFireButtonPressed == bPressed) return;
+	
 	bFireButtonPressed = bPressed;
 
 	if (bFireButtonPressed)
@@ -289,16 +265,28 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 
 	bAiming = bIsAiming;
 	ServerSetAiming(bIsAiming);
-	if (Character && Character->IsLocallyControlled())
+	
+	if (!Character->IsLocallyControlled()) return;
+	
+	EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
+	Character->SetPlayerMovementState(NewState);
+	bAimButtonPressed = bIsAiming;
+	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
 	{
-		EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
-		Character->SetPlayerMovementState(NewState);
-		bAimButtonPressed = bIsAiming;
-		if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
-		{
-			Character->ShowSniperScopeWidget(bIsAiming);
-		}
+		Character->ShowSniperScopeWidget(bIsAiming);
 	}
+
+	if (bIsAiming)
+	{
+		Character->GetFollowCamera()
+			->InterpFOV(EquippedRangeWeapon->GetZoomedFOV(),
+			EquippedRangeWeapon->GetZoomedFOV());
+		return;
+	}
+
+	Character->GetFollowCamera()
+			->InterpFOV(DefaultFOV,
+			EquippedRangeWeapon->GetZoomedFOV());
 }
 
 void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
@@ -408,7 +396,6 @@ void UCombatComponent::FinishSwap()
 
 void UCombatComponent::FinishSwapAttachWeapons()
 {
-
 	if (Character == nullptr) return;
 	AWeaponActor* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;

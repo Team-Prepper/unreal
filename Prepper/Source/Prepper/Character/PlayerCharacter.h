@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "Prepper/Component/CustomCameraComponent.h"
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
@@ -81,7 +82,7 @@ protected:
 	virtual void MouseRightReleased() override;
 public:
 	UFUNCTION(BlueprintCallable)
-	virtual UCameraComponent* GetFollowCamera() override;
+	virtual UCustomCameraComponent* GetFollowCamera() override;
 protected:
 	/* 행동관련 */
 	virtual void Jump() override;
@@ -130,9 +131,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class UCameraComponent* FollowCamera;
+	UCustomCameraComponent* FollowCamera;
 	UPROPERTY(EditAnywhere, Category = Skin)
-	class UStaticMeshComponent* Hair;
+	UStaticMeshComponent* Hair;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UWidgetComponent* OverheadWidget;
 

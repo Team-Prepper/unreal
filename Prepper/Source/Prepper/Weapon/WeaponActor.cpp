@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/Component/CombatComponent.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
 AWeaponActor::AWeaponActor()
@@ -147,14 +148,14 @@ void AWeaponActor::OnWeaponStateSet()
 void AWeaponActor::OnEquipped()
 {
 	ShowPickUpWidget(false);
-
-	WeaponHandler = TScriptInterface<IInteractable>(Owner);
 	WeaponPhysicsActive(false);
 
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
 		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
 
 	if (!PlayerOwnerCharacter) return;
+
+	WeaponHandler = GetWeaponHandler();
 
 	PlayerOwnerCharacter->AttachActorAtSocket(AttachSocketName(), this);
 	PlayEquipWeaponSound();
@@ -216,6 +217,25 @@ void AWeaponActor::OnEquippedSecondary()
 	}
 }
 
+TScriptInterface<IWeaponHandler> AWeaponActor::GetWeaponHandler()
+{
+	if (WeaponHandler != nullptr) return WeaponHandler;
+	
+	TArray<UActorComponent*> ActorCompList;
+	Owner->GetComponents(ActorCompList, true);
+	
+	for (int Z = 0; (Z < ActorCompList.Num()); Z++)
+	{
+		TScriptInterface<IWeaponHandler> Temp = TScriptInterface<IWeaponHandler>(ActorCompList[Z]);
+		if (Temp != nullptr)
+		{
+			return Temp;
+		}
+	}
+	
+	return nullptr;
+}
+
 void AWeaponActor::OnPingTooHigh(bool bPingTooHigh)
 {
 	bUseServerSideRewind = !bPingTooHigh;
@@ -251,7 +271,6 @@ void AWeaponActor::WeaponPhysicsActive(bool active)
 
 	if (active)
 	{
-	
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
@@ -267,14 +286,13 @@ void AWeaponActor::WeaponPhysicsActive(bool active)
 		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
-		
+
+		return;
 	}
-	else
-	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+	
+	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 bool AWeaponActor::IsMeleeWeapon()

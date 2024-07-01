@@ -71,6 +71,8 @@ protected:
 	virtual void OnDropped();
 	virtual void OnEquippedSecondary();
 
+	TScriptInterface<IWeaponHandler> GetWeaponHandler();
+
 	UFUNCTION()
 	void OnPingTooHigh(bool bPingTooHigh);
 	

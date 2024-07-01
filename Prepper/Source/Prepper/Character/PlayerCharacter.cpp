@@ -38,7 +38,7 @@ APlayerCharacter::APlayerCharacter()
 	CameraBoom->TargetArmLength = DefaultCamArmLength;
 	CameraBoom->bUsePawnControlRotation = true;
 
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCam"));
+	FollowCamera = CreateDefaultSubobject<UCustomCameraComponent>(TEXT("FollowCam"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
@@ -437,7 +437,7 @@ void APlayerCharacter::MouseRightReleased()
 	}
 }
 
-UCameraComponent* APlayerCharacter::GetFollowCamera()
+UCustomCameraComponent* APlayerCharacter::GetFollowCamera()
 {
 	return FollowCamera;
 }
