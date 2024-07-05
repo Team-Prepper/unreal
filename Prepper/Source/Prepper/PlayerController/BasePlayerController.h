@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/Interfaces/InventoryViewer.h"
 #include "BasePlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
@@ -35,6 +36,9 @@ protected:
 
 	UPROPERTY()
 	class APrepperHUD* PrepperHUD;
+
+	IInventoryViewer* InventoryViewer;
+	
 public:
 	/* NetWork */
 	FHighPingDelegate HighPingDelegate;

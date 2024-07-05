@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerState.h"
 #include "Prepper/HUD/PrepperHUD.h"
+#include "Prepper/InventoryView/UIInventoryViewer.h"
 
 
 void ABasePlayerController::BeginPlay()
@@ -213,6 +214,14 @@ void ABasePlayerController::FireButtonReleased()
 
 void ABasePlayerController::OpenInventoryPressed()
 {
+	if (!PrepperHUD) return;
+	if (!InventoryViewer)
+	{
+		InventoryViewer = new UIInventoryViewer(PrepperHUD);
+	}
+	
+	InventoryViewer->ToggleInventory();
+	return;
 	if (!PrepperHUD) return;
 	PrepperHUD->ToggleInventory();
 }
