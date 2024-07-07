@@ -31,38 +31,19 @@ class PREPPER_API APrepperHUD : public AHUD
 public:
 	virtual void DrawHUD() override;
 
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UUserWidget> CharacterOverlayClass;
-
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UUserWidget> InventoryHUDClass;
-
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UUserWidget> CraftingHUDClass;
-	
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UUserWidget> CompassHUDClass;
-
 	void AddCharacterOverlay();
 
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 	UPROPERTY()
-	class UCraftUI* ItemCombineUI;
-	UPROPERTY()
 	class UMainInventoryHUD* InventoryHUD;
 	UPROPERTY()
 	class UCompass* Compass;
-	
-	UPROPERTY(EditAnywhere, Category = "Annoucement")
-	TSubclassOf<UUserWidget> AnnouncementClass;
-
 	UPROPERTY()
 	class UAnnouncement* Announcement;
-
+	
 	void AddAnnouncement();
 	
-	bool IsInventoryVisible = false;
 	UFUNCTION()
 	void ToggleInventory();
 
@@ -72,14 +53,27 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	
 private:
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> CharacterOverlayClass;
+
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> InventoryHUDClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> CompassHUDClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Annoucement")
+	TSubclassOf<UUserWidget> AnnouncementClass;
+	
 	FHUDPackage HUDPackage;
-
-	void DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, FVector2D Spread, FLinearColor CrosshairColor);
-
+	bool IsInventoryVisible = false;
+	
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax = 16.f;
+
+	void DrawCrosshair(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread, const FLinearColor& CrosshairColor);
+	
 	
 public:
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; }

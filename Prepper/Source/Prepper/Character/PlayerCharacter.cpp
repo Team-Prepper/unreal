@@ -733,19 +733,6 @@ void APlayerCharacter::SetPlayerEqiupmentHiddenInGame(bool visible)
 	}
 }
 
-void APlayerCharacter::OpenCraftingTable()
-{
-	PrepperPlayerController->SetInputMode(FInputModeGameAndUI());
-	PrepperPlayerController->SetShowMouseCursor(true);
-	APrepperHUD* PrepperHUD = Cast<APrepperHUD>(PrepperPlayerController->GetHUD());
-	if(PrepperHUD && PrepperHUD->ItemCombineUI)
-	{
-		PrepperHUD->ItemCombineUI->SetTargetInventory(Inven);
-		PrepperHUD->ItemCombineUI->SetVisibility(ESlateVisibility::Visible);
-		PrepperHUD->ItemCombineUI->InteractionPlayer = this;
-	}
-}
-
 void APlayerCharacter::AddItem(FString ItemCode)
 {
 	if(!HasAuthority()) return;

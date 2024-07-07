@@ -4,8 +4,8 @@
 #include "Prepper/Car/CarPawn.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Component/StatusEffectComponent.h"
-#include "Prepper/HUD/CharacterOverlay.h"
-#include "Prepper/HUD/Compass.h"
+#include "Prepper/HUD/UI/CharacterOverlay.h"
+#include "Prepper/HUD/UI/Compass.h"
 #include "Prepper/HUD/PrepperHUD.h"
 
 void APrepperPlayerController::BeginPlay()

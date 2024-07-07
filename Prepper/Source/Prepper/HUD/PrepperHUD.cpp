@@ -1,8 +1,8 @@
 #include "PrepperHUD.h"
 
-#include "Announcement.h"
-#include "CharacterOverlay.h"
-#include "Compass.h"
+#include "UI/Announcement.h"
+#include "UI/CharacterOverlay.h"
+#include "UI/Compass.h"
 #include "Prepper/HUD/Item/ItemGrid.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
@@ -18,32 +18,25 @@ void APrepperHUD::BeginPlay()
 void APrepperHUD::AddCharacterOverlay()
 {
 	APlayerController* PlayerController = GetOwningPlayerController();
-	if(PlayerController)
+	if(!PlayerController) return;
+	
+	if(CharacterOverlayClass)
 	{
-		if(CharacterOverlayClass)
-		{
-			CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
-			CharacterOverlay->AddToViewport();
-		}
-		if(InventoryHUDClass)
-		{
-			InventoryHUD = CreateWidget<UMainInventoryHUD>(PlayerController, InventoryHUDClass);
-			InventoryHUD->AddToViewport();
-			InventoryHUD->SetVisibility(ESlateVisibility::Hidden);
-			if(InventoryHUD->ItemGrid)
-				InventoryHUD->ItemGrid->Set(Cast<APlayerCharacter>(GetOwningPawn())->Inven);
-		}
-		if(CraftingHUDClass)
-		{
-			ItemCombineUI = CreateWidget<UCraftUI>(PlayerController, CraftingHUDClass);
-			ItemCombineUI->AddToViewport();
-			ItemCombineUI->SetVisibility(ESlateVisibility::Hidden);
-		}
-		if(CompassHUDClass)
-		{
-			Compass = CreateWidget<UCompass>(PlayerController, CompassHUDClass);
-			Compass->AddToViewport();
-		}
+		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
+		CharacterOverlay->AddToViewport();
+	}
+	if(InventoryHUDClass)
+	{
+		InventoryHUD = CreateWidget<UMainInventoryHUD>(PlayerController, InventoryHUDClass);
+		InventoryHUD->AddToViewport();
+		InventoryHUD->SetVisibility(ESlateVisibility::Hidden);
+		if(InventoryHUD->ItemGrid)
+			InventoryHUD->ItemGrid->Set(Cast<APlayerCharacter>(GetOwningPawn())->Inven);
+	}
+	if(CompassHUDClass)
+	{
+		Compass = CreateWidget<UCompass>(PlayerController, CompassHUDClass);
+		Compass->AddToViewport();
 	}
 }
 
@@ -62,61 +55,34 @@ void APrepperHUD::DrawHUD()
 	Super::DrawHUD();
 
 	FVector2D ViewportSize;
-	if(GEngine)
-	{
-		GEngine->GameViewport->GetViewportSize(ViewportSize);
-		const FVector2D ViewportCenter(ViewportSize.X/ 2.f, ViewportSize.Y / 2.f);
+	if(!GEngine) return;
+	
+	GEngine->GameViewport->GetViewportSize(ViewportSize);
+	
+	const FVector2D ViewportCenter(ViewportSize.X/ 2.f, ViewportSize.Y / 2.f);
+	float SpreadScaled = CrosshairSpreadMax * HUDPackage.CrosshairSpread;
 
-		float SpreadScaled = CrosshairSpreadMax * HUDPackage.CrosshairSpread;
-
-		if(HUDPackage.CrosshairCenter)
-		{
-			FVector2D Spread(0.f, 0.f);
-			DrawCrosshair(HUDPackage.CrosshairCenter, ViewportCenter, Spread, HUDPackage.CrosshairColor);
-		}
-		if(HUDPackage.CrosshairLeft)
-		{
-			FVector2D Spread(-SpreadScaled, 0.f);
-			DrawCrosshair(HUDPackage.CrosshairLeft, ViewportCenter, Spread, HUDPackage.CrosshairColor);
-		}
-		if(HUDPackage.CrosshairRight)
-		{
-			FVector2D Spread(SpreadScaled, 0.f);
-			DrawCrosshair(HUDPackage.CrosshairRight, ViewportCenter, Spread, HUDPackage.CrosshairColor);
-		}
-		if(HUDPackage.CrosshairTop)
-		{
-			FVector2D Spread(0.f, -SpreadScaled);
-			DrawCrosshair(HUDPackage.CrosshairTop, ViewportCenter, Spread, HUDPackage.CrosshairColor);
-		}
-
-		if(HUDPackage.CrosshairBottom)
-		{
-			FVector2D Spread(0.f, SpreadScaled);
-			DrawCrosshair(HUDPackage.CrosshairBottom, ViewportCenter, Spread, HUDPackage.CrosshairColor);
-		}
-	}
+	DrawCrosshair(HUDPackage.CrosshairCenter, ViewportCenter, FVector2D(0.f, 0.f), HUDPackage.CrosshairColor);
+	DrawCrosshair(HUDPackage.CrosshairLeft, ViewportCenter, FVector2D(-SpreadScaled, 0.f), HUDPackage.CrosshairColor);
+	DrawCrosshair(HUDPackage.CrosshairRight, ViewportCenter, FVector2D(SpreadScaled, 0.f), HUDPackage.CrosshairColor);
+	DrawCrosshair(HUDPackage.CrosshairTop, ViewportCenter, FVector2D(0.f, -SpreadScaled), HUDPackage.CrosshairColor);
+	DrawCrosshair(HUDPackage.CrosshairBottom, ViewportCenter, FVector2D(0.f, SpreadScaled), HUDPackage.CrosshairColor);
 }
 
-void APrepperHUD::DrawCrosshair(UTexture2D* Texture, FVector2D ViewportCenter, FVector2D Spread, FLinearColor CrosshairColor)
+void APrepperHUD::DrawCrosshair(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread, const FLinearColor& CrosshairColor)
 {
+	if (!Texture) return;
+	
 	const float TextureWidth = Texture->GetSizeX();
 	const float TextureHeight =  Texture->GetSizeY();
-	const FVector2D TextureDrawPoint(
-	ViewportCenter.X - (TextureWidth / 2.f) + Spread.X,
-	ViewportCenter.Y - (TextureHeight / 2.f) + Spread.Y
-		);
 
 	DrawTexture(
 		Texture,
-		TextureDrawPoint.X,
-		TextureDrawPoint.Y,
-		TextureWidth,
-		TextureWidth,
-		0.f,
-		0.f,
-		1.f,
-		1.f,
+		ViewportCenter.X - (TextureWidth / 2.f) + Spread.X,
+		ViewportCenter.Y - (TextureHeight / 2.f) + Spread.Y,
+		TextureWidth,TextureWidth,
+		0.f,0.f,
+		1.f,1.f,
 		CrosshairColor
 		);
 }
