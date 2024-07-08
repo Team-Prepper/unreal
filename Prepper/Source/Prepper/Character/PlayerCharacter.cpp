@@ -437,6 +437,15 @@ void APlayerCharacter::MouseRightReleased()
 	}
 }
 
+void APlayerCharacter::ToggleInventory()
+{
+	if(EquippedBackpack)
+	{
+		UE_LOG(LogTemp,Warning,TEXT("OpenInven"));
+		//EquippedBackpack-> ShowInventory
+	}
+}
+
 UCustomCameraComponent* APlayerCharacter::GetFollowCamera()
 {
 	return FollowCamera;
@@ -647,7 +656,7 @@ void APlayerCharacter::ConvertPlayerMovementState()
 		bBeforeSeat = false;
 		SetActorEnableCollision(true);
 		SetActorHiddenInGame(false);
-		SetPlayerEqiupmentHiddenInGame(false);
+		SetPlayerEquipmentHiddenInGame(false);
 	}
 	
 	switch (PlayerMovementState)
@@ -656,7 +665,7 @@ void APlayerCharacter::ConvertPlayerMovementState()
 		bBeforeSeat = true;
 		SetActorEnableCollision(false);
 		SetActorHiddenInGame(true);
-		SetPlayerEqiupmentHiddenInGame(true);
+		SetPlayerEquipmentHiddenInGame(true);
 		break;
 	case EPlayerMovementState::EPMS_Aim:
 		GetCharacterMovement()->MaxWalkSpeed = AimMovementSpeed * CoefficientMovementSpeed;
@@ -715,7 +724,7 @@ void APlayerCharacter::Destroyed()
 	}
 }
 
-void APlayerCharacter::SetPlayerEqiupmentHiddenInGame(bool visible)
+void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
 {
 	if(!Combat) return;
 	if(Combat->EquippedWeapon)

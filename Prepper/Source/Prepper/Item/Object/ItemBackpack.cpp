@@ -3,6 +3,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Prepper/Object/OpenedInventory.h"
 
 
 AItemBackpack::AItemBackpack()
@@ -109,4 +110,24 @@ void AItemBackpack::SetBackpackState(EBackpackState NewBackpackState)
 {
 	BackpackState = NewBackpackState;
 	OnBackPackState();
+}
+
+
+void AItemBackpack::ShowInventory()
+{
+	UWorld* World = GetWorld();
+	if (!World) return;
+	/*
+	 *
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = GetOwner();
+	SpawnParams.Instigator = InstigatorPawn;
+	 
+	World->SpawnActor<AOpenedInventory>(
+		OpenedInventoryClass,
+		SocketTransform.GetLocation(), // fix
+		TargetRotation, // fix
+		SpawnParams // fix
+		);
+	*/
 }

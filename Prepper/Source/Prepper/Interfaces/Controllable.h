@@ -35,5 +35,7 @@ public:
 	virtual void MouseRightPressed() PURE_VIRTUAL(IControllable::MouseRightPressed, );
 	virtual void MouseRightReleased() PURE_VIRTUAL(IControllable::MouseRightReleased, );
 
+	virtual void ToggleInventory() PURE_VIRTUAL();
+
 	virtual UCameraComponent* GetFollowCamera() PURE_VIRTUAL(IControllable::GetFollowCamera, return nullptr;);
 };

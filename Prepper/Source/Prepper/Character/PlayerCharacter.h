@@ -80,6 +80,8 @@ protected:
 	virtual void MouseLeftReleased() override;
 	virtual void MouseRightPressed() override;
 	virtual void MouseRightReleased() override;
+
+	virtual void ToggleInventory() override;
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual UCustomCameraComponent* GetFollowCamera() override;
@@ -147,7 +149,7 @@ private:
 	class UStatusEffectComponent* StatusEffect;
 
 	
-	void SetPlayerEqiupmentHiddenInGame(bool visible);
+	void SetPlayerEquipmentHiddenInGame(bool visible);
 	
 	/* For Animation */
 	UPROPERTY(EditAnywhere, Category = Combat)

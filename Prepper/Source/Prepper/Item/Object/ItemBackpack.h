@@ -53,7 +53,12 @@ protected:
 
 	void OnBackPackState();
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AOpenedInventory> OpenedInventoryClass;
+	
+
 public:
+	void ShowInventory();	
 	void SetBackpackState(EBackpackState NewBackpackState);
 	FORCEINLINE UStaticMeshComponent* GetItemMesh() const { return BackpackMesh; }
 };
