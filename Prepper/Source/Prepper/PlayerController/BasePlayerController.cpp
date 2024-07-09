@@ -213,8 +213,7 @@ void ABasePlayerController::FireButtonReleased()
 
 void ABasePlayerController::OpenInventoryPressed()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->ToggleInventory();
+	ServerToggleInventory();
 }
 
 void ABasePlayerController::QuickSlot1Use()
@@ -229,3 +228,11 @@ void ABasePlayerController::ServerInteractionPressed_Implementation()
 	if (!TargetControllerable) return;
 	TargetControllerable->EPressed();
 }
+
+void ABasePlayerController::ServerToggleInventory_Implementation()
+{
+	if (!TargetControllerable) return;
+	TargetControllerable->ToggleInventory();
+}
+
+

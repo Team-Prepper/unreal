@@ -113,6 +113,7 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerInteractionPressed();
 
-	
+	UFUNCTION(Server, Reliable)
+	void ServerToggleInventory();
 
 };

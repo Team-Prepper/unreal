@@ -62,6 +62,9 @@ protected:
 	UPROPERTY(Replicated)
 	bool IsOpened = false;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastToggleInventory();
+
 
 public:
 	void ToggleInventory();
