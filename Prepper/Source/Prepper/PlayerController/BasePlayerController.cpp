@@ -213,8 +213,8 @@ void ABasePlayerController::FireButtonReleased()
 
 void ABasePlayerController::OpenInventoryPressed()
 {
-	if (!PrepperHUD) return;
-	PrepperHUD->ToggleInventory();
+	if (!TargetControllerable) return;
+	TargetControllerable->ToggleInventory();
 }
 
 void ABasePlayerController::QuickSlot1Use()

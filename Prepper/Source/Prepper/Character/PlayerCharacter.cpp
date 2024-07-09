@@ -438,12 +438,11 @@ void APlayerCharacter::MouseRightReleased()
 }
 
 void APlayerCharacter::ToggleInventory()
-{
-	if(EquippedBackpack)
-	{
-		UE_LOG(LogTemp,Warning,TEXT("OpenInven"));
-		//EquippedBackpack-> ShowInventory
-	}
+{ 
+	if(!EquippedBackpack) return;
+	
+	UE_LOG(LogTemp,Warning,TEXT("InvenToggle"));
+	EquippedBackpack->ToggleInventory();
 }
 
 UCustomCameraComponent* APlayerCharacter::GetFollowCamera()

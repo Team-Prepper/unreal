@@ -40,7 +40,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 	UStaticMeshComponent* BackpackMesh;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	class APlayerCharacter* PlayerOwnerCharacter;
 	UPROPERTY()
 	class APrepperPlayerController* PlayerOwnerController;
@@ -55,10 +55,18 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AOpenedInventory> OpenedInventoryClass;
-	
+
+	UPROPERTY()
+	class AOpenedInventory* OpenedInventory;
+
+	UPROPERTY(Replicated)
+	bool IsOpened = false;
+
 
 public:
-	void ShowInventory();	
+	void ToggleInventory();
+	void ShowInventory();
+	void HideInventory();
 	void SetBackpackState(EBackpackState NewBackpackState);
 	FORCEINLINE UStaticMeshComponent* GetItemMesh() const { return BackpackMesh; }
 };

@@ -6,9 +6,13 @@
 AOpenedInventory::AOpenedInventory()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
+	BaseActor = CreateDefaultSubobject<USceneComponent>(TEXT("BaseActor"));
+	SetRootComponent(BaseActor);
+	
 	InventoryMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InventoryMesh"));
-	SetRootComponent(InventoryMesh);
+	InventoryMesh->SetupAttachment(RootComponent);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(RootComponent);

@@ -113,4 +113,6 @@ protected:
 	UFUNCTION(Server, Reliable)
 	void ServerInteractionPressed();
 
+	
+
 };

@@ -9,6 +9,7 @@
 AItemBackpack::AItemBackpack()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	BackpackMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BackpackMesh"));
 	SetRootComponent(BackpackMesh);
@@ -34,6 +35,8 @@ void AItemBackpack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AItemBackpack, BackpackState);
+	DOREPLIFETIME(AItemBackpack, PlayerOwnerCharacter);
+	DOREPLIFETIME(AItemBackpack, IsOpened);
 }
 
 void AItemBackpack::BeginPlay()
@@ -59,6 +62,7 @@ void AItemBackpack::Interaction(APlayerCharacter* Target)
 {
 	if(Target)
 	{
+		PlayerOwnerCharacter = Target;
 		Target->EquipBackpack(this);
 	}
 }
@@ -112,22 +116,39 @@ void AItemBackpack::SetBackpackState(EBackpackState NewBackpackState)
 	OnBackPackState();
 }
 
+void AItemBackpack::ToggleInventory()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Backpack : Toggle"));
+	if(IsOpened)
+	{
+		HideInventory();
+	}
+	else
+	{
+		ShowInventory();
+	}
+	IsOpened = !IsOpened;
+}
 
 void AItemBackpack::ShowInventory()
 {
+	UE_LOG(LogTemp,Warning,TEXT("Show Inventory"));
 	UWorld* World = GetWorld();
-	if (!World) return;
-	/*
-	 *
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = GetOwner();
-	SpawnParams.Instigator = InstigatorPawn;
-	 
-	World->SpawnActor<AOpenedInventory>(
+	if(!World) return;
+	if(!PlayerOwnerCharacter) return;
+	if(!OpenedInventoryClass) return;
+
+	FRotator SpawnRotation(0.0f, GetActorRotation().Yaw, 0.0f);
+	OpenedInventory = World->SpawnActor<AOpenedInventory>(
 		OpenedInventoryClass,
-		SocketTransform.GetLocation(), // fix
-		TargetRotation, // fix
-		SpawnParams // fix
+		GetActorLocation() + GetActorForwardVector() * 200.0f + GetActorLocation().DownVector * 200.0f,
+		SpawnRotation
 		);
-	*/
+}
+
+void AItemBackpack::HideInventory()
+{
+	UE_LOG(LogTemp,Warning,TEXT("Hide Inventory"));
+	if(!OpenedInventory) return;
+	OpenedInventory->Destroy();
 }

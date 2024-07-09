@@ -16,6 +16,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere)
+	class USceneComponent* BaseActor;
+
+	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* InventoryMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
