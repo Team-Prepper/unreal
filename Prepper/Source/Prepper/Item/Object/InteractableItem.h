@@ -24,7 +24,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float BaseTurnRate = 45.f;
 	
-private:
 	UPROPERTY(EditAnywhere, Category = "Item Properties")
 	FString ItemCode;
 
