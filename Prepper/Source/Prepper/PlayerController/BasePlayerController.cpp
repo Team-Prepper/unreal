@@ -60,6 +60,15 @@ void ABasePlayerController::PossessPawn()
 	{
 		TargetControllerable = GetPawn();
 	}
+	
+	if(!IsLocalController()) return;
+
+	PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
+	
+	if (!PrepperHUD || !PlayerCharacter) return;
+	
+	PlayerCharacter->Attach(PrepperHUD);
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)

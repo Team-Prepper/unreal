@@ -11,8 +11,8 @@
 void APrepperPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	PrepperHUD = Cast<APrepperHUD>(GetHUD());
 	SetInputMode(FInputModeGameOnly());
+	PrepperHUD = Cast<APrepperHUD>(GetHUD());
 }
 
 void APrepperPlayerController::PossessPawn()
@@ -28,19 +28,21 @@ void APrepperPlayerController::PollInit()
 	{
 		PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 	}
-	if(PrepperHUD && PrepperHUD->CharacterOverlay)
+
+	if(PlayerCharacter && PlayerCharacter->GetStatusEffectComponent())
 	{
-		PrepperHUD->ResetCrossHair();
-		CharacterOverlay = PrepperHUD->CharacterOverlay;
-		if(CharacterOverlay && PlayerCharacter)
-		{
-			UE_LOG(LogTemp,Warning,TEXT("[PrepperPlayerController] : Set CharacterOverlay"));
-			UE_LOG(LogTemp,Warning,TEXT("%f, %f"),PlayerCharacter->GetCurrentHealth(),PlayerCharacter->GetMaxHealth());
-			SetHUDHealth(PlayerCharacter->GetCurrentHealth(),PlayerCharacter->GetMaxHealth());
-		}
+		PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
 	}
 
-	if(PrepperHUD && PrepperHUD->Compass)
+	if (!PrepperHUD) return;
+	PrepperHUD->ResetCrossHair();
+	
+	if(PrepperHUD->CharacterOverlay)
+	{
+		CharacterOverlay = PrepperHUD->CharacterOverlay;
+	}
+
+	if(PrepperHUD->Compass)
 	{
 		Compass = PrepperHUD->Compass;
 		if(Compass)
@@ -48,11 +50,6 @@ void APrepperPlayerController::PollInit()
 			UE_LOG(LogTemp,Warning,TEXT("[PrepperPlayerController] : Set Compass"));
 			SetCompass();
 		}
-	}
-
-	if(PlayerCharacter && PlayerCharacter->GetStatusEffectComponent())
-	{
-		PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
 	}
 }
 
@@ -80,9 +77,9 @@ void APrepperPlayerController::SetHUDHealth(float Health, float MaxHealth)
 	if(bHUDValid)
 	{
 		const float HealthPercent = Health / MaxHealth;
-		PrepperHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
+		//PrepperHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
 		FString HealthText = FString::Printf(TEXT("%d/%d"),FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
-		PrepperHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
+		//PrepperHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 	}
 	else
 	{

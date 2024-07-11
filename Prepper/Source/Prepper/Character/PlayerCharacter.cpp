@@ -147,16 +147,15 @@ void APlayerCharacter::RotateInPlace(float DeltaTime)
 	if(GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
 	{
 		AimOffset(DeltaTime);
+		return;
 	}
-	else
+	
+	TimeSinceLastMovementReplication += DeltaTime;
+	if (TimeSinceLastMovementReplication > 0.25f)
 	{
-		TimeSinceLastMovementReplication += DeltaTime;
-		if (TimeSinceLastMovementReplication > 0.25f)
-		{
-			OnRep_ReplicatedMovement();
-		}
-		CalculateAO_Pitch();
+		OnRep_ReplicatedMovement();
 	}
+	CalculateAO_Pitch();
 }
 
 
@@ -183,36 +182,19 @@ void APlayerCharacter::ShiftReleased()
 void APlayerCharacter::PlayHitReactMontage()
 {
 	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance && HitReactMontage)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		FName SectionName("HitFront");
-		AnimInstance->Montage_JumpToSection(SectionName);
-	}
+	ABaseCharacter::PlayHitReactMontage();
 }
 
 void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
 	Super::ReceiveDamage(Damage, InstigatorController, DamageCauser);
-	UpdateHUDHealth();
-}
-
-void APlayerCharacter::UpdateHUDHealth()
-{
-	// 본인의 플레이어가 다른이로부터 피해를 받았을 때 내 화면의 GUI를 갱신하기 위한 코드
-	PrepperPlayerController = PrepperPlayerController == nullptr ?  Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
-	if(PrepperPlayerController)
-	{
-		PrepperPlayerController->SetHUDHealth(CurrentHealth, MaxHealth);
-	}
+	Notify();
 }
 
 void APlayerCharacter::OnRep_Health()
 {
 	Super::OnRep_Health();
-	UpdateHUDHealth();
+	Notify();
 }
 
 void APlayerCharacter::PollInit()
@@ -234,22 +216,21 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 	
-	if (Controller != nullptr)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-		// get forward vector
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	if (Controller == nullptr) return;
 	
-		// get right vector 
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	// find out which way is forward
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-		// add movement 
-		AddMovementInput(ForwardDirection, MovementVector.Y);
-		AddMovementInput(RightDirection, MovementVector.X);
-	}
+	// get forward vector
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	
+	// get right vector 
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	// add movement 
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void APlayerCharacter::Elim()
@@ -377,22 +358,21 @@ void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
 	}
 }
 
-void APlayerCharacter::Heal(int Amount)
+void APlayerCharacter::Heal(float Amount)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Heal:%d"), Amount);
-	CurrentHealth += Amount;
-	if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
-	UpdateHUDHealth();
+	UE_LOG(LogTemp, Warning, TEXT("Heal:%f"), Amount);
+	Health.AddValue(Amount);
+	Notify();
 }
 
-void APlayerCharacter::Eat(int Amount)
+void APlayerCharacter::Eat(float Amount)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Eat:%d"), Amount);
+	UE_LOG(LogTemp, Warning, TEXT("Eat:%f"), Amount);
 }
 
-void APlayerCharacter::Drink(int Amount)
+void APlayerCharacter::Drink(float Amount)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Drink:%d"), Amount);
+	UE_LOG(LogTemp, Warning, TEXT("Drink:%f"), Amount);
 }
 
 void APlayerCharacter::ControlPressed()
@@ -723,20 +703,17 @@ void APlayerCharacter::Destroyed()
 
 void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
 {
+	SetEquipmentHidden(EquippedBackpack, visible);
+	
 	if(!Combat) return;
-	if(Combat->EquippedWeapon)
-	{
-		Combat->EquippedWeapon->SetActorHiddenInGame(visible);
-	}
-	if(Combat->SecondaryWeapon)
-	{
-		Combat->SecondaryWeapon->SetActorHiddenInGame(visible);
-	}
+	SetEquipmentHidden(Combat->EquippedWeapon, visible);
+	SetEquipmentHidden(Combat->SecondaryWeapon, visible);
+}
 
-	if(EquippedBackpack)
-	{
-		EquippedBackpack->SetActorHiddenInGame(visible);
-	}
+void APlayerCharacter::SetEquipmentHidden(AActor* Target, bool visible)
+{
+	if (!Target) return;
+	Target->SetActorHiddenInGame(visible);
 }
 
 void APlayerCharacter::AddItem(FString ItemCode)

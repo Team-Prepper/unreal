@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Prepper/_Base/ObserverPattern/Observer.h"
+#include "Prepper/_Base/Util/GaugeFloat.h"
 #include "PrepperHUD.generated.h"
 
 USTRUCT(BlueprintType)
@@ -24,7 +26,7 @@ struct FHUDPackage
 };
 
 UCLASS()
-class PREPPER_API APrepperHUD : public AHUD
+class PREPPER_API APrepperHUD : public AHUD, public IObserver<FGaugeFloat>
 {
 	GENERATED_BODY()
 	
@@ -44,6 +46,8 @@ public:
 
 	UFUNCTION()
 	void ResetCrossHair();
+
+	virtual void Update(FGaugeFloat& NewData) override;
 	
 protected:
 	virtual void BeginPlay() override;

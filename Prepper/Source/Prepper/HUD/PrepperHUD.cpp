@@ -4,6 +4,7 @@
 #include "UI/CharacterOverlay.h"
 #include "UI/Compass.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/ProgressBar.h"
 #include "GameFramework/PlayerController.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
@@ -84,4 +85,14 @@ void APrepperHUD::ResetCrossHair()
 	HUDPackage.CrosshairRight = nullptr;
 	HUDPackage.CrosshairTop = nullptr;
 	HUDPackage.CrosshairBottom = nullptr;
+}
+
+void APrepperHUD::Update(FGaugeFloat& NewData)
+{
+	if (!CharacterOverlay) return;
+	CharacterOverlay->HealthBar->SetPercent(NewData.GetRatio());
+	
+	FString HealthText = FString::Printf(TEXT("%d/%d"),
+		FMath::CeilToInt(NewData.GetCurValue()), FMath::CeilToInt(NewData.GetMaxValue()));
+	CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 }

@@ -32,7 +32,7 @@ public:
 	class UCompass* Compass;
 	
 	UPROPERTY()
-	class UCameraComponent* PlayerCam;
+	UCameraComponent* PlayerCam;
 	
 	bool bInitCharacterOverlay = false;
 	

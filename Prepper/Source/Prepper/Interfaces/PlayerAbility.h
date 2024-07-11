@@ -27,7 +27,7 @@ public:
 	virtual void UseQuickSlotItem(int Idx) PURE_VIRTUAL();
 	virtual void EquipWeapon(class AWeaponActor* Weapon) PURE_VIRTUAL();
 
-	virtual void Heal(int Amount) PURE_VIRTUAL();
-	virtual void Eat(int Amount) PURE_VIRTUAL();
-	virtual void Drink(int Amount) PURE_VIRTUAL();
+	virtual void Heal(float Amount) PURE_VIRTUAL();
+	virtual void Eat(float Amount) PURE_VIRTUAL();
+	virtual void Drink(float Amount) PURE_VIRTUAL();
 };

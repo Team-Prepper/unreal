@@ -80,8 +80,6 @@ protected:
 	virtual void MouseLeftReleased() override;
 	virtual void MouseRightPressed() override;
 	virtual void MouseRightReleased() override;
-
-	virtual void ToggleInventory() override;
 public:
 	UFUNCTION(BlueprintCallable)
 	virtual UCustomCameraComponent* GetFollowCamera() override;
@@ -114,8 +112,6 @@ private:
 	
 protected:
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-	virtual void UpdateHUDHealth();
-
 	virtual void OnRep_Health() override;
 	
 	// init 되었는지 확인하고 init함 _ DeathMatch
@@ -149,7 +145,8 @@ private:
 	class UStatusEffectComponent* StatusEffect;
 
 	
-	void SetPlayerEquipmentHiddenInGame(bool visible);
+	void SetPlayerEqiupmentHiddenInGame(bool visible);
+	void SetEquipmentHidden(AActor* Target, bool visible);
 	
 	/* For Animation */
 	UPROPERTY(EditAnywhere, Category = Combat)
@@ -225,9 +222,9 @@ public:
 	virtual void UseQuickSlotItem(int Idx) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
 	
-	virtual void Heal(int Amount) override;
-	virtual void Eat(int Amount) override;
-	virtual void Drink(int Amount) override;
+	virtual void Heal(float Amount) override;
+	virtual void Eat(float Amount) override;
+	virtual void Drink(float Amount) override;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAddItem(const FString& ItemCode);

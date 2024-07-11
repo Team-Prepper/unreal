@@ -17,11 +17,10 @@ ABaseCharacter::ABaseCharacter()
 	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
-
 void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(ABaseCharacter, CurrentHealth);
+	DOREPLIFETIME(ABaseCharacter, Health);
 }
 
 void ABaseCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
@@ -34,10 +33,28 @@ void ABaseCharacter::AttachActorAtSocket(const FName& SocketName, AActor* Target
 	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
+void ABaseCharacter::Attach(IObserver<FGaugeFloat>* Observer)
+{
+	Observers.insert(Observer);
+	Observer->Update(Health);
+}
+
+void ABaseCharacter::Detach(IObserver<FGaugeFloat>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void ABaseCharacter::Notify()
+{
+	std::ranges::for_each(Observers, [&](IObserver<FGaugeFloat>* Observer) {
+		Observer->Update(Health);
+		});
+}
+
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if(HasAuthority())
+	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
 	}
@@ -54,21 +71,22 @@ void ABaseCharacter::PlayElimMontage()
 
 void ABaseCharacter::PlayHitReactMontage()
 {
+	if (!HitReactMontage) return;
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance && HitReactMontage)
+	if(AnimInstance)
 	{
 		AnimInstance->Montage_Play(HitReactMontage);
-		FName SectionName("HitFront");
-		AnimInstance->Montage_JumpToSection(SectionName);
+		AnimInstance->Montage_JumpToSection(FName("HitFront"));
 	}
 }
 
 void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
-	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+	Health.SubValue(Damage);
 	PlayHitReactMontage();
 
-	if(CurrentHealth != 0.f) return;
+	if(Health.GetCurValue() != 0.f) return;
+	
 	// 해당 캐릭터가 사망했다면 
 	APrepperGameMode* PrepperGameMode =  GetWorld()->GetAuthGameMode<APrepperGameMode>();
 	
