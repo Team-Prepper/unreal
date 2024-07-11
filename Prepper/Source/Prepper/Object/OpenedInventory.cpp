@@ -2,6 +2,8 @@
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Prepper/Component/CustomCameraComponent.h"
+#include "Prepper/GameInstance/PrepperGameInstance.h"
+#include "Prepper/Item/Object/InventoryInteractableItem.h"
 
 AOpenedInventory::AOpenedInventory()
 {
@@ -23,14 +25,44 @@ AOpenedInventory::AOpenedInventory()
 	InventoryCam->bUsePawnControlRotation = false;
 }
 
-void AOpenedInventory::BeginPlay()
+void AOpenedInventory::SetTargetInventory(UMapInventory* Inventory)
 {
-	Super::BeginPlay();
+	TargetInventory = Inventory;
+	InitInventory();
+}
 
-	/* TODO
-	 * 인벤토리 추적 : Backpack에 Component로 존재  
-	 * 인벤토리에 있는 아이템 Spawn
-	 * 해당 아이템은 상호작용시 상호작용 HUD를 생성 
-	 */
+void AOpenedInventory::InitInventory()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Opened Inven init"));
+	UWorld* World = GetWorld();
+	if(!World)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NO WORLD"));
+		return;
+	}
+	FRotator SpawnRotation(0.0f, GetActorRotation().Yaw, 0.0f);
+	
+	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();
+	UE_LOG(LogTemp, Warning, TEXT("Item Count : %d"), Items.Num());
+	for (int i = 0; i < Items.Num(); i++)
+	{
+		IInventory::InventoryItem Item = Items[i]; // 생성할 아이템 선택
+
+		UPrepperGameInstance* PrepperGameInstance = Cast<UPrepperGameInstance>(GetGameInstance());
+		if(PrepperGameInstance->GetItemInstance(Item.ItemCode))
+		{
+			InventoryInteractableItem = World->SpawnActor<AInventoryInteractableItem>(
+				*PrepperGameInstance->GetItemInstance(Item.ItemCode),
+				GetActorLocation() + GetActorForwardVector() * 100.0f * i + GetActorLocation().UpVector * 200.0f, // TODO : Set Location 
+				SpawnRotation
+				);
+			UE_LOG(LogTemp, Warning, TEXT("Spawn Inven Item"));
+		}else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Check Game Instace!"));
+		}
+			
+		InventoryInteractableItem->SetTargetInventory(TargetInventory);
+	}
 }
 

@@ -3,11 +3,8 @@
 #include "UI/Announcement.h"
 #include "UI/CharacterOverlay.h"
 #include "UI/Compass.h"
-#include "Prepper/HUD/Item/ItemGrid.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
-#include "Item/CraftUI.h"
-#include "Item/MainInventoryHUD.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
 void APrepperHUD::BeginPlay()
@@ -25,14 +22,7 @@ void APrepperHUD::AddCharacterOverlay()
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
 		CharacterOverlay->AddToViewport();
 	}
-	if(InventoryHUDClass)
-	{
-		InventoryHUD = CreateWidget<UMainInventoryHUD>(PlayerController, InventoryHUDClass);
-		InventoryHUD->AddToViewport();
-		InventoryHUD->SetVisibility(ESlateVisibility::Hidden);
-		if(InventoryHUD->ItemGrid)
-			InventoryHUD->ItemGrid->Set(Cast<APlayerCharacter>(GetOwningPawn())->Inven);
-	}
+	
 	if(CompassHUDClass)
 	{
 		Compass = CreateWidget<UCompass>(PlayerController, CompassHUDClass);
@@ -85,24 +75,6 @@ void APrepperHUD::DrawCrosshair(UTexture2D* Texture, const FVector2D& ViewportCe
 		1.f,1.f,
 		CrosshairColor
 		);
-}
-
-void APrepperHUD::ToggleInventory()
-{
-	if(!InventoryHUD) return;
-	InventoryHUD->SetInventory(Cast<APlayerCharacter>(GetOwningPawn())->Inven);
-	IsInventoryVisible = !IsInventoryVisible;
-	InventoryHUD->SetVisibility(IsInventoryVisible ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
-	GetOwningPlayerController()->SetShowMouseCursor(IsInventoryVisible);
-	if(IsInventoryVisible)
-	{
-		GetOwningPlayerController()->SetInputMode(FInputModeGameAndUI());
-	}
-	else
-	{
-		GetOwningPlayerController()->SetInputMode(FInputModeGameOnly());
-	}
-	
 }
 
 void APrepperHUD::ResetCrossHair()

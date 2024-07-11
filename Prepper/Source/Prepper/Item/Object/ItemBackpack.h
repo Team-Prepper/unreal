@@ -57,6 +57,9 @@ protected:
 	TSubclassOf<class AOpenedInventory> OpenedInventoryClass;
 
 	UPROPERTY()
+	class UMapInventory* Inventory;
+	
+	UPROPERTY()
 	class AOpenedInventory* OpenedInventory;
 
 	UPROPERTY(Replicated)
@@ -72,4 +75,5 @@ public:
 	void HideInventory();
 	void SetBackpackState(EBackpackState NewBackpackState);
 	FORCEINLINE UStaticMeshComponent* GetItemMesh() const { return BackpackMesh; }
+	FORCEINLINE UMapInventory* GetInventory() const {return Inventory; }
 };

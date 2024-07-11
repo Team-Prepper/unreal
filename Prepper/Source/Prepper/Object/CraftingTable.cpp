@@ -2,7 +2,6 @@
 
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Prepper/HUD/Item/CraftUI.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/_Base/UISystem/UIManager.h"
 
@@ -34,8 +33,6 @@ void ACraftingTable::Interaction(APlayerCharacter* Target)
 void ACraftingTable::MulticastInteraction_Implementation(APlayerCharacter* Target)
 {
 	if(!Target->IsLocallyControlled()) return;
-	
-	UCraftUI* CraftUI = UIManager::GetInstance()->OpenGUI<UCraftUI>(Cast<APlayerController>(Target->GetController()), TEXT("CraftUI"));
-	CraftUI->SetTargetInventory(Target->Inven);
+	// DO SOMETHING
 }
 

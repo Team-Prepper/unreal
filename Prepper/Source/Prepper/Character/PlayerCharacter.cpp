@@ -20,7 +20,6 @@
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Sound/SoundCue.h"
 #include "Components/PawnNoiseEmitterComponent.h"
-#include "Prepper/HUD/Item/CraftUI.h"
 
 
 APlayerCharacter::APlayerCharacter()
@@ -112,7 +111,6 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Inven->SetOwner(this);
 	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 }
 
@@ -754,6 +752,11 @@ void APlayerCharacter::UseQuickSlotItem(int Idx)
 
 void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 {
+	if(EquippedBackpack)
+	{
+		EquippedBackpack->GetInventory()->TryAddItem(ItemCode);
+		return;
+	}
 	Inven->TryAddItem(ItemCode);
 }
 

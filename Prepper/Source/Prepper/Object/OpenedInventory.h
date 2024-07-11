@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "OpenedInventory.generated.h"
 
+class UMapInventory;
 UCLASS()
 class PREPPER_API AOpenedInventory : public AActor
 {
@@ -12,9 +13,21 @@ class PREPPER_API AOpenedInventory : public AActor
 public:	
 	AOpenedInventory();
 
-protected:
-	virtual void BeginPlay() override;
+	void SetTargetInventory(UMapInventory* Inventory);
 
+protected:
+	UFUNCTION()
+	void InitInventory();
+
+	UPROPERTY()
+	UMapInventory* TargetInventory;
+
+	UPROPERTY()
+	class AInventoryInteractableItem* InventoryInteractableItem;
+	
+	UPROPERTY()
+	TSubclassOf<class AInventoryInteractableItem> InventoryInteractableItemClass;
+	
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* BaseActor;
 
@@ -29,4 +42,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = Camera)
 	float DefaultCamArmLength;
+
+	
 };

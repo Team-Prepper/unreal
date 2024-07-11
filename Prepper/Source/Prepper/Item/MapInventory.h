@@ -25,7 +25,6 @@ private:
 
 public:
 	UMapInventory();
-	virtual void SetOwner(IPlayerAbility* Target) override;
 	virtual bool TryAddItem(const FString& ItemCode) override;
 	virtual bool TryUseItem(const FString& ItemCode) override;
 	virtual bool TryDiscardItem(const FString& ItemCode) override;

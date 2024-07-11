@@ -10,14 +10,8 @@ UMapInventory::UMapInventory()
 	BulletCount = 0;
 }
 
-void UMapInventory::SetOwner(IPlayerAbility* Target)
-{
-	Owner = Target;
-}
-
 bool UMapInventory::TryAddItem(const FString& ItemCode)
 {
-	
 	// 아이템이 존재한다면
 	// 그 아이템의 소지수를 1 늘리고 true 반환
 	if (ItemUnits.Contains(ItemCode))
@@ -44,12 +38,11 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 
 bool UMapInventory::TryUseItem(const FString& ItemCode)
 {
+	// 여기서는 아이템의 갯수만 제어
+	// 효과 적용은 해당 아이템에서 직접 적용
 	// 아이템이 존재하지 않는다면 return false
 	if (!ItemUnits.Contains(ItemCode))	return false;
-	UPrepperGameInstance* PrepperGameInstance = Cast<UPrepperGameInstance>(GetWorld()->GetGameInstance());
 	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - 1;
-	
-	PrepperGameInstance->ItemData.GetItem(ItemCode)->Use(Owner);
 
 	// 아이템 사용 후의 개수가 0인 경우 삭제
 	if (ItemCount == 0)
@@ -63,7 +56,6 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
-	// 아이템 사용에 성공했으므로 true 반환
 	return true;
 }
 
@@ -109,7 +101,6 @@ TArray<IInventory::InventoryItem> UMapInventory::GetIter()
 	TArray<InventoryItem> Retval;
 	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
 	{
-		
 		Retval.Add(InventoryItem(Iter.Key(), Iter.Value()));
 	}
 	return Retval;

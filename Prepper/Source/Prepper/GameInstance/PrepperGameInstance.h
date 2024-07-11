@@ -16,17 +16,22 @@ class PREPPER_API UPrepperGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+	TMap<FString, TSubclassOf<class AInventoryInteractableItem>> InteractableItems;
+
+
 public:
-	ItemDataGetter ItemData;
+	UPrepperGameInstance();
+	
+	TMap<FString, FItem> ItemData;
 
 	virtual void Init() override {
 		UIManager::Initialize();
 	};	
 
-	UPROPERTY()
-	class UItemGridSlotInfo* ItemInfo;
-
 public:
-	FORCEINLINE const ItemDataGetter& GetItemData() const {return ItemData;}
-	
+	bool GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName);
+	FItem* GetItem(const FString& ItemCode);
+	TSubclassOf<class AInventoryInteractableItem>* GetItemInstance(FString ItemCode);
 };

@@ -17,25 +17,25 @@ public:
 	AInventoryInteractableItem();
 	virtual void Interaction(APlayerCharacter* Target) override;
 
+	virtual void ShowPickUpWidget(bool bShowWidget) override;
+
+	void SetTargetInventory(UMapInventory* Inventory);
+
 private:
+	UPROPERTY()
+	class UMapInventory* TargetInventory;
+	
 	UPROPERTY(VisibleAnywhere)
-	UBoxComponent* BoxCollision;
+	class UBoxComponent* BoxCollision;
 
 	UPROPERTY(VisibleAnywhere)
-	UWidgetComponent* WidgetComponent;
+	class UWidgetComponent* WidgetComponent;
 	
 	UPROPERTY(EditAnywhere, Category = "UI")
-	TSubclassOf<UUserWidget> WidgetClass;
+	TSubclassOf<class UUserWidget> WidgetClass;
 
 	UPROPERTY()
-	UUserWidget* WidgetInstance;
+	class UUserWidget* WidgetInstance;
 
-	UFUNCTION()
-	void OnBeginCursorOver(UPrimitiveComponent* TouchedComponent);
-	
-	UFUNCTION()
-	void OnEndCursorOver(UPrimitiveComponent* TouchedComponent);
-
-	UFUNCTION()
-	void OnClicked(UPrimitiveComponent* TouchedComponent, FKey ButtonPressed);
+	void InitializeWidget();
 };

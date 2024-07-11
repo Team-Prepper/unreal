@@ -29,6 +29,9 @@ AItemBackpack::AItemBackpack()
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
+
+	Inventory = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
+	Inventory->SetIsReplicated(true);
 }
 
 void AItemBackpack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -64,6 +67,7 @@ void AItemBackpack::Interaction(APlayerCharacter* Target)
 	{
 		PlayerOwnerCharacter = Target;
 		Target->EquipBackpack(this);
+		SetOwner(Target);
 	}
 }
 
@@ -149,6 +153,7 @@ void AItemBackpack::ShowInventory()
 		GetActorLocation() + GetActorForwardVector() * 200.0f + GetActorLocation().DownVector * 200.0f,
 		SpawnRotation
 		);
+	OpenedInventory->SetTargetInventory(Inventory);
 }
 
 void AItemBackpack::HideInventory()

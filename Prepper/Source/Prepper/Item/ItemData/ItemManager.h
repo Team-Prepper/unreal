@@ -18,6 +18,7 @@ public:
 
 	TMap<FString, FItemCombinationData> CombinationData;
 	TMap<FString, FCombinedItems> CombinationResultToIngredients;
+	TMap<FString, TSubclassOf<class AInventoryInteractableItem>> InteractableItems;
 	
 	bool GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName);
 	FItem* GetItem(const FString& ItemCode);

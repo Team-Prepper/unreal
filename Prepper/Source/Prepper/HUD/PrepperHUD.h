@@ -36,16 +36,11 @@ public:
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 	UPROPERTY()
-	class UMainInventoryHUD* InventoryHUD;
-	UPROPERTY()
 	class UCompass* Compass;
 	UPROPERTY()
 	class UAnnouncement* Announcement;
 	
 	void AddAnnouncement();
-	
-	UFUNCTION()
-	void ToggleInventory();
 
 	UFUNCTION()
 	void ResetCrossHair();
