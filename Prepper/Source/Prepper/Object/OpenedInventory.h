@@ -15,9 +15,24 @@ public:
 
 	void SetTargetInventory(UMapInventory* Inventory);
 
+	UFUNCTION()
+	void CloseInventory();
+
 protected:
 	UFUNCTION()
 	void InitInventory();
+
+	UPROPERTY()
+	uint32 RowSize = 3;
+
+	UPROPERTY(EditAnywhere)
+	float RowPivot = 50;
+
+	UPROPERTY(EditAnywhere)
+	float ColPivot = -180;
+
+	UPROPERTY(EditAnywhere)
+	float HeightPivot = 171;
 
 	UPROPERTY()
 	UMapInventory* TargetInventory;
@@ -27,21 +42,14 @@ protected:
 	
 	UPROPERTY()
 	TSubclassOf<class AInventoryInteractableItem> InventoryInteractableItemClass;
+
+	TArray<AActor*> SpawnedActors;
 	
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* BaseActor;
 
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* InventoryMesh;
-
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class UCustomCameraComponent* InventoryCam;
-
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(EditAnywhere, Category = Camera)
-	float DefaultCamArmLength;
-
+	
 	
 };

@@ -15,14 +15,6 @@ AOpenedInventory::AOpenedInventory()
 	
 	InventoryMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InventoryMesh"));
 	InventoryMesh->SetupAttachment(RootComponent);
-
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = DefaultCamArmLength;
-
-	InventoryCam = CreateDefaultSubobject<UCustomCameraComponent>(TEXT("InvenCam"));
-	InventoryCam->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	InventoryCam->bUsePawnControlRotation = false;
 }
 
 void AOpenedInventory::SetTargetInventory(UMapInventory* Inventory)
@@ -33,6 +25,8 @@ void AOpenedInventory::SetTargetInventory(UMapInventory* Inventory)
 
 void AOpenedInventory::InitInventory()
 {
+	if(!HasAuthority()) return;
+	
 	UE_LOG(LogTemp, Warning, TEXT("Opened Inven init"));
 	UWorld* World = GetWorld();
 	if(!World)
@@ -53,16 +47,32 @@ void AOpenedInventory::InitInventory()
 		{
 			InventoryInteractableItem = World->SpawnActor<AInventoryInteractableItem>(
 				*PrepperGameInstance->GetItemInstance(Item.ItemCode),
-				GetActorLocation() + GetActorForwardVector() * 100.0f * i + GetActorLocation().UpVector * 200.0f, // TODO : Set Location 
+				GetActorLocation()
+				+ GetActorForwardVector() * (RowPivot - 100.0f * (i % RowSize))
+				+ GetActorRightVector() * (ColPivot + 100.0f * (i/RowSize))
+				+ GetActorLocation().UpVector * HeightPivot,  
 				SpawnRotation
 				);
+			if(InventoryInteractableItem)
+			{
+				SpawnedActors.Add(InventoryInteractableItem);	
+			}
 			UE_LOG(LogTemp, Warning, TEXT("Spawn Inven Item"));
-		}else
+		}
+		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Check Game Instace!"));
 		}
 			
 		InventoryInteractableItem->SetTargetInventory(TargetInventory);
+	}
+}
+
+void AOpenedInventory::CloseInventory()
+{
+	for (auto Item : SpawnedActors)
+	{
+		Item->Destroy();
 	}
 }
 

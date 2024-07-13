@@ -88,7 +88,6 @@ void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 	if (!Character->IsLocallyControlled()) return;
 	if(!Character->HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
 		ServerSetItemInteractable(InteractableItem);
 	}
 	if(CurInteractableItem)
@@ -98,6 +97,7 @@ void UInteractionComponent::SetItemInteractable(AActor* InteractableItem)
 	CurInteractableItem = NewInteractableItem;
 	if(CurInteractableItem)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Set Interaction Item"));
 		CurInteractableItem->ShowPickUpWidget(true);
 	}
 }

@@ -26,6 +26,7 @@ void AInventoryInteractableItem::Interaction(APlayerCharacter* Target)
 
 void AInventoryInteractableItem::ShowPickUpWidget(bool bShowWidget)
 {
+	UE_LOG(LogTemp, Warning, TEXT("toggle Pickup widget"));
 	PickUpWidget->SetVisibility(bShowWidget);
 }
 

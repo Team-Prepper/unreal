@@ -120,8 +120,9 @@ void AItemBackpack::SetBackpackState(EBackpackState NewBackpackState)
 	OnBackPackState();
 }
 
-void AItemBackpack::MulticastToggleInventory_Implementation()
+void AItemBackpack::ToggleInventory()
 {
+
 	UE_LOG(LogTemp,Warning,TEXT("Backpack : Toggle"));
 	if(IsOpened)
 	{
@@ -132,11 +133,6 @@ void AItemBackpack::MulticastToggleInventory_Implementation()
 		ShowInventory();
 	}
 	IsOpened = !IsOpened;
-}
-
-void AItemBackpack::ToggleInventory()
-{
-	MulticastToggleInventory();
 }
 
 void AItemBackpack::ShowInventory()
@@ -160,5 +156,6 @@ void AItemBackpack::HideInventory()
 {
 	UE_LOG(LogTemp,Warning,TEXT("Hide Inventory"));
 	if(!OpenedInventory) return;
+	OpenedInventory->CloseInventory();
 	OpenedInventory->Destroy();
 }

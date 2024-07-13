@@ -754,9 +754,11 @@ void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 {
 	if(EquippedBackpack)
 	{
-		EquippedBackpack->GetInventory()->TryAddItem(ItemCode);
-		return;
+		UE_LOG(LogTemp, Warning, TEXT("Backpack : Add Item %s"), *ItemCode);
+		if(EquippedBackpack->GetInventory()->TryAddItem(ItemCode))
+			return;
 	}
+	UE_LOG(LogTemp, Warning, TEXT("pocket : Add Item %s"), *ItemCode);
 	Inven->TryAddItem(ItemCode);
 }
 

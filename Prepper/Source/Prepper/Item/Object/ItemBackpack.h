@@ -65,9 +65,6 @@ protected:
 	UPROPERTY(Replicated)
 	bool IsOpened = false;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastToggleInventory();
-
 
 public:
 	void ToggleInventory();
@@ -75,5 +72,5 @@ public:
 	void HideInventory();
 	void SetBackpackState(EBackpackState NewBackpackState);
 	FORCEINLINE UStaticMeshComponent* GetItemMesh() const { return BackpackMesh; }
-	FORCEINLINE UMapInventory* GetInventory() const {return Inventory; }
+	FORCEINLINE UMapInventory* GetInventory() const { return Inventory; }
 };

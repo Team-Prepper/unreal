@@ -18,7 +18,7 @@ private:
 	IPlayerAbility * Owner;
 	
 	uint8 BulletCount;
-	
+
 	TMap<FString, uint8> ItemUnits;
 
 	FString QuickSlotItem[MAX_QUICK_SLOT];

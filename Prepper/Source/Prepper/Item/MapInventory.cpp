@@ -19,7 +19,7 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 		const uint8 ItemCount = *ItemUnits.Find(ItemCode) + 1;
 		ItemUnits.Add(ItemCode, ItemCount);
 		
-		UE_LOG(LogTemp, Warning, TEXT("Add Item %s + 1"), *ItemCode);
+		UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
 		return true;
 	}
 
@@ -31,7 +31,7 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 	
 	// 새로운 아이템을 추가하고 true 반환
 	ItemUnits.Add(ItemCode, 1);
-	UE_LOG(LogTemp, Warning, TEXT("Add Item %s"), *ItemCode);
+	UE_LOG(LogTemp, Warning, TEXT("Init : Add Item %s"), *ItemCode);
 	
 	return true;
 }
@@ -41,7 +41,11 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	// 여기서는 아이템의 갯수만 제어
 	// 효과 적용은 해당 아이템에서 직접 적용
 	// 아이템이 존재하지 않는다면 return false
-	if (!ItemUnits.Contains(ItemCode))	return false;
+	if (!ItemUnits.Contains(ItemCode))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UseItem : No Item %s"), *ItemCode);
+		return false;
+	}
 	const uint8 ItemCount = *ItemUnits.Find(ItemCode) - 1;
 
 	// 아이템 사용 후의 개수가 0인 경우 삭제
