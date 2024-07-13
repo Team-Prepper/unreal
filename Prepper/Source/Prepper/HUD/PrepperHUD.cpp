@@ -5,6 +5,7 @@
 #include "UI/Compass.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/PlayerController.h"
 #include "Prepper/Character/PlayerCharacter.h"
 

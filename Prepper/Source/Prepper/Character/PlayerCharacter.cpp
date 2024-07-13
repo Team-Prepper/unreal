@@ -701,6 +701,7 @@ void APlayerCharacter::Destroyed()
 	}
 }
 
+
 void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
 {
 	SetEquipmentHidden(EquippedBackpack, visible);
