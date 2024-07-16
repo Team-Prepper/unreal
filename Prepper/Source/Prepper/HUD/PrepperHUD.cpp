@@ -1,7 +1,6 @@
 #include "PrepperHUD.h"
 
 #include "UI/Announcement.h"
-#include "UI/CharacterOverlay.h"
 #include "UI/Compass.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
@@ -17,6 +16,7 @@ void APrepperHUD::BeginPlay()
 void APrepperHUD::AddCharacterOverlay()
 {
 	APlayerController* PlayerController = GetOwningPlayerController();
+	
 	if(!PlayerController) return;
 	
 	if(CharacterOverlayClass)
@@ -45,7 +45,11 @@ void APrepperHUD::AddAnnouncement()
 void APrepperHUD::DrawHUD()
 {
 	Super::DrawHUD();
+	DrawCrosshair();
+}
 
+void APrepperHUD::DrawCrosshair()
+{
 	FVector2D ViewportSize;
 	if(!GEngine) return;
 	
@@ -54,14 +58,15 @@ void APrepperHUD::DrawHUD()
 	const FVector2D ViewportCenter(ViewportSize.X/ 2.f, ViewportSize.Y / 2.f);
 	float SpreadScaled = CrosshairSpreadMax * HUDPackage.CrosshairSpread;
 
-	DrawCrosshair(HUDPackage.CrosshairCenter, ViewportCenter, FVector2D(0.f, 0.f), HUDPackage.CrosshairColor);
-	DrawCrosshair(HUDPackage.CrosshairLeft, ViewportCenter, FVector2D(-SpreadScaled, 0.f), HUDPackage.CrosshairColor);
-	DrawCrosshair(HUDPackage.CrosshairRight, ViewportCenter, FVector2D(SpreadScaled, 0.f), HUDPackage.CrosshairColor);
-	DrawCrosshair(HUDPackage.CrosshairTop, ViewportCenter, FVector2D(0.f, -SpreadScaled), HUDPackage.CrosshairColor);
-	DrawCrosshair(HUDPackage.CrosshairBottom, ViewportCenter, FVector2D(0.f, SpreadScaled), HUDPackage.CrosshairColor);
+	DrawCrosshairUnit(HUDPackage.CrosshairCenter, ViewportCenter, FVector2D(0.f, 0.f), HUDPackage.CrosshairColor);
+	DrawCrosshairUnit(HUDPackage.CrosshairLeft, ViewportCenter, FVector2D(-SpreadScaled, 0.f), HUDPackage.CrosshairColor);
+	DrawCrosshairUnit(HUDPackage.CrosshairRight, ViewportCenter, FVector2D(SpreadScaled, 0.f), HUDPackage.CrosshairColor);
+	DrawCrosshairUnit(HUDPackage.CrosshairTop, ViewportCenter, FVector2D(0.f, -SpreadScaled), HUDPackage.CrosshairColor);
+	DrawCrosshairUnit(HUDPackage.CrosshairBottom, ViewportCenter, FVector2D(0.f, SpreadScaled), HUDPackage.CrosshairColor);
+	
 }
 
-void APrepperHUD::DrawCrosshair(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread, const FLinearColor& CrosshairColor)
+void APrepperHUD::DrawCrosshairUnit(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread, const FLinearColor& CrosshairColor)
 {
 	if (!Texture) return;
 	
@@ -86,14 +91,4 @@ void APrepperHUD::ResetCrossHair()
 	HUDPackage.CrosshairRight = nullptr;
 	HUDPackage.CrosshairTop = nullptr;
 	HUDPackage.CrosshairBottom = nullptr;
-}
-
-void APrepperHUD::Update(FGaugeFloat& NewData)
-{
-	if (!CharacterOverlay) return;
-	CharacterOverlay->HealthBar->SetPercent(NewData.GetRatio());
-	
-	FString HealthText = FString::Printf(TEXT("%d/%d"),
-		FMath::CeilToInt(NewData.GetCurValue()), FMath::CeilToInt(NewData.GetMaxValue()));
-	CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
 }

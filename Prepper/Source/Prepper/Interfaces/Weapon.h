@@ -65,4 +65,7 @@ public:
 
 	virtual bool CanReload()
 	PURE_VIRTUAL(IWeapon::CanReload, return false; );
+
+	virtual int GetLeftAmmo()
+	PURE_VIRTUAL(IWeapon::GetLeftAmmo, return 0; );
 };

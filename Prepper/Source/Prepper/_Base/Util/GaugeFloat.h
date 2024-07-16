@@ -2,34 +2,25 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "GaugeValue.h"
-#include "UObject/NoExportTypes.h"
-#include "GaugeFloat.generated.h"
 
 /**
  * 
  */
-USTRUCT(Atomic, BlueprintType)
-struct FGaugeFloat
+struct FGaugeFloat : public GaugeValue<float>
 {
-	GENERATED_USTRUCT_BODY()
 private:
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Camera)
-	UPROPERTY(EditAnywhere, Category = Combat)
 	float CurValue;
-	
-	UPROPERTY(EditAnywhere, Category = Combat)
 	float MaxValue;
-	
 public:
 	FGaugeFloat();
-	virtual ~FGaugeFloat();
-	virtual void AddValue(float& Value);
-	virtual void SubValue(float& Value);
-	virtual float GetCurValue();
-	virtual float GetMaxValue();
-	virtual float GetRatio();
+	FGaugeFloat(float Cur, float Max);
+	virtual ~FGaugeFloat() override;
+	virtual void AddValue(float& Value) override;
+	virtual void SubValue(float& Value) override;
+	virtual float GetCurValue() const override;
+	virtual float GetMaxValue() const override;
+	virtual float GetRatio() const override;
 	
 };
 

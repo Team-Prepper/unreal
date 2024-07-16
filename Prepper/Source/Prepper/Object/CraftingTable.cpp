@@ -3,7 +3,6 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
-#include "Prepper/_Base/UISystem/UIManager.h"
 
 ACraftingTable::ACraftingTable()
 {

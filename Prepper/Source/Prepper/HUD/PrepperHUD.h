@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "Prepper/_Base/ObserverPattern/Observer.h"
-#include "Prepper/_Base/Util/GaugeFloat.h"
+#include "Prepper/Character/PlayerCharacter.h"
+#include "UI/CharacterOverlay/CharacterOverlay.h"
 #include "PrepperHUD.generated.h"
 
 USTRUCT(BlueprintType)
@@ -26,7 +26,7 @@ struct FHUDPackage
 };
 
 UCLASS()
-class PREPPER_API APrepperHUD : public AHUD, public IObserver<FGaugeFloat>
+class PREPPER_API APrepperHUD : public AHUD
 {
 	GENERATED_BODY()
 	
@@ -36,7 +36,7 @@ public:
 	void AddCharacterOverlay();
 
 	UPROPERTY()
-	class UCharacterOverlay* CharacterOverlay;
+	UCharacterOverlay* CharacterOverlay;
 	UPROPERTY()
 	class UCompass* Compass;
 	UPROPERTY()
@@ -47,8 +47,6 @@ public:
 	UFUNCTION()
 	void ResetCrossHair();
 
-	virtual void Update(FGaugeFloat& NewData) override;
-	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -71,9 +69,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax = 16.f;
 
-	void DrawCrosshair(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread, const FLinearColor& CrosshairColor);
-	
-	
+	UPROPERTY()
+	APlayerCharacter* TargetPlayerCharacter;
+
+	void DrawCrosshair();
+	void DrawCrosshairUnit(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread, const FLinearColor& CrosshairColor);
+
 public:
 	FORCEINLINE void SetHUDPackage(const FHUDPackage& Package) { HUDPackage = Package; }
 	

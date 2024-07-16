@@ -218,7 +218,7 @@ private:
 
 public:
 	UPROPERTY()
-	class UMapInventory* Inven;
+	UMapInventory* Inven;
 
 	virtual void AddItem(FString ItemCode) override;
 	virtual void UseQuickSlotItem(int Idx) override;

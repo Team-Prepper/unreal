@@ -7,22 +7,22 @@
 #include "Components/TimelineComponent.h"
 #include "Prepper/Interfaces/Damageable.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
-#include "Prepper/_Base/Util/GaugeFloat.h"
+#include "Prepper/_Base/Util/GaugeValue.h"
 #include "BaseCharacter.generated.h"
 
 UCLASS()
-class PREPPER_API ABaseCharacter : public ACharacter, public IDamageable, public ISubject<FGaugeFloat>
+class PREPPER_API ABaseCharacter : public ACharacter, public IDamageable, public ISubject<GaugeValue<float>>
 {
 	GENERATED_BODY()
 private:
-	std::pmr::set<IObserver<FGaugeFloat>*> Observers;
+	std::pmr::set<IObserver<GaugeValue<float>>*> Observers;
 public:
 	// 네트워크 동기화 변수 설정
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
 	
-	virtual void Attach(IObserver<FGaugeFloat>* Observer) override;
-	virtual void Detach(IObserver<FGaugeFloat>* Observer) override;
+	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
+	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
 	virtual void Notify() override;
 
 	ABaseCharacter();
@@ -41,14 +41,10 @@ protected:
 	UPROPERTY()
 	class ADeathMatchPlayerState* DeathMatchPlayerState;
 
-	/* 체력 관련 */
-	UPROPERTY(ReplicatedUsing = OnRep_Health, EditAnywhere, BlueprintReadWrite, Category = "Player Stats")
-	FGaugeFloat Health;
-
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float CurrentHealth = 100.f;
 	
 	UFUNCTION()

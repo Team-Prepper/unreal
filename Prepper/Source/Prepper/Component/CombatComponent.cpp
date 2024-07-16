@@ -1,4 +1,5 @@
 #include "CombatComponent.h"
+
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -8,6 +9,7 @@
 #include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
+#include "Prepper/_Base/Util/GaugeInt.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -118,15 +120,6 @@ void UCombatComponent::PlayAnim(UAnimMontage* Montage, const FName& SectionName 
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
-void UCombatComponent::SetHUDCarriedAmmo()
-{
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if (Controller)
-	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);
-	}
-}
-
 // TODO
 bool UCombatComponent::CanFire()
 {
@@ -135,7 +128,6 @@ bool UCombatComponent::CanFire()
 
 	if (EquippedMeleeWeapon) return true;
 	return !EquippedRangeWeapon->IsAmmoEmpty();
-		
 }
 
 void UCombatComponent::Fire()
@@ -150,7 +142,8 @@ void UCombatComponent::Fire()
 	ServerFireWeapon(HitTargets);
 
 	CombatState = ECombatState::ECS_Fire;
-	
+
+	Notify();
 	Character->GetWorldTimerManager().SetTimer(
 		FireTimer,
 		this,
@@ -211,7 +204,7 @@ void UCombatComponent::ReloadEmptyWeapon()
 
 void UCombatComponent::OnRep_CarriedAmmo()
 {
-	SetHUDCarriedAmmo();
+	Notify();
 }
 
 void UCombatComponent::InitCarriedAmmo()
@@ -347,7 +340,6 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	SetWeaponType();
-	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
 }
@@ -403,11 +395,12 @@ void UCombatComponent::FinishSwapAttachWeapons()
 
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	SetWeaponType();
-	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
 
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	
+	Notify();
 }
 
 void UCombatComponent::UpdateCarriedAmmo()
@@ -422,7 +415,7 @@ void UCombatComponent::UpdateCarriedAmmo()
 		CarriedAmmo = -1;
 	}
 	
-	SetHUDCarriedAmmo();
+	Notify();
 }
 
 void UCombatComponent::Reload()
@@ -459,6 +452,45 @@ void UCombatComponent::FinishReloading()
 	}
 }
 
+void UCombatComponent::Attach(IObserver<GaugeValue<int>>* Observer)
+{
+	Observers.insert(Observer);
+
+	if (!EquippedWeapon)
+	{
+		Observer->Update(FGaugeInt(-1, -1));
+		return;
+	}
+	
+	int WeaponAmmo = -1;
+	
+	if (EquippedWeapon)
+	{
+		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
+	}
+	Observer->Update(FGaugeInt(WeaponAmmo, CarriedAmmo));
+}
+
+void UCombatComponent::Detach(IObserver<GaugeValue<int>>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void UCombatComponent::Notify()
+{
+	int WeaponAmmo = -1;
+	
+	if (EquippedWeapon)
+	{
+		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
+	}
+
+	FGaugeInt Value(WeaponAmmo, CarriedAmmo);
+	std::ranges::for_each(Observers, [&](IObserver<GaugeValue<int>>* Observer) {
+		Observer->Update(Value);
+	});
+}
+
 void UCombatComponent::UpdateAmmoValues()
 {
 	if (Character == nullptr || EquippedRangeWeapon == nullptr) return;
@@ -468,8 +500,8 @@ void UCombatComponent::UpdateAmmoValues()
 		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 	}
-	SetHUDCarriedAmmo();
 	EquippedRangeWeapon->AddAmmo(ReloadAmount);
+	Notify();
 }
 
 int32 UCombatComponent::AmountToReload()

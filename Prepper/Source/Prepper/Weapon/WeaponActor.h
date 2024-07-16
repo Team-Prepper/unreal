@@ -28,6 +28,7 @@ public:
 	virtual void OnRep_Owner() override;
 	virtual void SetOwnerActor(AActor* NewOwner) override { 
 	SetWeaponState(WeaponState);;SetOwner(NewOwner); };
+	virtual int GetLeftAmmo() override { return -1; }
 
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 

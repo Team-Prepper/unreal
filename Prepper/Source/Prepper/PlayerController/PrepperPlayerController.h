@@ -17,13 +17,7 @@ public:
 	virtual void PossessPawn() override;
 	virtual void Tick(float DeltaTime) override;
 
-	/* Set HUD*/
-	void SetHUDHealth(float Health, float MaxHealth);
-
 	void SetHUDStatusEffect(float Hunger, float Thirst, float Infection);
-	
-	void SetHUDWeaponAmmo(int32 Value);
-	void SetHUDCarriedAmmo(int32 Value);
 	void SetCompass();
 
 	UPROPERTY()
