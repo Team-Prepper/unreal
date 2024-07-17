@@ -23,6 +23,9 @@ private:
 
 	FString QuickSlotItem[MAX_QUICK_SLOT];
 
+	UPROPERTY(EditAnywhere)
+	uint8 InventorySize = 16;
+
 public:
 	UMapInventory();
 	virtual bool TryAddItem(const FString& ItemCode) override;
@@ -34,7 +37,6 @@ public:
 	virtual void UseItemAtQuickSlot(const int Idx) override;
 	
 	virtual TArray<InventoryItem> GetIter() override;
-
 	
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;

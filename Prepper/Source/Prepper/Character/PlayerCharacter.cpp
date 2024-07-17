@@ -420,7 +420,8 @@ void APlayerCharacter::ToggleInventory()
 	if(!EquippedBackpack) return;
 	
 	UE_LOG(LogTemp,Warning,TEXT("InvenToggle"));
-	EquippedBackpack->ToggleInventory();
+	EquippedBackpack->OpenInventory();
+	EquippedBackpack = nullptr;
 }
 
 UCustomCameraComponent* APlayerCharacter::GetFollowCamera()
@@ -658,7 +659,6 @@ void APlayerCharacter::ConvertPlayerMovementState()
 	}
 }
 
-
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
 	Super::Crouch(bClientSimulation);
@@ -687,7 +687,6 @@ void APlayerCharacter::HideCamIfCharacterClose()
 	}
 }
 
-
 void APlayerCharacter::Destroyed()
 {
 	Super::Destroyed();
@@ -700,7 +699,6 @@ void APlayerCharacter::Destroyed()
 		//Combat->EquippedWeapon->Destroy();
 	}
 }
-
 
 void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
 {

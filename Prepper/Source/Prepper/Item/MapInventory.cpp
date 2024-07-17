@@ -24,7 +24,7 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 	}
 
 	// 새로운 아이템이 들어갈 공간이 없다면  false 반환
-	if (ItemUnits.Num() >= MAX_ITEM_COUNT)
+	if (ItemUnits.Num() >= InventorySize)
 	{
 		return false;
 	}

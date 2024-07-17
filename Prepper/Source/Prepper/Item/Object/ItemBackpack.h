@@ -64,9 +64,11 @@ protected:
 
 	UPROPERTY(Replicated)
 	bool IsOpened = false;
-
+private:
+	void BackpackPhysicsActive(bool active);
 
 public:
+	void OpenInventory();
 	void ToggleInventory();
 	void ShowInventory();
 	void HideInventory();

@@ -26,8 +26,6 @@ public:
 		FString ItemCode;
 		uint8 Count;
 	};
-
-	int Capacity = 30;
 	
 	virtual bool TryAddItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryAddItem, return 0; ); 
 	virtual bool TryUseItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryUseItem, return 0; );
