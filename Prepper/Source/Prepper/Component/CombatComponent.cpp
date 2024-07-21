@@ -1,4 +1,5 @@
 #include "CombatComponent.h"
+
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -8,6 +9,7 @@
 #include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
+#include "Prepper/_Base/Util/GaugeInt.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -57,6 +59,16 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// 총구의 방향을 내 화면의 방향과 일치 시키기 위해서 틱에서 처리 
 	FHitResult HitResult;
 	TraceUnderCrosshair(HitResult);
+
+	if (HitResult.GetActor() &&
+		HitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
+	{
+		HUDPackage.CrosshairColor = FLinearColor::Red;
+	}
+	else
+	{
+		HUDPackage.CrosshairColor = FLinearColor::White;
+	}
 	if (HitResult.bBlockingHit)
 	{
 		HitTarget = HitResult.ImpactPoint;
@@ -104,29 +116,6 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 		Fire();
 	}
 }
-
-void UCombatComponent::PlayAnim(UAnimMontage* Montage, const FName& SectionName = "")
-{
-	if (Montage == nullptr) return;
-	
-	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-	if (!AnimInstance) return;
-	
-	AnimInstance->Montage_Play(Montage);
-	if (SectionName.Compare("") == 0) return;
-	
-	AnimInstance->Montage_JumpToSection(SectionName);
-}
-
-void UCombatComponent::SetHUDCarriedAmmo()
-{
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if (Controller)
-	{
-		Controller->SetHUDCarriedAmmo(CarriedAmmo);
-	}
-}
-
 // TODO
 bool UCombatComponent::CanFire()
 {
@@ -135,22 +124,20 @@ bool UCombatComponent::CanFire()
 
 	if (EquippedMeleeWeapon) return true;
 	return !EquippedRangeWeapon->IsAmmoEmpty();
-		
 }
 
 void UCombatComponent::Fire()
 {
 	if (!CanFire()) return;
-
-	if (!EquippedWeapon) return;
-		
+	
 	CrosshairShootingFactor = .75f;
 	HitTargets = EquippedWeapon->GetTarget(HitTarget);
 	LocalFireWeapon(HitTargets);
 	ServerFireWeapon(HitTargets);
 
 	CombatState = ECombatState::ECS_Fire;
-	
+
+	Notify();
 	Character->GetWorldTimerManager().SetTimer(
 		FireTimer,
 		this,
@@ -169,12 +156,12 @@ void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceH
 	
 	if (EquippedRangeWeapon)
 	{
-		PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
+		Character->PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
 		
 	}
 	else
 	{
-		PlayAnim(MeleeWeaponMontage, EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
+		Character->PlayAnim(MeleeWeaponMontage, EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
 	}
 	
 }
@@ -211,7 +198,7 @@ void UCombatComponent::ReloadEmptyWeapon()
 
 void UCombatComponent::OnRep_CarriedAmmo()
 {
-	SetHUDCarriedAmmo();
+	Notify();
 }
 
 void UCombatComponent::InitCarriedAmmo()
@@ -347,7 +334,6 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	SetWeaponType();
-	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
 }
@@ -382,7 +368,7 @@ void UCombatComponent::MulticastSwapWeapon_Implementation()
 	FinishSwapAttachWeapons();
 	GetWorld()->GetTimerManager().SetTimer(SwapDelayTimer, this, &UCombatComponent::FinishSwap, 1.5f, false);
 
-	PlayAnim(SwapMontage);
+	Character->PlayAnim(SwapMontage);
 	
 }
 
@@ -403,11 +389,12 @@ void UCombatComponent::FinishSwapAttachWeapons()
 
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	SetWeaponType();
-	EquippedWeapon->SetHUDAmmo();
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
 
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	
+	Notify();
 }
 
 void UCombatComponent::UpdateCarriedAmmo()
@@ -422,7 +409,7 @@ void UCombatComponent::UpdateCarriedAmmo()
 		CarriedAmmo = -1;
 	}
 	
-	SetHUDCarriedAmmo();
+	Notify();
 }
 
 void UCombatComponent::Reload()
@@ -459,6 +446,45 @@ void UCombatComponent::FinishReloading()
 	}
 }
 
+void UCombatComponent::Attach(IObserver<GaugeValue<int>>* Observer)
+{
+	Observers.insert(Observer);
+
+	if (!EquippedWeapon)
+	{
+		Observer->Update(FGaugeInt(-1, -1));
+		return;
+	}
+	
+	int WeaponAmmo = -1;
+	
+	if (EquippedWeapon)
+	{
+		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
+	}
+	Observer->Update(FGaugeInt(WeaponAmmo, CarriedAmmo));
+}
+
+void UCombatComponent::Detach(IObserver<GaugeValue<int>>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void UCombatComponent::Notify()
+{
+	int WeaponAmmo = -1;
+	
+	if (EquippedWeapon)
+	{
+		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
+	}
+
+	FGaugeInt Value(WeaponAmmo, CarriedAmmo);
+	std::ranges::for_each(Observers, [&](IObserver<GaugeValue<int>>* Observer) {
+		Observer->Update(Value);
+	});
+}
+
 void UCombatComponent::UpdateAmmoValues()
 {
 	if (Character == nullptr || EquippedRangeWeapon == nullptr) return;
@@ -468,8 +494,8 @@ void UCombatComponent::UpdateAmmoValues()
 		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
 		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 	}
-	SetHUDCarriedAmmo();
 	EquippedRangeWeapon->AddAmmo(ReloadAmount);
+	Notify();
 }
 
 int32 UCombatComponent::AmountToReload()
@@ -509,7 +535,7 @@ void UCombatComponent::HandleReload()
 {
 	if (!Character) return;
 
-	PlayAnim(ReloadMontage, EquippedWeapon->ReloadActionName);
+	Character->PlayAnim(ReloadMontage, EquippedWeapon->ReloadActionName);
 }
 
 
@@ -551,15 +577,6 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 	{
 		// TraceHitResult의 Location에 End 좌표 설정
 		TraceHitResult.Location = End;
-	}
-
-	if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
-	{
-		HUDPackage.CrosshairColor = FLinearColor::Red;
-	}
-	else
-	{
-		HUDPackage.CrosshairColor = FLinearColor::White;
 	}
 }
 

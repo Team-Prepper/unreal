@@ -5,6 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
+#include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/Damageable.h"
 #include "Prepper/Interfaces/Interactable.h"
@@ -83,11 +84,9 @@ protected:
 	/** Brake Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* BrakeAction;
-
 	/** Handbrake Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* HandbrakeAction;
-
 	/** Reset Vehicle Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* ResetVehicleAction;

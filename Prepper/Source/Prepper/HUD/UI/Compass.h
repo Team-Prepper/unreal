@@ -19,12 +19,10 @@ public:
 	float CompassOffset;
 
 	void SetDirection();
-	void PossessPlayer();
-
 	float GetImageWidth() const;
 
 	UPROPERTY(EditAnywhere)
-	class UCameraComponent* PlayerCam;
+	UCameraComponent* PlayerCam;
 
 	FTimerHandle SetDirectionTimerHandle;
 	FTimerHandle PlayerPossessTimerHandle;

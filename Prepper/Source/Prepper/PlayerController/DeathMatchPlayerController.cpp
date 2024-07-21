@@ -9,7 +9,7 @@
 #include "Prepper/GameMode/DeathMatchGameMode.h"
 #include "Prepper/GameState/DeathMatchGameState.h"
 #include "Prepper/HUD/UI/Announcement.h"
-#include "Prepper/HUD/UI/CharacterOverlay.h"
+#include "Prepper/HUD/UI/CharacterOverlay/CharacterOverlay.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 
 void ADeathMatchPlayerController::BeginPlay()

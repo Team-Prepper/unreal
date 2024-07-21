@@ -3,10 +3,18 @@
 
 #include "GaugeFloat.h"
 
+#include "Curves/CurveEvaluation.h"
+
 FGaugeFloat::FGaugeFloat()
 {
 	CurValue = 0;
 	MaxValue = 0;
+}
+
+FGaugeFloat::FGaugeFloat(float Cur, float Max)
+{
+	CurValue = Cur;
+	MaxValue = Max;
 }
 
 FGaugeFloat::~FGaugeFloat()
@@ -25,17 +33,17 @@ void FGaugeFloat::SubValue(float& Value)
 	if (CurValue < 0) CurValue = 0;
 }
 
-float FGaugeFloat::GetCurValue()
+float FGaugeFloat::GetCurValue() const
 {
 	return CurValue;
 }
 
-float FGaugeFloat::GetMaxValue()
+float FGaugeFloat::GetMaxValue() const
 {
 	return MaxValue;
 }
 
-float FGaugeFloat::GetRatio()
+float FGaugeFloat::GetRatio() const
 {
 	return CurValue / MaxValue;
 }

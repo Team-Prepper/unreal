@@ -15,11 +15,6 @@ void UCompass::NativeConstruct()
 	CompassOffset = GetImageWidth();
 }
 
-void UCompass::PossessPlayer()
-{
-	if(!GetOwningPlayerPawn()) return;
-}
-
 void UCompass::SetDirection()
 {
 	if(PlayerCam == nullptr)

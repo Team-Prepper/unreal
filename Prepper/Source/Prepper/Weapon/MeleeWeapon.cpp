@@ -1,7 +1,6 @@
 #include "MeleeWeapon.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/Prepper.h"
 #include "Sound/SoundCue.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
@@ -68,19 +67,6 @@ void AMeleeWeapon::FindActorsWithinRadius()
 	{
 		//CallDamageTargetAfterDelay(Hit); <- 현재 뭔가 오류 발생의 원인
 		DamageTarget(Hit);
-	}
-}
-
-void AMeleeWeapon::SetHUDAmmo()
-{
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
-	if(PlayerOwnerCharacter)
-	{
-		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
-		if(PlayerOwnerController)
-		{
-			PlayerOwnerController->SetHUDWeaponAmmo(-1);
-		}
 	}
 }
 

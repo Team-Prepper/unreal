@@ -9,7 +9,7 @@
 #include "CombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UCombatComponent : public UActorComponent, public IWeaponHandler
+class PREPPER_API UCombatComponent : public UActorComponent, public IWeaponHandler, public ISubject<GaugeValue<int>>
 {
 	GENERATED_BODY()
 private:
@@ -25,15 +25,22 @@ private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* SwapMontage;
 	
+	std::pmr::set<IObserver<GaugeValue<int>>*> Observers;
+	
 public:	
 	UCombatComponent();
 	friend class APlayerCharacter;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) override;
+	virtual void EquipWeapon(AWeaponActor* WeaponToEquip) override;
+	
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
+	
+	virtual void Attach(IObserver<GaugeValue<int>>* Observer) override;
+	virtual void Detach(IObserver<GaugeValue<int>>* Observer) override;
+	virtual void Notify() override;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -59,13 +66,10 @@ public:
 	void FireButtonPressed(bool bPressed);
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	class AWeaponActor* EquippedWeapon;
+	AWeaponActor* EquippedWeapon;
 
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	AWeaponActor* SecondaryWeapon;
-private:
-	void PlayAnim(UAnimMontage* Montage, const FName& Name);
-	void SetHUDCarriedAmmo();
 	
 protected:
 

@@ -3,35 +3,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
-
-void ARangeWeapon::SetHUDAmmo()
-{
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ? Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
-	if(PlayerOwnerCharacter)
-	{
-		PlayerOwnerController = PlayerOwnerController == nullptr ? Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
-		if(PlayerOwnerController)
-		{
-			PlayerOwnerController->SetHUDWeaponAmmo(Ammo);
-		}
-	}
-}
-
-void ARangeWeapon::OnRep_Owner()
-{
-	Super::OnRep_Owner();
-	if(Owner)
-	{
-		SetHUDAmmo();
-	}
-}
 
 void ARangeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
-	FVector HitTarget = HitTargets.Top();
-	TargetDistance = FVector::Distance(HitTarget, WeaponMesh->GetComponentLocation());
-	
 	if(FireAnimation)
 	{
 		GetRangeWeaponMesh()->PlayAnimation(FireAnimation, false);
@@ -78,7 +52,6 @@ USkeletalMeshComponent* ARangeWeapon::GetRangeWeaponMesh()
 void ARangeWeapon::SpendRound()
 {
 	Ammo = FMath::Clamp(Ammo -1, 0, MagCapacity);
-	SetHUDAmmo();
 	if(HasAuthority())
 	{
 		ClientUpdateAmmo(Ammo);
@@ -96,13 +69,11 @@ void ARangeWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo)
 	Ammo = ServerAmmo;
 	--Sequence;
 	Ammo -= Sequence;
-	SetHUDAmmo();
 }
 
 void ARangeWeapon::AddAmmo(int32 AmmoToAdd)
 {
 	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
-	SetHUDAmmo();
 	ClientAddAmmo(AmmoToAdd);
 }
 
@@ -110,7 +81,6 @@ void ARangeWeapon::ClientAddAmmo_Implementation(int32 AmmoToAdd)
 {
 	if (HasAuthority()) return;
 	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
-	SetHUDAmmo();
 }
 
 TArray<FVector_NetQuantize> ARangeWeapon::GetTarget(FVector& HitTarget)

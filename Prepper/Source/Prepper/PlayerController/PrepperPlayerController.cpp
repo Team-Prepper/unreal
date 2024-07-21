@@ -4,7 +4,7 @@
 #include "Prepper/Car/CarPawn.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Component/StatusEffectComponent.h"
-#include "Prepper/HUD/UI/CharacterOverlay.h"
+#include "Prepper/HUD/UI/CharacterOverlay/CharacterOverlay.h"
 #include "Prepper/HUD/UI/Compass.h"
 #include "Prepper/HUD/PrepperHUD.h"
 
@@ -56,37 +56,6 @@ void APrepperPlayerController::PollInit()
 void APrepperPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(Compass)
-	{
-		Compass->SetDirection();
-	}
-}
-
-
-void APrepperPlayerController::SetHUDHealth(float Health, float MaxHealth)
-{
-	if(!IsLocalController()) return;
-	// 주로 폰이 변경되었을 떄 사용 (init,차량 탑승, 부활 등)
-	// 데미지 처리시 HUD 갱신은 Player에서 처리중
-	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->CharacterOverlay &&
-					 PrepperHUD->CharacterOverlay->HealthBar &&
-					 PrepperHUD->CharacterOverlay->HealthText;
-	
-	if(bHUDValid)
-	{
-		const float HealthPercent = Health / MaxHealth;
-		//PrepperHUD->CharacterOverlay->HealthBar->SetPercent(HealthPercent);
-		FString HealthText = FString::Printf(TEXT("%d/%d"),FMath::CeilToInt(Health), FMath::CeilToInt(MaxHealth));
-		//PrepperHUD->CharacterOverlay->HealthText->SetText(FText::FromString(HealthText));
-	}
-	else
-	{
-		bInitCharacterOverlay = true;
-		HUDHealth = Health;
-		HUDMaxHealth = MaxHealth;
-	}
 }
 
 void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, float Infection)
@@ -103,33 +72,8 @@ void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, fl
 	{
 		PrepperHUD->CharacterOverlay->HungerBar->SetPercent(Hunger / 100);
 		PrepperHUD->CharacterOverlay->ThirstBar->SetPercent(Thirst/ 100);
-		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection/ 100);
+		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection / 100);
 	}
-}
-
-void APrepperPlayerController::SetHUDWeaponAmmo(int32 Value)
-{
-	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->CharacterOverlay &&
-					 PrepperHUD->CharacterOverlay->WeaponAmmoValue;
-	if(bHUDValid)
-	{
-		FString AmmoText = FString::Printf(TEXT("%d"),Value);
-		PrepperHUD->CharacterOverlay->WeaponAmmoValue->SetText(FText::FromString(AmmoText));
-	}
-}
-
-void APrepperPlayerController::SetHUDCarriedAmmo(int32 Value)
-{
-	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->CharacterOverlay &&
-					 PrepperHUD->CharacterOverlay->CarriedAmmoValue;
-	if(!bHUDValid) return;
-	
-	FString AmmoText = FString::Printf(TEXT("%d"),Value);
-	PrepperHUD->CharacterOverlay->CarriedAmmoValue->SetText(FText::FromString(AmmoText));
 }
 
 void APrepperPlayerController::SetCompass()

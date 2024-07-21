@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerState.h"
+#include "Prepper/Component/CombatComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 
 
@@ -66,9 +67,10 @@ void ABasePlayerController::PossessPawn()
 	PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
 	
-	if (!PrepperHUD || !PlayerCharacter) return;
+	if (!PrepperHUD || !PlayerCharacter || !PrepperHUD->CharacterOverlay) return;
 	
-	PlayerCharacter->Attach(PrepperHUD);
+	PlayerCharacter->Attach(PrepperHUD->CharacterOverlay);
+	PlayerCharacter->GetCombatComponent()->Attach(PrepperHUD->CharacterOverlay);
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)

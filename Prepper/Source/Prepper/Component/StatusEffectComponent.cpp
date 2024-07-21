@@ -42,7 +42,6 @@ void UStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UStatusEffectComponent::StatusTimerStart()
 {
 	if(!Character || !Character->IsLocallyControlled()) return;
-	PrepperPlayerController = Cast<APrepperPlayerController>(Character->GetController());
 	GetWorld()->GetTimerManager().SetTimer(
 		StatusTimerHandle,
 		this,

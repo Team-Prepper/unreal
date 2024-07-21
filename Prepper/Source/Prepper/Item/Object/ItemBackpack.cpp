@@ -2,8 +2,10 @@
 #include "Prepper/Prepper.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Object/OpenedInventory.h"
+#include "Sound/SoundCue.h"
 
 
 AItemBackpack::AItemBackpack()
@@ -63,15 +65,21 @@ void AItemBackpack::EnableCustomDepth(bool bEnable)
 
 void AItemBackpack::Interaction(APlayerCharacter* Target)
 {
-	if(Target)
-	{
-		PlayerOwnerCharacter = Target;
-		Target->EquipBackpack(this);
-		SetOwner(Target);
-
-		if(IsOpened)
-			HideInventory();
-	}
+	if(!Target) return;
+	
+	PlayerOwnerCharacter = Target;
+	SetOwner(Target);
+	
+	Target->EquipBackpack(this);
+	Target->AttachActorAtSocket(FName("BackpackSocket"), this);
+	
+	if (!EquipSound) return;
+	
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		EquipSound,
+		GetActorLocation()
+	);
 }
 
 void AItemBackpack::Dropped()
@@ -90,13 +98,26 @@ void AItemBackpack::OnBackPackState()
 	switch (BackpackState)
 	{
 	case EBackpackState::EBS_Equipped:
-		UE_LOG(LogTemp,Warning,TEXT("Backpack equipped"));
-		BackpackPhysicsActive(false);
+		BackpackMesh->SetSimulatePhysics(false);
+		BackpackMesh->SetEnableGravity(false);
+		EnableCustomDepth(false);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 	case EBackpackState::EBS_Dropped:
-		UE_LOG(LogTemp,Warning,TEXT("Backpack dropped"));
-		BackpackPhysicsActive(true);
-		SetOwner(nullptr);
+		BackpackMesh->SetSimulatePhysics(true);
+		BackpackMesh->SetEnableGravity(true);
+		BackpackMesh->SetCollisionResponseToAllChannels(ECR_Block);
+		BackpackMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		BackpackMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		BackpackMesh->SetCustomDepthStencilValue(CustomDepthColor);
+		BackpackMesh->MarkRenderStateDirty();
+		EnableCustomDepth(true);
+
+		if (HasAuthority())
+		{
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		}
 		break;
 
 	default:
@@ -110,41 +131,9 @@ void AItemBackpack::SetBackpackState(EBackpackState NewBackpackState)
 	OnBackPackState();
 }
 
-void AItemBackpack::BackpackPhysicsActive(bool active)
-{
-	SetActorEnableCollision(active);
-	BackpackMesh->SetSimulatePhysics(active);
-	BackpackMesh->SetEnableGravity(active);
-	EnableCustomDepth(active);
-
-	if (active)
-	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-
-		BackpackMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		BackpackMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
-
-		return;
-	}
-	
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	BackpackMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void AItemBackpack::OpenInventory()
-{
-	ShowInventory();
-	IsOpened = true;
-}
-
 void AItemBackpack::ToggleInventory()
 {
+
 	UE_LOG(LogTemp,Warning,TEXT("Backpack : Toggle"));
 	if(IsOpened)
 	{
@@ -172,12 +161,6 @@ void AItemBackpack::ShowInventory()
 		SpawnRotation
 		);
 	OpenedInventory->SetTargetInventory(Inventory);
-	
-	AttachToActor(OpenedInventory, FAttachmentTransformRules::KeepWorldTransform /* , socketName*/ );
-	
-	SetBackpackState(EBackpackState::EBS_Dropped);
-	
-		
 }
 
 void AItemBackpack::HideInventory()
@@ -186,5 +169,4 @@ void AItemBackpack::HideInventory()
 	if(!OpenedInventory) return;
 	OpenedInventory->CloseInventory();
 	OpenedInventory->Destroy();
-	IsOpened = false;
 }
