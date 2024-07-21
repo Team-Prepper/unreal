@@ -45,6 +45,7 @@ void APrepperHUD::AddAnnouncement()
 void APrepperHUD::DrawHUD()
 {
 	Super::DrawHUD();
+	Compass->SetDirection();
 	DrawCrosshair();
 }
 

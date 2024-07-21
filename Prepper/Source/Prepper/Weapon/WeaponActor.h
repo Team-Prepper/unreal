@@ -109,7 +109,6 @@ private:
 	void WeaponPhysicsActive(bool active);
 	
 public:
-	bool IsMeleeWeapon();
 	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
 	

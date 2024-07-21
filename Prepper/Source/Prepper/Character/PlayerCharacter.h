@@ -38,25 +38,17 @@ public:
 	APlayerCharacter();
 	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
-
-	//combatcomponent 에서 사용
-	void PlaySwapMontage();
 	
 	virtual void Elim() override;
 	virtual void MulticastElim() override;
-
-
+	
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bShowScope);
-	
 	void EquipBackpack(class AItemBackpack* BackpackToEquip);
-	
-	bool bFinishedSwapping = false;
 	
 	UPROPERTY(Replicated)
 	bool bDisableGamePlay = false;
 
-	
 private:
 	void ElimTimerFinished();
 	
@@ -146,7 +138,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UStatusEffectComponent* StatusEffect;
 
-	
 	void SetPlayerEquipmentHiddenInGame(bool visible);
 	void SetEquipmentHidden(AActor* Target, bool visible);
 	
@@ -218,7 +209,7 @@ private:
 
 public:
 	UPROPERTY()
-	UMapInventory* Inven;
+	UMapInventory* Inventory;
 
 	virtual void AddItem(FString ItemCode) override;
 	virtual void UseQuickSlotItem(int Idx) override;

@@ -2,8 +2,10 @@
 #include "Prepper/Prepper.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Object/OpenedInventory.h"
+#include "Sound/SoundCue.h"
 
 
 AItemBackpack::AItemBackpack()
@@ -63,12 +65,21 @@ void AItemBackpack::EnableCustomDepth(bool bEnable)
 
 void AItemBackpack::Interaction(APlayerCharacter* Target)
 {
-	if(Target)
-	{
-		PlayerOwnerCharacter = Target;
-		Target->EquipBackpack(this);
-		SetOwner(Target);
-	}
+	if(!Target) return;
+	
+	PlayerOwnerCharacter = Target;
+	SetOwner(Target);
+	
+	Target->EquipBackpack(this);
+	Target->AttachActorAtSocket(FName("BackpackSocket"), this);
+	
+	if (!EquipSound) return;
+	
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		EquipSound,
+		GetActorLocation()
+	);
 }
 
 void AItemBackpack::Dropped()

@@ -7,8 +7,6 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
 
-class UInputAction;
-
 UCLASS()
 class PREPPER_API ABasePlayerController : public APlayerController
 {
@@ -20,18 +18,17 @@ public:
 	void SetPossessPawn();
 	void ResetPlayer();
 protected:
-	virtual void BeginPlay() override;
-
-	virtual void PossessPawn();
-	
 	FTimerHandle TimerHandle;
+	
+	virtual void BeginPlay() override;
+	virtual void PossessPawn();
 	
 	void PossessNewPawn();
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastPossessNewPawn();
 
 	UPROPERTY()
-	class APlayerCharacter* PlayerCharacter;
+	APlayerCharacter* PlayerCharacter;
 
 	UPROPERTY()
 	class APrepperHUD* PrepperHUD;

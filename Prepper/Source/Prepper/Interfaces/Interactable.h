@@ -19,6 +19,6 @@ class PREPPER_API IInteractable
 	GENERATED_BODY()
 
 public:
-	virtual void Interaction(class APlayerCharacter* Target) PURE_VIRTUAL();
+	virtual void Interaction(APlayerCharacter* Target) PURE_VIRTUAL();
 	virtual void ShowPickUpWidget(bool bShowWidget) PURE_VIRTUAL();
 };

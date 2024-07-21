@@ -23,13 +23,9 @@ class PREPPER_API IWeapon
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	PURE_VIRTUAL();
 	virtual void FireEnd(bool Trigger)
-	PURE_VIRTUAL();
-
-	virtual void SetHUDAmmo()
 	PURE_VIRTUAL();
 
 	virtual void GetCrosshair(

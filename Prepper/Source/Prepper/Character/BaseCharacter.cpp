@@ -63,22 +63,12 @@ void ABaseCharacter::BeginPlay()
 
 void ABaseCharacter::PlayElimMontage()
 {
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && ElimMontage)
-	{
-		AnimInstance->Montage_Play(ElimMontage);
-	}
+	PlayAnim(ElimMontage);
 }
 
 void ABaseCharacter::PlayHitReactMontage()
 {
-	if (!HitReactMontage) return;
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance)
-	{
-		AnimInstance->Montage_Play(HitReactMontage);
-		AnimInstance->Montage_JumpToSection(FName("HitFront"));
-	}
+	PlayAnim(HitReactMontage, FName("HitFront"));
 }
 
 void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
@@ -102,6 +92,19 @@ void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorControll
 void ABaseCharacter::Elim()
 {
 	MulticastElim();
+}
+
+void ABaseCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName)
+{
+	if (Montage == nullptr) return;
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance) return;
+	
+	AnimInstance->Montage_Play(Montage);
+	if (SectionName.Compare("") == 0) return;
+	
+	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
 void ABaseCharacter::MulticastElim_Implementation()

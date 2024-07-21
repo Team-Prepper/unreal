@@ -56,10 +56,6 @@ void APrepperPlayerController::PollInit()
 void APrepperPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(Compass)
-	{
-		Compass->SetDirection();
-	}
 }
 
 void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, float Infection)
@@ -76,7 +72,7 @@ void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, fl
 	{
 		PrepperHUD->CharacterOverlay->HungerBar->SetPercent(Hunger / 100);
 		PrepperHUD->CharacterOverlay->ThirstBar->SetPercent(Thirst/ 100);
-		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection/ 100);
+		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection / 100);
 	}
 }
 

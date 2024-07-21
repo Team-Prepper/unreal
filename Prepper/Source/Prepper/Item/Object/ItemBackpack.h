@@ -29,7 +29,7 @@ public:
 	void Dropped();
 
 	UPROPERTY()
-	class USoundCue* EquipSound;
+	USoundCue* EquipSound;
 
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
@@ -41,9 +41,9 @@ protected:
 	UStaticMeshComponent* BackpackMesh;
 
 	UPROPERTY(Replicated)
-	class APlayerCharacter* PlayerOwnerCharacter;
+	APlayerCharacter* PlayerOwnerCharacter;
 	UPROPERTY()
-	class APrepperPlayerController* PlayerOwnerController;
+	APrepperPlayerController* PlayerOwnerController;
 
 	UPROPERTY(ReplicatedUsing = OnRep_BackpackState, VisibleAnywhere)
 	EBackpackState BackpackState;
@@ -57,14 +57,13 @@ protected:
 	TSubclassOf<class AOpenedInventory> OpenedInventoryClass;
 
 	UPROPERTY()
-	class UMapInventory* Inventory;
+	UMapInventory* Inventory;
 	
 	UPROPERTY()
-	class AOpenedInventory* OpenedInventory;
+	AOpenedInventory* OpenedInventory;
 
 	UPROPERTY(Replicated)
 	bool IsOpened = false;
-
 
 public:
 	void ToggleInventory();

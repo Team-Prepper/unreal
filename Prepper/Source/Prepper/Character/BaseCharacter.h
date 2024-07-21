@@ -74,6 +74,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastElim();
 
+	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "");
+
 	/* 사망 이펙트  */
 protected:
 	UPROPERTY(VisibleAnywhere)

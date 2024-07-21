@@ -294,8 +294,3 @@ void AWeaponActor::WeaponPhysicsActive(bool active)
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
-
-bool AWeaponActor::IsMeleeWeapon()
-{
-	return GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt || GetWeaponType() == EWeaponType::EWT_MeleeWeaponSword;
-}

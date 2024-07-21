@@ -59,6 +59,16 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// 총구의 방향을 내 화면의 방향과 일치 시키기 위해서 틱에서 처리 
 	FHitResult HitResult;
 	TraceUnderCrosshair(HitResult);
+
+	if (HitResult.GetActor() &&
+		HitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
+	{
+		HUDPackage.CrosshairColor = FLinearColor::Red;
+	}
+	else
+	{
+		HUDPackage.CrosshairColor = FLinearColor::White;
+	}
 	if (HitResult.bBlockingHit)
 	{
 		HitTarget = HitResult.ImpactPoint;
@@ -106,20 +116,6 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 		Fire();
 	}
 }
-
-void UCombatComponent::PlayAnim(UAnimMontage* Montage, const FName& SectionName = "")
-{
-	if (Montage == nullptr) return;
-	
-	UAnimInstance* AnimInstance = Character->GetMesh()->GetAnimInstance();
-	if (!AnimInstance) return;
-	
-	AnimInstance->Montage_Play(Montage);
-	if (SectionName.Compare("") == 0) return;
-	
-	AnimInstance->Montage_JumpToSection(SectionName);
-}
-
 // TODO
 bool UCombatComponent::CanFire()
 {
@@ -133,9 +129,7 @@ bool UCombatComponent::CanFire()
 void UCombatComponent::Fire()
 {
 	if (!CanFire()) return;
-
-	if (!EquippedWeapon) return;
-		
+	
 	CrosshairShootingFactor = .75f;
 	HitTargets = EquippedWeapon->GetTarget(HitTarget);
 	LocalFireWeapon(HitTargets);
@@ -162,12 +156,12 @@ void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceH
 	
 	if (EquippedRangeWeapon)
 	{
-		PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
+		Character->PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
 		
 	}
 	else
 	{
-		PlayAnim(MeleeWeaponMontage, EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
+		Character->PlayAnim(MeleeWeaponMontage, EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
 	}
 	
 }
@@ -374,7 +368,7 @@ void UCombatComponent::MulticastSwapWeapon_Implementation()
 	FinishSwapAttachWeapons();
 	GetWorld()->GetTimerManager().SetTimer(SwapDelayTimer, this, &UCombatComponent::FinishSwap, 1.5f, false);
 
-	PlayAnim(SwapMontage);
+	Character->PlayAnim(SwapMontage);
 	
 }
 
@@ -541,7 +535,7 @@ void UCombatComponent::HandleReload()
 {
 	if (!Character) return;
 
-	PlayAnim(ReloadMontage, EquippedWeapon->ReloadActionName);
+	Character->PlayAnim(ReloadMontage, EquippedWeapon->ReloadActionName);
 }
 
 
@@ -583,15 +577,6 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 	{
 		// TraceHitResult의 Location에 End 좌표 설정
 		TraceHitResult.Location = End;
-	}
-
-	if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
-	{
-		HUDPackage.CrosshairColor = FLinearColor::Red;
-	}
-	else
-	{
-		HUDPackage.CrosshairColor = FLinearColor::White;
 	}
 }
 

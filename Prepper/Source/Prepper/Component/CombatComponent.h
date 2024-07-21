@@ -33,7 +33,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) override;
+	virtual void EquipWeapon(AWeaponActor* WeaponToEquip) override;
+	
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
 	
@@ -69,8 +70,6 @@ public:
 
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	AWeaponActor* SecondaryWeapon;
-private:
-	void PlayAnim(UAnimMontage* Montage, const FName& Name);
 	
 protected:
 

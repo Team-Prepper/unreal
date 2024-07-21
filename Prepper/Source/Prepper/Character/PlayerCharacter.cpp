@@ -57,8 +57,8 @@ APlayerCharacter::APlayerCharacter()
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
 	InteractionComponent->SetIsReplicated(true);
 
-	Inven = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
-	Inven->SetIsReplicated(true);
+	Inventory = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
+	Inventory->SetIsReplicated(true);
 
 	StatusEffect = CreateDefaultSubobject<UStatusEffectComponent>(TEXT("StatusEffectComponet"));
 
@@ -260,25 +260,12 @@ void APlayerCharacter::Elim()
 
 void APlayerCharacter::MulticastElim()
 {
-	// 클라이언트가 죽었을 때 자기자신 화면 조정
-	if(PrepperPlayerController)
-	{
-		
-	}
 	Super::MulticastElim();
 	bDisableGamePlay = true;
+	ShowSniperScopeWidget(false);
 	if(Combat)
 	{
 		Combat->FireButtonPressed(false);
-	}
-	bool bHideSniperScope = IsLocallyControlled() && 
-		Combat && 
-		Combat->bAiming && 
-		Combat->EquippedWeapon && 
-		Combat->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
-	if (bHideSniperScope)
-	{
-		ShowSniperScopeWidget(false);
 	}
 	if(IsLocallyControlled())
 	{
@@ -343,8 +330,6 @@ void APlayerCharacter::EPressed()
 		UE_LOG(LogTemp, Warning , TEXT("COMBAT COMP : SWAP"));
 		Combat->SwapWeapons();
 	}
-	bool bSwap = Combat->ShouldSwapWeapons() &&
-			Combat->CombatState == ECombatState::ECS_Unoccupied;
 
 }
 
@@ -473,17 +458,6 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
-
-	AttachActorAtSocket(FName("BackpackSocket"), EquippedBackpack);
-
-	if (EquippedBackpack->EquipSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-			this,
-			EquippedBackpack->EquipSound,
-			GetActorLocation()
-		);
-	}
 	
 }
 
@@ -726,7 +700,7 @@ void APlayerCharacter::AddItem(FString ItemCode)
 
 void APlayerCharacter::UseQuickSlotItem(int Idx)
 {
-	Inven->UseItemAtQuickSlot(Idx);
+	Inventory->UseItemAtQuickSlot(Idx);
 }
 
 void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
@@ -738,7 +712,7 @@ void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 			return;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("pocket : Add Item %s"), *ItemCode);
-	Inven->TryAddItem(ItemCode);
+	Inventory->TryAddItem(ItemCode);
 }
 
 bool APlayerCharacter::IsWeaponEquipped()
