@@ -18,7 +18,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SetHUDStatusEffect(float Hunger, float Thirst, float Infection);
-	void SetCompass();
 
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;

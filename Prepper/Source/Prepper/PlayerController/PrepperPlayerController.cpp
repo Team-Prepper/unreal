@@ -23,6 +23,7 @@ void APrepperPlayerController::PossessPawn()
 
 void APrepperPlayerController::PollInit()
 {
+	return;
 	if(!IsLocalController()) return;
 	if(Cast<APlayerCharacter>(GetPawn()))
 	{
@@ -48,7 +49,7 @@ void APrepperPlayerController::PollInit()
 		if(Compass)
 		{
 			UE_LOG(LogTemp,Warning,TEXT("[PrepperPlayerController] : Set Compass"));
-			SetCompass();
+			//SetCompass();
 		}
 	}
 }
@@ -74,10 +75,4 @@ void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, fl
 		PrepperHUD->CharacterOverlay->ThirstBar->SetPercent(Thirst/ 100);
 		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection / 100);
 	}
-}
-
-void APrepperPlayerController::SetCompass()
-{
-	if (Cast<IControllable>(GetPawn()) == nullptr) return;
-	Compass->PlayerCam = Cast<IControllable>(GetPawn())->GetFollowCamera();
 }
