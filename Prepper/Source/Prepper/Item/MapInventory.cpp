@@ -81,6 +81,16 @@ bool UMapInventory::TryDiscardItem(const FString& ItemCode)
 	return true;
 }
 
+int UMapInventory::TryGetItemCount(const FString& ItemCode)
+{
+	if (!ItemUnits.Contains(ItemCode))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Item %s"), *ItemCode);
+		return 0;
+	}
+	return *ItemUnits.Find(ItemCode);
+}
+
 bool UMapInventory::CheckOwnItem(const FString& ItemCode)
 {
 	if (ItemUnits.Contains(ItemCode)) return true;

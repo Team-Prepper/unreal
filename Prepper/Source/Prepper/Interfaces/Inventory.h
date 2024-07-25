@@ -30,6 +30,8 @@ public:
 	virtual bool TryAddItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryAddItem, return 0; ); 
 	virtual bool TryUseItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryUseItem, return 0; );
 	virtual bool TryDiscardItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryDiscardItem, return 0; );
+
+	virtual int TryGetItemCount(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryGetItemCount, return 0; );
 	
 	virtual bool CheckOwnItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::CheckOwnItem, return 0; );
 	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) PURE_VIRTUAL(); 

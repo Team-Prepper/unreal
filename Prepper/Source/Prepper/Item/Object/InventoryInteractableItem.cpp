@@ -20,7 +20,10 @@ void AInventoryInteractableItem::Interaction(APlayerCharacter* Target)
 	if(TargetInventory->TryUseItem(ItemCode))
 	{
 		ItemManager::GetInstance()->GetItem(ItemCode)->Use(Target);
-		DestroyInteractionItem();
+		if(TargetInventory->TryGetItemCount(ItemCode) == 0)
+		{
+			DestroyInteractionItem();
+		}
 	}
 }
 
