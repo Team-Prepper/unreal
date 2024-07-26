@@ -19,12 +19,22 @@ class UWeaponHandler : public UInterface
 class PREPPER_API IWeaponHandler
 {
 	GENERATED_BODY()
+public:
+	enum Action
+	{
+		FireWeapon,
+		ReloadWeapon,
+	};
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
-public:
 
-	virtual void Reload() PURE_VIRTUAL();
-	virtual void Fire() PURE_VIRTUAL();
 	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) PURE_VIRTUAL();
+
+	virtual void ActionReservation(Action Act) PURE_VIRTUAL();
+	
+	virtual void Fire() PURE_VIRTUAL();
+	virtual void FireTrigger(bool IsTrigger) PURE_VIRTUAL();
+	
+	virtual void Reload() PURE_VIRTUAL();
 	
 };

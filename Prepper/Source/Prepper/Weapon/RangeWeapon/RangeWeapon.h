@@ -84,8 +84,6 @@ public:
 	void AddAmmo(int32 AmmoToAdd);
 
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
-	
-	virtual void FireEnd(bool Trigger) override;
 
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 	

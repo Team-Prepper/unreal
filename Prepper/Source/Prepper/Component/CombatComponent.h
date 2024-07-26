@@ -12,92 +12,35 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UCombatComponent : public UActorComponent, public IWeaponHandler, public ISubject<GaugeValue<int>>
 {
 	GENERATED_BODY()
-private:
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* FireWeaponMontage;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* MeleeWeaponMontage;
 	
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* ReloadMontage;
-	
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* SwapMontage;
-	
-	std::pmr::set<IObserver<GaugeValue<int>>*> Observers;
-	
+// Actor
 public:	
 	UCombatComponent();
 	friend class APlayerCharacter;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	virtual void EquipWeapon(AWeaponActor* WeaponToEquip) override;
+protected:
+	virtual void BeginPlay() override;
 	
-	UFUNCTION(BlueprintCallable)
-	void FinishReloading();
-	
+// Observer Pattern
+private:
+	std::pmr::set<IObserver<GaugeValue<int>>*> Observers;
+
+public:
 	virtual void Attach(IObserver<GaugeValue<int>>* Observer) override;
 	virtual void Detach(IObserver<GaugeValue<int>>* Observer) override;
 	virtual void Notify() override;
 	
-protected:
-	virtual void BeginPlay() override;
-	void SetAiming(bool bIsAiming);
-
-	void ReloadEmptyWeapon();
-
-	UFUNCTION(Server, Reliable)
-	void ServerSetAiming(bool bIsAiming);
+// Eqip Weapon
+private:
 	
-	virtual void Reload() override;
+	UPROPERTY(Replicated)
+	class ARangeWeapon* EquippedRangeWeapon;
+
+	UPROPERTY(Replicated)
+	class AMeleeWeapon* EquippedMeleeWeapon;
 	
-	virtual void Fire() override;
-	void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
-
-	UFUNCTION(BlueprintCallable)
-	void FinishSwap();
-
-	UFUNCTION(BlueprintCallable)
-	void FinishSwapAttachWeapons();
-	
-public:
-	void FireButtonPressed(bool bPressed);
-	
-	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	AWeaponActor* EquippedWeapon;
-
-	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
-	AWeaponActor* SecondaryWeapon;
-	
-protected:
-
-	UFUNCTION(Server, Reliable)
-	void ServerFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
-
-	void TraceUnderCrosshair(FHitResult& TraceHitResult);
-
-	void SetHUDCrosshair(float DeltaTime);
-
-	UFUNCTION(Server, Reliable)
-	void ServerReload();
-
-	void HandleReload();
-	int32 AmountToReload();
-	
-	bool bLocallyReload = false;
-	
-	UPROPERTY()
-	class APlayerCharacter* Character;
-	UPROPERTY()
-	class APrepperPlayerController* Controller;
-	UPROPERTY()
-	class APrepperHUD* HUD;
-
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
@@ -106,6 +49,121 @@ protected:
 
 	void EquipPrimaryWeapon(AWeaponActor* WeaponToEquip);
 	void EquipSecondaryWeapon(AWeaponActor* WeaponToEquip);
+public:
+	virtual void EquipWeapon(AWeaponActor* WeaponToEquip) override;
+	
+// Swap Weapon
+private:
+	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* SwapMontage;
+	
+	UFUNCTION(BlueprintCallable)
+	void FinishSwap();
+
+	UFUNCTION(BlueprintCallable)
+	void FinishSwapAttachWeapons();
+	
+	bool ShouldSwapWeapons();
+// ActionReservation
+private:
+	TQueue<Action> ActionQueue;
+public:
+	virtual void ActionReservation(Action Act) override;
+	void ActionDequeue();
+// Fire
+private:
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* FireWeaponMontage;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* MeleeWeaponMontage;
+
+	//Auto Fire
+	FTimerHandle FireTimer;
+	
+	bool bFireButtonPressed;
+	
+	bool CanFire();
+	
+	void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
+
+	UFUNCTION(Server, Reliable)
+	void ServerFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
+	
+	void FireTimerFinished();
+public:
+	virtual void FireTrigger(bool IsTrigger) override;
+	
+	virtual void Fire() override;
+
+// Reload
+private:
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ReloadMontage;
+	
+	bool bLocallyReload = false;
+	
+	void HandleReload();
+	void ReloadEmptyWeapon();
+
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
+	
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
+	
+	int32 AmountToReload();
+public:
+	virtual void Reload() override;
+
+// Set Aming
+private:
+	// Aiming FOV
+	float DefaultFOV;
+	
+	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
+	bool bAiming;
+	
+	UFUNCTION()
+	void OnRep_Aiming();
+	
+	UFUNCTION(Server, Reliable)
+	void ServerSetAiming(bool bIsAiming);
+	
+public:
+	void SetAiming(bool bIsAiming);
+	
+public:
+	
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
+	AWeaponActor* EquippedWeapon;
+
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	AWeaponActor* SecondaryWeapon;
+
+// SetCrosshair
+private:
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
+	float CrosshairAimFactor;
+	float CrosshairShootingFactor;
+
+// Targeting
+protected:
+
+	void TraceUnderCrosshair(FHitResult& TraceHitResult);
+	void SetHUDCrosshair(float DeltaTime, FLinearColor& CrosshairColor);
+	
+	UPROPERTY()
+	APlayerCharacter* Character;
+	UPROPERTY()
+	APrepperPlayerController* Controller;
+	UPROPERTY()
+	APrepperHUD* HUD;
 
 	void DropEquippedWeapon();
 	void UpdateCarriedAmmo();
@@ -115,44 +173,17 @@ protected:
 	void MulticastSwapWeapon();
 	
 	FTimerHandle SwapDelayTimer;
-	
-	UPROPERTY(Replicated)
-	class ARangeWeapon* EquippedRangeWeapon;
-
-	UPROPERTY(Replicated)
-	class AMeleeWeapon* EquippedMeleeWeapon;
 
 	UFUNCTION()
-	EWeaponType SetWeaponType();
-	
-	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
-	bool bAiming;
+	void SetWeaponType();
 
 	bool bAimButtonPressed = false;
 
-	UFUNCTION()
-	void OnRep_Aiming();
-
-	bool bFireButtonPressed;
-
-	float CrosshairVelocityFactor;
-	float CrosshairInAirFactor;
-	float CrosshairAimFactor;
-	float CrosshairShootingFactor;
-
-	FHUDPackage HUDPackage;
 	FVector HitTarget;
 	TArray<FVector_NetQuantize> HitTargets;
-	// Aiming FOV
-
-	float DefaultFOV;
-
-	//Auto Fire
-	FTimerHandle FireTimer;
-
-	// chk Ammo
-	bool CanFire();
-
+	
+// Ammo
+private:
 	// carried ammo for cur equip weapon
 	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
 	int32 CarriedAmmo;
@@ -189,6 +220,4 @@ protected:
 	UFUNCTION()
 	void OnRep_CombatState();
 	void UpdateAmmoValues();
-	void FireTimerFinished();
-	bool ShouldSwapWeapons();
 };

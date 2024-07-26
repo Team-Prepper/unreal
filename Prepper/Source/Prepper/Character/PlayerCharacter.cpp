@@ -265,7 +265,7 @@ void APlayerCharacter::MulticastElim()
 	ShowSniperScopeWidget(false);
 	if(Combat)
 	{
-		Combat->FireButtonPressed(false);
+		Combat->FireTrigger(false);
 	}
 	if(IsLocallyControlled())
 	{
@@ -420,7 +420,7 @@ void APlayerCharacter::MouseLeftPressed()
 	if(bDisableGamePlay) return;
 	if(Combat)
 	{
-		Combat->FireButtonPressed(true);
+		Combat->FireTrigger(true);
 	}
 }
 
@@ -429,7 +429,7 @@ void APlayerCharacter::MouseLeftReleased()
 	if(bDisableGamePlay) return;
 	if(Combat)
 	{
-		Combat->FireButtonPressed(false);
+		Combat->FireTrigger(false);
 	}
 }
 

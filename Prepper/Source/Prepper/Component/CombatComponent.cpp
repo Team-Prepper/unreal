@@ -36,7 +36,6 @@ void UCombatComponent::BeginPlay()
 	if (!Character) return;
 	
 	UE_LOG(LogTemp, Warning, TEXT("CombatComponentReady"));
-	Character->SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
 
 	if (Character->GetFollowCamera())
 	{
@@ -60,15 +59,17 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FHitResult HitResult;
 	TraceUnderCrosshair(HitResult);
 
+	FLinearColor CrosshairColor;
 	if (HitResult.GetActor() &&
 		HitResult.GetActor()->Implements<UInteractWithCrosshairInterface>())
 	{
-		HUDPackage.CrosshairColor = FLinearColor::Red;
+		CrosshairColor = FLinearColor::Red;
 	}
 	else
 	{
-		HUDPackage.CrosshairColor = FLinearColor::White;
+		CrosshairColor = FLinearColor::White;
 	}
+	
 	if (HitResult.bBlockingHit)
 	{
 		HitTarget = HitResult.ImpactPoint;
@@ -78,10 +79,10 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		HitTarget = HitResult.Location;
 	}
 
-	SetHUDCrosshair(DeltaTime);
+	SetHUDCrosshair(DeltaTime, CrosshairColor);
 }
 
-void UCombatComponent::SetHUDCrosshair(float DeltaTime)
+void UCombatComponent::SetHUDCrosshair(float DeltaTime, FLinearColor& CrosshairColor)
 {
 	if (Character == nullptr || Character->Controller == nullptr) return;
 	if (!EquippedWeapon) return;
@@ -92,6 +93,8 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 	HUD = HUD == nullptr ? Cast<APrepperHUD>(Controller->GetHUD()) : HUD;
 	if (!HUD) return;
 	
+	FHUDPackage HUDPackage;
+	
 	EquippedWeapon->GetCrosshair(DeltaTime, bAiming,
 								HUDPackage.CrosshairCenter,
 								HUDPackage.CrosshairLeft,
@@ -100,12 +103,12 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime)
 								HUDPackage.CrosshairBottom,
 								HUDPackage.CrosshairSpread);
 
+	HUDPackage.CrosshairColor = CrosshairColor;
+	
 	HUD->SetHUDPackage(HUDPackage);
 }
 
-// TODO
-// Fire Start
-void UCombatComponent::FireButtonPressed(bool bPressed)
+void UCombatComponent::FireTrigger(bool bPressed)
 {
 	if (bFireButtonPressed == bPressed) return;
 	
@@ -113,13 +116,15 @@ void UCombatComponent::FireButtonPressed(bool bPressed)
 
 	if (bFireButtonPressed)
 	{
-		Fire();
+		ActionReservation(FireWeapon);
+		ActionDequeue();
 	}
 }
-// TODO
+
 bool UCombatComponent::CanFire()
 {
 	if (!EquippedWeapon) return false;
+	if (!bFireButtonPressed) return false;
 	if (CombatState != ECombatState::ECS_Unoccupied) return false;
 
 	if (EquippedMeleeWeapon) return true;
@@ -132,6 +137,7 @@ void UCombatComponent::Fire()
 	
 	CrosshairShootingFactor = .75f;
 	HitTargets = EquippedWeapon->GetTarget(HitTarget);
+	
 	LocalFireWeapon(HitTargets);
 	ServerFireWeapon(HitTargets);
 
@@ -157,12 +163,11 @@ void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceH
 	if (EquippedRangeWeapon)
 	{
 		Character->PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
-		
+		return;
 	}
-	else
-	{
-		Character->PlayAnim(MeleeWeaponMontage, EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
-	}
+	
+	Character->PlayAnim(MeleeWeaponMontage,
+		EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
 	
 }
 
@@ -181,12 +186,12 @@ void UCombatComponent::MulticastFireWeapon_Implementation(const TArray<FVector_N
 
 void UCombatComponent::FireTimerFinished()
 {
-	if (EquippedWeapon == nullptr) return;
-
 	CombatState = ECombatState::ECS_Unoccupied;
-	EquippedWeapon->FireEnd(bFireButtonPressed);
+	
+	if (EquippedWeapon == nullptr) return;
+	
+	ActionDequeue();
 }
-
 void UCombatComponent::ReloadEmptyWeapon()
 {
 	if (EquippedRangeWeapon && EquippedRangeWeapon->IsAmmoEmpty())
@@ -194,7 +199,6 @@ void UCombatComponent::ReloadEmptyWeapon()
 		Reload();
 	}
 }
-
 
 void UCombatComponent::OnRep_CarriedAmmo()
 {
@@ -225,15 +229,12 @@ void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 	}
 }
 
-EWeaponType UCombatComponent::SetWeaponType()
+void UCombatComponent::SetWeaponType()
 {
-	if (EquippedWeapon)
-	{
-		EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
-		EquippedMeleeWeapon = Cast<AMeleeWeapon>(EquippedWeapon);
-		return EquippedWeapon->GetWeaponType();
-	}
-	return EWeaponType::EWT_MAX;
+	if (!EquippedWeapon) return;
+	
+	EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
+	EquippedMeleeWeapon = Cast<AMeleeWeapon>(EquippedWeapon);
 }
 
 
@@ -388,11 +389,11 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	SecondaryWeapon = TempWeapon;
 
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	
 	SetWeaponType();
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
-
-	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
 	
 	Notify();
 }
@@ -434,12 +435,13 @@ void UCombatComponent::ServerReload_Implementation()
 
 void UCombatComponent::FinishReloading()
 {
-	if (Character == nullptr) return;
 	CombatState = ECombatState::ECS_Unoccupied;
+	if (Character == nullptr) return;
 	if (Character->HasAuthority())
 	{
 		UpdateAmmoValues();
 	}
+	ActionDequeue();
 	if (bFireButtonPressed)
 	{
 		Fire();
@@ -583,4 +585,29 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 bool UCombatComponent::ShouldSwapWeapons()
 {
 	return (EquippedWeapon != nullptr && SecondaryWeapon != nullptr);
+}
+
+void UCombatComponent::ActionReservation(Action Act)
+{
+	ActionQueue.Enqueue(Act);
+}
+
+void UCombatComponent::ActionDequeue()
+{
+	if (ActionQueue.IsEmpty()) return;
+	
+	Action Act;
+	ActionQueue.Dequeue(Act);
+
+	switch(Act)
+	{
+	case FireWeapon:
+		Fire();
+		UE_LOG(LogTemp, Warning, TEXT("Fire Weapon Action Reservation"));
+		break;
+	case ReloadWeapon:
+		Reload();
+		UE_LOG(LogTemp, Warning, TEXT("Reload Weapon Action Reservation"));
+		break;
+	}
 }

@@ -275,7 +275,7 @@ void ADeathMatchPlayerController::HandleCooldown()
 	if(PlayerCharacter && PlayerCharacter->GetCombatComponent())
 	{
 		PlayerCharacter->bDisableGamePlay = true;
-		PlayerCharacter->GetCombatComponent()->FireButtonPressed(false);
+		PlayerCharacter->GetCombatComponent()->FireTrigger(false);
 	}
 }
 

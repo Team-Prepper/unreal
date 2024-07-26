@@ -12,21 +12,17 @@ void ARangeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	}
 	
 	SpendRound();
-}
-
-void ARangeWeapon::FireEnd(bool Trigger)
-{
+	
 	WeaponHandler = GetWeaponHandler();
 	
 	if (WeaponHandler == nullptr) return;
-	
-	if (Trigger && bAutomatic)
-	{
-		WeaponHandler->Fire();
-	}
 	if (bAutoReload)
 	{
-		WeaponHandler->Reload();
+		WeaponHandler->ActionReservation(IWeaponHandler::ReloadWeapon);
+	}
+	if (bAutomatic)
+	{
+		WeaponHandler->ActionReservation(IWeaponHandler::FireWeapon);
 	}
 }
 
