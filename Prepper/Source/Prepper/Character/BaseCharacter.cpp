@@ -9,6 +9,7 @@
 #include "Prepper/GameMode/DeathMatchGameMode.h"
 #include "Prepper/_Base/Util/GaugeFloat.h"
 
+// Actor
 ABaseCharacter::ABaseCharacter()
 {
 	WalkSpeed = 600.f;
@@ -23,16 +24,16 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(ABaseCharacter, CurrentHealth);
 }
 
-void ABaseCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
+void ABaseCharacter::BeginPlay()
 {
-	const USkeletalMeshSocket* TargetSocket = GetMesh()->GetSocketByName(SocketName);
-	if(TargetSocket)
+	Super::BeginPlay();
+	if (HasAuthority())
 	{
-		TargetSocket->AttachActor(TargetActor, GetMesh());
+		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
+// Observer Pattern
 void ABaseCharacter::Attach(IObserver<GaugeValue<float>>* Observer)
 {
 	Observers.insert(Observer);
@@ -52,25 +53,32 @@ void ABaseCharacter::Notify()
 	});
 }
 
-void ABaseCharacter::BeginPlay()
+
+// Character
+void ABaseCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
 {
-	Super::BeginPlay();
-	if (HasAuthority())
+	const USkeletalMeshSocket* TargetSocket = GetMesh()->GetSocketByName(SocketName);
+	if(TargetSocket)
 	{
-		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
+		TargetSocket->AttachActor(TargetActor, GetMesh());
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
 }
 
-void ABaseCharacter::PlayElimMontage()
+void ABaseCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
 {
-	PlayAnim(ElimMontage);
+	if (Montage == nullptr) return;
+	
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance) return;
+	
+	AnimInstance->Montage_Play(Montage);
+	if (SectionName.Compare("") == 0) return;
+	
+	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
-void ABaseCharacter::PlayHitReactMontage()
-{
-	PlayAnim(HitReactMontage, FName("HitFront"));
-}
-
+// Health
 void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth -= Damage;
@@ -89,28 +97,25 @@ void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorControll
 	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 }
 
+void ABaseCharacter::PlayHitReactMontage()
+{
+	PlayAnim(HitReactMontage, FName("HitFront"));
+}
+
+void ABaseCharacter::OnRep_Health()
+{
+	PlayHitReactMontage();
+}
+
 void ABaseCharacter::Elim()
 {
 	MulticastElim();
 }
 
-void ABaseCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName)
-{
-	if (Montage == nullptr) return;
-	
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (!AnimInstance) return;
-	
-	AnimInstance->Montage_Play(Montage);
-	if (SectionName.Compare("") == 0) return;
-	
-	AnimInstance->Montage_JumpToSection(SectionName);
-}
-
 void ABaseCharacter::MulticastElim_Implementation()
 {
 	bElimed = true;
-	PlayElimMontage();
+	PlayAnim(ElimMontage);
 
 	// Start Dissolve Effect
 	if (DissolveMaterialInstance)
@@ -145,14 +150,6 @@ void ABaseCharacter::MulticastElim_Implementation()
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void ABaseCharacter::UpdateDissolveMaterial(float DissolveValue)
-{
-	if (DynamicDissolveMaterialInstance)
-	{
-		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), DissolveValue);
-	}
-}
-
 void ABaseCharacter::StartDissolve()
 {
 	DissolveTrack.BindDynamic(this, &ABaseCharacter::UpdateDissolveMaterial);
@@ -163,7 +160,10 @@ void ABaseCharacter::StartDissolve()
 	}
 }
 
-void ABaseCharacter::OnRep_Health()
+void ABaseCharacter::UpdateDissolveMaterial(float DissolveValue)
 {
-	PlayHitReactMontage();
+	if (DynamicDissolveMaterialInstance)
+	{
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), DissolveValue);
+	}
 }

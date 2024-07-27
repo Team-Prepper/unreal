@@ -188,8 +188,6 @@ void UCombatComponent::OnRep_EquippedWeapon()
 
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 
-	//Character->AttachActorAtSocket(EquippedWeapon->AttachSocketName(), EquippedWeapon);
-
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
 }
@@ -540,10 +538,9 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 	}
 	
 	const FVector End = Start + CrosshairWorldDirection * TRACE_LEN;
-	const ECollisionChannel CollisionChannel = ECC_Visibility;
 
 	const bool bHitSomething = GetWorld()->LineTraceSingleByChannel(
-		TraceHitResult, Start, End, CollisionChannel);
+		TraceHitResult, Start, End, ECC_Visibility);
 	
 	if (!bHitSomething)
 	{
@@ -582,9 +579,6 @@ void UCombatComponent::OnRep_CarriedAmmo()
 {
 	Notify();
 }
-
-
-
 
 void UCombatComponent::UpdateCarriedAmmo()
 {
