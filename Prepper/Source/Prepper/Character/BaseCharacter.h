@@ -68,7 +68,7 @@ public:
 protected:
 	virtual void PlayHitReactMontage();
 
-private:
+protected:
 	UFUNCTION()
 	virtual void OnRep_Health();
 
@@ -76,6 +76,7 @@ private:
 private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ElimMontage;
+protected:
 	bool bElimed = false;
 
 protected:
@@ -87,7 +88,7 @@ protected:
 public:
 	virtual void Elim();
 	FORCEINLINE bool IsElimed() const { return bElimed; }
-private:
+protected:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastElim();
 
