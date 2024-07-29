@@ -203,6 +203,7 @@ void AEnemyBaseCharacter::Elim()
 	if(EquippedWeapon)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+		EquippedWeapon = nullptr;
 	}
 	Super::Elim();
 }

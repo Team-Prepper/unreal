@@ -1,5 +1,6 @@
 #include "WeaponActor.h"
 
+#include "Components/BoxComponent.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -16,17 +17,15 @@ AWeaponActor::AWeaponActor()
 	bReplicates = true;
 	SetReplicateMovement(true);
 
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("WeaponBox"));
+	SetRootComponent(BoxComponent);
+
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	SetRootComponent(WeaponMesh);
-
-	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
-	WeaponMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	WeaponMesh->SetupAttachment(RootComponent);
+	
 	StaticWeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeleeWeaponMesh"));
-	StaticWeaponMesh->SetupAttachment(RootComponent);
-	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	StaticWeaponMesh->SetupAttachment(WeaponMesh);
+	
 	WeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	StaticWeaponMesh->SetCustomDepthStencilValue(CustomDepthColor);
 	WeaponMesh->MarkRenderStateDirty();
@@ -35,10 +34,6 @@ AWeaponActor::AWeaponActor()
 	
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);;
-	AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-	AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 	AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
@@ -124,6 +119,7 @@ void AWeaponActor::SetWeaponState(EWeaponState State)
 // client
 void AWeaponActor::OnRep_WeaponState()
 {
+	UE_LOG(LogTemp, Warning , TEXT("CLIENT : WeaponState Change"));
 	OnWeaponStateSet();
 }
 
@@ -174,10 +170,9 @@ void AWeaponActor::OnEquipped()
 void AWeaponActor::OnDropped()
 {
 	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON DROPPED"));
-	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-
+	FDetachmentTransformRules RootDetachRule(EDetachmentRule::KeepWorld, true);
 	WeaponPhysicsActive(true);
-	WeaponMesh->DetachFromComponent(DetachRules);
+	BoxComponent->DetachFromComponent(RootDetachRule);
 
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
 		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
@@ -263,33 +258,42 @@ TArray<FVector_NetQuantize> AWeaponActor::GetTarget(FVector& HitTarget)
 void AWeaponActor::WeaponPhysicsActive(bool active)
 {
 	SetActorEnableCollision(active);
-	WeaponMesh->SetSimulatePhysics(active);
-	WeaponMesh->SetEnableGravity(active);
+	BoxComponent->SetSimulatePhysics(active);
+	BoxComponent->SetEnableGravity(active);
+	AreaSphere->SetSimulatePhysics(false);
+	
+	WeaponMesh->SetSimulatePhysics(false);
+	WeaponMesh->SetEnableGravity(false);
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
 	EnableCustomDepth(active);
 
 	if (active)
 	{
+		BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		BoxComponent->SetCollisionResponseToAllChannels(ECR_Block);
+		BoxComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		BoxComponent->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+		
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 		AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
 		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 		AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-	
-		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
 
-		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
 		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 		WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
-
+	
+		StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		StaticWeaponMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
+		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+		StaticWeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
 		return;
 	}
-	
+
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);

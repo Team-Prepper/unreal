@@ -81,10 +81,13 @@ protected:
 	bool bUseServerSideRewind = false;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	class UBoxComponent* BoxComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	UMeshComponent* WeaponMesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
-	UStaticMeshComponent* StaticWeaponMesh;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
+	UMeshComponent* StaticWeaponMesh;
 
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
 	UAnimationAsset* FireAnimation;
@@ -107,7 +110,8 @@ protected:
 
 private:
 	void WeaponPhysicsActive(bool active);
-	
+
+	FTransform StaticWeaponMeshTransform;
 public:
 	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
