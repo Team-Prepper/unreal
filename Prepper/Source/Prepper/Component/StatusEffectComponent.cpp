@@ -25,6 +25,32 @@ void UStatusEffectComponent::BeginPlay()
 	StatusTimerStart();
 }
 
+void UStatusEffectComponent::Attach(IObserver<Status>* Observer)
+{
+	Observers.insert(Observer);
+	Observer->Update(
+		Status(	FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
+						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
+						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100)));
+}
+
+void UStatusEffectComponent::Detach(IObserver<Status>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void UStatusEffectComponent::Notify()
+{
+	const Status Value(	FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
+						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
+						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100));
+
+	std::ranges::for_each(Observers, [&](IObserver<Status>* Observer) {
+		Observer->Update(Value);
+	});
+
+}
+
 void UStatusEffectComponent::InitStateEffectMap()
 {
 	UE_LOG(LogTemp,Warning,TEXT("SET STATUS EFFECT LEVEL"));
@@ -61,7 +87,8 @@ void UStatusEffectComponent::StatusTimerFinish()
 		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
 	}
 	StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
-	
+
+	Notify();
 	UpdateStatusEffectHUD();
 	UpdateStatusEffect();
 }
@@ -117,6 +144,7 @@ void UStatusEffectComponent::UpdateStatusEffect()
 
 void UStatusEffectComponent::UpdateStatusEffectHUD()
 {
+	
 	if(!PrepperPlayerController) return;
 	PrepperPlayerController->SetHUDStatusEffect(
 		StateEffectMap[EStatusEffect::ESE_HUNGRY],

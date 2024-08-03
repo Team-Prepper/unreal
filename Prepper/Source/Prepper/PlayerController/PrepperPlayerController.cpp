@@ -61,18 +61,4 @@ void APrepperPlayerController::Tick(float DeltaTime)
 
 void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, float Infection)
 {
-	if(!IsLocalController()) return;
-	
-	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->CharacterOverlay &&
-					 PrepperHUD->CharacterOverlay->HungerBar &&
-					 PrepperHUD->CharacterOverlay->ThirstBar &&
-					 PrepperHUD->CharacterOverlay->InfectionBar;
-	if(bHUDValid)
-	{
-		PrepperHUD->CharacterOverlay->HungerBar->SetPercent(Hunger / 100);
-		PrepperHUD->CharacterOverlay->ThirstBar->SetPercent(Thirst/ 100);
-		PrepperHUD->CharacterOverlay->InfectionBar->SetPercent(Infection / 100);
-	}
 }

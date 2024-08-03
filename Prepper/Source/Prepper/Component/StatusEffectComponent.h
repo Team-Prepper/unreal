@@ -2,26 +2,38 @@
 
 #pragma once
 
+#include <set>
+
 #include "CoreMinimal.h"
+#include "Status.h"
 #include "Prepper/Enums/StatusEffect.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "StatusEffectComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UStatusEffectComponent : public UActorComponent
+class PREPPER_API UStatusEffectComponent : public UActorComponent, public ISubject<Status>
 {
 	GENERATED_BODY()
 
 public:	
-	UStatusEffectComponent();
 	friend class APlayerCharacter;
-
+	UStatusEffectComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 protected:
 	virtual void BeginPlay() override;
 
+	// Observer Pattern
+private:
+	std::pmr::set<IObserver<Status>*> Observers;
+	
+public:
+	virtual void Attach(IObserver<Status>* Observer) override;
+	virtual void Detach(IObserver<Status>* Observer) override;
+	virtual void Notify() override;
+	
 private:
 	UPROPERTY()
 	EStatusEffect CurrentStatusEffect;

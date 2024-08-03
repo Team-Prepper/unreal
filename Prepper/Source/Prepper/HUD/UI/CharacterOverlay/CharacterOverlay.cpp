@@ -25,3 +25,10 @@ void UCharacterOverlay::Update(const GaugeValue<int>& NewData)
 	const FString CarriedText = FString::Printf(TEXT("%d"), NewData.GetMaxValue());
 	CarriedAmmoValue->SetText(FText::FromString(CarriedText));
 }
+
+void UCharacterOverlay::Update(const Status& NewData)
+{
+	HungerBar->SetPercent(NewData.Hungry.GetRatio());
+	ThirstBar->SetPercent(NewData.Thirsty.GetRatio());
+	InfectionBar->SetPercent(NewData.Infected.GetRatio());
+}

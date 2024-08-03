@@ -225,6 +225,7 @@ public:
 	bool IsWeaponEquipped();
 	bool IsAiming();
 	bool IsLocallyReloading();
+	
 	AWeaponActor* GetEquippedWeapon();
 	FVector GetHitTarget() const;
 	ECombatState GetCombatState() const;

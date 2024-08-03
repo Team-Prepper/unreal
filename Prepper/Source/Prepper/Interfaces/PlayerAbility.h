@@ -21,8 +21,6 @@ class PREPPER_API IPlayerAbility
 	GENERATED_BODY()
 
 public:
-	virtual void OpenCraftingTable() PURE_VIRTUAL();
-	
 	virtual void AddItem(FString ItemCode) PURE_VIRTUAL();
 	virtual void UseQuickSlotItem(int Idx) PURE_VIRTUAL();
 	virtual void EquipWeapon(class AWeaponActor* Weapon) PURE_VIRTUAL();

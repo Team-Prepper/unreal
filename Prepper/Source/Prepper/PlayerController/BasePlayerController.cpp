@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerState.h"
 #include "Prepper/Component/CombatComponent.h"
+#include "Prepper/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 
 
@@ -71,6 +72,8 @@ void ABasePlayerController::PossessPawn()
 	
 	PlayerCharacter->Attach(PrepperHUD->CharacterOverlay);
 	PlayerCharacter->GetCombatComponent()->Attach(PrepperHUD->CharacterOverlay);
+	PlayerCharacter->GetStatusEffectComponent()->Attach(PrepperHUD->CharacterOverlay);
+	
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
