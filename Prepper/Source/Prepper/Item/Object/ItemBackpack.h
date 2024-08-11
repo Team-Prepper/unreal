@@ -13,6 +13,7 @@ enum class EBackpackState : uint8
 	EBS_Initial UMETA(DisplayName = "Initial State"),
 	EBS_Equipped UMETA(DisplayName = "Equipped"),
 	EBS_Dropped UMETA(DisplayName = "Dropped"),
+	EBS_OpenInventory UMETA(DisplayName = "OpenInventory"),
 	EBS_MAX UMETA(DisplayName = "Default MAX")
 };
 

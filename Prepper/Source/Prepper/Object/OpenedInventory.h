@@ -50,6 +50,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* InventoryMesh;
+
+public:
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return InventoryMesh; }
 	
 	
 };

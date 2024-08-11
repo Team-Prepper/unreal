@@ -2,6 +2,7 @@
 #include "Prepper/Prepper.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Object/OpenedInventory.h"
@@ -109,6 +110,19 @@ void AItemBackpack::OnBackPackState()
 		BackpackPhysicsActive(true);
 		SetOwner(nullptr);
 		break;
+	case EBackpackState::EBS_OpenInventory:
+		UE_LOG(LogTemp,Warning,TEXT("Backpack dropped"));
+		BackpackPhysicsActive(false);
+
+		EnableCustomDepth(true);
+		SetActorEnableCollision(true);
+		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
+		AreaSphere->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+		
+		SetOwner(nullptr);
+		break;
 
 	default:
 		break;
@@ -183,10 +197,17 @@ void AItemBackpack::ShowInventory()
 		SpawnRotation
 		);
 	OpenedInventory->SetTargetInventory(Inventory);
+
+	// 인벤토리 테이블 생성
+	//AttachToActor(OpenedInventory, FAttachmentTransformRules::KeepWorldTransform);
+
+	const UStaticMeshSocket* TargetSocket = OpenedInventory->GetMesh()->GetSocketByName(TEXT("BackpackSocket"));
+	if(TargetSocket)
+	{
+		TargetSocket->AttachActor(this, OpenedInventory->GetMesh());
+	}
 	
-	AttachToActor(OpenedInventory, FAttachmentTransformRules::KeepWorldTransform /* , socketName*/ );
-	
-	SetBackpackState(EBackpackState::EBS_Dropped);
+	SetBackpackState(EBackpackState::EBS_OpenInventory);
 }
 
 void AItemBackpack::HideInventory()

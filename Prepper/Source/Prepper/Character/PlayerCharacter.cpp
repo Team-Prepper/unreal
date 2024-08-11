@@ -262,7 +262,17 @@ void APlayerCharacter::MulticastElim()
 {
 	Super::MulticastElim();
 	bDisableGamePlay = true;
-	ShowSniperScopeWidget(false);
+	
+	bool bHideSniperScope = IsLocallyControlled() && 
+		Combat && 
+		Combat->bAiming && 
+		Combat->EquippedWeapon && 
+		Combat->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
+	
+	if (bHideSniperScope)
+	{
+		ShowSniperScopeWidget(false);
+	}
 	if(Combat)
 	{
 		Combat->FireTrigger(false);
