@@ -20,7 +20,7 @@ class PREPPER_API IWeaponHandler
 {
 	GENERATED_BODY()
 public:
-	enum Action
+	enum EAction
 	{
 		FireWeapon,
 		ReloadWeapon,
@@ -30,7 +30,7 @@ public:
 
 	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) PURE_VIRTUAL();
 
-	virtual void ActionReservation(Action Act) PURE_VIRTUAL();
+	virtual void ActionReservation(EAction Act) PURE_VIRTUAL();
 	
 	virtual void Fire() PURE_VIRTUAL();
 	virtual void FireTrigger(bool IsTrigger) PURE_VIRTUAL();
