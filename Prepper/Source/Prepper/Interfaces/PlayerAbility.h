@@ -24,6 +24,7 @@ public:
 	virtual void AddItem(FString ItemCode) PURE_VIRTUAL();
 	virtual void UseQuickSlotItem(int Idx) PURE_VIRTUAL();
 	virtual void EquipWeapon(class AWeaponActor* Weapon) PURE_VIRTUAL();
+	virtual void EquipBackpack(class AItemBackpack* BackpackToEquip) PURE_VIRTUAL();
 
 	virtual void Heal(float Amount) PURE_VIRTUAL();
 	virtual void Eat(float Amount) PURE_VIRTUAL();

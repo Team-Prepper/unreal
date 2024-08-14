@@ -14,70 +14,86 @@ UCLASS()
 class PREPPER_API ABaseCharacter : public ACharacter, public IDamageable, public ISubject<GaugeValue<float>>
 {
 	GENERATED_BODY()
+// Actor
+public:
+	ABaseCharacter();
+	// 네트워크 동기화 변수 설정
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+protected:
+	virtual void BeginPlay() override;
+	
+// Observer Pattern
 private:
 	std::pmr::set<IObserver<GaugeValue<float>>*> Observers;
 public:
-	// 네트워크 동기화 변수 설정
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
-	
 	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
 	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
 	virtual void Notify() override;
 
-	ABaseCharacter();
+// Character
+public:
+	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
+	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
+	
+// Movement
 protected:
-	virtual void BeginPlay() override;
-
 	/* 기본 변수 */
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float WalkSpeed = 600;
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float SprintSpeed = 900;
 
+protected:
 	UPROPERTY()
 	class APrepperPlayerController* PrepperPlayerController;
 	
 	UPROPERTY()
 	class ADeathMatchPlayerState* DeathMatchPlayerState;
 
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
-	float MaxHealth = 100.f;
-	
-	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
-	float CurrentHealth = 100.f;
-	
-	UFUNCTION()
-	virtual void OnRep_Health();
-
+// Health
+private:
 	/* 데미지 처리 */
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* HitReactMontage;
-
+protected:
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	float CurrentHealth = 100.f;
+public:
 	
 	UFUNCTION()
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 
+protected:
 	virtual void PlayHitReactMontage();
 
-	/* 사망 및 부활 처리 */
-	bool bElimed = false;
-	FTimerHandle ElimTimer;
-	UPROPERTY(EditDefaultsOnly)
-	float ElimDelay = 3.f;
+protected:
+	UFUNCTION()
+	virtual void OnRep_Health();
+
+/* 사망 및 부활 처리 */
+private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ElimMontage;
-	void PlayElimMontage();
+protected:
+	bool bElimed = false;
+
+protected:
+	FTimerHandle ElimTimer;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float ElimDelay = 3.f;
 
 public:
 	virtual void Elim();
+	FORCEINLINE bool IsElimed() const { return bElimed; }
+protected:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastElim();
 
-	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "");
-
-	/* 사망 이펙트  */
-protected:
+/* 사망 이펙트  */
+private:
 	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* DissolveTimeline;
 	FOnTimelineFloat DissolveTrack;
@@ -93,11 +109,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
 
-	
+protected:
+	void StartDissolve();
 	UFUNCTION()
 	void UpdateDissolveMaterial(float DissolveValue);
-	void StartDissolve();
-
-public:
-	FORCEINLINE bool IsElimed() const { return bElimed; }
 };

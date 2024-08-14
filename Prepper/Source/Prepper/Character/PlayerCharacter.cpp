@@ -2,7 +2,6 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
-#include "AnimNodes/AnimNode_RandomPlayer.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -18,10 +17,9 @@
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Component/InteractionComponent.h"
 #include "Prepper/Item/Object/ItemBackpack.h"
-#include "Sound/SoundCue.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 
-
+// Actor
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -81,15 +79,6 @@ APlayerCharacter::APlayerCharacter()
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 }
 
-void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	
-	DOREPLIFETIME(APlayerCharacter, bDisableGamePlay);
-	DOREPLIFETIME(APlayerCharacter, PlayerMovementState);
-	DOREPLIFETIME(APlayerCharacter, EquippedBackpack);
-}
-
 void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -105,13 +94,6 @@ void APlayerCharacter::PostInitializeComponents()
 	{
 		InteractionComponent->Character = this;
 	}
-}
-
-void APlayerCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -136,101 +118,41 @@ void APlayerCharacter::Tick(float DeltaTime)
 	}
 }
 
-void APlayerCharacter::RotateInPlace(float DeltaTime)
+void APlayerCharacter::Destroyed()
 {
-	if(bDisableGamePlay)
+	Super::Destroyed();
+
+	ADeathMatchGameMode* DeathMatchGameMode = Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this));
+	bool bMatchNotInProgress = DeathMatchGameMode && DeathMatchGameMode->GetMatchState() != MatchState::InProgress;
+
+	if(Combat && Combat->EquippedWeapon && bMatchNotInProgress)
 	{
-		bUseControllerRotationYaw = false;
-		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
-		return;
-	}
-	if(GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
-	{
-		AimOffset(DeltaTime);
-		return;
-	}
-	
-	TimeSinceLastMovementReplication += DeltaTime;
-	if (TimeSinceLastMovementReplication > 0.25f)
-	{
-		OnRep_ReplicatedMovement();
-	}
-	CalculateAO_Pitch();
-}
-
-
-void APlayerCharacter::ShiftPressed()
-{
-	if(bDisableGamePlay) return;
-	if(StatusEffect && StatusEffect->StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("THIRSTY : Can't Sprint"));
-		SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
-		return;
-	}
-	if(PlayerMovementState == EPlayerMovementState::EPMS_Sprint) return;
-	
-	SetPlayerMovementState(EPlayerMovementState::EPMS_Sprint);
-}
-
-void APlayerCharacter::ShiftReleased()
-{
-	if(bDisableGamePlay) return;
-	SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
-}
-
-void APlayerCharacter::PlayHitReactMontage()
-{
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
-	ABaseCharacter::PlayHitReactMontage();
-}
-
-void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
-{
-	Super::ReceiveDamage(Damage, InstigatorController, DamageCauser);
-	Notify();
-}
-
-void APlayerCharacter::OnRep_Health()
-{
-	Super::OnRep_Health();
-	Notify();
-}
-
-void APlayerCharacter::PollInit()
-{
-	if(DeathMatchPlayerState == nullptr)
-	{
-		DeathMatchPlayerState = GetPlayerState<ADeathMatchPlayerState>();
-		if(DeathMatchPlayerState)
-		{
-			DeathMatchPlayerState->AddToScore(0.f);
-			DeathMatchPlayerState->AddToDefeats(0);
-		}
+		//Combat->EquippedWeapon->Destroy();
 	}
 }
 
-void APlayerCharacter::Move(const FInputActionValue& Value)
+void APlayerCharacter::BeginPlay()
 {
-	if(bDisableGamePlay) return;
-	// input is a Vector2D
-	FVector2D MovementVector = Value.Get<FVector2D>();
-	
-	if (Controller == nullptr) return;
-	
-	// find out which way is forward
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
+	Super::BeginPlay();
 
-	// get forward vector
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-	// get right vector 
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
+}
 
-	// add movement 
-	AddMovementInput(ForwardDirection, MovementVector.Y);
-	AddMovementInput(RightDirection, MovementVector.X);
+// BaseCharacter
+
+void APlayerCharacter::Crouch(bool bClientSimulation)
+{
+	Super::Crouch(bClientSimulation);
+	TargetSpringArmLocation = (FVector(0.0f, 0.0f, CrouchCamOffset));
+	TargetArmLength = CrouchCamArmLength;
+}
+
+void APlayerCharacter::UnCrouch(bool bClientSimulation)
+{
+	Super::UnCrouch(bClientSimulation);
+
+	TargetSpringArmLocation = (FVector(0.0f, 0.0f, DefaultCamOffset));
+	TargetArmLength = DefaultCamArmLength;
 }
 
 void APlayerCharacter::Elim()
@@ -283,6 +205,29 @@ void APlayerCharacter::MulticastElim()
 	}
 }
 
+void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
+{
+	Super::ReceiveDamage(Damage, InstigatorController, DamageCauser);
+	Notify();
+}
+
+void APlayerCharacter::PlayHitReactMontage()
+{
+	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	ABaseCharacter::PlayHitReactMontage();
+}
+
+void APlayerCharacter::Jump()
+{
+	if(bIsCrouched)
+	{
+		UnCrouch();
+	}else
+	{
+		Super::Jump();
+	}
+}
+
 void APlayerCharacter::ElimTimerFinished()
 {
 	// Only Server
@@ -295,6 +240,101 @@ void APlayerCharacter::ElimTimerFinished()
 	{
 		PrepperPlayerController->TargetControllerable = nullptr;
 	}
+}
+
+// IPlayerAbility
+
+void APlayerCharacter::AddItem(FString ItemCode)
+{
+	if(!HasAuthority()) return;
+	MulticastAddItem(ItemCode);
+}
+
+void APlayerCharacter::UseQuickSlotItem(int Idx)
+{
+	Inventory->UseItemAtQuickSlot(Idx);
+}
+
+void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
+	if(bDisableGamePlay) return;
+	if(Combat)
+	{
+		Combat->EquipWeapon(Weapon);
+	}
+}
+
+void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
+{
+	if(BackpackToEquip == nullptr) return;
+
+	EquippedBackpack = BackpackToEquip;
+	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
+	
+}
+
+void APlayerCharacter::Heal(float Amount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Heal:%f"), Amount);
+	CurrentHealth += Amount;
+	if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
+	Notify();
+}
+
+void APlayerCharacter::Eat(float Amount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Eat:%f"), Amount);
+}
+
+void APlayerCharacter::Drink(float Amount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Drink:%f"), Amount);
+}
+
+void APlayerCharacter::OnRep_EquippedBackpack()
+{
+	if(EquippedBackpack)
+	{
+		EquipBackpack(EquippedBackpack);
+	}
+}
+
+void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
+{
+	if(EquippedBackpack)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Backpack : Add Item %s"), *ItemCode);
+		if(EquippedBackpack->GetInventory()->TryAddItem(ItemCode))
+			return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("pocket : Add Item %s"), *ItemCode);
+	Inventory->TryAddItem(ItemCode);
+}
+
+// IControllable
+
+void APlayerCharacter::Move(const FInputActionValue& Value)
+{
+	if(bDisableGamePlay) return;
+	// input is a Vector2D
+	FVector2D MovementVector = Value.Get<FVector2D>();
+	
+	if (Controller == nullptr) return;
+	
+	// find out which way is forward
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	// get forward vector
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	
+	// get right vector 
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+	// add movement 
+	AddMovementInput(ForwardDirection, MovementVector.Y);
+	AddMovementInput(RightDirection, MovementVector.X);
 }
 
 void APlayerCharacter::Look(const FInputActionValue& Value)
@@ -322,6 +362,26 @@ void APlayerCharacter::SpaceReleased()
 	StopJumping();
 }
 
+void APlayerCharacter::ShiftPressed()
+{
+	if(bDisableGamePlay) return;
+	if(StatusEffect && StatusEffect->StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("THIRSTY : Can't Sprint"));
+		SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
+		return;
+	}
+	if(PlayerMovementState == EPlayerMovementState::EPMS_Sprint) return;
+	
+	SetPlayerMovementState(EPlayerMovementState::EPMS_Sprint);
+}
+
+void APlayerCharacter::ShiftReleased()
+{
+	if(bDisableGamePlay) return;
+	SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
+}
+
 void APlayerCharacter::EPressed()
 {
 	if(bDisableGamePlay) return;
@@ -343,32 +403,13 @@ void APlayerCharacter::EPressed()
 
 }
 
-void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
+void APlayerCharacter::RPressed()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
 	if(bDisableGamePlay) return;
 	if(Combat)
 	{
-		Combat->EquipWeapon(Weapon);
+		Combat->Reload();
 	}
-}
-
-void APlayerCharacter::Heal(float Amount)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Heal:%f"), Amount);
-	CurrentHealth += Amount;
-	if (CurrentHealth > MaxHealth) CurrentHealth = MaxHealth;
-	Notify();
-}
-
-void APlayerCharacter::Eat(float Amount)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Eat:%f"), Amount);
-}
-
-void APlayerCharacter::Drink(float Amount)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Drink:%f"), Amount);
 }
 
 void APlayerCharacter::ControlPressed()
@@ -384,12 +425,21 @@ void APlayerCharacter::ControlPressed()
 	}
 }
 
-void APlayerCharacter::RPressed()
+void APlayerCharacter::MouseLeftPressed()
 {
 	if(bDisableGamePlay) return;
 	if(Combat)
 	{
-		Combat->Reload();
+		Combat->FireTrigger(true);
+	}
+}
+
+void APlayerCharacter::MouseLeftReleased()
+{
+	if(bDisableGamePlay) return;
+	if(Combat)
+	{
+		Combat->FireTrigger(false);
 	}
 }
 
@@ -425,24 +475,6 @@ UCustomCameraComponent* APlayerCharacter::GetFollowCamera()
 	return FollowCamera;
 }
 
-void APlayerCharacter::MouseLeftPressed()
-{
-	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->FireTrigger(true);
-	}
-}
-
-void APlayerCharacter::MouseLeftReleased()
-{
-	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->FireTrigger(false);
-	}
-}
-
 void APlayerCharacter::CalculateAO_Pitch()
 {
 	AO_Pitch = GetBaseAimRotation().Pitch;
@@ -453,30 +485,6 @@ void APlayerCharacter::CalculateAO_Pitch()
 		const FVector2d OutRange(-90.f,0.f);
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
 		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
-	}
-}
-
-float APlayerCharacter::CalculateSpeed()
-{
-	FVector Velocity = GetVelocity();
-	Velocity.Z = 0.f;
-	return Velocity.Size();
-}
-
-void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
-{
-	if(BackpackToEquip == nullptr) return;
-
-	EquippedBackpack = BackpackToEquip;
-	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
-	
-}
-
-void APlayerCharacter::OnRep_EquippedBackpack()
-{
-	if(EquippedBackpack)
-	{
-		EquipBackpack(EquippedBackpack);
 	}
 }
 
@@ -512,13 +520,27 @@ void APlayerCharacter::AimOffset(float DeltaTime)
 	CalculateAO_Pitch();
 }
 
-void APlayerCharacter::OnRep_ReplicatedMovement()
+void APlayerCharacter::TurnInPlace(float DeltaTime)
 {
-	Super::OnRep_ReplicatedMovement();
-	SimProxiesTurn();
-	TimeSinceLastMovementReplication = 0.f;
+	if(AO_Yaw > 90.f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Right;
+	}
+	else if(AO_Yaw < -90.f)
+	{
+		TurningInPlace = ETurningInPlace::ETIP_Left;
+	}
+	if(TurningInPlace != ETurningInPlace::ETIP_NotTurning)
+	{
+		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 10.f);
+		AO_Yaw = InterpAO_Yaw;
+		if(FMath::Abs(AO_Yaw) < 15.f)
+		{
+			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
+	}
 }
-
 
 void APlayerCharacter::SimProxiesTurn()
 {
@@ -556,60 +578,77 @@ void APlayerCharacter::SimProxiesTurn()
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 }
 
-void APlayerCharacter::Jump()
+void APlayerCharacter::RotateInPlace(float DeltaTime)
 {
-	if(bIsCrouched)
+	if(bDisableGamePlay)
 	{
-		UnCrouch();
-	}else
-	{
-		Super::Jump();
+		bUseControllerRotationYaw = false;
+		TurningInPlace = ETurningInPlace::ETIP_NotTurning;
+		return;
 	}
+	if(GetLocalRole() > ROLE_SimulatedProxy && IsLocallyControlled())
+	{
+		AimOffset(DeltaTime);
+		return;
+	}
+	
+	TimeSinceLastMovementReplication += DeltaTime;
+	if (TimeSinceLastMovementReplication > 0.25f)
+	{
+		OnRep_ReplicatedMovement();
+	}
+	CalculateAO_Pitch();
 }
 
-void APlayerCharacter::TurnInPlace(float DeltaTime)
+void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	if(AO_Yaw > 90.f)
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(APlayerCharacter, bDisableGamePlay);
+	DOREPLIFETIME(APlayerCharacter, PlayerMovementState);
+	DOREPLIFETIME(APlayerCharacter, EquippedBackpack);
+}
+
+// ETC
+void APlayerCharacter::PollInit()
+{
+	if(DeathMatchPlayerState == nullptr)
 	{
-		TurningInPlace = ETurningInPlace::ETIP_Right;
-	}
-	else if(AO_Yaw < -90.f)
-	{
-		TurningInPlace = ETurningInPlace::ETIP_Left;
-	}
-	if(TurningInPlace != ETurningInPlace::ETIP_NotTurning)
-	{
-		InterpAO_Yaw = FMath::FInterpTo(InterpAO_Yaw, 0.f, DeltaTime, 10.f);
-		AO_Yaw = InterpAO_Yaw;
-		if(FMath::Abs(AO_Yaw) < 15.f)
+		DeathMatchPlayerState = GetPlayerState<ADeathMatchPlayerState>();
+		if(DeathMatchPlayerState)
 		{
-			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
-			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+			DeathMatchPlayerState->AddToScore(0.f);
+			DeathMatchPlayerState->AddToDefeats(0);
 		}
 	}
 }
 
-// public
+void APlayerCharacter::OnRep_ReplicatedMovement()
+{
+	Super::OnRep_ReplicatedMovement();
+	SimProxiesTurn();
+	TimeSinceLastMovementReplication = 0.f;
+}
+
+void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
+{
+	SetEquipmentHidden(EquippedBackpack, visible);
+	
+	if(!Combat) return;
+	SetEquipmentHidden(Combat->EquippedWeapon, visible);
+	SetEquipmentHidden(Combat->SecondaryWeapon, visible);
+}
+
+void APlayerCharacter::SetEquipmentHidden(AActor* Target, bool visible)
+{
+	if (!Target) return;
+	Target->SetActorHiddenInGame(visible);
+}
+
 void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
 {
 	if(!(IsLocallyControlled() || HasAuthority())) return;
 	ServerConvertPlayerMovementState(State);
-}
-
-// private
-void APlayerCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
-{
-	if(!HasAuthority()) return;
-	PlayerMovementState = State;
-	ConvertPlayerMovementState();
-	MulticastConvertPlayerMovementState(State);
-}
-
-void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
-{
-	if(HasAuthority()) return;
-	PlayerMovementState = State;
-	ConvertPlayerMovementState();
 }
 
 void APlayerCharacter::ConvertPlayerMovementState()
@@ -644,19 +683,19 @@ void APlayerCharacter::ConvertPlayerMovementState()
 	}
 }
 
-void APlayerCharacter::Crouch(bool bClientSimulation)
+void APlayerCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
 {
-	Super::Crouch(bClientSimulation);
-	TargetSpringArmLocation = (FVector(0.0f, 0.0f, CrouchCamOffset));
-	TargetArmLength = CrouchCamArmLength;
+	if(!HasAuthority()) return;
+	PlayerMovementState = State;
+	ConvertPlayerMovementState();
+	MulticastConvertPlayerMovementState(State);
 }
 
-void APlayerCharacter::UnCrouch(bool bClientSimulation)
+void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
 {
-	Super::UnCrouch(bClientSimulation);
-
-	TargetSpringArmLocation = (FVector(0.0f, 0.0f, DefaultCamOffset));
-	TargetArmLength = DefaultCamArmLength;
+	if(HasAuthority()) return;
+	PlayerMovementState = State;
+	ConvertPlayerMovementState();
 }
 
 void APlayerCharacter::HideCamIfCharacterClose()
@@ -672,55 +711,11 @@ void APlayerCharacter::HideCamIfCharacterClose()
 	}
 }
 
-void APlayerCharacter::Destroyed()
+float APlayerCharacter::CalculateSpeed()
 {
-	Super::Destroyed();
-
-	ADeathMatchGameMode* DeathMatchGameMode = Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this));
-	bool bMatchNotInProgress = DeathMatchGameMode && DeathMatchGameMode->GetMatchState() != MatchState::InProgress;
-
-	if(Combat && Combat->EquippedWeapon && bMatchNotInProgress)
-	{
-		//Combat->EquippedWeapon->Destroy();
-	}
-}
-
-void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
-{
-	SetEquipmentHidden(EquippedBackpack, visible);
-	
-	if(!Combat) return;
-	SetEquipmentHidden(Combat->EquippedWeapon, visible);
-	SetEquipmentHidden(Combat->SecondaryWeapon, visible);
-}
-
-void APlayerCharacter::SetEquipmentHidden(AActor* Target, bool visible)
-{
-	if (!Target) return;
-	Target->SetActorHiddenInGame(visible);
-}
-
-void APlayerCharacter::AddItem(FString ItemCode)
-{
-	if(!HasAuthority()) return;
-	MulticastAddItem(ItemCode);
-}
-
-void APlayerCharacter::UseQuickSlotItem(int Idx)
-{
-	Inventory->UseItemAtQuickSlot(Idx);
-}
-
-void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
-{
-	if(EquippedBackpack)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Backpack : Add Item %s"), *ItemCode);
-		if(EquippedBackpack->GetInventory()->TryAddItem(ItemCode))
-			return;
-	}
-	UE_LOG(LogTemp, Warning, TEXT("pocket : Add Item %s"), *ItemCode);
-	Inventory->TryAddItem(ItemCode);
+	FVector Velocity = GetVelocity();
+	Velocity.Z = 0.f;
+	return Velocity.Size();
 }
 
 bool APlayerCharacter::IsWeaponEquipped()
