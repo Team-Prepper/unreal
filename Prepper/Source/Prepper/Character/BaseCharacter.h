@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Components/TimelineComponent.h"
+#include "ElimEvent/ElimDissolveComponent.h"
 #include "Prepper/Interfaces/Damageable.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
@@ -22,95 +22,58 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-// Observer Pattern
 private:
 	std::pmr::set<IObserver<GaugeValue<float>>*> Observers;
-public:
-	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
-	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
-	virtual void Notify() override;
-
-// Character
-public:
-	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
-	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
 	
-// Movement
-protected:
-	/* 기본 변수 */
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float WalkSpeed = 600;
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float SprintSpeed = 900;
-
-protected:
-	UPROPERTY()
-	class APrepperPlayerController* PrepperPlayerController;
-	
-	UPROPERTY()
-	class ADeathMatchPlayerState* DeathMatchPlayerState;
-
-// Health
-private:
-	/* 데미지 처리 */
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* HitReactMontage;
-protected:
-	UPROPERTY(EditAnywhere, Category = "Player Stats")
-	float MaxHealth = 100.f;
-	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
-	float CurrentHealth = 100.f;
-public:
-	
-	UFUNCTION()
-	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
-
-protected:
-	virtual void PlayHitReactMontage();
-
-protected:
-	UFUNCTION()
-	virtual void OnRep_Health();
-
-/* 사망 및 부활 처리 */
-private:
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* ElimMontage;
-protected:
-	bool bElimed = false;
-
 protected:
 	FTimerHandle ElimTimer;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float ElimDelay = 3.f;
-
+	
+	/* 기본 변수 */
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth = 100.f;
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	float CurrentHealth = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
+	float WalkSpeed = 600;
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
+	float SprintSpeed = 900;
+	
+	/* 데미지 처리 */
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* HitReactMontage;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UElimDissolveComponent* ElimEvent;
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* ElimMontage;
+	
 public:
+	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
+	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
+	virtual void Notify() override;
+
 	virtual void Elim();
-	FORCEINLINE bool IsElimed() const { return bElimed; }
+	FORCEINLINE bool IsElimed() const { return CurrentHealth <= 0; }
+	
+	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
+	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
+	
+	UFUNCTION()
+	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
+	
+// Movement
 protected:
+	UPROPERTY()
+	class APrepperPlayerController* PrepperPlayerController;
+	UPROPERTY()
+	class ADeathMatchPlayerState* DeathMatchPlayerState;
+
+	virtual void PlayHitReactMontage();
+	UFUNCTION()
+	virtual void OnRep_Health();
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastElim();
-
-/* 사망 이펙트  */
-private:
-	UPROPERTY(VisibleAnywhere)
-	UTimelineComponent* DissolveTimeline;
-	FOnTimelineFloat DissolveTrack;
-
-	UPROPERTY(EditAnywhere)
-	UCurveFloat* DissolveCurve;
-	
-	// DissolveMaterialInstance로 부터 동적 생성
-	UPROPERTY(VisibleAnywhere, Category = Elim)
-	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;
-
-	// 블루 프린트에 세팅
-	UPROPERTY(EditAnywhere, Category = Elim)
-	UMaterialInstance* DissolveMaterialInstance;
-
-protected:
-	void StartDissolve();
-	UFUNCTION()
-	void UpdateDissolveMaterial(float DissolveValue);
 };

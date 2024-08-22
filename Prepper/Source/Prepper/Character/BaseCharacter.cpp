@@ -14,8 +14,10 @@ ABaseCharacter::ABaseCharacter()
 {
 	WalkSpeed = 600.f;
 	SprintSpeed = 900.f;
+	
+	ElimEvent = CreateDefaultSubobject<UElimDissolveComponent>(TEXT("ElimEventComponent"));
 
-	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
+	ElimEvent->SetIsReplicated(true);
 }
 
 void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -27,6 +29,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	ElimEvent->SetTarget(this);
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
@@ -114,56 +117,16 @@ void ABaseCharacter::Elim()
 
 void ABaseCharacter::MulticastElim_Implementation()
 {
-	bElimed = true;
 	PlayAnim(ElimMontage);
-
-	// Start Dissolve Effect
-	if (DissolveMaterialInstance)
-	{
-		DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-		
-		GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
-
-		TArray<USceneComponent*> AttachedComponents;
-		GetMesh()->GetChildrenComponents(true,  AttachedComponents);
-
-		// Loop through all found Static Mesh components
-		for (USceneComponent* SceneComponent : AttachedComponents)
-		{
-			UStaticMeshComponent* SMComp = Cast<UStaticMeshComponent>(SceneComponent);
-			if(SMComp)
-			{
-				SMComp->SetMaterial(0, DynamicDissolveMaterialInstance);
-			}
-		}
-		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), 0.55f);
-		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("GlowValue"), 200.f);
-	}
-	StartDissolve();
+	ElimEvent->StartElim();
 
 	// Disable Movement
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
+	
 	// Disable Collision
 	SetActorEnableCollision(false);
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-}
-
-void ABaseCharacter::StartDissolve()
-{
-	DissolveTrack.BindDynamic(this, &ABaseCharacter::UpdateDissolveMaterial);
-	if (DissolveCurve && DissolveTimeline)
-	{
-		DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
-		DissolveTimeline->Play();
-	}
-}
-
-void ABaseCharacter::UpdateDissolveMaterial(float DissolveValue)
-{
-	if (DynamicDissolveMaterialInstance)
-	{
-		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("DissolveValue"), DissolveValue);
-	}
+	
 }
