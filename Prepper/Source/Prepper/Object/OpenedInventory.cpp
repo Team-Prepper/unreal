@@ -37,7 +37,7 @@ void AOpenedInventory::InitInventory()
 	FRotator SpawnRotation(0.0f, GetActorRotation().Yaw, 0.0f);
 	
 	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();
-	UE_LOG(LogTemp, Warning, TEXT("Item Count : %d"), Items.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("Item Count : %d"), Items.Num());
 	for (int i = 0; i < Items.Num(); i++)
 	{
 		IInventory::InventoryItem Item = Items[i]; // 생성할 아이템 선택

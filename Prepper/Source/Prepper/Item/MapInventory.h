@@ -37,7 +37,7 @@ public:
 	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) override;
 	virtual void UseItemAtQuickSlot(const int Idx) override;
 	
-	virtual TArray<InventoryItem> GetIter() override;
+	virtual TArray<InventoryItem> GetIter() const override;
 	
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;

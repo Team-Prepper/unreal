@@ -5,6 +5,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Prepper/Component/Status.h"
+#include "Prepper/Item/MapInventory.h"
 #include "Prepper/_Base/ObserverPattern/Observer.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
 #include "CharacterOverlay.generated.h"
@@ -13,7 +14,8 @@ UCLASS()
 class PREPPER_API UCharacterOverlay : public UUserWidget,
 										public IObserver<GaugeValue<float>>,
 										public IObserver<GaugeValue<int>>,
-										public IObserver<Status>
+										public IObserver<Status>,
+										public IObserver<UMapInventory>
 {
 	GENERATED_BODY()
 	UPROPERTY(meta = (BindWidget))
@@ -50,4 +52,5 @@ public:
 	virtual void Update(const GaugeValue<float>& NewData) override;
 	virtual void Update(const GaugeValue<int>& NewData) override;
 	virtual void Update(const Status& NewData) override;
+	virtual void Update(const UMapInventory& NewData) override;
 };

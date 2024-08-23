@@ -45,6 +45,24 @@ void AItemBackpack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AItemBackpack, IsOpened);
 }
 
+void AItemBackpack::Attach(IObserver<UMapInventory>* Observer)
+{
+	Observers.insert(Observer);
+	Observer->Update(*Inventory);
+}
+
+void AItemBackpack::Detach(IObserver<UMapInventory>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void AItemBackpack::Notify()
+{
+	std::ranges::for_each(Observers, [&](IObserver<UMapInventory>* Observer) {
+		Observer->Update(*Inventory);
+	});
+}
+
 void AItemBackpack::BeginPlay()
 {
 	Super::BeginPlay();
@@ -73,6 +91,7 @@ void AItemBackpack::Interaction(APlayerCharacter* Target)
 	
 	Target->EquipBackpack(this);
 	Target->AttachActorAtSocket(FName("BackpackSocket"), this);
+	
 	
 	if(IsOpened)
 		HideInventory();
@@ -153,7 +172,6 @@ void AItemBackpack::BackpackPhysicsActive(bool active)
 		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
-
 		return;
 	}
 	

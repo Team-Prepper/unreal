@@ -271,7 +271,15 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(Cast<APlayerController>(GetController())->GetHUD()) : PrepperHUD;
 	
+	if (!PrepperHUD || !PrepperHUD->CharacterOverlay)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
+		return;
+	}
+	
+	EquippedBackpack->Attach(PrepperHUD->CharacterOverlay);
 }
 
 void APlayerCharacter::Heal(float Amount)
@@ -467,6 +475,17 @@ void APlayerCharacter::ToggleInventory()
 	
 	UE_LOG(LogTemp,Warning,TEXT("InvenToggle"));
 	EquippedBackpack->OpenInventory();
+	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(Cast<APlayerController>(GetController())->GetHUD()) : PrepperHUD;
+	
+	if (PrepperHUD && PrepperHUD->CharacterOverlay)
+	{
+		EquippedBackpack->Detach(PrepperHUD->CharacterOverlay);
+	}else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
+	}
+	
+	
 	EquippedBackpack = nullptr;
 }
 

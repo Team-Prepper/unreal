@@ -18,7 +18,7 @@ enum class EBackpackState : uint8
 };
 
 UCLASS()
-class PREPPER_API AItemBackpack : public AInteractableActor
+class PREPPER_API AItemBackpack : public AInteractableActor, public ISubject<UMapInventory>
 {
 	GENERATED_BODY()
 	
@@ -27,6 +27,10 @@ public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void Attach(IObserver<UMapInventory>* Observer) override;
+	virtual void Detach(IObserver<UMapInventory>* Observer) override;
+	virtual void Notify() override;
+
 	void Dropped();
 
 	UPROPERTY()
@@ -34,7 +38,8 @@ public:
 
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
-	
+private:
+	std::pmr::set<IObserver<UMapInventory>*> Observers;
 protected:
 	virtual void BeginPlay() override;
 

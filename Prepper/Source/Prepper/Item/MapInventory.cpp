@@ -110,7 +110,7 @@ void UMapInventory::UseItemAtQuickSlot(const int Idx)
 	TryUseItem(QuickSlotItem[Idx]);
 }
 
-TArray<IInventory::InventoryItem> UMapInventory::GetIter()
+TArray<IInventory::InventoryItem> UMapInventory::GetIter() const
 {
 	TArray<InventoryItem> Retval;
 	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
