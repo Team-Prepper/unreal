@@ -279,7 +279,7 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 		return;
 	}
 	
-	EquippedBackpack->Attach(PrepperHUD->CharacterOverlay);
+	EquippedBackpack->GetInventory()->Attach(PrepperHUD->CharacterOverlay);
 }
 
 void APlayerCharacter::Heal(float Amount)
@@ -479,7 +479,7 @@ void APlayerCharacter::ToggleInventory()
 	
 	if (PrepperHUD && PrepperHUD->CharacterOverlay)
 	{
-		EquippedBackpack->Detach(PrepperHUD->CharacterOverlay);
+		EquippedBackpack->GetInventory()->Detach(PrepperHUD->CharacterOverlay);
 	}else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));

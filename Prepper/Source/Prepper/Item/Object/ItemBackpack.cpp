@@ -45,24 +45,6 @@ void AItemBackpack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(AItemBackpack, IsOpened);
 }
 
-void AItemBackpack::Attach(IObserver<UMapInventory>* Observer)
-{
-	Observers.insert(Observer);
-	Observer->Update(*Inventory);
-}
-
-void AItemBackpack::Detach(IObserver<UMapInventory>* Observer)
-{
-	Observers.erase(Observer);
-}
-
-void AItemBackpack::Notify()
-{
-	std::ranges::for_each(Observers, [&](IObserver<UMapInventory>* Observer) {
-		Observer->Update(*Inventory);
-	});
-}
-
 void AItemBackpack::BeginPlay()
 {
 	Super::BeginPlay();

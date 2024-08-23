@@ -131,4 +131,25 @@ uint8 UMapInventory::GetBulletCount() const
 	return BulletCount;
 }
 
+// OBSERVER
+void UMapInventory::Attach(IObserver<TMap<FString, uint8>>* Observer)
+{
+	Observers.insert(Observer);
+	Observer->Update(ItemUnits);
+}
+
+void UMapInventory::Detach(IObserver<TMap<FString, uint8>>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void UMapInventory::Notify()
+{
+	const TMap<FString, uint8> Value = ItemUnits;
+	
+	std::ranges::for_each(Observers, [&](IObserver<TMap<FString, uint8>>* Observer) {
+		Observer->Update(Value);
+	});
+}
+
 

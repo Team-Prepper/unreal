@@ -15,7 +15,7 @@ class PREPPER_API UCharacterOverlay : public UUserWidget,
 										public IObserver<GaugeValue<float>>,
 										public IObserver<GaugeValue<int>>,
 										public IObserver<Status>,
-										public IObserver<UMapInventory>
+										public IObserver<TMap<FString, uint8>>
 {
 	GENERATED_BODY()
 	UPROPERTY(meta = (BindWidget))
@@ -52,5 +52,5 @@ public:
 	virtual void Update(const GaugeValue<float>& NewData) override;
 	virtual void Update(const GaugeValue<int>& NewData) override;
 	virtual void Update(const Status& NewData) override;
-	virtual void Update(const UMapInventory& NewData) override;
+	virtual void Update(const TMap<FString, uint8>& NewData) override;
 };

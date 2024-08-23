@@ -33,15 +33,15 @@ void UCharacterOverlay::Update(const Status& NewData)
 	InfectionBar->SetPercent(NewData.Infected.GetRatio());
 }
 
-void UCharacterOverlay::Update(const UMapInventory& NewData)
+void UCharacterOverlay::Update(const TMap<FString, uint8>& NewData)
 {
-	// Inven UI Slot에 해당 인벤토리의 아이템 UI  생성
-	
-	TArray<IInventory::InventoryItem> InventoryItems = NewData.GetIter();
-
-	// 배열의 각 아이템을 순회하며 로그로 출력
-	for (const IInventory::InventoryItem& Item : InventoryItems)
+	for (const TPair<FString, uint8>& Elem : NewData)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s"), *Item.ItemCode);
+		// 키와 값 가져오기
+		const FString& Key = Elem.Key;
+		uint8 Value = Elem.Value;
+
+		// 로그로 출력
+		UE_LOG(LogTemp, Log, TEXT("Key: %s, Value: %d"), *Key, Value);
 	}
 }
