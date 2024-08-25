@@ -3,20 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerComponent.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/Interfaces/Interactable.h"
 #include "InteractionComponent.generated.h"
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UInteractionComponent : public UActorComponent
+class PREPPER_API UInteractionComponent : public UActorComponent,
+									public IPlayerComponent
 {
 	GENERATED_BODY()
 
 public:
 	/* BASE */
 	UInteractionComponent();
-	friend class APlayerCharacter;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 protected:
 	/* SetInteractable */
@@ -26,13 +27,16 @@ protected:
 	void ServerSetItemInteractable(AActor* InteractableItem);
 
 	UPROPERTY()
-	class APlayerCharacter* Character;
+	APlayerCharacter* Character;
+public:
+	virtual void SetPlayer(APlayerCharacter* Target) override;
+	virtual void TargetElim() override { };
 
 	void TraceInteractionItem(FHitResult& TraceHitResult);
 
 private:
 	float TraceRange = 500.f;
-
+public:
 	UPROPERTY()
 	TScriptInterface<IInteractable> CurInteractableItem;
 		

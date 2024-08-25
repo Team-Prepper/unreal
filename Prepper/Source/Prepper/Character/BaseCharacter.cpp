@@ -108,6 +108,7 @@ void ABaseCharacter::PlayHitReactMontage()
 void ABaseCharacter::OnRep_Health()
 {
 	PlayHitReactMontage();
+	Notify();
 }
 
 void ABaseCharacter::Elim()

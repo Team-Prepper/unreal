@@ -2,6 +2,9 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
+#include "Component/CombatComponent.h"
+#include "Component/InteractionComponent.h"
+#include "Component/StatusEffectComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -9,13 +12,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
-#include "Prepper/Component/CombatComponent.h"
-#include "Prepper/Component/StatusEffectComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/WeaponActor.h"
-#include "Prepper/Component/InteractionComponent.h"
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 
@@ -51,15 +51,18 @@ APlayerCharacter::APlayerCharacter()
 
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
+	PlayerComponents.Add(Combat);
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
 	InteractionComponent->SetIsReplicated(true);
-
+	PlayerComponents.Add(InteractionComponent);
+	
 	Inventory = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
 	Inventory->SetIsReplicated(true);
 
 	StatusEffect = CreateDefaultSubobject<UStatusEffectComponent>(TEXT("StatusEffectComponet"));
-
+	PlayerComponents.Add(StatusEffect);
+	
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
 
@@ -82,17 +85,10 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if(Combat)
+	
+	for (int i = 0; i < PlayerComponents.Num(); i++)
 	{
-		Combat->Character = this;
-	}
-	if(StatusEffect)
-	{
-		StatusEffect->Character = this;
-	}
-	if(InteractionComponent)
-	{
-		InteractionComponent->Character = this;
+		PlayerComponents[i]->SetPlayer(this);
 	}
 }
 
@@ -157,19 +153,9 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 void APlayerCharacter::Elim()
 {
-	if (Combat)
+	for (int i = 0; i < PlayerComponents.Num(); i++)
 	{
-		if(Combat->EquippedWeapon)
-		{
-			Combat->EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-			Combat->EquippedWeapon = nullptr;
-		}
-		if(Combat->SecondaryWeapon)
-		{
-			Combat->SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-			Combat->SecondaryWeapon = nullptr;
-		}
-		
+		PlayerComponents[i]->TargetElim();
 	}
 	MulticastElim();
 	GetWorldTimerManager().SetTimer(
@@ -194,10 +180,6 @@ void APlayerCharacter::MulticastElim()
 	if (bHideSniperScope)
 	{
 		ShowSniperScopeWidget(false);
-	}
-	if(Combat)
-	{
-		Combat->FireTrigger(false);
 	}
 	if(IsLocallyControlled())
 	{

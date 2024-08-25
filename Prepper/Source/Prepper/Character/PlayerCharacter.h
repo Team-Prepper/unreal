@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "Component/PlayerComponent.h"
 #include "Prepper/Component/CustomCameraComponent.h"
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Enums/CombatState.h"
@@ -102,6 +103,8 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UInteractionComponent* InteractionComponent;
+
+	TArray<IPlayerComponent*> PlayerComponents;
 	
 	/* For Crouch Cam */
 	UPROPERTY(EditAnywhere, Category = CrouchMovement)

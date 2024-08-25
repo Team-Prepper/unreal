@@ -3,7 +3,7 @@
 #include "Components/TextBlock.h"
 #include "Prepper/Car/CarPawn.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/Component/StatusEffectComponent.h"
+#include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/UI/CharacterOverlay/CharacterOverlay.h"
 #include "Prepper/HUD/UI/Compass.h"
 #include "Prepper/HUD/PrepperHUD.h"

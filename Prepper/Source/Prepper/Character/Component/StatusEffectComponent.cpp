@@ -51,6 +51,11 @@ void UStatusEffectComponent::Notify()
 
 }
 
+void UStatusEffectComponent::SetPlayer(APlayerCharacter* Target)
+{
+	Character = Target;
+}
+
 void UStatusEffectComponent::InitStateEffectMap()
 {
 	UE_LOG(LogTemp,Warning,TEXT("SET STATUS EFFECT LEVEL"));

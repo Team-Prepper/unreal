@@ -77,10 +77,6 @@ void UCombatComponent::BeginPlay()
 	{
 		DefaultFOV = Character->GetFollowCamera()->FieldOfView;
 	}
-	if (Character->HasAuthority())
-	{
-		InitCarriedAmmo();
-	}
 }
 
 // Observer Pattern
@@ -549,6 +545,27 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 	}
 }
 
+void UCombatComponent::SetPlayer(APlayerCharacter* Target)
+{
+	Character = Target;
+}
+
+void UCombatComponent::TargetElim()
+{
+	FireTrigger(false);
+	
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+		EquippedWeapon = nullptr;
+	}
+	if(SecondaryWeapon)
+	{
+		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+		SecondaryWeapon = nullptr;
+	}
+}
+
 // Ammo
 
 void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
@@ -562,17 +579,6 @@ void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 	{
 		Reload();
 	}
-}
-
-void UCombatComponent::InitCarriedAmmo()
-{
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_AssaultRifle, StartingARAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Revolver, StartingRevolverAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSMGAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_SniperRifle, StartingSniperRifleAmmo);
-	CarriedAmmoMap.Emplace(EWeaponType::EWT_MiniGun, StartingMiniGunAmmo);
 }
 
 void UCombatComponent::OnRep_CarriedAmmo()

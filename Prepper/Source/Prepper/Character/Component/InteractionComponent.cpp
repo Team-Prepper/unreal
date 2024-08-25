@@ -21,6 +21,11 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 }
 
 
+void UInteractionComponent::SetPlayer(APlayerCharacter* Target)
+{
+	Character = Target;
+}
+
 void UInteractionComponent::TraceInteractionItem(FHitResult& TraceHitResult)
 {
 	FVector2D ViewportSize;

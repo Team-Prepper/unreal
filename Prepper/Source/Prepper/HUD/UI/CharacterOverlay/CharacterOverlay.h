@@ -4,10 +4,11 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Prepper/Component/Status.h"
 #include "Prepper/_Base/ObserverPattern/Observer.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
 #include "CharacterOverlay.generated.h"
+
+class Status;
 
 UCLASS()
 class PREPPER_API UCharacterOverlay : public UUserWidget,

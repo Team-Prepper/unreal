@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerComponent.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/HUD/PrepperHUD.h"
@@ -9,7 +10,9 @@
 #include "CombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UCombatComponent : public UActorComponent, public IWeaponHandler, public ISubject<GaugeValue<int>>
+class PREPPER_API UCombatComponent : public UActorComponent,
+									public IWeaponHandler, public ISubject<GaugeValue<int>>,
+									public IPlayerComponent
 {
 	GENERATED_BODY()
 public:
@@ -186,6 +189,10 @@ protected:
 	TArray<FVector_NetQuantize> HitTargets;
 	
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
+
+public:
+	virtual void SetPlayer(APlayerCharacter* Target) override;
+	virtual void TargetElim() override;
 	
 // Ammo
 private:
@@ -193,32 +200,17 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
 	int32 CarriedAmmo;
 
+	UPROPERTY(EditAnywhere)
 	TMap<EWeaponType, int32> CarriedAmmoMap;
 	
 protected:
 	UPROPERTY(EditAnywhere)
 	int32 MaxCarriedAmmo = 500;
 
-	UPROPERTY(EditAnywhere)
-	int32 StartingARAmmo = 30;
-	UPROPERTY(EditAnywhere)
-	int32 StartingRocketAmmo = 0;
-	UPROPERTY(EditAnywhere)
-	int32 StartingRevolverAmmo = 30;
-	UPROPERTY(EditAnywhere)
-	int32 StartingSMGAmmo = 100;
-	UPROPERTY(EditAnywhere)
-	int32 StartingShotgunAmmo = 10;
-	UPROPERTY(EditAnywhere)
-	int32 StartingSniperRifleAmmo = 10;
-	UPROPERTY(EditAnywhere)
-	int32 StartingMiniGunAmmo = 0;
-	
 public:
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 
 private:
-	void InitCarriedAmmo();
 	void UpdateCarriedAmmo();
 	void UpdateAmmoValues();
 	

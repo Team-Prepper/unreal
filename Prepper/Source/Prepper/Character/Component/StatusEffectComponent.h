@@ -5,6 +5,7 @@
 #include <set>
 
 #include "CoreMinimal.h"
+#include "PlayerComponent.h"
 #include "Status.h"
 #include "Prepper/Enums/StatusEffect.h"
 #include "Components/ActorComponent.h"
@@ -13,7 +14,8 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UStatusEffectComponent : public UActorComponent, public ISubject<Status>
+class PREPPER_API UStatusEffectComponent : public UActorComponent,
+									public ISubject<Status>, public IPlayerComponent
 {
 	GENERATED_BODY()
 
@@ -39,10 +41,13 @@ private:
 	EStatusEffect CurrentStatusEffect;
 
 	UPROPERTY()
-	class APlayerCharacter* Character;
-	UPROPERTY()
-	class APrepperPlayerController* PrepperPlayerController;
+	APlayerCharacter* Character;
 	
+	UPROPERTY()
+	APrepperPlayerController* PrepperPlayerController;
+public:
+	virtual void SetPlayer(APlayerCharacter* Target) override;
+	virtual void TargetElim() override {};
 
 public:
 	TMap<EStatusEffect, float> StateEffectMap;

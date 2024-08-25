@@ -7,7 +7,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/Component/CombatComponent.h"
 #include "Prepper/PlayerController/PrepperPlayerController.h"
 
 AWeaponActor::AWeaponActor()
