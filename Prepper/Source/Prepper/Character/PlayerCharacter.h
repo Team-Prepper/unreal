@@ -13,6 +13,7 @@
 #include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
 
+class UFlexibleSpringArmComponent;
 class UInputAction;
 
 struct FInputActionValue;
@@ -106,21 +107,8 @@ private:
 
 	TArray<IPlayerComponent*> PlayerComponents;
 	
-	/* For Crouch Cam */
-	UPROPERTY(EditAnywhere, Category = CrouchMovement)
-	float CrouchCamOffset;
-	UPROPERTY(EditAnywhere, Category = CrouchMovement)
-	float DefaultCamOffset;
-	UPROPERTY(EditAnywhere, Category = CrouchMovement)
-	float CrouchCamArmLength;
-	UPROPERTY(EditAnywhere, Category = CrouchMovement)
-	float DefaultCamArmLength;
-	float InterpSpeed;
-	float TargetArmLength;
-	FVector TargetSpringArmLocation;
-	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class USpringArmComponent* CameraBoom;
+	UFlexibleSpringArmComponent* FlexibleCameraBoom;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCustomCameraComponent* FollowCamera;
 	

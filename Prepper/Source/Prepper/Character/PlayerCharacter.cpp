@@ -18,25 +18,21 @@
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "Prepper/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 
 // Actor
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-	CrouchCamOffset = 30.f;
-	DefaultCamOffset = 100.f;
-	CrouchCamArmLength = 200.f;
-	DefaultCamArmLength = 350.f;
-	InterpSpeed = 5.f;
 
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetMesh());
-	CameraBoom->TargetArmLength = DefaultCamArmLength;
-	CameraBoom->bUsePawnControlRotation = true;
+	FlexibleCameraBoom = CreateDefaultSubobject<UFlexibleSpringArmComponent>(TEXT("FlexibleCameraBoom"));
+	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Default"));
+	FlexibleCameraBoom->SetupAttachment(GetMesh());
+	FlexibleCameraBoom->bUsePawnControlRotation = true;
 
 	FollowCamera = CreateDefaultSubobject<UCustomCameraComponent>(TEXT("FollowCam"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->SetupAttachment(FlexibleCameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
 	Hair = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Hair"));
@@ -98,14 +94,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	RotateInPlace(DeltaTime);
 	HideCamIfCharacterClose();
-
-	FVector CurrentLocation = CameraBoom->GetRelativeLocation();
-	FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetSpringArmLocation, DeltaTime, InterpSpeed);
-	CameraBoom->SetRelativeLocation(NewLocation);
-	
-	float CurrentArmLength = CameraBoom->TargetArmLength;
-	float NewArmLength = FMath::FInterpTo(CurrentArmLength, TargetArmLength, DeltaTime, InterpSpeed);
-	CameraBoom->TargetArmLength = NewArmLength;
 	
 	PollInit();
 	if (PlayerMovementState == EPlayerMovementState::EPMS_Sprint)
@@ -139,16 +127,15 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Crouch(bool bClientSimulation)
 {
 	Super::Crouch(bClientSimulation);
-	TargetSpringArmLocation = (FVector(0.0f, 0.0f, CrouchCamOffset));
-	TargetArmLength = CrouchCamArmLength;
+
+	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Crouch"));
 }
 
 void APlayerCharacter::UnCrouch(bool bClientSimulation)
 {
 	Super::UnCrouch(bClientSimulation);
 
-	TargetSpringArmLocation = (FVector(0.0f, 0.0f, DefaultCamOffset));
-	TargetArmLength = DefaultCamArmLength;
+	FlexibleCameraBoom->ChangeArmOffsetToTemplate(FString("Default"));
 }
 
 void APlayerCharacter::Elim()
