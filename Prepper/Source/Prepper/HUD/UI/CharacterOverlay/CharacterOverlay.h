@@ -49,6 +49,17 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UProgressBar* InfectionBar;
 
+	// UI에서 사용할 Vertical Box 변수
+	UPROPERTY(meta = (BindWidget))
+	class UVerticalBox* ItemBox;
+
+	// 아이콘을 Vertical Box에 추가하는 함수
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	void AddItemIcon(UTexture2D* ItemIconTexture);
+
+	UFUNCTION(BlueprintCallable, Category="Inventory")
+	void ClearAllItemIcons();
+	
 	virtual void Update(const GaugeValue<float>& NewData) override;
 	virtual void Update(const GaugeValue<int>& NewData) override;
 	virtual void Update(const Status& NewData) override;

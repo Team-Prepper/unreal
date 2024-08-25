@@ -271,15 +271,22 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
-	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(Cast<APlayerController>(GetController())->GetHUD()) : PrepperHUD;
-	
-	if (!PrepperHUD || !PrepperHUD->CharacterOverlay)
+
+	if(IsLocallyControlled())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
-		return;
-	}
+		if(GetController())
+			PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(Cast<APlayerController>(GetController())->GetHUD()) : PrepperHUD;
+		else
+			UE_LOG(LogTemp, Warning, TEXT("!!!!! SOMETHING TERRIBLE ERROR !!!!! : NO CONTORLLER"));
 	
-	EquippedBackpack->GetInventory()->Attach(PrepperHUD->CharacterOverlay);
+	
+		if (!PrepperHUD || !PrepperHUD->CharacterOverlay)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
+			return;
+		}
+		EquippedBackpack->GetInventory()->Attach(PrepperHUD->CharacterOverlay);
+	}
 }
 
 void APlayerCharacter::Heal(float Amount)
@@ -475,16 +482,27 @@ void APlayerCharacter::ToggleInventory()
 	
 	UE_LOG(LogTemp,Warning,TEXT("InvenToggle"));
 	EquippedBackpack->OpenInventory();
-	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(Cast<APlayerController>(GetController())->GetHUD()) : PrepperHUD;
 	
-	if (PrepperHUD && PrepperHUD->CharacterOverlay)
+	MulticastToggleInventory();
+}
+
+void APlayerCharacter::MulticastToggleInventory_Implementation()
+{
+	if(IsLocallyControlled())
 	{
-		EquippedBackpack->GetInventory()->Detach(PrepperHUD->CharacterOverlay);
-	}else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(PlayerController->GetHUD()) : PrepperHUD;
+	
+		if (PrepperHUD && PrepperHUD->CharacterOverlay)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Complete Detach inventory Observer"));
+			EquippedBackpack->GetInventory()->Detach(PrepperHUD->CharacterOverlay);
+			PrepperHUD->CharacterOverlay->ClearAllItemIcons();
+		}else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
+		}
 	}
-	
 	
 	EquippedBackpack = nullptr;
 }
