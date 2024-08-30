@@ -58,10 +58,10 @@ protected:
 	TSubclassOf<class AOpenedInventory> OpenedInventoryClass;
 
 	UPROPERTY()
-	class UMapInventory* Inventory;
+	UMapInventory* Inventory;
 	
 	UPROPERTY()
-	class AOpenedInventory* OpenedInventory;
+	AOpenedInventory* OpenedInventory;
 
 	UPROPERTY(Replicated)
 	bool IsOpened = false;

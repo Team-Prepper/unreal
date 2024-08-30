@@ -109,6 +109,11 @@ void AWeaponActor::OnRep_Owner()
 	}
 }
 
+void AWeaponActor::SetWeaponHandler(IWeaponHandler* NewOwner)
+{
+	WeaponHandler = NewOwner;
+}
+
 void AWeaponActor::Interaction(APlayerCharacter* Target)
 {
 	Target->EquipWeapon(this);
@@ -153,8 +158,6 @@ void AWeaponActor::OnEquipped()
 		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
 
 	if (!PlayerOwnerCharacter) return;
-
-	WeaponHandler = GetWeaponHandler();
 
 	PlayerOwnerCharacter->AttachActorAtSocket(AttachSocketName(), this);
 	PlayEquipWeaponSound();
@@ -216,21 +219,9 @@ void AWeaponActor::OnEquippedSecondary()
 	}
 }
 
-TScriptInterface<IWeaponHandler> AWeaponActor::GetWeaponHandler()
+IWeaponHandler* AWeaponActor::GetWeaponHandler()
 {
 	if (WeaponHandler != nullptr) return WeaponHandler;
-	
-	TArray<UActorComponent*> ActorCompList;
-	Owner->GetComponents(ActorCompList, true);
-	
-	for (int Z = 0; (Z < ActorCompList.Num()); Z++)
-	{
-		TScriptInterface<IWeaponHandler> Temp = TScriptInterface<IWeaponHandler>(ActorCompList[Z]);
-		if (Temp != nullptr)
-		{
-			return Temp;
-		}
-	}
 	
 	return nullptr;
 }

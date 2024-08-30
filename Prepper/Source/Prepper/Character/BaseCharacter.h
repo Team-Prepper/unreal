@@ -67,8 +67,6 @@ public:
 // Movement
 protected:
 	UPROPERTY()
-	class APrepperPlayerController* PrepperPlayerController;
-	UPROPERTY()
 	class ADeathMatchPlayerState* DeathMatchPlayerState;
 
 	virtual void PlayHitReactMontage();

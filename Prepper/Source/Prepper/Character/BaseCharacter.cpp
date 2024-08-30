@@ -95,8 +95,9 @@ void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorControll
 	
 	if(PrepperGameMode == nullptr) return;
 	
-	PrepperPlayerController = (PrepperPlayerController == nullptr) ? Cast<APrepperPlayerController>(Controller) : PrepperPlayerController;
+	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+	
 	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 }
 

@@ -6,6 +6,7 @@
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/Interfaces/WeaponHandler.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
@@ -180,8 +181,6 @@ protected:
 	
 	UPROPERTY()
 	APlayerCharacter* Character;
-	UPROPERTY()
-	APrepperPlayerController* Controller;
 	UPROPERTY()
 	APrepperHUD* HUD;
 	

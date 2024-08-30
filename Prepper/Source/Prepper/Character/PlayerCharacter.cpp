@@ -118,8 +118,6 @@ void APlayerCharacter::Destroyed()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 }
 
 // BaseCharacter
@@ -144,19 +142,9 @@ void APlayerCharacter::Elim()
 	{
 		PlayerComponents[i]->TargetElim();
 	}
-	MulticastElim();
-	GetWorldTimerManager().SetTimer(
-		ElimTimer,
-		this,
-		&APlayerCharacter::ElimTimerFinished,
-		ElimDelay
-	);
-}
-
-void APlayerCharacter::MulticastElim()
-{
-	Super::MulticastElim();
-	bDisableGamePlay = true;
+	
+	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
+	PrepperPlayerController->ResetPlayer();
 	
 	bool bHideSniperScope = IsLocallyControlled() && 
 		Combat && 
@@ -168,10 +156,15 @@ void APlayerCharacter::MulticastElim()
 	{
 		ShowSniperScopeWidget(false);
 	}
-	if(IsLocallyControlled())
-	{
-		PrepperPlayerController->ResetPlayer();
-	}
+	
+	MulticastElim();
+}
+
+void APlayerCharacter::MulticastElim()
+{
+	Super::MulticastElim();
+	bDisableGamePlay = true;
+	
 }
 
 void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
@@ -197,23 +190,9 @@ void APlayerCharacter::Jump()
 	}
 }
 
-void APlayerCharacter::ElimTimerFinished()
-{
-	// Only Server
-	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
-	if (DeathMatchGameMode)
-	{
-		DeathMatchGameMode->RequestRespawn(this, Controller);
-	}
-	if(PrepperPlayerController)
-	{
-		PrepperPlayerController->TargetControllerable = nullptr;
-	}
-}
-
 // IPlayerAbility
 
-void APlayerCharacter::AddItem(FString ItemCode)
+void APlayerCharacter::AddItem(const FString& ItemCode)
 {
 	if(!HasAuthority()) return;
 	MulticastAddItem(ItemCode);

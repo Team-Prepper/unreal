@@ -66,9 +66,6 @@ protected:
 	
 	/* 행동관련 */
 	virtual void Jump() override;
-private:
-	void ElimTimerFinished();
-
 // IPlayerAbility
 private:
 	UPROPERTY()
@@ -81,7 +78,7 @@ private:
 	class UStatusEffectComponent* StatusEffect;
 public:
 
-	virtual void AddItem(FString ItemCode) override;
+	virtual void AddItem(const FString& ItemCode) override;
 	virtual void UseQuickSlotItem(int Idx) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
 	virtual void EquipBackpack(class AItemBackpack* BackpackToEquip) override;

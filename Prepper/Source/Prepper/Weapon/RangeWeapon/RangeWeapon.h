@@ -111,7 +111,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	bool bAutoReload = false;
 	
-
 	UPROPERTY()
 	USkeletalMeshComponent* RangeWeaponMesh;
 
@@ -119,7 +118,6 @@ public:
 	bool IsAmmoEmpty();
 	virtual bool CanReload() override;
 	USkeletalMeshComponent* GetRangeWeaponMesh();
-	FORCEINLINE int32 GetAmmo()							const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity()					const { return MagCapacity; }
 	FORCEINLINE float GetZoomedFOV()					const { return ZoomFOV; }
 	FORCEINLINE float GetZoomedInterpSpeed()			const { return ZoomInterpSpeed; }
