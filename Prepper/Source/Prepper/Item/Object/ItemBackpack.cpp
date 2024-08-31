@@ -74,6 +74,7 @@ void AItemBackpack::Interaction(APlayerCharacter* Target)
 	Target->EquipBackpack(this);
 	Target->AttachActorAtSocket(FName("BackpackSocket"), this);
 	
+	
 	if(IsOpened)
 		HideInventory();
 	
@@ -153,7 +154,6 @@ void AItemBackpack::BackpackPhysicsActive(bool active)
 		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 		BackpackMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Vehicle, ECollisionResponse::ECR_Ignore);
-
 		return;
 	}
 	

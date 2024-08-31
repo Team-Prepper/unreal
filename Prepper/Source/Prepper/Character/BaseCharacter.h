@@ -24,7 +24,6 @@ protected:
 	
 private:
 	std::pmr::set<IObserver<GaugeValue<float>>*> Observers;
-	
 protected:
 	FTimerHandle ElimTimer;
 	

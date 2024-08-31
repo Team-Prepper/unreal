@@ -37,5 +37,5 @@ public:
 	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) PURE_VIRTUAL(); 
 	virtual void UseItemAtQuickSlot(const int Idx) PURE_VIRTUAL();
 
-	virtual TArray<InventoryItem> GetIter() PURE_VIRTUAL(IInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
+	virtual TArray<InventoryItem> GetIter() const PURE_VIRTUAL(IInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
 };

@@ -240,7 +240,22 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
+
+	if(IsLocallyControlled())
+	{
+		if(GetController())
+			PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(Cast<APlayerController>(GetController())->GetHUD()) : PrepperHUD;
+		else
+			UE_LOG(LogTemp, Warning, TEXT("!!!!! SOMETHING TERRIBLE ERROR !!!!! : NO CONTORLLER"));
 	
+	
+		if (!PrepperHUD || !PrepperHUD->CharacterOverlay)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
+			return;
+		}
+		EquippedBackpack->GetInventory()->Attach(PrepperHUD->CharacterOverlay);
+	}
 }
 
 void APlayerCharacter::Heal(float Amount)
@@ -436,6 +451,28 @@ void APlayerCharacter::ToggleInventory()
 	
 	UE_LOG(LogTemp,Warning,TEXT("InvenToggle"));
 	EquippedBackpack->OpenInventory();
+	
+	MulticastToggleInventory();
+}
+
+void APlayerCharacter::MulticastToggleInventory_Implementation()
+{
+	if(IsLocallyControlled())
+	{
+		APlayerController* PlayerController = Cast<APlayerController>(GetController());
+		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(PlayerController->GetHUD()) : PrepperHUD;
+	
+		if (PrepperHUD && PrepperHUD->CharacterOverlay)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Complete Detach inventory Observer"));
+			EquippedBackpack->GetInventory()->Detach(PrepperHUD->CharacterOverlay);
+			PrepperHUD->CharacterOverlay->ClearAllItemIcons();
+		}else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
+		}
+	}
+	
 	EquippedBackpack = nullptr;
 }
 

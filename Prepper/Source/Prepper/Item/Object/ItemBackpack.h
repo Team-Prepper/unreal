@@ -34,7 +34,7 @@ public:
 
 	/* Custom Depth 아이템 윤곽선 효과 */
 	void EnableCustomDepth(bool bEnable);
-	
+
 protected:
 	virtual void BeginPlay() override;
 

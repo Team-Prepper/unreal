@@ -79,6 +79,13 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UStatusEffectComponent* StatusEffect;
+
+	UPROPERTY()
+	class APrepperHUD* PrepperHUD;
+	
+	std::pmr::set<IObserver<UMapInventory>*> InventoryObservers;
+
+	
 public:
 
 	virtual void AddItem(FString ItemCode) override;
@@ -91,7 +98,6 @@ public:
 	virtual void Drink(float Amount) override;
 
 private:
-
 	UFUNCTION()
 	void OnRep_EquippedBackpack();
 	UFUNCTION(NetMulticast, Reliable)
@@ -122,6 +128,7 @@ private:
 	float TimeSinceLastMovementReplication;
 	
 public:
+	// 서버에서만 실행되는 함수들 
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 
@@ -141,6 +148,9 @@ public:
 	virtual void MouseRightReleased() override;
 
 	virtual void ToggleInventory() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastToggleInventory();
 	
 	UFUNCTION(BlueprintCallable)
 	virtual UCustomCameraComponent* GetFollowCamera() override;

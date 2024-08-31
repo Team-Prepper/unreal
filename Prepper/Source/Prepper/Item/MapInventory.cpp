@@ -20,6 +20,7 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 		ItemUnits.Add(ItemCode, ItemCount);
 		
 		UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
+		Notify();
 		return true;
 	}
 
@@ -32,7 +33,7 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 	// 새로운 아이템을 추가하고 true 반환
 	ItemUnits.Add(ItemCode, 1);
 	UE_LOG(LogTemp, Warning, TEXT("Init : Add Item %s"), *ItemCode);
-	
+	Notify();
 	return true;
 }
 
@@ -60,6 +61,7 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
+	Notify();
 	return true;
 }
 
@@ -78,6 +80,7 @@ bool UMapInventory::TryDiscardItem(const FString& ItemCode)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
 	// 아이템 사용에 성공했으므로 true 반환
+	Notify();
 	return true;
 }
 
@@ -110,7 +113,7 @@ void UMapInventory::UseItemAtQuickSlot(const int Idx)
 	TryUseItem(QuickSlotItem[Idx]);
 }
 
-TArray<IInventory::InventoryItem> UMapInventory::GetIter()
+TArray<IInventory::InventoryItem> UMapInventory::GetIter() const
 {
 	TArray<InventoryItem> Retval;
 	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
@@ -129,6 +132,27 @@ void UMapInventory::AddBullet(const uint8 Count)
 uint8 UMapInventory::GetBulletCount() const
 {
 	return BulletCount;
+}
+
+// OBSERVER
+void UMapInventory::Attach(IObserver<TMap<FString, uint8>>* Observer)
+{
+	Observers.insert(Observer);
+	Observer->Update(ItemUnits);
+}
+
+void UMapInventory::Detach(IObserver<TMap<FString, uint8>>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void UMapInventory::Notify()
+{
+	const TMap<FString, uint8> Value = ItemUnits;
+	
+	std::ranges::for_each(Observers, [&](IObserver<TMap<FString, uint8>>* Observer) {
+		Observer->Update(Value);
+	});
 }
 
 
