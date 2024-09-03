@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "WeaponHandler.h"
 #include "UObject/Interface.h"
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "Weapon.generated.h"
@@ -39,7 +40,7 @@ public:
 	virtual void SetWeaponState(EWeaponState State)
 	PURE_VIRTUAL();
 
-	virtual void SetOwnerActor(AActor* Owner)
+	virtual void SetWeaponHandler(IWeaponHandler* Owner)
 	PURE_VIRTUAL();
 
 	virtual float GetFireDelay()

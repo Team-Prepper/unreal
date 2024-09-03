@@ -5,7 +5,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
@@ -114,7 +113,7 @@ void UCombatComponent::Notify()
 		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
 	}
 
-	FGaugeInt Value(WeaponAmmo, CarriedAmmo);
+	const FGaugeInt Value(WeaponAmmo, CarriedAmmo);
 	std::ranges::for_each(Observers, [&](IObserver<GaugeValue<int>>* Observer) {
 		Observer->Update(Value);
 	});
@@ -148,6 +147,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->SetWeaponHandler(this);
 	SetWeaponType();
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
@@ -183,6 +183,7 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	if (!EquippedWeapon || !Character) return;
 
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->SetWeaponHandler(this);
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
@@ -193,6 +194,7 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	if (SecondaryWeapon && Character)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+		SecondaryWeapon->SetWeaponHandler(this);
 	}
 }
 
@@ -255,6 +257,8 @@ void UCombatComponent::ActionReservation(EAction Act)
 void UCombatComponent::ActionDequeue()
 {
 	if (ActionQueue.IsEmpty()) return;
+
+	Notify();
 	
 	EAction Act;
 	ActionQueue.Dequeue(Act);
@@ -389,7 +393,7 @@ void UCombatComponent::ReloadEmptyWeapon()
 int32 UCombatComponent::AmountToReload()
 {
 	if (EquippedRangeWeapon == nullptr) return 0;
-	int32 RoomInMag = EquippedRangeWeapon->GetMagCapacity() - EquippedRangeWeapon->GetAmmo();
+	const int32 RoomInMag = EquippedRangeWeapon->GetMagCapacity() - EquippedRangeWeapon->GetLeftAmmo();
 
 	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
@@ -482,10 +486,14 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime, const FLinearColor& Cros
 	if (Character == nullptr || Character->Controller == nullptr) return;
 	if (!EquippedWeapon) return;
 
-	Controller = Controller == nullptr ? Cast<APrepperPlayerController>(Character->Controller) : Controller;
-	if (!Controller) return;
+	if (!HUD)
+	{
+		const APlayerController* Controller = Cast<APlayerController>(Character->Controller);
+		if (!Controller) return;
+
+		HUD =  Cast<APrepperHUD>(Controller->GetHUD());
+	}
 	
-	HUD = HUD == nullptr ? Cast<APrepperHUD>(Controller->GetHUD()) : HUD;
 	if (!HUD) return;
 	
 	FHUDPackage HUDPackage;

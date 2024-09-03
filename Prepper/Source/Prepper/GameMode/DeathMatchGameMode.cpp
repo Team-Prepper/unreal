@@ -53,22 +53,22 @@ void ADeathMatchGameMode::Tick(float DeltaSeconds)
 		{
 			StartMatch();
 		}
+		return;
 	}
-	else if(MatchState == MatchState::InProgress)
+	if(MatchState == MatchState::InProgress)
 	{
 		CountdownTime = WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
 		if(CountdownTime <= 0.f)
 		{
 			SetMatchState(MatchState::Cooldown);
 		}
+		return;
 	}
-	else if(MatchState == MatchState::Cooldown)
+	
+	CountdownTime = CooldownTime + WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+	if(CountdownTime <= 0.f)
 	{
-		CountdownTime = CooldownTime + WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if(CountdownTime <= 0.f)
-		{
-			RestartGame();
-		}
+		RestartGame();
 	}
 }
 
@@ -90,7 +90,25 @@ void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 	{
 		VictimPlayerState->AddToDefeats(1);
 	}
+
+	RequestQueue.Add(RequestQueueUnit(ElimmedCharacter, VictimController));
+	
+	FTimerHandle TestTimeHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		TestTimeHandle, this, &ADeathMatchGameMode::Respawn, RespawnTime);
+	
 	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
+
+}
+
+void ADeathMatchGameMode::Respawn()
+{
+	ADeathMatchGameMode* DeathMatchGameMode = GetWorld()->GetAuthGameMode<ADeathMatchGameMode>();
+
+	if (!DeathMatchGameMode) return;
+	
+	DeathMatchGameMode->RequestRespawn(RequestQueue[0].Character, RequestQueue[0].Controller);
+	RequestQueue.RemoveAt(0);
 }
 
 void ADeathMatchGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController)

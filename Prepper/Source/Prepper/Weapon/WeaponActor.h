@@ -26,8 +26,7 @@ public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void OnRep_Owner() override;
-	virtual void SetOwnerActor(AActor* NewOwner) override { 
-	SetWeaponState(WeaponState);;SetOwner(NewOwner); };
+	virtual void SetWeaponHandler(IWeaponHandler* NewOwner) override;
 	virtual int GetLeftAmmo() override { return -1; }
 
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
@@ -72,7 +71,7 @@ protected:
 	virtual void OnDropped();
 	virtual void OnEquippedSecondary();
 
-	TScriptInterface<IWeaponHandler> GetWeaponHandler();
+	IWeaponHandler* GetWeaponHandler();
 
 	UFUNCTION()
 	void OnPingTooHigh(bool bPingTooHigh);
@@ -99,8 +98,8 @@ protected:
 	APlayerCharacter* PlayerOwnerCharacter;
 	UPROPERTY()
 	class APrepperPlayerController* PlayerOwnerController;
-	UPROPERTY()
-	TScriptInterface<IWeaponHandler> WeaponHandler;
+	
+	IWeaponHandler* WeaponHandler;
 
 	UPROPERTY(EditAnywhere)
 	EWeaponType WeaponType;
