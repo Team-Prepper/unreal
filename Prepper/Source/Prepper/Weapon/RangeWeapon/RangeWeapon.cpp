@@ -62,9 +62,7 @@ void ARangeWeapon::ClientUpdateAmmo_Implementation(int32 ServerAmmo)
 {
 	if (HasAuthority()) return;
  
-	Ammo = ServerAmmo;
 	--Sequence;
-	Ammo -= Sequence;
 }
 
 void ARangeWeapon::AddAmmo(int32 AmmoToAdd)

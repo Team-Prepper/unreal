@@ -4,7 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Prepper/Component/Status.h"
+#include "Prepper/Character/Component/Status.h"
 #include "Prepper/Item/MapInventory.h"
 #include "Prepper/_Base/ObserverPattern/Observer.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
