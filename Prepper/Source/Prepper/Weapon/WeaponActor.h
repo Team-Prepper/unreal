@@ -62,6 +62,10 @@ public:
 	USoundCue* EquipSound;
 	
 	void PlayEquipWeaponSound();
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMyDelegate);
+
+	FMyDelegate OnDroppedWeapon;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -91,6 +95,9 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
+	UPROPERTY()
+	EWeaponState CurWeaponState;
+	
 	UFUNCTION()
 	void OnRep_WeaponState();
 	
@@ -110,6 +117,7 @@ private:
 public:
 	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
+	FORCEINLINE EWeaponState GetWeaponState()			const { return CurWeaponState; }
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트

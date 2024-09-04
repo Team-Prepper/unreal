@@ -202,10 +202,27 @@ void AEnemyBaseCharacter::Elim()
 {
 	if(EquippedWeapon)
 	{
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+		ElimDroppedWeapon();
+		return;
 	}
-	Super::Elim();
+	Super::Elim(); // MulticastElim()
 }
+
+void AEnemyBaseCharacter::ElimDroppedWeapon_Implementation()
+{
+	if(EquippedWeapon)
+	{
+		EquippedWeapon->OnDroppedWeapon.AddDynamic(this, &AEnemyBaseCharacter::MulticastElim);
+		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+		EquippedWeapon = nullptr;
+	}
+}
+
+void AEnemyBaseCharacter::MulticastElim()
+{
+	Super::MulticastElim();
+}
+
 
 void AEnemyBaseCharacter::PawnAttack()
 {

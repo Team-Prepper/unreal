@@ -56,6 +56,7 @@ public:
 	
 	virtual void Elim() override;
 	virtual void MulticastElim() override;
+	
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 	
 	UFUNCTION(BlueprintImplementableEvent)

@@ -137,12 +137,15 @@ void AWeaponActor::OnWeaponStateSet()
 	{
 		case EWeaponState::EWS_Equipped:
 			OnEquipped();
+			CurWeaponState = EWeaponState::EWS_Equipped;
 			break;
 		case EWeaponState::EWS_Holstered:
 			OnEquippedSecondary();
+			CurWeaponState = EWeaponState::EWS_Holstered;
 			break;
 		case EWeaponState::EWS_Dropped:
 			OnDropped();
+			CurWeaponState = EWeaponState::EWS_Dropped;
 			break;
 		default:
 			break;
@@ -180,6 +183,10 @@ void AWeaponActor::OnDropped()
 
 	WeaponPhysicsActive(true);
 	WeaponMesh->DetachFromComponent(DetachRules);
+
+	if(OnDroppedWeapon.IsBound())
+		OnDroppedWeapon.Broadcast();
+	OnDroppedWeapon.Clear();
 
 	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
 		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;

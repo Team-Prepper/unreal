@@ -14,6 +14,15 @@ void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABaseP
 	}
 }
 
+void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter)
+{
+	if (ElimmedCharacter)
+	{
+		ElimmedCharacter->Elim();
+		RemoveCharacterAfterDelay(ElimmedCharacter, DelayTime);
+	}
+}
+
 void APrepperGameMode::RemoveCharacterAfterDelay(ACharacter* Character, float Delay)
 {
 	if (Character)

@@ -85,6 +85,11 @@ protected:
 
 	virtual void Elim() override;
 
+	virtual void MulticastElim() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void ElimDroppedWeapon();
+
 	/*
 	 * Attack 
 	 */

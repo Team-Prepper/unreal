@@ -156,16 +156,19 @@ void APlayerCharacter::Elim()
 	{
 		ShowSniperScopeWidget(false);
 	}
-	
-	MulticastElim();
+
+	if(!IsWeaponEquipped())
+		MulticastElim();
 }
+
 
 void APlayerCharacter::MulticastElim()
 {
 	Super::MulticastElim();
 	bDisableGamePlay = true;
-	
 }
+
+
 
 void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {

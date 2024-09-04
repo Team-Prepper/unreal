@@ -57,6 +57,8 @@ private:
 	void EquipPrimaryWeapon(AWeaponActor* WeaponToEquip);
 	void EquipSecondaryWeapon(AWeaponActor* WeaponToEquip);
 	void DropEquippedWeapon();
+
+	
 	
 	UFUNCTION()
 	void SetWeaponType();
@@ -180,7 +182,7 @@ private:
 protected:
 	
 	UPROPERTY()
-	APlayerCharacter* Character;
+	APlayerCharacter* OwnerCharacter;
 	UPROPERTY()
 	APrepperHUD* HUD;
 	
@@ -192,6 +194,12 @@ protected:
 public:
 	virtual void SetPlayer(APlayerCharacter* Target) override;
 	virtual void TargetElim() override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDropWeapon();
+
+	UFUNCTION()
+	void DropEquippedWeaponByElim();
 	
 // Ammo
 private:
