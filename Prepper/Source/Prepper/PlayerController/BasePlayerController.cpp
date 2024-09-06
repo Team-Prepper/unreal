@@ -5,7 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerState.h"
-#include "Prepper/Character/Component/CombatComponent.h"
+#include "Prepper/Character/Component/Combat/CombatComponent.h"
 #include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 

@@ -5,7 +5,7 @@
 #include "Components/TextBlock.h"
 #include "GameFramework/GameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/Character/Component/CombatComponent.h"
+#include "Prepper/Character/Component/Combat/CombatComponent.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
 #include "Prepper/GameState/DeathMatchGameState.h"
 #include "Prepper/HUD/UI/Announcement.h"

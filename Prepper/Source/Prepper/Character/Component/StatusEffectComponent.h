@@ -9,6 +9,7 @@
 #include "Status.h"
 #include "Prepper/Enums/StatusEffect.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "StatusEffectComponent.generated.h"
 

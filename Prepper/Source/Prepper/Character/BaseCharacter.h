@@ -10,6 +10,18 @@
 #include "Prepper/_Base/Util/GaugeValue.h"
 #include "BaseCharacter.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EPlayerMovementState : uint8
+{
+	EPMS_Seat UMETA(DisplayName = "Seat"),
+	EPMS_Aim UMETA(DisplayName = "Aim"),
+	EPMS_Sprint UMETA(DisplayName = "Sprint"),
+	EPMS_Idle UMETA(DisplayName = "Idle"),
+    
+	EPMS_MAX UMETA(DisplayName = "Default Max")
+};
+
 UCLASS()
 class PREPPER_API ABaseCharacter : public ACharacter, public IDamageable, public ISubject<GaugeValue<float>>
 {
@@ -35,10 +47,13 @@ protected:
 	float MaxHealth = 100.f;
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float CurrentHealth = 100.f;
+	
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float WalkSpeed = 600;
 	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
 	float SprintSpeed = 900;
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
+	float AimMovementSpeed = 400.f;
 	
 	/* 데미지 처리 */
 	UPROPERTY(EditAnywhere, Category = Combat)
@@ -63,14 +78,31 @@ public:
 	UFUNCTION()
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 	
-// Movement
+	// Movement
+public:
+	float CoefficientMovementSpeed = 1;
+	void SetPlayerMovementState(const EPlayerMovementState& State);
+	
 protected:
 	UPROPERTY()
 	class ADeathMatchPlayerState* DeathMatchPlayerState;
+	
+	UPROPERTY(Replicated)
+	EPlayerMovementState PlayerMovementState;
+	
+	void ConvertPlayerMovementState(const EPlayerMovementState& State);
+	UFUNCTION(Server, Reliable)
+	void ServerConvertPlayerMovementState(const EPlayerMovementState& State);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastConvertPlayerMovementState(const EPlayerMovementState& State);
 
+	virtual void SeatToggle(bool Seat);
+	
 	virtual void PlayHitReactMontage();
 	UFUNCTION()
 	virtual void OnRep_Health();
+
+public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastElim();
 };

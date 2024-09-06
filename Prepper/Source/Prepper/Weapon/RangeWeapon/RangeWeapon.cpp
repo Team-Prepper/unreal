@@ -13,17 +13,6 @@ void ARangeWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	
 	SpendRound();
 	
-	WeaponHandler = GetWeaponHandler();
-	
-	if (WeaponHandler == nullptr) return;
-	if (bAutoReload)
-	{
-		WeaponHandler->ActionReservation(IWeaponHandler::ReloadWeapon);
-	}
-	if (bAutomatic)
-	{
-		WeaponHandler->ActionReservation(IWeaponHandler::FireWeapon);
-	}
 }
 
 bool ARangeWeapon::IsAmmoEmpty()
@@ -47,7 +36,7 @@ USkeletalMeshComponent* ARangeWeapon::GetRangeWeaponMesh()
 
 void ARangeWeapon::SpendRound()
 {
-	Ammo = FMath::Clamp(Ammo -1, 0, MagCapacity);
+	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
 	if(HasAuthority())
 	{
 		ClientUpdateAmmo(Ammo);

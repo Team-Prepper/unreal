@@ -1,6 +1,5 @@
 #include "CombatComponent.h"
 
-#include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -21,8 +20,8 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!OwnerCharacter) return;
-	if (!OwnerCharacter->IsLocallyControlled()) return;
+	if (!Character) return;
+	if (!Character->IsLocallyControlled()) return;
 	
 	// 총구의 방향을 내 화면의 방향과 일치 시키기 위해서 틱에서 처리 
 	FHitResult HitResult;
@@ -59,23 +58,21 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, EquippedRangeWeapon);
 	DOREPLIFETIME(UCombatComponent, EquippedMeleeWeapon);
-	DOREPLIFETIME(UCombatComponent, bAiming);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
-	DOREPLIFETIME(UCombatComponent, CombatState);
 }
 
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!OwnerCharacter) return;
+	if (!Character) return;
 	
 	UE_LOG(LogTemp, Warning, TEXT("CombatComponentReady"));
 
-	if (OwnerCharacter->GetFollowCamera())
-	{
-		DefaultFOV = OwnerCharacter->GetFollowCamera()->FieldOfView;
-	}
+	AimingEffect = Cast<UCustomCameraComponent>
+	(Character->GetComponentByClass(UCustomCameraComponent::StaticClass()));
+	
+	DefaultFOV = AimingEffect == nullptr ? 0 : AimingEffect->GetDefaultFieldOfView();
 }
 
 // Observer Pattern
@@ -121,9 +118,24 @@ void UCombatComponent::Notify()
 
 // Equipped Weapon
 
+void UCombatComponent::ActionEnd()
+{
+	if (EquippedRangeWeapon == nullptr) return;
+	
+	if (EquippedRangeWeapon->bAutoReload && EquippedRangeWeapon->GetLeftAmmo() <= 0)
+	{
+		Reload();
+	}
+	if (EquippedRangeWeapon->bAutomatic)
+	{
+		Fire();
+	}
+	
+}
+
 void UCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 {
-	if (OwnerCharacter == nullptr || WeaponToEquip == nullptr) return;
+	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	WeaponToEquip->SetActorEnableCollision(false);
 
@@ -136,8 +148,8 @@ void UCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 		EquipPrimaryWeapon(WeaponToEquip);
 	}
 
-	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
-	OwnerCharacter->bUseControllerRotationYaw = true;
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
 }
 
 void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
@@ -145,7 +157,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	DropEquippedWeapon();
 	EquippedWeapon = WeaponToEquip;
-	EquippedWeapon->SetOwner(OwnerCharacter);
+	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	EquippedWeapon->SetWeaponHandler(this);
 	SetWeaponType();
@@ -157,7 +169,7 @@ void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
 	SecondaryWeapon = WeaponToEquip;
-	SecondaryWeapon->SetOwner(OwnerCharacter);
+	SecondaryWeapon->SetOwner(Character);
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
 }
 
@@ -177,21 +189,9 @@ void UCombatComponent::SetWeaponType()
 	EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
 	EquippedMeleeWeapon = Cast<AMeleeWeapon>(EquippedWeapon);
 }
-
-void UCombatComponent::OnRep_EquippedWeapon()
-{
-	if (!EquippedWeapon || !OwnerCharacter) return;
-
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	EquippedWeapon->SetWeaponHandler(this);
-
-	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
-	OwnerCharacter->bUseControllerRotationYaw = true;
-}
-
 void UCombatComponent::OnRep_SecondaryWeapon()
 {
-	if (SecondaryWeapon && OwnerCharacter)
+	if (SecondaryWeapon && Character)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
 		SecondaryWeapon->SetWeaponHandler(this);
@@ -202,37 +202,29 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 
 void UCombatComponent::SwapWeapons()
 {
-	if (CombatState != ECombatState::ECS_Unoccupied || OwnerCharacter == nullptr || !OwnerCharacter->HasAuthority()) return;
+	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr || !Character->HasAuthority()) return;
 	MulticastSwapWeapon();
 }
-
-bool UCombatComponent::ShouldSwapWeapons()
-{
-	return (EquippedWeapon != nullptr && SecondaryWeapon != nullptr);
-}
-
 void UCombatComponent::MulticastSwapWeapon_Implementation()
 {
 	CombatState = ECombatState::ECS_SwappingWeapons;
 
 	FinishSwapAttachWeapons();
-	GetWorld()->GetTimerManager().SetTimer(SwapDelayTimer, this, &UCombatComponent::FinishSwap, 1.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(ActionTimer, this, &UCombatComponent::FinishSwap, 1.5f, false);
 
-	OwnerCharacter->PlayAnim(SwapMontage);
+	Character->PlayAnim(SwapMontage);
 	
 }
 
 void UCombatComponent::FinishSwap()
 {
-	if (OwnerCharacter)
-	{
-		CombatState = ECombatState::ECS_Unoccupied;
-	}
+	CombatState = ECombatState::ECS_Unoccupied;
+	ActionEnd();
 }
 
 void UCombatComponent::FinishSwapAttachWeapons()
 {
-	if (OwnerCharacter == nullptr) return;
+	if (Character == nullptr) return;
 	AWeaponActor* TempWeapon = EquippedWeapon;
 	EquippedWeapon = SecondaryWeapon;
 	SecondaryWeapon = TempWeapon;
@@ -247,120 +239,36 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	Notify();
 }
 
-// Action Reservation
-
-void UCombatComponent::ActionReservation(EAction Act)
-{
-	ActionQueue.Enqueue(Act);
-}
-
-void UCombatComponent::ActionDequeue()
-{
-	if (ActionQueue.IsEmpty()) return;
-
-	Notify();
-	
-	EAction Act;
-	ActionQueue.Dequeue(Act);
-
-	switch(Act)
-	{
-	case FireWeapon:
-		Fire();
-		UE_LOG(LogTemp, Warning, TEXT("Fire Weapon Action Reservation"));
-		break;
-	case ReloadWeapon:
-		Reload();
-		UE_LOG(LogTemp, Warning, TEXT("Reload Weapon Action Reservation"));
-		break;
-	}
-}
-
-// Fire
-
-void UCombatComponent::FireTrigger(bool bPressed)
-{
-	if (bFireButtonPressed == bPressed) return;
-	
-	bFireButtonPressed = bPressed;
-
-	if (bFireButtonPressed)
-	{
-		ActionReservation(FireWeapon);
-		ActionDequeue();
-	}
-}
 
 void UCombatComponent::Fire()
 {
 	if (!CanFire()) return;
 	
-	CrosshairShootingFactor = .75f;
-	HitTargets = EquippedWeapon->GetTarget(HitTarget);
-	
-	LocalFireWeapon(HitTargets);
-	ServerFireWeapon(HitTargets);
-
-	CombatState = ECombatState::ECS_Fire;
-
+	Super::Fire();
 	Notify();
-	OwnerCharacter->GetWorldTimerManager().SetTimer(
-		FireTimer,
-		this,
-		&UCombatComponent::FireTimerFinished,
-		EquippedWeapon->FireDelay
-	);
+	
+	CrosshairShootingFactor = .75f;
 }
 
-bool UCombatComponent::CanFire()
+void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const
 {
-	if (!EquippedWeapon) return false;
-	if (!bFireButtonPressed) return false;
-	if (CombatState != ECombatState::ECS_Unoccupied) return false;
-
-	if (EquippedMeleeWeapon) return true;
-	return !EquippedRangeWeapon->IsAmmoEmpty();
-}
-
-void UCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets)
-{
-	if (EquippedWeapon == nullptr || OwnerCharacter == nullptr) return;
-	
-	if (CombatState != ECombatState::ECS_Unoccupied) return;
-	
-	EquippedWeapon->Fire(TraceHitTargets);	
+	Super::LocalFireWeapon(TraceHitTargets);
 	
 	if (EquippedRangeWeapon)
 	{
-		OwnerCharacter->PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
+		Character->PlayAnim(FireWeaponMontage, bAiming ? FName("FireAim") : FName("FireHip"));
 		return;
 	}
 	
-	OwnerCharacter->PlayAnim(MeleeWeaponMontage,
+	Character->PlayAnim(MeleeWeaponMontage,
 		EquippedMeleeWeapon->GetWeaponType() == EWeaponType::EWT_MeleeWeaponBlunt ? FName("Attack1") : FName("Attack2"));
 	
 }
 
-void UCombatComponent::ServerFireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
+void UCombatComponent::FinishFire()
 {
-	// 노이즈 발생
-	EquippedWeapon->MakeNoise(1, OwnerCharacter, FVector::ZeroVector);
-	MulticastFireWeapon(TraceHitTargets);
-}
-
-void UCombatComponent::MulticastFireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
-{
-	if (OwnerCharacter && OwnerCharacter->IsLocallyControlled()) return;
-	LocalFireWeapon(TraceHitTargets);
-}
-
-void UCombatComponent::FireTimerFinished()
-{
-	CombatState = ECombatState::ECS_Unoccupied;
-	
-	if (EquippedWeapon == nullptr) return;
-	
-	ActionDequeue();
+	Super::FinishFire();
+	ActionEnd();
 }
 
 // Reload
@@ -368,26 +276,29 @@ void UCombatComponent::FireTimerFinished()
 void UCombatComponent::Reload()
 {
 	if (CarriedAmmo <= 0) return;
-	if (CombatState == ECombatState::ECS_Reloading) return;
-	if (!EquippedWeapon->CanReload()) return;
+
+	Super::Reload();
+}
+
+void UCombatComponent::FinishReload()
+{
+	Super::FinishReload();
 	
-	ServerReload();
-	HandleReload();
-}
+	if (Character == nullptr || EquippedRangeWeapon == nullptr) return;
+	
+	int32 ReloadAmount = AmountToReload();
 
-void UCombatComponent::HandleReload()
-{
-	if (!OwnerCharacter) return;
-
-	OwnerCharacter->PlayAnim(ReloadMontage, EquippedWeapon->ReloadActionName);
-}
-
-void UCombatComponent::ReloadEmptyWeapon()
-{
-	if (EquippedRangeWeapon && EquippedRangeWeapon->IsAmmoEmpty())
+	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
 	{
-		Reload();
+		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
+		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 	}
+	
+	EquippedRangeWeapon->AddAmmo(ReloadAmount);
+	
+	Notify();
+	ActionEnd();
+	
 }
 
 int32 UCombatComponent::AmountToReload()
@@ -404,91 +315,56 @@ int32 UCombatComponent::AmountToReload()
 	return 0;
 }
 
-void UCombatComponent::ServerReload_Implementation()
-{
-	if (OwnerCharacter == nullptr || EquippedWeapon == nullptr) return;
-	if (!OwnerCharacter->IsLocallyControlled())
-	{
-		CombatState = ECombatState::ECS_Reloading;
-		HandleReload();
-	}
-}
-
-void UCombatComponent::FinishReloading()
-{
-	CombatState = ECombatState::ECS_Unoccupied;
-	if (OwnerCharacter == nullptr) return;
-	if (OwnerCharacter->HasAuthority())
-	{
-		UpdateAmmoValues();
-	}
-	ActionDequeue();
-	if (bFireButtonPressed)
-	{
-		Fire();
-	}
-}
-
 // Set Aiming
 
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
-	if (OwnerCharacter == nullptr || EquippedWeapon == nullptr) return;
-	if (bAiming == bIsAiming) return;
-
-	bAiming = bIsAiming;
-	ServerSetAiming(bIsAiming);
+	if (Character == nullptr || EquippedWeapon == nullptr) return;
 	
-	if (!OwnerCharacter->IsLocallyControlled()) return;
+	Super::SetAiming(bIsAiming);
+	
+	if (!Character->IsLocallyControlled()) return;
 	
 	EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
-	OwnerCharacter->SetPlayerMovementState(NewState);
-	bAimButtonPressed = bIsAiming;
+	Character->SetPlayerMovementState(NewState);
+
+	if (AimingEffect == nullptr) return;
+	
 	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
 	{
-		OwnerCharacter->ShowSniperScopeWidget(bIsAiming);
+		AimingEffect->ShowSniperScopeWidget(bIsAiming);
 	}
 
 	if (bIsAiming)
 	{
-		OwnerCharacter->GetFollowCamera()
-			->InterpFOV(EquippedRangeWeapon->GetZoomedFOV(),
+		AimingEffect->InterpFOV(EquippedRangeWeapon->GetZoomedFOV(),
 			EquippedRangeWeapon->GetZoomedFOV());
 		return;
 	}
 
-	OwnerCharacter->GetFollowCamera()
-			->InterpFOV(DefaultFOV,
+	AimingEffect->InterpFOV(DefaultFOV,
 			EquippedRangeWeapon->GetZoomedFOV());
 }
 
-void UCombatComponent::OnRep_Aiming()
+void UCombatComponent::ServerSetAiming(bool bIsAiming)
 {
-	if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
-	{
-		bAiming = bAimButtonPressed;
-	}
-}
-
-void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
-{
-	bAiming = bIsAiming;
-	if (OwnerCharacter)
+	Super::ServerSetAiming_Implementation(bIsAiming);
+	if (Character)
 	{
 		EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
-		OwnerCharacter->SetPlayerMovementState(NewState);
+		Character->SetPlayerMovementState(NewState);
 	}
 }
 
 // Set Crosshair
 void UCombatComponent::SetHUDCrosshair(float DeltaTime, const FLinearColor& CrosshairColor)
 {
-	if (OwnerCharacter == nullptr || OwnerCharacter->Controller == nullptr) return;
+	if (Character == nullptr || Character->Controller == nullptr) return;
 	if (!EquippedWeapon) return;
 
 	if (!HUD)
 	{
-		const APlayerController* Controller = Cast<APlayerController>(OwnerCharacter->Controller);
+		const APlayerController* Controller = Cast<APlayerController>(Character->Controller);
 		if (!Controller) return;
 
 		HUD =  Cast<APrepperHUD>(Controller->GetHUD());
@@ -535,9 +411,9 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 	
 	FVector Start = CrosshairWorldPosition;
 
-	if (OwnerCharacter)
+	if (Character)
 	{
-		const float DistanceToCharacter = (OwnerCharacter->GetActorLocation() - Start).Size();
+		const float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
 		Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
 	}
 	
@@ -556,14 +432,17 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 void UCombatComponent::SetPlayer(APlayerCharacter* Target)
 {
 	OwnerCharacter = Target;
+	Character = Target;
 }
 
 void UCombatComponent::TargetElim()
 {
-	// 서버만 실행됨 
-	FireTrigger(false);
-	
-	MulticastDropWeapon();
+	Super::TargetElim();
+	if(SecondaryWeapon)
+	{
+		EquippedWeapon->OnDroppedWeapon.AddDynamic(this, &UCombatComponent::DropEquippedWeaponByElim);
+		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	}
 }
 
 void UCombatComponent::MulticastDropWeapon_Implementation()
@@ -612,15 +491,13 @@ void UCombatComponent::DropEquippedWeaponByElim()
 		bSecondaryWeaponDropped = true;
 	}
 
-	
 	if (bEquippedWeaponDropped && bSecondaryWeaponDropped)
 	{
-		OwnerCharacter->MulticastElim();
+		Character->MulticastElim();
 	}
 }
 
 // Ammo
-
 void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 {
 	if (CarriedAmmoMap.Contains(WeaponType))
@@ -628,10 +505,8 @@ void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 		CarriedAmmoMap[WeaponType] = FMath::Clamp(CarriedAmmoMap[WeaponType] + AmmoAmount, 0, MaxCarriedAmmo);
 		UpdateCarriedAmmo();
 	}
-	if (EquippedRangeWeapon && EquippedRangeWeapon->IsAmmoEmpty() && EquippedWeapon->GetWeaponType() == WeaponType)
-	{
-		Reload();
-	}
+
+	ReloadEmptyWeapon();
 }
 
 void UCombatComponent::OnRep_CarriedAmmo()
@@ -652,37 +527,4 @@ void UCombatComponent::UpdateCarriedAmmo()
 	}
 	
 	Notify();
-}
-
-void UCombatComponent::UpdateAmmoValues()
-{
-	if (OwnerCharacter == nullptr || EquippedRangeWeapon == nullptr) return;
-	int32 ReloadAmount = AmountToReload();
-	if (CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
-	{
-		CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= ReloadAmount;
-		CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
-	}
-	EquippedRangeWeapon->AddAmmo(ReloadAmount);
-	Notify();
-}
-
-// Combat State
-void UCombatComponent::OnRep_CombatState()
-{
-	switch (CombatState)
-	{
-	case ECombatState::ECS_Reloading:
-		if (OwnerCharacter && !OwnerCharacter->IsLocallyControlled())
-		{
-			HandleReload();
-		}
-		break;
-	case ECombatState::ECS_Unoccupied:
-		if (bFireButtonPressed)
-		{
-			Fire();
-		}
-		break;
-	}
 }

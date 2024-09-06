@@ -3,7 +3,7 @@
 
 #include "ItemPickupAmmo.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/Character/Component/CombatComponent.h"
+#include "Prepper/Character/Component/Combat/CombatComponent.h"
 
 void AItemPickupAmmo::Interaction(APlayerCharacter* Target)
 {

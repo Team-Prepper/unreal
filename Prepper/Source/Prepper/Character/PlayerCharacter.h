@@ -9,7 +9,6 @@
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
-#include "Prepper/Interfaces/Weapon.h"
 #include "Prepper/Item/MapInventory.h"
 #include "PlayerCharacter.generated.h"
 
@@ -17,18 +16,6 @@ class UFlexibleSpringArmComponent;
 class UInputAction;
 
 struct FInputActionValue;
-
-UENUM(BlueprintType)
-enum class EPlayerMovementState : uint8
-{
-	EPMS_Seat UMETA(DisplayName = "Seat"),
-	EPMS_Aim UMETA(DisplayName = "Aim"),
-	EPMS_Sprint UMETA(DisplayName = "Sprint"),
-	EPMS_Idle UMETA(DisplayName = "Idle"),
-    
-	EPMS_MAX UMETA(DisplayName = "Default Max")
-};
-
 UCLASS()
 class PREPPER_API APlayerCharacter : public ABaseCharacter,
 									 public IInteractWithCrosshairInterface,
@@ -108,16 +95,14 @@ private:
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	class UInteractionComponent* InteractionComponent;
-
-	TArray<IPlayerComponent*> PlayerComponents;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UFlexibleSpringArmComponent* FlexibleCameraBoom;
+
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCustomCameraComponent* FollowCamera;
 	
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float AimMovementSpeed = 400.f;
+	TArray<IPlayerComponent*> PlayerComponents;
 
 	float AO_Yaw;
 	float InterpAO_Yaw;
@@ -146,6 +131,8 @@ public:
 	virtual void MouseRightReleased() override;
 
 	virtual void ToggleInventory() override;
+
+	virtual void SeatToggle(bool Seat) override;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastToggleInventory();
@@ -196,24 +183,12 @@ private:
 
 	/* Player Movement State */
 	bool bBeforeSeat;
-	
-	UPROPERTY(Replicated)
-	EPlayerMovementState PlayerMovementState;
 
 	UPROPERTY(VisibleAnywhere, Category = "Player Noise")
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트
 public:
-	void SetPlayerMovementState(const EPlayerMovementState State);
-
-	float CoefficientMovementSpeed = 1;
 	
 private:
-	void ConvertPlayerMovementState();
-	UFUNCTION(Server, Reliable)
-	void ServerConvertPlayerMovementState(const EPlayerMovementState State);
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastConvertPlayerMovementState(const EPlayerMovementState State);
-
 	void HideCamIfCharacterClose();
 	UPROPERTY(EditAnywhere)
 	float CamThreshold = 200.f;

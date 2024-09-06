@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/Character/Component/Combat/AimingEffect.h"
 #include "CustomCameraComponent.generated.h"
 
 
 UCLASS( HideCategories=(Mobility, Rendering, LOD), Blueprintable, ClassGroup=Camera, meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UCustomCameraComponent : public UCameraComponent
+class PREPPER_API UCustomCameraComponent : public UCameraComponent, public IAimingEffect
 {
 	GENERATED_BODY()
 private:
@@ -26,6 +27,14 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void InterpFOV(float GoalFOVSet, float InterpSpeedSet);
-		
+	virtual void InterpFOV(float GoalFOVSet, float InterpSpeedSet) override;
+	virtual float GetDefaultFieldOfView() { return FieldOfView; }
+	
+	virtual void ShowSniperScopeWidget(bool bIsAiming) override
+	{
+		_ShowSniperScopeWidget(bIsAiming);
+	};
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void _ShowSniperScopeWidget(bool bIsAiming);
 };

@@ -101,6 +101,10 @@ void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorControll
 	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 }
 
+void ABaseCharacter::SeatToggle(bool Seat)
+{
+}
+
 void ABaseCharacter::PlayHitReactMontage()
 {
 	PlayAnim(HitReactMontage, FName("HitFront"));
@@ -115,6 +119,52 @@ void ABaseCharacter::OnRep_Health()
 void ABaseCharacter::Elim()
 {
 	MulticastElim();
+}
+
+void ABaseCharacter::SetPlayerMovementState(const EPlayerMovementState& State)
+{
+	if(!(IsLocallyControlled() || HasAuthority())) return;
+	ServerConvertPlayerMovementState(State);
+}
+
+void ABaseCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState& State)
+{
+	if(!HasAuthority()) return;
+	MulticastConvertPlayerMovementState(State);
+}
+
+void ABaseCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState& State)
+{
+	if(HasAuthority()) return;
+	ConvertPlayerMovementState(State);
+}
+
+void ABaseCharacter::ConvertPlayerMovementState(const EPlayerMovementState& State)
+{
+	if(PlayerMovementState == EPlayerMovementState::EPMS_Seat)
+	{
+		SeatToggle(false);
+	}
+	
+	PlayerMovementState = State;
+	
+	switch (PlayerMovementState)
+	{
+	case EPlayerMovementState::EPMS_Seat:
+		SeatToggle(true);
+		break;
+	case EPlayerMovementState::EPMS_Aim:
+		GetCharacterMovement()->MaxWalkSpeed = AimMovementSpeed * CoefficientMovementSpeed;
+		break;
+	case EPlayerMovementState::EPMS_Sprint:
+		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * CoefficientMovementSpeed;
+		break;
+	case EPlayerMovementState::EPMS_Idle:
+		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed * CoefficientMovementSpeed;
+		break;
+	default:
+		break;
+	}
 }
 
 void ABaseCharacter::MulticastElim_Implementation()

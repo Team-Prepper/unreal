@@ -2,7 +2,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
-#include "Component/CombatComponent.h"
+#include "Component/Combat/CombatComponent.h"
 #include "Component/InteractionComponent.h"
 #include "Component/StatusEffectComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -159,6 +159,7 @@ void APlayerCharacter::Elim()
 
 	if(!IsWeaponEquipped())
 		MulticastElim();
+	
 }
 
 
@@ -361,7 +362,7 @@ void APlayerCharacter::EPressed()
 	}
 
 	/* Swap */
-	if (Combat && Combat->ShouldSwapWeapons())
+	if (Combat)
 	{
 		UE_LOG(LogTemp, Warning , TEXT("COMBAT COMP : SWAP"));
 		Combat->SwapWeapons();
@@ -435,6 +436,13 @@ void APlayerCharacter::ToggleInventory()
 	EquippedBackpack->OpenInventory();
 	
 	MulticastToggleInventory();
+}
+
+void APlayerCharacter::SeatToggle(bool Seat)
+{
+	SetActorEnableCollision(!Seat);
+	SetActorHiddenInGame(Seat);
+	SetPlayerEquipmentHiddenInGame(Seat);
 }
 
 void APlayerCharacter::MulticastToggleInventory_Implementation()
@@ -631,59 +639,6 @@ void APlayerCharacter::SetEquipmentHidden(AActor* Target, bool visible)
 {
 	if (!Target) return;
 	Target->SetActorHiddenInGame(visible);
-}
-
-void APlayerCharacter::SetPlayerMovementState(const EPlayerMovementState State)
-{
-	if(!(IsLocallyControlled() || HasAuthority())) return;
-	ServerConvertPlayerMovementState(State);
-}
-
-void APlayerCharacter::ConvertPlayerMovementState()
-{
-	if(bBeforeSeat)
-	{
-		bBeforeSeat = false;
-		SetActorEnableCollision(true);
-		SetActorHiddenInGame(false);
-		SetPlayerEquipmentHiddenInGame(false);
-	}
-	
-	switch (PlayerMovementState)
-	{
-	case EPlayerMovementState::EPMS_Seat:
-		bBeforeSeat = true;
-		SetActorEnableCollision(false);
-		SetActorHiddenInGame(true);
-		SetPlayerEquipmentHiddenInGame(true);
-		break;
-	case EPlayerMovementState::EPMS_Aim:
-		GetCharacterMovement()->MaxWalkSpeed = AimMovementSpeed * CoefficientMovementSpeed;
-		break;
-	case EPlayerMovementState::EPMS_Sprint:
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * CoefficientMovementSpeed;
-		break;
-	case EPlayerMovementState::EPMS_Idle:
-		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed * CoefficientMovementSpeed;
-		break;
-	default:
-		break;
-	}
-}
-
-void APlayerCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
-{
-	if(!HasAuthority()) return;
-	PlayerMovementState = State;
-	ConvertPlayerMovementState();
-	MulticastConvertPlayerMovementState(State);
-}
-
-void APlayerCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState State)
-{
-	if(HasAuthority()) return;
-	PlayerMovementState = State;
-	ConvertPlayerMovementState();
 }
 
 void APlayerCharacter::HideCamIfCharacterClose()

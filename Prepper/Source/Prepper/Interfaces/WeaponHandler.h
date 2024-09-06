@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "Prepper/Weapon/WeaponTypes.h"
 #include "WeaponHandler.generated.h"
 
 // This class does not need to be modified.
@@ -20,17 +21,10 @@ class PREPPER_API IWeaponHandler
 {
 	GENERATED_BODY()
 public:
-	enum EAction
-	{
-		FireWeapon,
-		ReloadWeapon,
-	};
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 
 	virtual void EquipWeapon(class AWeaponActor* WeaponToEquip) PURE_VIRTUAL();
-
-	virtual void ActionReservation(EAction Act) PURE_VIRTUAL();
 	
 	virtual void Fire() PURE_VIRTUAL();
 	virtual void FireTrigger(bool IsTrigger) PURE_VIRTUAL();

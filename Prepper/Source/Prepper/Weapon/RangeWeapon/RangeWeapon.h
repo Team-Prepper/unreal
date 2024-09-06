@@ -80,6 +80,8 @@ public:
 	/* Ammo - 탄 */
 	UPROPERTY(EditAnywhere, Category = Combat)
 	bool bAutomatic = false;
+	UPROPERTY(EditAnywhere)
+	bool bAutoReload = false;
 
 	void AddAmmo(int32 AmmoToAdd);
 
@@ -107,9 +109,6 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	int32 MagCapacity;
-	
-	UPROPERTY(EditAnywhere)
-	bool bAutoReload = false;
 	
 	UPROPERTY()
 	USkeletalMeshComponent* RangeWeaponMesh;

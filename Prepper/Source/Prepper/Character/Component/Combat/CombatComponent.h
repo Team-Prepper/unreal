@@ -1,19 +1,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerComponent.h"
+#include "AimingEffect.h"
+#include "BaseCombatComponent.h"
+#include "../PlayerComponent.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/Enums/CombatState.h"
 #include "Prepper/HUD/PrepperHUD.h"
-#include "Prepper/Interfaces/WeaponHandler.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UCombatComponent : public UActorComponent,
-									public IWeaponHandler, public ISubject<GaugeValue<int>>,
-									public IPlayerComponent
+class PREPPER_API UCombatComponent : public UBaseCombatComponent, public ISubject<GaugeValue<int>>
 {
 	GENERATED_BODY()
 public:
@@ -38,9 +35,6 @@ public:
 	
 	// Equip Weapon
 private:
-	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
-	AWeaponActor* EquippedWeapon;
-
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	AWeaponActor* SecondaryWeapon;
 	
@@ -49,6 +43,9 @@ private:
 
 	UPROPERTY(Replicated)
 	class AMeleeWeapon* EquippedMeleeWeapon;
+
+protected:
+	virtual void ActionEnd() override;
 	
 public:
 	virtual void EquipWeapon(AWeaponActor* WeaponToEquip) override;
@@ -56,15 +53,11 @@ public:
 private:
 	void EquipPrimaryWeapon(AWeaponActor* WeaponToEquip);
 	void EquipSecondaryWeapon(AWeaponActor* WeaponToEquip);
-	void DropEquippedWeapon();
-
-	
+	virtual void DropEquippedWeapon() override;
 	
 	UFUNCTION()
 	void SetWeaponType();
 	
-	UFUNCTION()
-	void OnRep_EquippedWeapon();
 	UFUNCTION()
 	void OnRep_SecondaryWeapon();
 	
@@ -72,14 +65,10 @@ private:
 private:
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* SwapMontage;
-	
-	FTimerHandle SwapDelayTimer;
 public:
 	void SwapWeapons();
 	
 private:
-	
-	bool ShouldSwapWeapons();
 	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSwapWeapon();
@@ -90,12 +79,6 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void FinishSwapAttachWeapons();
 	
-// Action Reservation
-private:
-	TQueue<EAction> ActionQueue;
-public:
-	virtual void ActionReservation(EAction Act) override;
-	void ActionDequeue();
 // Fire
 private:
 	UPROPERTY(EditAnywhere, Category = Combat)
@@ -110,64 +93,36 @@ private:
 	bool bFireButtonPressed;
 
 public:
-	virtual void FireTrigger(bool IsTrigger) override;
-	
 	virtual void Fire() override;
 
-private:
-	
-	bool CanFire();
-	
-	void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
-
-	UFUNCTION(Server, Reliable)
-	void ServerFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
-	
-	void FireTimerFinished();
-
+protected:
+	virtual void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const override;
+	virtual void FinishFire() override;
 // Reload
 private:
-	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* ReloadMontage;
-	
 	bool bLocallyReload = false;
 	
 public:
 	virtual void Reload() override;
-	
+protected:
+	virtual void FinishReload() override;
 private:
-	void HandleReload();
-	void ReloadEmptyWeapon();
 	int32 AmountToReload();
-
-	UFUNCTION(Server, Reliable)
-	void ServerReload();
-	
-	UFUNCTION(BlueprintCallable)
-	void FinishReloading();
 
 // Set Aiming
 private:
 	// Aiming FOV
 	float DefaultFOV;
-	
-	bool bAimButtonPressed = false;
-	
-	UPROPERTY(ReplicatedUsing = OnRep_Aiming)
-	bool bAiming;
+
+	UPROPERTY(EditAnywhere)
+	UCustomCameraComponent* AimingEffect;
 	
 public:
-	void SetAiming(bool bIsAiming);
+	virtual void SetAiming(bool bIsAiming) override;
 
 private:
-	UFUNCTION()
-	void OnRep_Aiming();
 	
-	UFUNCTION(Server, Reliable)
-	void ServerSetAiming(bool bIsAiming);
+	virtual void ServerSetAiming(bool bIsAiming) override;
 
 // Set Crosshair
 private:
@@ -185,9 +140,6 @@ protected:
 	APlayerCharacter* OwnerCharacter;
 	UPROPERTY()
 	APrepperHUD* HUD;
-	
-	FVector HitTarget;
-	TArray<FVector_NetQuantize> HitTargets;
 	
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 
@@ -219,15 +171,8 @@ public:
 
 private:
 	void UpdateCarriedAmmo();
-	void UpdateAmmoValues();
 	
 	UFUNCTION()
 	void OnRep_CarriedAmmo();
 
-// Combat State
-private:
-	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
-	ECombatState CombatState = ECombatState::ECS_Unoccupied;
-	UFUNCTION()
-	void OnRep_CombatState();
 };
