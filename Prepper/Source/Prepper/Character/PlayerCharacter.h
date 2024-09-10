@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
-#include "Component/PlayerComponent.h"
+#include "Component/CharacterComponent.h"
 #include "Prepper/Component/CustomCameraComponent.h"
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Enums/CombatState.h"
@@ -101,8 +101,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCustomCameraComponent* FollowCamera;
-	
-	TArray<IPlayerComponent*> PlayerComponents;
 
 	float AO_Yaw;
 	float InterpAO_Yaw;
@@ -132,7 +130,7 @@ public:
 
 	virtual void ToggleInventory() override;
 
-	virtual void SeatToggle(bool Seat) override;
+	virtual void SeatToggle(const bool Seat) override;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastToggleInventory();
@@ -214,7 +212,6 @@ public:
 	FORCEINLINE float GetAO_Yaw() const { return AO_Yaw;}
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch;}
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace;}
-	FORCEINLINE EPlayerMovementState GetPlayerMovementState() const { return PlayerMovementState; }
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
 	FORCEINLINE UStatusEffectComponent* GetStatusEffectComponent() const { return StatusEffect; }

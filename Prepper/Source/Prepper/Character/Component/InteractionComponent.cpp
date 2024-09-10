@@ -21,7 +21,7 @@ void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 }
 
 
-void UInteractionComponent::SetPlayer(APlayerCharacter* Target)
+void UInteractionComponent::SetCharacter(ABaseCharacter* Target)
 {
 	Character = Target;
 }

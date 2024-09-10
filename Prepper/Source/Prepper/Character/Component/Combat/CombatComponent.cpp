@@ -54,7 +54,6 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, EquippedRangeWeapon);
 	DOREPLIFETIME(UCombatComponent, EquippedMeleeWeapon);
@@ -75,56 +74,15 @@ void UCombatComponent::BeginPlay()
 	DefaultFOV = AimingEffect == nullptr ? 0 : AimingEffect->GetDefaultFieldOfView();
 }
 
-// Observer Pattern
-
-void UCombatComponent::Attach(IObserver<GaugeValue<int>>* Observer)
-{
-	Observers.insert(Observer);
-
-	if (!EquippedWeapon)
-	{
-		Observer->Update(FGaugeInt(-1, -1));
-		return;
-	}
-	
-	int WeaponAmmo = -1;
-	
-	if (EquippedWeapon)
-	{
-		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
-	}
-	Observer->Update(FGaugeInt(WeaponAmmo, CarriedAmmo));
-}
-
-void UCombatComponent::Detach(IObserver<GaugeValue<int>>* Observer)
-{
-	Observers.erase(Observer);
-}
-
-void UCombatComponent::Notify()
-{
-	int WeaponAmmo = -1;
-	
-	if (EquippedWeapon)
-	{
-		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
-	}
-
-	const FGaugeInt Value(WeaponAmmo, CarriedAmmo);
-	std::ranges::for_each(Observers, [&](IObserver<GaugeValue<int>>* Observer) {
-		Observer->Update(Value);
-	});
-}
-
 // Equipped Weapon
 
 void UCombatComponent::ActionEnd()
 {
 	if (EquippedRangeWeapon == nullptr) return;
 	
-	if (EquippedRangeWeapon->bAutoReload && EquippedRangeWeapon->GetLeftAmmo() <= 0)
+	if (EquippedRangeWeapon->bAutoReload)
 	{
-		Reload();
+		ReloadEmptyWeapon();
 	}
 	if (EquippedRangeWeapon->bAutomatic)
 	{
@@ -135,6 +93,11 @@ void UCombatComponent::ActionEnd()
 
 void UCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 {
+	if (WeaponToEquip == nullptr)
+	{
+		SwapWeapons();
+		return;
+	}
 	if (Character == nullptr || WeaponToEquip == nullptr) return;
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	WeaponToEquip->SetActorEnableCollision(false);
@@ -203,6 +166,7 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 void UCombatComponent::SwapWeapons()
 {
 	if (CombatState != ECombatState::ECS_Unoccupied || Character == nullptr || !Character->HasAuthority()) return;
+	if (EquippedWeapon == nullptr || SecondaryWeapon == nullptr) return;
 	MulticastSwapWeapon();
 }
 void UCombatComponent::MulticastSwapWeapon_Implementation()
@@ -325,8 +289,8 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	
 	if (!Character->IsLocallyControlled()) return;
 	
-	EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
-	Character->SetPlayerMovementState(NewState);
+	EMovementState NewState = bIsAiming ? EMovementState::EMS_Aim : EMovementState::EMS_Idle;
+	Character->SetMovementState(NewState);
 
 	if (AimingEffect == nullptr) return;
 	
@@ -351,8 +315,8 @@ void UCombatComponent::ServerSetAiming(bool bIsAiming)
 	Super::ServerSetAiming_Implementation(bIsAiming);
 	if (Character)
 	{
-		EPlayerMovementState NewState = bIsAiming ? EPlayerMovementState::EPMS_Aim : EPlayerMovementState::EPMS_Idle;
-		Character->SetPlayerMovementState(NewState);
+		EMovementState NewState = bIsAiming ? EMovementState::EMS_Aim : EMovementState::EMS_Idle;
+		Character->SetMovementState(NewState);
 	}
 }
 
@@ -429,12 +393,6 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 	}
 }
 
-void UCombatComponent::SetPlayer(APlayerCharacter* Target)
-{
-	OwnerCharacter = Target;
-	Character = Target;
-}
-
 void UCombatComponent::TargetElim()
 {
 	Super::TargetElim();
@@ -495,6 +453,18 @@ void UCombatComponent::DropEquippedWeaponByElim()
 	{
 		Character->MulticastElim();
 	}
+}
+
+FGaugeInt UCombatComponent::GetAmmoShow()
+{
+	int WeaponAmmo = -1;
+	
+	if (EquippedWeapon)
+	{
+		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
+	}
+		
+	return FGaugeInt(WeaponAmmo, CarriedAmmo);
 }
 
 // Ammo

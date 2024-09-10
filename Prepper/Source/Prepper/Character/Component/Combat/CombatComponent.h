@@ -3,14 +3,14 @@
 #include "CoreMinimal.h"
 #include "AimingEffect.h"
 #include "BaseCombatComponent.h"
-#include "../PlayerComponent.h"
+#include "../CharacterComponent.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UCombatComponent : public UBaseCombatComponent, public ISubject<GaugeValue<int>>
+class PREPPER_API UCombatComponent : public UBaseCombatComponent
 {
 	GENERATED_BODY()
 public:
@@ -23,15 +23,6 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	
-// Observer Pattern
-private:
-	std::pmr::set<IObserver<GaugeValue<int>>*> Observers;
-
-public:
-	virtual void Attach(IObserver<GaugeValue<int>>* Observer) override;
-	virtual void Detach(IObserver<GaugeValue<int>>* Observer) override;
-	virtual void Notify() override;
 	
 	// Equip Weapon
 private:
@@ -86,9 +77,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* MeleeWeaponMontage;
-
-	//Auto Fire
-	FTimerHandle FireTimer;
 	
 	bool bFireButtonPressed;
 
@@ -135,16 +123,12 @@ private:
 	
 // Targeting
 protected:
-	
-	UPROPERTY()
-	APlayerCharacter* OwnerCharacter;
 	UPROPERTY()
 	APrepperHUD* HUD;
 	
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 
 public:
-	virtual void SetPlayer(APlayerCharacter* Target) override;
 	virtual void TargetElim() override;
 
 	UFUNCTION(NetMulticast, Reliable)
@@ -165,6 +149,8 @@ private:
 protected:
 	UPROPERTY(EditAnywhere)
 	int32 MaxCarriedAmmo = 500;
+	
+	virtual FGaugeInt GetAmmoShow() override;
 
 public:
 	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);

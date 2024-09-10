@@ -29,6 +29,8 @@ public:
 	virtual void Fire() PURE_VIRTUAL();
 	virtual void FireTrigger(bool IsTrigger) PURE_VIRTUAL();
 	
+	virtual void SetAiming(bool bIsAiming) PURE_VIRTUAL();
+	
 	virtual void Reload() PURE_VIRTUAL();
 	
 };

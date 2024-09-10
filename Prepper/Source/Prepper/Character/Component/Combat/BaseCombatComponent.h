@@ -1,25 +1,41 @@
 #pragma once
 
+#include <set>
+
 #include "CoreMinimal.h"
-#include "../PlayerComponent.h"
+#include "../CharacterComponent.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/Character/BaseCharacter.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/WeaponHandler.h"
+#include "Prepper/_Base/ObserverPattern/Subject.h"
+#include "Prepper/_Base/Util/GaugeInt.h"
+#include "Prepper/_Base/Util/GaugeValue.h"
 #include "BaseCombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UBaseCombatComponent : public UActorComponent,
-									public IWeaponHandler, public IPlayerComponent
+									public IWeaponHandler, public ICharacterComponent, public ISubject<GaugeValue<int>>
 {
 	GENERATED_BODY()
+	friend class ABaseCharacter;
+	friend class APlayerCharacter;
 // Actor
 public:	
 	UBaseCombatComponent();
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+// Observer Pattern
+private:
+	std::pmr::set<IObserver<GaugeValue<int>>*> Observers;
+	virtual FGaugeInt GetAmmoShow() { return FGaugeInt(0, 0); }
 	
-	// Equip Weapon
+public:
+	virtual void Attach(IObserver<GaugeValue<int>>* Observer) override;
+	virtual void Detach(IObserver<GaugeValue<int>>* Observer) override;
+	virtual void Notify() override;
+	
+// Equip Weapon
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeaponActor* EquippedWeapon;
@@ -34,12 +50,15 @@ protected:
 	void OnRep_EquippedWeapon() const;
 	
 protected:
-	virtual void ActionEnd() {};
+	virtual void ActionEnd();
 // Fire
 protected:
 	//Auto Fire
 	FTimerHandle ActionTimer;
 	bool bFireButtonPressed;
+	
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	UAnimMontage* AttackMontage;
 
 public:
 	virtual void FireTrigger(bool IsTrigger) override;
@@ -88,7 +107,7 @@ protected:
 	bool bAiming;
 	
 public:
-	virtual void SetAiming(bool bIsAiming);
+	virtual void SetAiming(bool bIsAiming) override;
 
 private:
 	UFUNCTION()
@@ -107,7 +126,7 @@ protected:
 	TArray<FVector_NetQuantize> HitTargets;
 
 public:
-	virtual void SetPlayer(APlayerCharacter* Target) override;
+	virtual void SetCharacter(ABaseCharacter* Target) override;
 	virtual void TargetElim() override;
 	
 // Combat State

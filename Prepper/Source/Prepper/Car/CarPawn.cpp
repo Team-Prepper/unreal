@@ -143,7 +143,7 @@ void ACarPawn::EPressed()
 	Controller->Possess(Driver);
 	Driver->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Driver->SetActorLocation(GetActorLocation() + FVector(0, 0, 200));
-	Driver->SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
+	Driver->SetMovementState(EMovementState::EMS_Idle);
 }
 void ACarPawn::RPressed() {}
 
@@ -171,7 +171,7 @@ void ACarPawn::Interaction(APlayerCharacter* Target)
 	Driver = Target;
 
 	Target->Controller->Possess(this);
-	Target->SetPlayerMovementState(EPlayerMovementState::EPMS_Seat);
+	Target->SetMovementState(EMovementState::EMS_Seat);
 	
 	MulticastInteraction(Target);
 }

@@ -24,12 +24,17 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(100.f);
+
+	CombatComp = CreateDefaultSubobject<UBaseCombatComponent>(TEXT("CombatComponent"));
+	CombatComp->SetIsReplicated(true);
+	
 }
 
 void AEnemyBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	EnemyController = Cast<AAIController>(GetController());
+	CombatComp->SetCharacter(this);
 	SpawnWeaponActor();
 	if (PawnSensing)
 	{
@@ -42,19 +47,40 @@ void AEnemyBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if(IsElimed()) return;
-	if (EnemyState > EEnemyState::EES_Patrolling)
+	
+	// 공격사거리 안에서 공격이 아닐떄 -> 공격!
+	if (InTargetRange(CombatTarget, AttackRadius))
 	{
-		CheckCombatTarget();
-	}
-	else
-	{
-		CheckPatrolTarget();
-	}
-}
+		//UE_LOG(LogTemp, Warning, TEXT("CODE : zombie Attack"));
+		AttackTrigger(true);
 
-void AEnemyBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+		//UE_LOG(LogTemp, Warning, TEXT("%hs"), CombatComp == nullptr ? "True":"False");
+		return;
+	}
+
+	AttackTrigger(false);
+
+	if (InTargetRange(CombatTarget, CombatRadius))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
+		EnemyState = EEnemyState::EES_Chasing;
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
+		MoveToTarget(CombatTarget);
+		return;
+	}
+
+	if (PatrolTarget != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
+		CombatTarget = nullptr;
+		EnemyState = EEnemyState::EES_Patrolling;
+		GetCharacterMovement()->MaxWalkSpeed = 300.f;
+		MoveToTarget(PatrolTarget);
+	}
+
+	CheckPatrolTarget();
+	
+	return;
 }
 
 void AEnemyBaseCharacter::CheckPatrolTarget()
@@ -66,39 +92,6 @@ void AEnemyBaseCharacter::CheckPatrolTarget()
 		const float WaitTime = FMath::RandRange(WaitMin, WaitMax);
 		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyBaseCharacter::PatrolTimerFinished, WaitTime);
 	}
-}
-
-void AEnemyBaseCharacter::CheckCombatTarget()
-{
-	if(IsElimed()) return;
-	/* ees가 attack이거나 chase 일때만 실행 */
-
-	// 공격사거리 안에서 공격이 아닐떄 -> 공격!
-	if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_Attacking)
-	{
-		EnemyState = EEnemyState::EES_Attacking;
-		UE_LOG(LogTemp, Warning, TEXT("CODE : zombie Attack"));
-		PawnAttack();
-	}
-	// 공격사거리보다는 멀고 탐지사거리보다는 가까운데 
-	// 감지 사거리 내에서 순찰중일때
-	else if (!InTargetRange(CombatTarget, AttackRadius) && InTargetRange(CombatTarget, CombatRadius) && EnemyState < EEnemyState::EES_Chasing)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
-		EnemyState = EEnemyState::EES_Chasing;
-		GetCharacterMovement()->MaxWalkSpeed = 600.f;
-		MoveToTarget(CombatTarget);
-	}
-	else if (!InTargetRange(CombatTarget, CombatRadius))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
-		CombatTarget = nullptr;
-		EnemyState = EEnemyState::EES_Patrolling;
-		GetCharacterMovement()->MaxWalkSpeed = 300.f;
-		MoveToTarget(PatrolTarget);
-	}
-	
-	
 }
 
 void AEnemyBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -166,7 +159,7 @@ void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 	if(IsElimed()) return;
 	if (!SeenPawn->ActorHasTag(FName("PlayerCharacter"))) return; 
 	// 엑터의 태그가 플레이어일때만
-	UE_LOG(LogTemp, Warning, TEXT("zombie SEE -> chasing"));
+	//UE_LOG(LogTemp, Warning, TEXT("zombie SEE -> chasing"));
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	CombatTarget = SeenPawn;
@@ -223,41 +216,6 @@ void AEnemyBaseCharacter::MulticastElim()
 	Super::MulticastElim();
 }
 
-
-void AEnemyBaseCharacter::PawnAttack()
-{
-	if(IsElimed()) return;
-	if(!bCanAttack) return;
-	UE_LOG(LogTemp, Warning, TEXT("zombie Attack"));
-	bCanAttack = false;
-	GetWorldTimerManager().SetTimer(AttackTimerHandle, this, &AEnemyBaseCharacter::AttackCoolDown, AttackCoolTime);
-	PlayAttackMontage();
-	
-	if(EquippedWeapon)
-	{
-		HitTargets = EquippedWeapon->GetTarget(HitTarget);
-		EquippedWeapon->Fire(HitTargets);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Weapon"));
-	}
-}
-
-void AEnemyBaseCharacter::PlayAttackMontage()
-{
-	MulticastPlayAttackMontage();
-}
-
-void AEnemyBaseCharacter::MulticastPlayAttackMontage_Implementation()
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if (AnimInstance && AttackMontage)
-	{
-		AnimInstance->Montage_Play(AttackMontage);
-	}
-}
-
 void AEnemyBaseCharacter::SpawnWeaponActor()
 {
 	if(!HasAuthority()) return;
@@ -270,6 +228,7 @@ void AEnemyBaseCharacter::SpawnWeaponActor()
 	FRotator Rotation = GetActorRotation();
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this; // Setting the owner
+
 	EquippedWeapon = World->SpawnActor<AWeaponActor>(WeaponActorClass, Location, Rotation, SpawnParams);
 
 	if (!EquippedWeapon) return;
@@ -278,12 +237,8 @@ void AEnemyBaseCharacter::SpawnWeaponActor()
 	EquippedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
 	EquippedWeapon->SetOwner(this);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	CombatComp->EquipWeapon(EquippedWeapon);
+	
 	AttachActorAtSocket(FName("MeleeWeaponSocket"),EquippedWeapon);
-}
-
-void AEnemyBaseCharacter::AttackCoolDown()
-{
-	bCanAttack = true;
-	EnemyState = EEnemyState::EES_Patrolling;
-	CheckCombatTarget();
+	
 }

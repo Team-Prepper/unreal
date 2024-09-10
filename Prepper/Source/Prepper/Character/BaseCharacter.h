@@ -3,8 +3,10 @@
 #include <set>
 
 #include "CoreMinimal.h"
+#include "Component/CharacterComponent.h"
+#include "Component/ElimDissolveComponent.h"
+#include "Component/Combat/BaseCombatComponent.h"
 #include "GameFramework/Character.h"
-#include "ElimEvent/ElimDissolveComponent.h"
 #include "Prepper/Interfaces/Damageable.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
@@ -12,14 +14,14 @@
 
 
 UENUM(BlueprintType)
-enum class EPlayerMovementState : uint8
+enum class EMovementState : uint8
 {
-	EPMS_Seat UMETA(DisplayName = "Seat"),
-	EPMS_Aim UMETA(DisplayName = "Aim"),
-	EPMS_Sprint UMETA(DisplayName = "Sprint"),
-	EPMS_Idle UMETA(DisplayName = "Idle"),
+	EMS_Seat UMETA(DisplayName = "Seat"),
+	EMS_Aim UMETA(DisplayName = "Aim"),
+	EMS_Sprint UMETA(DisplayName = "Sprint"),
+	EMS_Idle UMETA(DisplayName = "Idle"),
     
-	EPMS_MAX UMETA(DisplayName = "Default Max")
+	EMS_MAX UMETA(DisplayName = "Default Max")
 };
 
 UCLASS()
@@ -34,26 +36,20 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
+	TArray<ICharacterComponent*> CharacterComponents;
+	
 private:
 	std::pmr::set<IObserver<GaugeValue<float>>*> Observers;
+public:
+	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
+	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
+	virtual void Notify() override;
 protected:
-	FTimerHandle ElimTimer;
-	
-	UPROPERTY(EditDefaultsOnly)
-	float ElimDelay = 3.f;
-	
 	/* 기본 변수 */
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth = 100.f;
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float CurrentHealth = 100.f;
-	
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float WalkSpeed = 600;
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float SprintSpeed = 900;
-	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
-	float AimMovementSpeed = 400.f;
 	
 	/* 데미지 처리 */
 	UPROPERTY(EditAnywhere, Category = Combat)
@@ -65,10 +61,6 @@ protected:
 	UAnimMontage* ElimMontage;
 	
 public:
-	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
-	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
-	virtual void Notify() override;
-
 	virtual void Elim();
 	FORCEINLINE bool IsElimed() const { return CurrentHealth <= 0; }
 	
@@ -78,23 +70,32 @@ public:
 	UFUNCTION()
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 	
-	// Movement
+// Movement
+protected:
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
+	float WalkSpeed = 600;
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
+	float SprintSpeed = 900;
+	UPROPERTY(EditAnywhere, Category = "Player Movement Speed")
+	float AimMovementSpeed = 400.f;
+	
+	UPROPERTY(Replicated)
+	EMovementState MovementState;
+	
 public:
 	float CoefficientMovementSpeed = 1;
-	void SetPlayerMovementState(const EPlayerMovementState& State);
+	void SetMovementState(const EMovementState& State);
+	FORCEINLINE EMovementState GetMovementState() const { return MovementState; }
 	
 protected:
 	UPROPERTY()
 	class ADeathMatchPlayerState* DeathMatchPlayerState;
 	
-	UPROPERTY(Replicated)
-	EPlayerMovementState PlayerMovementState;
-	
-	void ConvertPlayerMovementState(const EPlayerMovementState& State);
+	void ConvertMovementState(const EMovementState& State);
 	UFUNCTION(Server, Reliable)
-	void ServerConvertPlayerMovementState(const EPlayerMovementState& State);
+	void ServerConvertMovementState(const EMovementState& State);
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastConvertPlayerMovementState(const EPlayerMovementState& State);
+	void MulticastConvertMovementState(const EMovementState& State);
 
 	virtual void SeatToggle(bool Seat);
 	
@@ -105,4 +106,12 @@ protected:
 public:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void MulticastElim();
+// Attack
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBaseCombatComponent> CombatComp;
+public:
+	virtual void AttackTrigger(const bool IsTrigger);
+	virtual void Reload();
+	virtual void AimTrigger(const bool IsTrigger);
 };

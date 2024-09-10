@@ -33,6 +33,40 @@ void UBaseCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(UBaseCombatComponent, CombatState);
 }
 
+
+// Observer Pattern
+
+void UBaseCombatComponent::Attach(IObserver<GaugeValue<int>>* Observer)
+{
+	Observers.insert(Observer);
+
+	if (!EquippedWeapon)
+	{
+		Observer->Update(FGaugeInt(-1, -1));
+		return;
+	}
+	Observer->Update(GetAmmoShow());
+}
+
+void UBaseCombatComponent::Detach(IObserver<GaugeValue<int>>* Observer)
+{
+	Observers.erase(Observer);
+}
+
+void UBaseCombatComponent::Notify()
+{
+	int WeaponAmmo = -1;
+	
+	if (EquippedWeapon)
+	{
+		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
+	}
+
+	const FGaugeInt Value = GetAmmoShow();
+	std::ranges::for_each(Observers, [&](IObserver<GaugeValue<int>>* Observer) {
+		Observer->Update(Value);
+	});
+}
 // Equipped Weapon
 void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 {
@@ -42,7 +76,8 @@ void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	
 	DropEquippedWeapon();
-	WeaponToEquip->SetActorEnableCollision(false);
+	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetActorEnableCollision(false);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 	ReloadEmptyWeapon();
 }
@@ -69,6 +104,12 @@ void UBaseCombatComponent::OnRep_EquippedWeapon() const
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+}
+
+void UBaseCombatComponent::ActionEnd()
+{
+	ReloadEmptyWeapon();
+	Fire();
 }
 
 // Fire
@@ -118,8 +159,9 @@ void UBaseCombatComponent::LocalFireWeapon(const TArray<FVector_NetQuantize>& Tr
 	
 	if (CombatState != ECombatState::ECS_Unoccupied) return;
 	
-	EquippedWeapon->Fire(TraceHitTargets);	
-
+	EquippedWeapon->Fire(TraceHitTargets);
+	Character->PlayAnim(AttackMontage);
+	
 }
 
 void UBaseCombatComponent::ServerFireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets) const
@@ -208,7 +250,7 @@ void UBaseCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
 	bAiming = bIsAiming;
 }
 
-void UBaseCombatComponent::SetPlayer(APlayerCharacter* Target)
+void UBaseCombatComponent::SetCharacter(ABaseCharacter* Target)
 {
 	Character = Target;
 }

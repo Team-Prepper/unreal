@@ -29,7 +29,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	ElimEvent->SetTarget(this);
+	ElimEvent->SetCharacter(this);
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &IDamageable::DynamicDamage);
@@ -116,50 +116,67 @@ void ABaseCharacter::OnRep_Health()
 	Notify();
 }
 
+void ABaseCharacter::AttackTrigger(const bool IsTrigger)
+{
+	if (CombatComp == nullptr) return;
+	CombatComp->FireTrigger(IsTrigger);
+}
+
+void ABaseCharacter::Reload()
+{
+	if (CombatComp == nullptr) return;
+	CombatComp->Reload();
+}
+
+void ABaseCharacter::AimTrigger(const bool IsTrigger)
+{
+	if (CombatComp == nullptr) return;
+	CombatComp->SetAiming(IsTrigger);
+}
+
 void ABaseCharacter::Elim()
 {
 	MulticastElim();
 }
 
-void ABaseCharacter::SetPlayerMovementState(const EPlayerMovementState& State)
+void ABaseCharacter::SetMovementState(const EMovementState& State)
 {
-	if(!(IsLocallyControlled() || HasAuthority())) return;
-	ServerConvertPlayerMovementState(State);
+	if(!IsLocallyControlled() && !HasAuthority()) return;
+	ServerConvertMovementState(State);
 }
 
-void ABaseCharacter::ServerConvertPlayerMovementState_Implementation(const EPlayerMovementState& State)
+void ABaseCharacter::ServerConvertMovementState_Implementation(const EMovementState& State)
 {
 	if(!HasAuthority()) return;
-	MulticastConvertPlayerMovementState(State);
+	MulticastConvertMovementState(State);
 }
 
-void ABaseCharacter::MulticastConvertPlayerMovementState_Implementation(const EPlayerMovementState& State)
+void ABaseCharacter::MulticastConvertMovementState_Implementation(const EMovementState& State)
 {
-	if(HasAuthority()) return;
-	ConvertPlayerMovementState(State);
+	ConvertMovementState(State);
 }
 
-void ABaseCharacter::ConvertPlayerMovementState(const EPlayerMovementState& State)
+void ABaseCharacter::ConvertMovementState(const EMovementState& State)
 {
-	if(PlayerMovementState == EPlayerMovementState::EPMS_Seat)
+	if(State == EMovementState::EMS_Seat)
 	{
 		SeatToggle(false);
 	}
 	
-	PlayerMovementState = State;
+	MovementState = State;
 	
-	switch (PlayerMovementState)
+	switch (MovementState)
 	{
-	case EPlayerMovementState::EPMS_Seat:
+	case EMovementState::EMS_Seat:
 		SeatToggle(true);
 		break;
-	case EPlayerMovementState::EPMS_Aim:
+	case EMovementState::EMS_Aim:
 		GetCharacterMovement()->MaxWalkSpeed = AimMovementSpeed * CoefficientMovementSpeed;
 		break;
-	case EPlayerMovementState::EPMS_Sprint:
+	case EMovementState::EMS_Sprint:
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed * CoefficientMovementSpeed;
 		break;
-	case EPlayerMovementState::EPMS_Idle:
+	case EMovementState::EMS_Idle:
 		GetCharacterMovement()->MaxWalkSpeed = WalkSpeed * CoefficientMovementSpeed;
 		break;
 	default:
@@ -170,7 +187,7 @@ void ABaseCharacter::ConvertPlayerMovementState(const EPlayerMovementState& Stat
 void ABaseCharacter::MulticastElim_Implementation()
 {
 	PlayAnim(ElimMontage);
-	ElimEvent->StartElim();
+	ElimEvent->TargetElim();
 
 	// Disable Movement
 	GetCharacterMovement()->DisableMovement();

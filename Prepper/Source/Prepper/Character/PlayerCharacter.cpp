@@ -44,20 +44,22 @@ APlayerCharacter::APlayerCharacter()
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
-
+	
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	Combat->SetIsReplicated(true);
-	PlayerComponents.Add(Combat);
+	
+	CombatComp = Combat;
+	CharacterComponents.Add(CombatComp);
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
 	InteractionComponent->SetIsReplicated(true);
-	PlayerComponents.Add(InteractionComponent);
+	CharacterComponents.Add(InteractionComponent);
 	
 	Inventory = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
 	Inventory->SetIsReplicated(true);
 
 	StatusEffect = CreateDefaultSubobject<UStatusEffectComponent>(TEXT("StatusEffectComponet"));
-	PlayerComponents.Add(StatusEffect);
+	CharacterComponents.Add(StatusEffect);
 	
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -82,9 +84,9 @@ void APlayerCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 	
-	for (int i = 0; i < PlayerComponents.Num(); i++)
+	for (int i = 0; i < CharacterComponents.Num(); i++)
 	{
-		PlayerComponents[i]->SetPlayer(this);
+		CharacterComponents[i]->SetCharacter(this);
 	}
 }
 
@@ -96,7 +98,7 @@ void APlayerCharacter::Tick(float DeltaTime)
 	HideCamIfCharacterClose();
 	
 	PollInit();
-	if (PlayerMovementState == EPlayerMovementState::EPMS_Sprint)
+	if (MovementState == EMovementState::EMS_Sprint)
 	{
 		MakeNoise(1, nullptr, FVector::ZeroVector);
 	}
@@ -109,9 +111,9 @@ void APlayerCharacter::Destroyed()
 	ADeathMatchGameMode* DeathMatchGameMode = Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this));
 	bool bMatchNotInProgress = DeathMatchGameMode && DeathMatchGameMode->GetMatchState() != MatchState::InProgress;
 
-	if(Combat && Combat->EquippedWeapon && bMatchNotInProgress)
+	if(CombatComp && CombatComp->EquippedWeapon && bMatchNotInProgress)
 	{
-		//Combat->EquippedWeapon->Destroy();
+		//CombatComp->EquippedWeapon->Destroy();
 	}
 }
 
@@ -138,19 +140,19 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 void APlayerCharacter::Elim()
 {
-	for (int i = 0; i < PlayerComponents.Num(); i++)
+	for (int i = 0; i < CharacterComponents.Num(); i++)
 	{
-		PlayerComponents[i]->TargetElim();
+		CharacterComponents[i]->TargetElim();
 	}
 	
 	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 	PrepperPlayerController->ResetPlayer();
-	
-	bool bHideSniperScope = IsLocallyControlled() && 
-		Combat && 
-		Combat->bAiming && 
-		Combat->EquippedWeapon && 
-		Combat->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
+
+	const bool bHideSniperScope = IsLocallyControlled() && 
+		CombatComp && 
+		CombatComp->bAiming && 
+		CombatComp->EquippedWeapon && 
+		CombatComp->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
 	
 	if (bHideSniperScope)
 	{
@@ -179,7 +181,7 @@ void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorContro
 
 void APlayerCharacter::PlayHitReactMontage()
 {
-	if(Combat == nullptr || Combat->EquippedWeapon == nullptr) return;
+	if(CombatComp == nullptr || CombatComp->EquippedWeapon == nullptr) return;
 	ABaseCharacter::PlayHitReactMontage();
 }
 
@@ -211,9 +213,9 @@ void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Equip Weapon"));
 	if(bDisableGamePlay) return;
-	if(Combat)
+	if(CombatComp)
 	{
-		Combat->EquipWeapon(Weapon);
+		CombatComp->EquipWeapon(Weapon);
 	}
 }
 
@@ -335,18 +337,18 @@ void APlayerCharacter::ShiftPressed()
 	if(StatusEffect && StatusEffect->StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("THIRSTY : Can't Sprint"));
-		SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
+		SetMovementState(EMovementState::EMS_Idle);
 		return;
 	}
-	if(PlayerMovementState == EPlayerMovementState::EPMS_Sprint) return;
+	if(MovementState == EMovementState::EMS_Sprint) return;
 	
-	SetPlayerMovementState(EPlayerMovementState::EPMS_Sprint);
+	SetMovementState(EMovementState::EMS_Sprint);
 }
 
 void APlayerCharacter::ShiftReleased()
 {
 	if(bDisableGamePlay) return;
-	SetPlayerMovementState(EPlayerMovementState::EPMS_Idle);
+	SetMovementState(EMovementState::EMS_Idle);
 }
 
 void APlayerCharacter::EPressed()
@@ -362,10 +364,10 @@ void APlayerCharacter::EPressed()
 	}
 
 	/* Swap */
-	if (Combat)
+	if (CombatComp)
 	{
 		UE_LOG(LogTemp, Warning , TEXT("COMBAT COMP : SWAP"));
-		Combat->SwapWeapons();
+		CombatComp->EquipWeapon(nullptr);
 	}
 
 }
@@ -373,10 +375,7 @@ void APlayerCharacter::EPressed()
 void APlayerCharacter::RPressed()
 {
 	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->Reload();
-	}
+	Reload();
 }
 
 void APlayerCharacter::ControlPressed()
@@ -395,37 +394,25 @@ void APlayerCharacter::ControlPressed()
 void APlayerCharacter::MouseLeftPressed()
 {
 	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->FireTrigger(true);
-	}
+	AttackTrigger(true);
 }
 
 void APlayerCharacter::MouseLeftReleased()
 {
 	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->FireTrigger(false);
-	}
+	AttackTrigger(false);
 }
 
 void APlayerCharacter::MouseRightPressed()
 {
 	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->SetAiming(true);
-	}
+	AimTrigger(true);
 }
 
 void APlayerCharacter::MouseRightReleased()
 {
 	if(bDisableGamePlay) return;
-	if(Combat)
-	{
-		Combat->SetAiming(false);
-	}
+	AimTrigger(false);
 }
 
 void APlayerCharacter::ToggleInventory()
@@ -438,7 +425,7 @@ void APlayerCharacter::ToggleInventory()
 	MulticastToggleInventory();
 }
 
-void APlayerCharacter::SeatToggle(bool Seat)
+void APlayerCharacter::SeatToggle(const bool Seat)
 {
 	SetActorEnableCollision(!Seat);
 	SetActorHiddenInGame(Seat);
@@ -486,7 +473,7 @@ void APlayerCharacter::CalculateAO_Pitch()
 
 void APlayerCharacter::AimOffset(float DeltaTime)
 {
-	if(Combat && Combat->EquippedWeapon == nullptr) return;
+	if (CombatComp && CombatComp->EquippedWeapon == nullptr) return;
 
 	float Speed = CalculateSpeed();
 
@@ -540,7 +527,7 @@ void APlayerCharacter::TurnInPlace(float DeltaTime)
 
 void APlayerCharacter::SimProxiesTurn()
 {
-	if(Combat == nullptr || Combat -> EquippedWeapon == nullptr) return;
+	if(CombatComp == nullptr || CombatComp-> EquippedWeapon == nullptr) return;
 
 	bRotateRootBone = false;
 	float Speed = CalculateSpeed();
@@ -601,7 +588,7 @@ void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(APlayerCharacter, bDisableGamePlay);
-	DOREPLIFETIME(APlayerCharacter, PlayerMovementState);
+	DOREPLIFETIME(APlayerCharacter, MovementState);
 	DOREPLIFETIME(APlayerCharacter, EquippedBackpack);
 }
 
@@ -631,7 +618,7 @@ void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
 	SetEquipmentHidden(EquippedBackpack, visible);
 	
 	if(!Combat) return;
-	SetEquipmentHidden(Combat->EquippedWeapon, visible);
+	SetEquipmentHidden(CombatComp->EquippedWeapon, visible);
 	SetEquipmentHidden(Combat->SecondaryWeapon, visible);
 }
 
@@ -663,34 +650,34 @@ float APlayerCharacter::CalculateSpeed()
 
 bool APlayerCharacter::IsWeaponEquipped()
 {
-	return (Combat && Combat->EquippedWeapon);
+	return (CombatComp && CombatComp->EquippedWeapon);
 }
 
 bool APlayerCharacter::IsAiming()
 {
-	return (Combat && Combat->bAiming);
+	return GetMovementState() == EMovementState::EMS_Aim;
 }
 
 bool APlayerCharacter::IsLocallyReloading()
 {
-	if(Combat == nullptr) return false;
-	return Combat->bLocallyReload;
+	if(CombatComp == nullptr) return false;
+	return CombatComp->bLocallyReload;
 }
 
 AWeaponActor* APlayerCharacter::GetEquippedWeapon()
 {
-	if(Combat == nullptr) return nullptr;
-	return Combat->EquippedWeapon;
+	if(CombatComp == nullptr) return nullptr;
+	return CombatComp->EquippedWeapon;
 }
 
 FVector APlayerCharacter::GetHitTarget() const
 {
-	if(Combat == nullptr) return FVector();
-	return Combat->HitTarget;
+	if(CombatComp == nullptr) return FVector();
+	return CombatComp->HitTarget;
 }
 
 ECombatState APlayerCharacter::GetCombatState() const
 {
-	if (Combat == nullptr) return ECombatState::ECS_MAX;
-	return Combat->CombatState;
+	if(CombatComp == nullptr) return ECombatState::ECS_MAX;
+	return CombatComp->CombatState;
 }

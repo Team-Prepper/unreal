@@ -3,6 +3,7 @@
 
 #include "ElimDissolveComponent.h"
 #include "GameFramework/Character.h"
+#include "Prepper/Character/BaseCharacter.h"
 
 
 // Sets default values
@@ -11,7 +12,7 @@ UElimDissolveComponent::UElimDissolveComponent()
 	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
-void UElimDissolveComponent::StartElim()
+void UElimDissolveComponent::TargetElim()
 {
 	// Start Dissolve Effect
 	if (DissolveMaterialInstance)
@@ -46,7 +47,7 @@ void UElimDissolveComponent::StartElim()
 	
 }
 
-void UElimDissolveComponent::SetTarget(ACharacter* Target)
+void UElimDissolveComponent::SetCharacter(ABaseCharacter* Target)
 {
 	TargetCharacter = Target;
 }

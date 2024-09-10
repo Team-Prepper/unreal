@@ -51,7 +51,7 @@ void UStatusEffectComponent::Notify()
 
 }
 
-void UStatusEffectComponent::SetPlayer(APlayerCharacter* Target)
+void UStatusEffectComponent::SetCharacter(ABaseCharacter* Target)
 {
 	Character = Target;
 }
@@ -86,8 +86,8 @@ void UStatusEffectComponent::StatusTimerFinish()
 	if(!Character) return;
 	
 	StateEffectMap[EStatusEffect::ESE_HUNGRY] -= StatusEffectTickValue[0];
-	if(Character->GetPlayerMovementState() == EPlayerMovementState::EPMS_Sprint ||
-		Character->GetPlayerMovementState() == EPlayerMovementState::EPMS_Aim)
+	if(Character->GetMovementState() == EMovementState::EMS_Sprint ||
+		Character->GetMovementState() == EMovementState::EMS_Aim)
 	{
 		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
 	}

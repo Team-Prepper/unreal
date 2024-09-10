@@ -3,21 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ElimEvent.h"
 #include "Components/TimelineComponent.h"
-#include "UObject/Object.h"
-#include "ElimDissolveEvent.generated.h"
+#include "Prepper/Character/Component/CharacterComponent.h"
+#include "ElimDissolveComponent.generated.h"
 
-/**
- * 
- */
-UCLASS()
-class PREPPER_API UElimDissolveEvent : public UObject, public IElimEvent
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+class PREPPER_API UElimDissolveComponent : public UActorComponent, public ICharacterComponent
 {
 	GENERATED_BODY()
+	
 private:
 	UPROPERTY()
-	ACharacter* TargetCharacter;
+	ABaseCharacter* TargetCharacter;
 	
 	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* DissolveTimeline;
@@ -31,10 +28,14 @@ private:
 	// 블루 프린트에 세팅
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
+
 public:
-	virtual void StartElim() override;
-	virtual void SetTarget(ACharacter* Target) override;
+	// Sets default values for this pawn's properties
+	UElimDissolveComponent();
 	
+	virtual void SetCharacter(ABaseCharacter* Target) override;
+	virtual void TargetElim() override;
+
 	UFUNCTION()
 	void UpdateDissolveMaterial(const float DissolveValue);
 };

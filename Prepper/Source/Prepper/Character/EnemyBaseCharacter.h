@@ -24,10 +24,8 @@ public:
 	AEnemyBaseCharacter();
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
 	void CheckPatrolTarget();
-	void CheckCombatTarget();
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 
@@ -96,19 +94,7 @@ protected:
 
 	UPROPERTY()
 	bool bCanAttack = true;
-	
-	UFUNCTION()
-	void PawnAttack();
 
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	UAnimMontage* AttackMontage;
-
-	UFUNCTION()
-	void PlayAttackMontage();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastPlayAttackMontage();
-	
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void SpawnWeaponActor();
 
@@ -118,18 +104,7 @@ protected:
 	UPROPERTY(Replicated)
 	AWeaponActor* EquippedWeapon;
 
-	FVector HitTarget;
-	TArray<FVector_NetQuantize> HitTargets;
-
 	UPROPERTY()
 	AActor* CombatTarget;
-
-	FTimerHandle AttackTimerHandle;
-
-	UPROPERTY(EditAnywhere)
-	float AttackCoolTime = 2.f;
-
-	UFUNCTION()
-	void AttackCoolDown();
 	
 };
