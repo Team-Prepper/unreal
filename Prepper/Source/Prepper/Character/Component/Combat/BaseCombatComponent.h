@@ -14,7 +14,7 @@
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UBaseCombatComponent : public UActorComponent,
-									public IWeaponHandler, public ICharacterComponent, public ISubject<GaugeValue<int>>
+									 public IWeaponHandler, public ICharacterComponent, public ISubject<GaugeValue<int>>
 {
 	GENERATED_BODY()
 	friend class ABaseCharacter;
@@ -88,6 +88,10 @@ protected:
 	
 public:
 	virtual void Reload() override;
+	virtual void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
+	{
+		
+	}
 	void HandleReload() const;
 	
 protected:

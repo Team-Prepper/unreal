@@ -26,7 +26,6 @@ class PREPPER_API APlayerCharacter : public ABaseCharacter,
 // Actor
 public:
 	APlayerCharacter();
-	virtual void PostInitializeComponents() override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void Destroyed() override;
 
@@ -213,7 +212,7 @@ public:
 	FORCEINLINE float GetAO_Pitch() const { return AO_Pitch;}
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace;}
 	FORCEINLINE bool ShouldRotateRootBone() const { return bRotateRootBone; }
-	FORCEINLINE UCombatComponent* GetCombatComponent() const { return Combat; }
+	FORCEINLINE UBaseCombatComponent* GetCombatComponent() const { return CombatComp; }
 	FORCEINLINE UStatusEffectComponent* GetStatusEffectComponent() const { return StatusEffect; }
 	FORCEINLINE bool GetDisableGamePlay() const { return bDisableGamePlay; }
 	

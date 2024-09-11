@@ -131,9 +131,11 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponActor* WeaponToEquip)
 void UCombatComponent::EquipSecondaryWeapon(AWeaponActor* WeaponToEquip)
 {
 	if (WeaponToEquip == nullptr) return;
+	
 	SecondaryWeapon = WeaponToEquip;
 	SecondaryWeapon->SetOwner(Character);
 	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	SecondaryWeapon->SetWeaponHandler(this);
 }
 
 void UCombatComponent::DropEquippedWeapon()
@@ -154,11 +156,12 @@ void UCombatComponent::SetWeaponType()
 }
 void UCombatComponent::OnRep_SecondaryWeapon()
 {
-	if (SecondaryWeapon && Character)
-	{
-		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
-		SecondaryWeapon->SetWeaponHandler(this);
-	}
+	if (!EquippedWeapon) return;
+	if (!Character) return;
+	
+	SecondaryWeapon->SetOwner(Character);
+	SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Holstered);
+	SecondaryWeapon->SetWeaponHandler(this);
 }
 
 // Swap Weapon
@@ -398,60 +401,7 @@ void UCombatComponent::TargetElim()
 	Super::TargetElim();
 	if(SecondaryWeapon)
 	{
-		EquippedWeapon->OnDroppedWeapon.AddDynamic(this, &UCombatComponent::DropEquippedWeaponByElim);
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-	}
-}
-
-void UCombatComponent::MulticastDropWeapon_Implementation()
-{
-	if(EquippedWeapon)
-	{
-		EquippedWeapon->OnDroppedWeapon.AddDynamic(this, &UCombatComponent::DropEquippedWeaponByElim);
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-	}
-	if(SecondaryWeapon)
-	{
-		EquippedWeapon->OnDroppedWeapon.AddDynamic(this, &UCombatComponent::DropEquippedWeaponByElim);
-		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-	}
-}
-
-void UCombatComponent::DropEquippedWeaponByElim()
-{
-	bool bEquippedWeaponDropped = false;
-	bool bSecondaryWeaponDropped = false;
-
-	if (EquippedWeapon)
-	{
-		if (EquippedWeapon->GetWeaponState() == EWeaponState::EWS_Dropped)
-		{
-			bEquippedWeaponDropped = true;
-			EquippedWeapon = nullptr;
-		}
-	}
-	else
-	{
-		bEquippedWeaponDropped = true;
-		bSecondaryWeaponDropped = true;
-	}
-
-	if (SecondaryWeapon)
-	{
-		if (SecondaryWeapon->GetWeaponState() == EWeaponState::EWS_Dropped)
-		{
-			bSecondaryWeaponDropped = true;
-			SecondaryWeapon = nullptr;
-		}
-	}
-	else
-	{
-		bSecondaryWeaponDropped = true;
-	}
-
-	if (bEquippedWeaponDropped && bSecondaryWeaponDropped)
-	{
-		Character->MulticastElim();
 	}
 }
 

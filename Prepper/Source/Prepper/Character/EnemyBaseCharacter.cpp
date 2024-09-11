@@ -27,6 +27,7 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 
 	CombatComp = CreateDefaultSubobject<UBaseCombatComponent>(TEXT("CombatComponent"));
 	CombatComp->SetIsReplicated(true);
+	CharacterComponents.Add(CombatComp);
 	
 }
 
@@ -34,8 +35,9 @@ void AEnemyBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	EnemyController = Cast<AAIController>(GetController());
-	CombatComp->SetCharacter(this);
+	
 	SpawnWeaponActor();
+	
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyBaseCharacter::PawnSeen);
@@ -97,8 +99,6 @@ void AEnemyBaseCharacter::CheckPatrolTarget()
 void AEnemyBaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AEnemyBaseCharacter, EquippedWeapon);
 }
 
 void AEnemyBaseCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
@@ -193,27 +193,7 @@ void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, f
 
 void AEnemyBaseCharacter::Elim()
 {
-	if(EquippedWeapon)
-	{
-		ElimDroppedWeapon();
-		return;
-	}
-	Super::Elim(); // MulticastElim()
-}
-
-void AEnemyBaseCharacter::ElimDroppedWeapon_Implementation()
-{
-	if(EquippedWeapon)
-	{
-		EquippedWeapon->OnDroppedWeapon.AddDynamic(this, &AEnemyBaseCharacter::MulticastElim);
-		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-		EquippedWeapon = nullptr;
-	}
-}
-
-void AEnemyBaseCharacter::MulticastElim()
-{
-	Super::MulticastElim();
+	Super::Elim();
 }
 
 void AEnemyBaseCharacter::SpawnWeaponActor()
@@ -229,16 +209,12 @@ void AEnemyBaseCharacter::SpawnWeaponActor()
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this; // Setting the owner
 
-	EquippedWeapon = World->SpawnActor<AWeaponActor>(WeaponActorClass, Location, Rotation, SpawnParams);
+	const TObjectPtr<AWeaponActor> EquippedWeapon =
+		World->SpawnActor<AWeaponActor>(WeaponActorClass, Location, Rotation, SpawnParams);
 
 	if (!EquippedWeapon) return;
-	UE_LOG(LogTemp, Warning, TEXT("Spawned Weapon Actor: %s"), *EquippedWeapon->GetName());
-
-	EquippedWeapon->AttachToActor(this, FAttachmentTransformRules::KeepRelativeTransform);
-	EquippedWeapon->SetOwner(this);
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-	CombatComp->EquipWeapon(EquippedWeapon);
 	
-	AttachActorAtSocket(FName("MeleeWeaponSocket"),EquippedWeapon);
+	UE_LOG(LogTemp, Warning, TEXT("Spawned Weapon Actor: %s"), *EquippedWeapon->GetName());
+	CombatComp->EquipWeapon(EquippedWeapon);
 	
 }

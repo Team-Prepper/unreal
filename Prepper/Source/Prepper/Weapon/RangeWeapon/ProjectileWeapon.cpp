@@ -18,7 +18,7 @@ void AProjectileWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	UWorld* World = GetWorld();
 	if (!World) return;
 	
-	MakeNoise(1, PlayerOwnerCharacter, FVector::ZeroVector);
+	MakeNoise(1, OwnerCharacter, FVector::ZeroVector);
 	
 	APawn* InstigatorPawn = Cast<APawn>(GetOwner());
 	if (!InstigatorPawn) return;

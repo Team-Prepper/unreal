@@ -83,11 +83,6 @@ protected:
 
 	virtual void Elim() override;
 
-	virtual void MulticastElim() override;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void ElimDroppedWeapon();
-
 	/*
 	 * Attack 
 	 */
@@ -100,9 +95,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeaponActor> WeaponActorClass;
-
-	UPROPERTY(Replicated)
-	AWeaponActor* EquippedWeapon;
 
 	UPROPERTY()
 	AActor* CombatTarget;

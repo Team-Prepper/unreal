@@ -7,11 +7,7 @@
 void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABasePlayerController* VictimController,
 	ABasePlayerController* AttackerController)
 {
-	if (ElimmedCharacter)
-	{
-		ElimmedCharacter->Elim();
-		RemoveCharacterAfterDelay(ElimmedCharacter, DelayTime);
-	}
+	PlayerEliminated(ElimmedCharacter);
 }
 
 void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter)

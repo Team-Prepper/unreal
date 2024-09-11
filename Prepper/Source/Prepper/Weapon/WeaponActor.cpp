@@ -50,11 +50,11 @@ AWeaponActor::AWeaponActor()
 void AWeaponActor::PlayEquipWeaponSound()
 {
 	if (!EquipSound) return;
-	if (!PlayerOwnerCharacter) return;
+	if (!OwnerCharacter) return;
 	
 	UGameplayStatics::PlaySoundAtLocation(
-		PlayerOwnerCharacter, EquipSound,
-		PlayerOwnerCharacter->GetActorLocation()
+		OwnerCharacter, EquipSound,
+		OwnerCharacter->GetActorLocation()
 	);
 }
 
@@ -102,7 +102,7 @@ void AWeaponActor::OnRep_Owner()
 	Super::OnRep_Owner();
 	if(Owner == nullptr)
 	{
-		PlayerOwnerCharacter = nullptr;
+		OwnerCharacter = nullptr;
 		PlayerOwnerController = nullptr;
 		WeaponHandler = nullptr;
 		return;
@@ -157,19 +157,20 @@ void AWeaponActor::OnEquipped()
 	ShowPickUpWidget(false);
 	WeaponPhysicsActive(false);
 
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
-		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	OwnerCharacter = OwnerCharacter == nullptr ?
+		Cast<ABaseCharacter>(GetOwner()) : OwnerCharacter;
 
-	if (!PlayerOwnerCharacter) return;
+	if (!OwnerCharacter) return;
 
-	PlayerOwnerCharacter->AttachActorAtSocket(AttachSocketName(), this);
+	OwnerCharacter->AttachActorAtSocket(AttachSocketName(), this);
 	PlayEquipWeaponSound();
 	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON EQUIPPED"));
 		
 	if (!bUseServerSideRewind) return;
 	
 	PlayerOwnerController = PlayerOwnerController == nullptr ?
-		Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		Cast<APrepperPlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
+	
 	if (PlayerOwnerController && HasAuthority() && !PlayerOwnerController->HighPingDelegate.IsBound())
 	{
 		PlayerOwnerController->HighPingDelegate.AddDynamic(this, &AWeaponActor::OnPingTooHigh);
@@ -183,25 +184,23 @@ void AWeaponActor::OnDropped()
 
 	WeaponPhysicsActive(true);
 	WeaponMesh->DetachFromComponent(DetachRules);
+	
+	SetOwner(nullptr);
 
-	if(OnDroppedWeapon.IsBound())
-		OnDroppedWeapon.Broadcast();
-	OnDroppedWeapon.Clear();
-
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
-		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
-	if (!PlayerOwnerCharacter) return;
+	OwnerCharacter = OwnerCharacter == nullptr ?
+		Cast<ABaseCharacter>(GetOwner()) : OwnerCharacter;
+	
+	if (!OwnerCharacter) return;
 	
 	PlayerOwnerController = PlayerOwnerController == nullptr ?
-		Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		Cast<APrepperPlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
+	OwnerCharacter = nullptr;
+	
+	PlayerOwnerController = nullptr;
 	if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 	{
 		PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);
 	}
-	
-	SetOwner(nullptr);
-	PlayerOwnerCharacter = nullptr;
-	PlayerOwnerController = nullptr;
 }
 
 void AWeaponActor::OnEquippedSecondary()
@@ -209,17 +208,17 @@ void AWeaponActor::OnEquippedSecondary()
 	ShowPickUpWidget(false);
 	WeaponPhysicsActive(false);
 	
-	PlayerOwnerCharacter = PlayerOwnerCharacter == nullptr ?
-		Cast<APlayerCharacter>(GetOwner()) : PlayerOwnerCharacter;
+	OwnerCharacter = OwnerCharacter == nullptr ?
+		Cast<ABaseCharacter>(GetOwner()) : OwnerCharacter;
 
-	if (!PlayerOwnerCharacter) return;
+	if (!OwnerCharacter) return;
 	
 	UE_LOG(LogTemp, Warning , TEXT("WEAPON : WEAPON SECONDARY"));
-	PlayerOwnerCharacter->AttachActorAtSocket(HolsteredWeaponSocketName, this);
+	OwnerCharacter->AttachActorAtSocket(HolsteredWeaponSocketName, this);
 	PlayEquipWeaponSound();
 	
 	PlayerOwnerController = PlayerOwnerController == nullptr ?
-		Cast<APrepperPlayerController>(PlayerOwnerCharacter->Controller) : PlayerOwnerController;
+		Cast<APrepperPlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
 	if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 	{
 		PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);

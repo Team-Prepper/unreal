@@ -11,7 +11,7 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
-	MakeNoise(1, PlayerOwnerCharacter, FVector::ZeroVector);
+	MakeNoise(1, OwnerCharacter, FVector::ZeroVector);
 	
 	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
 	if (!MuzzleSocket) return;

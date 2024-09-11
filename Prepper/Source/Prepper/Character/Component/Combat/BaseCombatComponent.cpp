@@ -76,9 +76,12 @@ void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	if (WeaponToEquip == nullptr) return;
 	
 	DropEquippedWeapon();
+	
 	EquippedWeapon = WeaponToEquip;
-	EquippedWeapon->SetActorEnableCollision(false);
+	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->SetWeaponHandler(this);
+	
 	ReloadEmptyWeapon();
 }
 
@@ -98,8 +101,10 @@ void UBaseCombatComponent::DropEquippedWeapon()
 
 void UBaseCombatComponent::OnRep_EquippedWeapon() const
 {
-	if (!EquippedWeapon || !Character) return;
+	if (!EquippedWeapon) return;
+	if (!Character) return;
 
+	EquippedWeapon->SetOwner(Character);
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -262,7 +267,6 @@ void UBaseCombatComponent::TargetElim()
 	if(EquippedWeapon)
 	{
 		EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
-		EquippedWeapon = nullptr;
 	}
 }
 

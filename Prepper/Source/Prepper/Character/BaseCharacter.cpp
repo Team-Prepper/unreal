@@ -20,6 +20,16 @@ ABaseCharacter::ABaseCharacter()
 	ElimEvent->SetIsReplicated(true);
 }
 
+void ABaseCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+	for (int i = 0; i < CharacterComponents.Num(); i++)
+	{
+		CharacterComponents[i]->SetCharacter(this);
+	}
+}
+
 void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -63,9 +73,18 @@ void ABaseCharacter::AttachActorAtSocket(const FName& SocketName, AActor* Target
 	const USkeletalMeshSocket* TargetSocket = GetMesh()->GetSocketByName(SocketName);
 	if(TargetSocket)
 	{
+		AttachedActor.Add(TargetActor);
 		TargetSocket->AttachActor(TargetActor, GetMesh());
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Attach %s"), *SocketName.ToString());
+}
+
+void ABaseCharacter::SetAttachedHidden(const bool Visible)
+{
+	for(TObjectPtr<AActor> TargetActor : AttachedActor)
+	{
+		TargetActor->SetActorHiddenInGame(Visible);
+	}
 }
 
 void ABaseCharacter::PlayAnim(UAnimMontage* Montage, const FName& SectionName) const
@@ -136,7 +155,42 @@ void ABaseCharacter::AimTrigger(const bool IsTrigger)
 
 void ABaseCharacter::Elim()
 {
+	ServerElim();
+}
+
+void ABaseCharacter::ServerElim_Implementation()
+{
+	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+	
+	for (const TObjectPtr<AActor> TargetActor : AttachedActor)
+	{
+		TargetActor->DetachFromActor(DetachRules);
+	}
+
+	AttachedActor.Empty();
+
 	MulticastElim();
+}
+
+void ABaseCharacter::MulticastElim_Implementation()
+{
+	for (int i = 0; i < CharacterComponents.Num(); i++)
+	{
+		CharacterComponents[i]->TargetElim();
+	}
+	
+	PlayAnim(ElimMontage);
+	ElimEvent->TargetElim();
+
+	// Disable Movement
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	
+	// Disable Collision
+	SetActorEnableCollision(false);
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	
 }
 
 void ABaseCharacter::SetMovementState(const EMovementState& State)
@@ -158,7 +212,7 @@ void ABaseCharacter::MulticastConvertMovementState_Implementation(const EMovemen
 
 void ABaseCharacter::ConvertMovementState(const EMovementState& State)
 {
-	if(State == EMovementState::EMS_Seat)
+	if(MovementState == EMovementState::EMS_Seat)
 	{
 		SeatToggle(false);
 	}
@@ -182,20 +236,4 @@ void ABaseCharacter::ConvertMovementState(const EMovementState& State)
 	default:
 		break;
 	}
-}
-
-void ABaseCharacter::MulticastElim_Implementation()
-{
-	PlayAnim(ElimMontage);
-	ElimEvent->TargetElim();
-
-	// Disable Movement
-	GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->StopMovementImmediately();
-	
-	// Disable Collision
-	SetActorEnableCollision(false);
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	
 }

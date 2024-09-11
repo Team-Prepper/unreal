@@ -86,12 +86,31 @@ public:
 protected:
 	virtual void LocalFireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets) const override;
 	virtual void FinishFire() override;
+	
+// Ammo
+private:
+	// carried ammo for cur equip weapon
+	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+
+	UPROPERTY(EditAnywhere)
+	TMap<EWeaponType, int32> CarriedAmmoMap;
+	
+protected:
+	UPROPERTY(EditAnywhere)
+	int32 MaxCarriedAmmo = 500;
+	
+	virtual FGaugeInt GetAmmoShow() override;
+
+public:
+	virtual void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount) override;
 // Reload
 private:
 	bool bLocallyReload = false;
 	
 public:
 	virtual void Reload() override;
+	
 protected:
 	virtual void FinishReload() override;
 private:
@@ -130,30 +149,6 @@ protected:
 
 public:
 	virtual void TargetElim() override;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastDropWeapon();
-
-	UFUNCTION()
-	void DropEquippedWeaponByElim();
-	
-// Ammo
-private:
-	// carried ammo for cur equip weapon
-	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
-	int32 CarriedAmmo;
-
-	UPROPERTY(EditAnywhere)
-	TMap<EWeaponType, int32> CarriedAmmoMap;
-	
-protected:
-	UPROPERTY(EditAnywhere)
-	int32 MaxCarriedAmmo = 500;
-	
-	virtual FGaugeInt GetAmmoShow() override;
-
-public:
-	void PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount);
 
 private:
 	void UpdateCarriedAmmo();

@@ -44,11 +44,11 @@ APlayerCharacter::APlayerCharacter()
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
-	
+
 	Combat = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-	Combat->SetIsReplicated(true);
 	
 	CombatComp = Combat;
+	CombatComp->SetIsReplicated(true);
 	CharacterComponents.Add(CombatComp);
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
@@ -78,16 +78,6 @@ APlayerCharacter::APlayerCharacter()
 
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
-}
-
-void APlayerCharacter::PostInitializeComponents()
-{
-	Super::PostInitializeComponents();
-	
-	for (int i = 0; i < CharacterComponents.Num(); i++)
-	{
-		CharacterComponents[i]->SetCharacter(this);
-	}
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -140,10 +130,6 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 void APlayerCharacter::Elim()
 {
-	for (int i = 0; i < CharacterComponents.Num(); i++)
-	{
-		CharacterComponents[i]->TargetElim();
-	}
 	
 	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
 	PrepperPlayerController->ResetPlayer();
@@ -159,8 +145,7 @@ void APlayerCharacter::Elim()
 		ShowSniperScopeWidget(false);
 	}
 
-	if(!IsWeaponEquipped())
-		MulticastElim();
+	Super::Elim();
 	
 }
 
@@ -170,8 +155,6 @@ void APlayerCharacter::MulticastElim()
 	Super::MulticastElim();
 	bDisableGamePlay = true;
 }
-
-
 
 void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)
 {
@@ -615,11 +598,7 @@ void APlayerCharacter::OnRep_ReplicatedMovement()
 
 void APlayerCharacter::SetPlayerEquipmentHiddenInGame(bool visible)
 {
-	SetEquipmentHidden(EquippedBackpack, visible);
-	
-	if(!Combat) return;
-	SetEquipmentHidden(CombatComp->EquippedWeapon, visible);
-	SetEquipmentHidden(Combat->SecondaryWeapon, visible);
+	SetAttachedHidden(visible);
 }
 
 void APlayerCharacter::SetEquipmentHidden(AActor* Target, bool visible)

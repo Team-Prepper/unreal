@@ -31,6 +31,7 @@ class PREPPER_API ABaseCharacter : public ACharacter, public IDamageable, public
 // Actor
 public:
 	ABaseCharacter();
+	virtual void PostInitializeComponents() override;
 	// 네트워크 동기화 변수 설정
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
@@ -59,13 +60,20 @@ protected:
 	UElimDissolveComponent* ElimEvent;
 	UPROPERTY(EditAnywhere, Category = Combat)
 	UAnimMontage* ElimMontage;
+
+	TSet<TObjectPtr<AActor>> AttachedActor;
 	
 public:
 	virtual void Elim();
+	UFUNCTION(Server, Reliable)
+	virtual void ServerElim();
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void MulticastElim();
 	FORCEINLINE bool IsElimed() const { return CurrentHealth <= 0; }
 	
 	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;
 	void AttachActorAtSocket(const FName& SocketName, AActor* TargetActor);
+	void SetAttachedHidden(const bool Visible);
 	
 	UFUNCTION()
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
@@ -102,10 +110,6 @@ protected:
 	virtual void PlayHitReactMontage();
 	UFUNCTION()
 	virtual void OnRep_Health();
-
-public:
-	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastElim();
 // Attack
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))

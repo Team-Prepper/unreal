@@ -41,7 +41,7 @@ void ARangeWeapon::SpendRound()
 	{
 		ClientUpdateAmmo(Ammo);
 	}
-	else if (PlayerOwnerCharacter && PlayerOwnerCharacter->IsLocallyControlled())
+	else if (OwnerCharacter && OwnerCharacter->IsLocallyControlled())
 	{
 		Sequence++;
 	}
@@ -88,13 +88,13 @@ void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, UTexture2D*& Ce
 	Bottom = CrosshairBottom;
 	Spread = 0.5f;
 
-	if (bUseScatter || PlayerOwnerCharacter == nullptr) {
+	if (bUseScatter || OwnerCharacter == nullptr) {
 		return;
 	}
 	
-	FVector2D WalkSpeedRange(0.f, PlayerOwnerCharacter->GetCharacterMovement()->MaxWalkSpeed);
+	FVector2D WalkSpeedRange(0.f, OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed);
 	FVector2D VelocityMultiplierRange(0.f, 1.f);
-	FVector Velocity = PlayerOwnerCharacter->GetVelocity();
+	FVector Velocity = OwnerCharacter->GetVelocity();
 	Velocity.Z = 0.f;
 
 	const float CrosshairVelocityFactor =
@@ -103,7 +103,7 @@ void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, UTexture2D*& Ce
 			VelocityMultiplierRange,
 			Velocity.Size());
 
-	if (PlayerOwnerCharacter->GetCharacterMovement()->IsFalling())
+	if (OwnerCharacter->GetCharacterMovement()->IsFalling())
 	{
 		CurCrosshairInAirFactor =
 			FMath::FInterpTo(

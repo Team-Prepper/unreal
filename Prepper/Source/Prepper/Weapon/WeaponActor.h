@@ -63,10 +63,6 @@ public:
 	
 	void PlayEquipWeaponSound();
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMyDelegate);
-
-	FMyDelegate OnDroppedWeapon;
-	
 protected:
 	virtual void BeginPlay() override;
 
@@ -102,7 +98,7 @@ protected:
 	void OnRep_WeaponState();
 	
 	UPROPERTY()
-	APlayerCharacter* PlayerOwnerCharacter;
+	ABaseCharacter* OwnerCharacter;
 	UPROPERTY()
 	class APrepperPlayerController* PlayerOwnerController;
 	
