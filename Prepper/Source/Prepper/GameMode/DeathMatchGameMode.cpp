@@ -91,7 +91,7 @@ void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 		VictimPlayerState->AddToDefeats(1);
 	}
 
-	RequestQueue.Add(RequestQueueUnit(ElimmedCharacter, VictimController));
+	RequestQueue.Add(FRequestQueueUnit(ElimmedCharacter, VictimController));
 	
 	FTimerHandle TestTimeHandle;
 	GetWorld()->GetTimerManager().SetTimer(

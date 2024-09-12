@@ -25,7 +25,7 @@ private:
 protected:
 	virtual void BeginPlay() override;
 public:
-	UFlexibleSpringArmComponent();
+	UFlexibleSpringArmComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void ChangeArmOffsetToTemplate(const FString& TemplateName);
 	virtual void ChangeArmOffset(const float Length, const FVector& Location);
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

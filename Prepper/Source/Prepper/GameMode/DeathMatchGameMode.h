@@ -12,10 +12,15 @@ namespace MatchState
 	extern PREPPER_API const FName Cooldown; // Match duration has been reached. Display winner and begin cooldown timer.
 }
 
-struct RequestQueueUnit
+struct FRequestQueueUnit
 {
 	ACharacter* Character;
 	AController* Controller;
+	FRequestQueueUnit(ACharacter* TargetCharacter, AController* TargetController)
+	{
+		Character = TargetCharacter;
+		Controller = TargetController;
+	}
 };
 
 UCLASS()
@@ -23,7 +28,7 @@ class PREPPER_API ADeathMatchGameMode : public APrepperGameMode
 {
 	GENERATED_BODY()
 private:
-	TArray<RequestQueueUnit> RequestQueue;
+	TArray<FRequestQueueUnit> RequestQueue;
 public:
 	ADeathMatchGameMode();
 	virtual void Tick(float DeltaSeconds) override;

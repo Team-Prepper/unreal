@@ -2,18 +2,19 @@
 
 #include "FlexibleSpringArmComponent.h"
 
-void UFlexibleSpringArmComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	ChangeArmOffsetToTemplate(FString("Default"));
-}
-
-UFlexibleSpringArmComponent::UFlexibleSpringArmComponent()
+UFlexibleSpringArmComponent::UFlexibleSpringArmComponent(const FObjectInitializer& ObjectInitializer /*= FObjectInitializer::Get()*/)
+	: Super(ObjectInitializer)
 {
 	TargetLength = TargetArmLength;
 	TargetLocation = GetRelativeLocation();
 	
 	Template.Add(FString("Default"), FFlexibleArmTemplate(350, FVector(0, 0, 100)));
+}
+
+void UFlexibleSpringArmComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	ChangeArmOffsetToTemplate(FString("Default"));
 }
 
 void UFlexibleSpringArmComponent::ChangeArmOffsetToTemplate(const FString& TemplateName)
