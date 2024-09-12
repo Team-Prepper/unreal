@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
@@ -16,6 +14,18 @@ struct PREPPER_API FFlexibleArmTemplate
 	
 	UPROPERTY(EditAnywhere)
 	float Length;
+
 	UPROPERTY(EditAnywhere)
 	FVector Location;
+
+	// 생성자 선언
+	FFlexibleArmTemplate()
+		: Length(100.0f), Location(FVector::ZeroVector)
+	{
+	}
+
+	FFlexibleArmTemplate(float InLength, FVector InLocation)
+		: Length(InLength), Location(InLocation)
+	{
+	}
 };
