@@ -41,7 +41,7 @@ public:
 	virtual void UnCrouch(bool bClientSimulation = false) override;
 	
 	virtual void Elim() override;
-	virtual void MulticastElim() override;
+	virtual void MulticastElimAction() override;
 	
 	virtual void ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser) override;
 	

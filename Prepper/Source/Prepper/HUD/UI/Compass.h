@@ -22,6 +22,8 @@ public:
 	void SetDirection();
 	float GetImageWidth() const;
 
+	void SetTargetCamera(UCameraComponent* Target);
+
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* PlayerCam;
 

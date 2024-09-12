@@ -74,7 +74,6 @@ void AItemBackpack::Interaction(APlayerCharacter* Target)
 	Target->EquipBackpack(this);
 	Target->AttachActorAtSocket(FName("BackpackSocket"), this);
 	
-	
 	if(IsOpened)
 		HideInventory();
 	
@@ -107,9 +106,13 @@ void AItemBackpack::OnBackPackState()
 		BackpackPhysicsActive(false);
 		break;
 	case EBackpackState::EBS_Dropped:
-		UE_LOG(LogTemp,Warning,TEXT("Backpack dropped"));
-		BackpackPhysicsActive(true);
-		SetOwner(nullptr);
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Backpack dropped"));
+			FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
+			BackpackMesh->DetachFromComponent(DetachRules);
+			BackpackPhysicsActive(true);
+			SetOwner(nullptr);
+		}
 		break;
 	case EBackpackState::EBS_OpenInventory:
 		UE_LOG(LogTemp,Warning,TEXT("Backpack dropped"));

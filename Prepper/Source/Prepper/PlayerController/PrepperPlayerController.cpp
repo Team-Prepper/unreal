@@ -1,7 +1,4 @@
 #include "PrepperPlayerController.h"
-#include "Components/ProgressBar.h"
-#include "Components/TextBlock.h"
-#include "Prepper/Car/CarPawn.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/UI/CharacterOverlay/CharacterOverlay.h"
@@ -23,7 +20,6 @@ void APrepperPlayerController::PossessPawn()
 
 void APrepperPlayerController::PollInit()
 {
-	return;
 	if(!IsLocalController()) return;
 	if(Cast<APlayerCharacter>(GetPawn()))
 	{
@@ -36,6 +32,7 @@ void APrepperPlayerController::PollInit()
 	}
 
 	if (!PrepperHUD) return;
+	
 	PrepperHUD->ResetCrossHair();
 	
 	if(PrepperHUD->CharacterOverlay)
@@ -48,8 +45,8 @@ void APrepperPlayerController::PollInit()
 		Compass = PrepperHUD->Compass;
 		if(Compass)
 		{
+			Compass->SetTargetCamera(TargetControllerable->GetFollowCamera());
 			UE_LOG(LogTemp,Warning,TEXT("[PrepperPlayerController] : Set Compass"));
-			//SetCompass();
 		}
 	}
 }
@@ -57,8 +54,4 @@ void APrepperPlayerController::PollInit()
 void APrepperPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void APrepperPlayerController::SetHUDStatusEffect(float Hunger, float Thirst, float Infection)
-{
 }

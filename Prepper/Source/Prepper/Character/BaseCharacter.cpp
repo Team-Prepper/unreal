@@ -155,25 +155,16 @@ void ABaseCharacter::AimTrigger(const bool IsTrigger)
 
 void ABaseCharacter::Elim()
 {
-	ServerElim();
-}
-
-void ABaseCharacter::ServerElim_Implementation()
-{
-	FDetachmentTransformRules DetachRules(EDetachmentRule::KeepWorld, true);
-	
-	for (const TObjectPtr<AActor> TargetActor : AttachedActor)
-	{
-		TargetActor->DetachFromActor(DetachRules);
-	}
-
 	AttachedActor.Empty();
-
+	
 	MulticastElim();
 }
 
 void ABaseCharacter::MulticastElim_Implementation()
 {
+	MulticastElimAction();
+	
+	UE_LOG(LogTemp, Warning, TEXT("TMP: MulticastElim by BaseCharacter"));
 	for (int i = 0; i < CharacterComponents.Num(); i++)
 	{
 		CharacterComponents[i]->TargetElim();

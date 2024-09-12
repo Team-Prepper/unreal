@@ -74,7 +74,6 @@ public:
 	};
 	
 	void UpdateStatusEffect();
-	void UpdateStatusEffectHUD();
 	
 	FTimerHandle StatusTimerHandle;
 	void StatusTimerStart();

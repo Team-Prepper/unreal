@@ -15,20 +15,21 @@ void UCompass::NativeConstruct()
 	CompassOffset = GetImageWidth();
 }
 
+void UCompass::SetTargetCamera(UCameraComponent* Target)
+{
+	PlayerCam = Target;
+}
+
+
 void UCompass::SetDirection()
 {
-	if(PlayerCam == nullptr)
-	{
-		PlayerCam = Cast<IControllable>(GetOwningPlayerPawn())->GetFollowCamera();
-		UE_LOG(LogTemp,Warning,TEXT("Player Cam = nullptr"));
-		return;
-	}
-	float YawValue = -10 * PlayerCam->GetComponentRotation().Yaw - (CompassOffset/2);
-
+	if(PlayerCam == nullptr) return;
 	if(!CompassPoint) return;
-	
+
 	UCanvasPanelSlot* CanvasSlot = Cast<UCanvasPanelSlot>(CompassPoint->Slot);
 	if(!CanvasSlot) return;
+	
+	float YawValue = -10 * PlayerCam->GetComponentRotation().Yaw - (CompassOffset/2);
 	
 	CanvasSlot->SetPosition(FVector2D(YawValue,0));
 }

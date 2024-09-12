@@ -65,10 +65,11 @@ protected:
 	
 public:
 	virtual void Elim();
-	UFUNCTION(Server, Reliable)
-	virtual void ServerElim();
+	
+	virtual void MulticastElimAction() {}
 	UFUNCTION(NetMulticast, Reliable)
-	virtual void MulticastElim();
+	void MulticastElim();
+	
 	FORCEINLINE bool IsElimed() const { return CurrentHealth <= 0; }
 	
 	void PlayAnim(UAnimMontage* Montage, const FName& SectionName = "") const;

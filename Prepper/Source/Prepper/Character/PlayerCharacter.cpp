@@ -149,11 +149,15 @@ void APlayerCharacter::Elim()
 	
 }
 
+void APlayerCharacter::MulticastElimAction() {
 
-void APlayerCharacter::MulticastElim()
-{
-	Super::MulticastElim();
+	UE_LOG(LogTemp, Warning, TEXT("TMP: MulticastElim by PlayerCharacter"));
+	if (EquippedBackpack)
+	{
+		EquippedBackpack->SetBackpackState(EBackpackState::EBS_Dropped);
+	}
 	bDisableGamePlay = true;
+	
 }
 
 void APlayerCharacter::ReceiveDamage(float Damage, AController* InstigatorController, AActor* DamageCauser)

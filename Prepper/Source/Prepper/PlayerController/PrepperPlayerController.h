@@ -17,8 +17,6 @@ public:
 	virtual void PossessPawn() override;
 	virtual void Tick(float DeltaTime) override;
 
-	void SetHUDStatusEffect(float Hunger, float Thirst, float Infection);
-
 	UPROPERTY()
 	class UCharacterOverlay* CharacterOverlay;
 	UPROPERTY()

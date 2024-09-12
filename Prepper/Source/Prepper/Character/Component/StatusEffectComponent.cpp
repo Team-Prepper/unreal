@@ -94,7 +94,6 @@ void UStatusEffectComponent::StatusTimerFinish()
 	StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
 
 	Notify();
-	UpdateStatusEffectHUD();
 	UpdateStatusEffect();
 }
 
@@ -145,14 +144,4 @@ void UStatusEffectComponent::UpdateStatusEffect()
 		}
 	}
 	*/
-}
-
-void UStatusEffectComponent::UpdateStatusEffectHUD()
-{
-	
-	if(!PrepperPlayerController) return;
-	PrepperPlayerController->SetHUDStatusEffect(
-		StateEffectMap[EStatusEffect::ESE_HUNGRY],
-		StateEffectMap[EStatusEffect::ESE_THIRSTY],
-		StateEffectMap[EStatusEffect::ESE_INFECTED]);
 }
