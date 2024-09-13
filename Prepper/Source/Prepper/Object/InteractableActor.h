@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Interfaces/Interactable.h"
 #include "InteractableActor.generated.h"
+
+class IPlayerAbility;
 
 UCLASS()
 class PREPPER_API AInteractableActor : public AActor, public IInteractable

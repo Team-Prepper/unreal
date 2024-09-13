@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Prepper/Interfaces/Inventory.h"
 #include "OverheadWidget.generated.h"
 
 UCLASS()

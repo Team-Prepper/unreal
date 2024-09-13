@@ -1,9 +1,8 @@
 ﻿#include "ItemManager.h"
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "ItemCombinationData.h"
 #include "UObject/ConstructorHelpers.h"
-#include "ItemData.h"
+#include "ItemData/ItemData.h"
 #include "Prepper/_Base/DataTableGetter.h"
 
 FString ItemManager::ItemCombineCode(const FString& Code1, const FString& Code2)
@@ -19,8 +18,23 @@ FString ItemManager::ItemCombineCode(const FString& Code1, const FString& Code2)
 ItemManager::ItemManager()
 {
 	UDataTable* ItemDataTable;
+	DataTableGetter::GetDataTable("ItemDataTable", ItemDataTable);
 	
-	if (DataTableGetter::GetDataTable("ItemDataTable", ItemDataTable))
+	UDataTable* ItemCombinationDataTable;
+	DataTableGetter::GetDataTable("ItemCombinationDataTable", ItemCombinationDataTable);
+
+	Initial(ItemDataTable, ItemCombinationDataTable);
+	
+}
+
+ItemManager::~ItemManager()
+{
+}
+
+void ItemManager::Initial(const TObjectPtr<UDataTable> ItemDataTable, const TObjectPtr<UDataTable> ItemCombinationDataTable)
+{
+	
+	if (ItemDataTable)
 	{
 		TArray<FItemData*> arr;
 		ItemDataTable->GetAllRows(TEXT("GetAllRows"), arr);
@@ -33,9 +47,7 @@ ItemManager::ItemManager()
 		
 	}
 	
-	UDataTable* ItemCombinationDataTable;
-	
-	if (DataTableGetter::GetDataTable("ItemCombinationDataTable", ItemCombinationDataTable))
+	if (ItemCombinationDataTable)
 	{
 		TArray<FItemCombinationData*> arr;
 		ItemCombinationDataTable->GetAllRows(TEXT("GetAllRows"), arr);
@@ -43,16 +55,8 @@ ItemManager::ItemManager()
 		for (int i = 0; i < arr.Num(); ++i)
 		{
 			CombinationData.Add(ItemCombineCode(arr[i]->InputItemCode1, arr[i]->InputItemCode2), *arr[i]);
-			FCombinedItems Ingredients = FCombinedItems(arr[i]->InputItemCode1, arr[i]->InputItemCode2);
-			CombinationResultToIngredients.Add(*arr[i]->OutputItemCode,Ingredients);
 		}
 	}
-
-	
-}
-
-ItemManager::~ItemManager()
-{
 }
 
 bool ItemManager::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName)
@@ -71,6 +75,18 @@ FItem* ItemManager::GetItem(const FString& ItemCode)
 	if (!ItemData.Contains(ItemCode)) return nullptr;
 
 	return ItemData.Find(ItemCode);
+}
+
+TObjectPtr<AActor> ItemManager::SpawnItem(UWorld* World, const FString& ItemCode)
+{
+	if (World == nullptr) return nullptr;
+	return World->SpawnActor<AActor>(ItemData.Find(ItemCode)->ItemObject);
+}
+
+TObjectPtr<AInventoryInteractableItem> ItemManager::SpawnItemInteraction(UWorld* World, const FString& ItemCode)
+{
+	if (World == nullptr) return nullptr;
+	return World->SpawnActor<AInventoryInteractableItem>(ItemData.Find(ItemCode)->ItemInteraction);
 }
 
 bool ItemManager::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)

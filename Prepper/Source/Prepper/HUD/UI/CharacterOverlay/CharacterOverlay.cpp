@@ -2,6 +2,7 @@
 
 #include "Components/Image.h"
 #include "Components/VerticalBox.h"
+#include "Prepper/Item/ItemManager.h"
 
 void UCharacterOverlay::Update(const GaugeValue<float>& NewData)
 {

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InteractableItem.h"
+#include "Prepper/Item/Inventory/MapInventory.h"
 #include "InventoryInteractableItem.generated.h"
 
 /**

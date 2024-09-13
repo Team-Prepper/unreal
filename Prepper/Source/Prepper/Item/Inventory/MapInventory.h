@@ -7,9 +7,8 @@
 #include <set>
 
 #include "CoreMinimal.h"
+#include "Inventory.h"
 #include "Components/ActorComponent.h"
-#include "ItemData/ItemManager.h"
-#include "Prepper/Interfaces/Inventory.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "MapInventory.generated.h"
 
@@ -48,7 +47,6 @@ public:
 	void AddBullet(uint8 Count);
 	uint8 GetBulletCount() const;
 
-	
 	virtual void Attach(IObserver<TMap<FString, uint8>>* Observer) override;
 	virtual void Detach(IObserver<TMap<FString, uint8>>* Observer) override;
 	virtual void Notify() override;

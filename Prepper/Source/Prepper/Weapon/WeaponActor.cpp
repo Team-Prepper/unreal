@@ -118,7 +118,6 @@ void AWeaponActor::Interaction(APlayerCharacter* Target)
 {
 	Target->EquipWeapon(this);
 }
-
 void AWeaponActor::SetWeaponState(EWeaponState State)
 {
 	WeaponState = State;

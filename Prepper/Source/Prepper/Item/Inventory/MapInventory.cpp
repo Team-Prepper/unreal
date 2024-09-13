@@ -1,8 +1,5 @@
 #include "MapInventory.h"
 #include "Engine/GameInstance.h"
-#include "ItemData/ItemManager.h"
-#include "Prepper/GameInstance/PrepperGameInstance.h"
-#include "Prepper/Interfaces/Inventory.h"
 #include "UObject/ConstructorHelpers.h"
 
 UMapInventory::UMapInventory()

@@ -32,10 +32,12 @@ public:
 		ItemName = Name;
 		ItemCount = Count;
 	}
-
-	IInventory* TargetInventory;
 	
+	IInventory* TargetInventory;
+
+	UPROPERTY()
 	UTexture2D* TextureIcon;
+
 	FString ItemCode;
 	FText ItemName;
 	uint8 ItemCount;
