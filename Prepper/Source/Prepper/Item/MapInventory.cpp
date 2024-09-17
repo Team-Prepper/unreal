@@ -33,6 +33,8 @@ bool UMapInventory::TryAddItem(const FString& ItemCode)
 	// 새로운 아이템을 추가하고 true 반환
 	ItemUnits.Add(ItemCode, 1);
 	UE_LOG(LogTemp, Warning, TEXT("Init : Add Item %s"), *ItemCode);
+
+	ConvertMapToArray();
 	Notify();
 	return true;
 }
@@ -61,6 +63,7 @@ bool UMapInventory::TryUseItem(const FString& ItemCode)
 	}
 	
 	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
+	ConvertMapToArray();
 	Notify();
 	return true;
 }
@@ -80,6 +83,7 @@ bool UMapInventory::TryDiscardItem(const FString& ItemCode)
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
 	// 아이템 사용에 성공했으므로 true 반환
+	ConvertMapToArray();
 	Notify();
 	return true;
 }
@@ -135,24 +139,57 @@ uint8 UMapInventory::GetBulletCount() const
 }
 
 // OBSERVER
-void UMapInventory::Attach(IObserver<TMap<FString, uint8>>* Observer)
+void UMapInventory::Attach(IObserver<TArray<FItemConvertData>>* Observer)
 {
 	Observers.insert(Observer);
-	Observer->Update(ItemUnits);
+	Observer->Update(ReplicatedItemUnits);
 }
 
-void UMapInventory::Detach(IObserver<TMap<FString, uint8>>* Observer)
+void UMapInventory::Detach(IObserver<TArray<FItemConvertData>>* Observer)
 {
 	Observers.erase(Observer);
 }
 
 void UMapInventory::Notify()
 {
-	const TMap<FString, uint8> Value = ItemUnits;
-	
-	std::ranges::for_each(Observers, [&](IObserver<TMap<FString, uint8>>* Observer) {
-		Observer->Update(Value);
+	std::ranges::for_each(Observers, [&](IObserver<TArray<FItemConvertData>>* Observer) {
+		Observer->Update(ReplicatedItemUnits);
 	});
 }
+
+void UMapInventory::ConvertMapToArray()
+{
+	ReplicatedItemUnits.Empty();
+	for (const auto& Elem : ItemUnits)
+	{
+		FItemConvertData ItemData;
+		ItemData.ItemCode = Elem.Key;
+		ItemData.Count = Elem.Value;
+		ReplicatedItemUnits.Add(ItemData);
+	}
+}
+
+void UMapInventory::ConvertArrayToMap()
+{
+	ItemUnits.Empty();
+	for (const auto& Elem : ReplicatedItemUnits)
+	{
+		ItemUnits.Add(Elem.ItemCode, Elem.Count);
+	}
+}
+
+void UMapInventory::OnRep_ItemUnits()
+{
+	ConvertArrayToMap(); // 클라이언트에서 배열을 맵으로 변환
+	Notify(); // 옵저버 패턴으로 변경 사항을 알림
+}
+
+void UMapInventory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UMapInventory, ReplicatedItemUnits);
+}
+
 
 

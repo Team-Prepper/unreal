@@ -35,21 +35,13 @@ void UCharacterOverlay::Update(const Status& NewData)
 	InfectionBar->SetPercent(NewData.Infected.GetRatio());
 }
 
-void UCharacterOverlay::Update(const TMap<FString, uint8>& NewData)
+void UCharacterOverlay::Update(const TArray<FItemConvertData>& NewData)
 {
 	ClearAllItemIcons();
-	for (const TPair<FString, uint8>& Elem : NewData)
+	for (const auto& Elem : NewData)
 	{
-		// 키와 값 가져오기
-		const FString& Key = Elem.Key;
-		uint8 Value = Elem.Value;
-
-		// 로그로 출력
-		UE_LOG(LogTemp, Log, TEXT("Key: %s, Value: %d"), *Key, Value);
-
-		// UI에 이미지 추가하기
-		
-		AddItemIcon(ItemManager::GetInstance()->GetItem(Key)->ItemIcon);
+		UE_LOG(LogTemp, Log, TEXT("Key: %s, Value: %d"), *Elem.ItemCode, Elem.Count);
+		AddItemIcon(ItemManager::GetInstance()->GetItem(Elem.ItemCode)->ItemIcon);
 	}
 }
 
