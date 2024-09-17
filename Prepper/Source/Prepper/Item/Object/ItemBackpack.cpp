@@ -117,6 +117,7 @@ void AItemBackpack::OnBackPackState()
 		UE_LOG(LogTemp,Warning,TEXT("Backpack dropped"));
 		BackpackPhysicsActive(false);
 		SetActorEnableCollision(true);
+		ToggleOutline(true);
 		SetOwner(nullptr);
 		break;
 
@@ -187,9 +188,6 @@ void AItemBackpack::ShowInventory()
 		SpawnRotation
 		);
 	OpenedInventory->SetTargetInventory(Inventory);
-
-	// 인벤토리 테이블 생성
-	//AttachToActor(OpenedInventory, FAttachmentTransformRules::KeepWorldTransform);
 
 	const UStaticMeshSocket* TargetSocket = OpenedInventory->GetMesh()->GetSocketByName(TEXT("BackpackSocket"));
 	if(TargetSocket)
