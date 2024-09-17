@@ -12,13 +12,27 @@ UCLASS()
 class PREPPER_API AInteractableActor : public AActor, public IInteractable
 {
 	GENERATED_BODY()
+private:
+	TArray<TObjectPtr<UMeshComponent>> MeshComponents;
+
+protected:
+	UPROPERTY(EditAnywhere)
+	FCollisionResponseContainer ColliderChannel;
+	UPROPERTY(EditAnywhere)
+	FCollisionResponseContainer TriggerChannel;
 	
 public:
+	AInteractableActor();
+	virtual void PostInitializeComponents() override;
+	
 	virtual void ShowPickUpWidget(bool bShowWidget) override;
+	void ToggleOutline(const bool bEnable);
+	void ToggleTrigger(const bool bEnable);
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
-	class USphereComponent* AreaSphere;
+	UShapeComponent* AreaSphere;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Pickup Properties")
 	class UWidgetComponent* PickUpWidget;
 	

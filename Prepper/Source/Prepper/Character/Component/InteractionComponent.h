@@ -10,8 +10,7 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UInteractionComponent : public UActorComponent,
-									public ICharacterComponent
+class PREPPER_API UInteractionComponent : public UCharacterComponent
 {
 	GENERATED_BODY()
 

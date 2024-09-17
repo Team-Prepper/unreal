@@ -20,8 +20,7 @@ AInteractableBox::AInteractableBox()
 
 	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
 	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ToggleTrigger(false);
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
@@ -67,8 +66,7 @@ void AInteractableBox::MulticastBoxOpen_Implementation()
 	UE_LOG(LogTemp,Warning, TEXT("MULTI OPEN"));
 	BoxMesh->SetStaticMesh(OpenBoxMesh);
 	BoxMesh->SetRenderCustomDepth(false);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ToggleTrigger(false);
 	
 }
 

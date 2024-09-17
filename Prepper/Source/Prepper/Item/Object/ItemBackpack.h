@@ -27,13 +27,11 @@ public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	void Equip();
 	void Dropped();
 
 	UPROPERTY()
 	class USoundCue* EquipSound;
-
-	/* Custom Depth 아이템 윤곽선 효과 */
-	void EnableCustomDepth(bool bEnable);
 
 protected:
 	virtual void BeginPlay() override;

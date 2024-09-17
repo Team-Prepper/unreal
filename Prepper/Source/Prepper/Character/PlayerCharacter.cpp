@@ -49,17 +49,14 @@ APlayerCharacter::APlayerCharacter()
 	
 	CombatComp = Combat;
 	CombatComp->SetIsReplicated(true);
-	CharacterComponents.Add(CombatComp);
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(TEXT("InteractComponent"));
 	InteractionComponent->SetIsReplicated(true);
-	CharacterComponents.Add(InteractionComponent);
 	
 	Inventory = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
 	Inventory->SetIsReplicated(true);
 
 	StatusEffect = CreateDefaultSubobject<UStatusEffectComponent>(TEXT("StatusEffectComponet"));
-	CharacterComponents.Add(StatusEffect);
 	
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
@@ -252,6 +249,7 @@ void APlayerCharacter::OnRep_EquippedBackpack()
 {
 	if(EquippedBackpack)
 	{
+		EquippedBackpack->SetOwner(this);
 		EquipBackpack(EquippedBackpack);
 	}
 }

@@ -13,8 +13,8 @@
 #include "BaseCombatComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UBaseCombatComponent : public UActorComponent,
-									 public IWeaponHandler, public ICharacterComponent, public ISubject<GaugeValue<int>>
+class PREPPER_API UBaseCombatComponent : public UCharacterComponent,
+									 public IWeaponHandler, public ISubject<GaugeValue<int>>
 {
 	GENERATED_BODY()
 	friend class ABaseCharacter;

@@ -31,13 +31,15 @@ class PREPPER_API ABaseCharacter : public ACharacter, public IDamageable, public
 // Actor
 public:
 	ABaseCharacter();
+	virtual void OnConstruction(const FTransform& Transform) override;
 	virtual void PostInitializeComponents() override;
 	// 네트워크 동기화 변수 설정
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 protected:
 	virtual void BeginPlay() override;
-	
-	TArray<ICharacterComponent*> CharacterComponents;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UCharacterComponent>> CharacterComponents;
 	
 private:
 	std::pmr::set<IObserver<GaugeValue<float>>*> Observers;

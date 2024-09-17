@@ -8,7 +8,7 @@
 #include "ElimDissolveComponent.generated.h"
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UElimDissolveComponent : public UActorComponent, public ICharacterComponent
+class PREPPER_API UElimDissolveComponent : public UCharacterComponent
 {
 	GENERATED_BODY()
 	

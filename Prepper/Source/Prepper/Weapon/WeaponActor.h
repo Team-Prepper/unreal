@@ -14,9 +14,6 @@ UCLASS()
 class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
 {
 	GENERATED_BODY()
-private:
-	/* Custom Depth 아이템 윤곽선 효과 */
-	void EnableCustomDepth(bool bEnable);
 	
 public:	
 	AWeaponActor();
@@ -90,9 +87,6 @@ protected:
 	
 	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
-
-	UPROPERTY()
-	EWeaponState CurWeaponState;
 	
 	UFUNCTION()
 	void OnRep_WeaponState();
@@ -111,9 +105,9 @@ private:
 	void WeaponPhysicsActive(bool active);
 	
 public:
-	FORCEINLINE USphereComponent* GetAreaSphere()		const { return AreaSphere; }
+	FORCEINLINE UShapeComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
-	FORCEINLINE EWeaponState GetWeaponState()			const { return CurWeaponState; }
+	FORCEINLINE EWeaponState GetWeaponState()			const { return WeaponState; }
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트

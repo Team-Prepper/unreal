@@ -15,8 +15,8 @@
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PREPPER_API UStatusEffectComponent : public UActorComponent,
-									public ISubject<Status>, public ICharacterComponent
+class PREPPER_API UStatusEffectComponent : public UCharacterComponent,
+											public ISubject<Status>
 {
 	GENERATED_BODY()
 

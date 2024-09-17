@@ -20,9 +20,17 @@ ABaseCharacter::ABaseCharacter()
 	ElimEvent->SetIsReplicated(true);
 }
 
+void ABaseCharacter::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+	
+}
+
 void ABaseCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	
+	GetComponents<TObjectPtr<UCharacterComponent>>(CharacterComponents);
 	
 	for (int i = 0; i < CharacterComponents.Num(); i++)
 	{

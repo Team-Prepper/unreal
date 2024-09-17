@@ -27,7 +27,6 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 
 	CombatComp = CreateDefaultSubobject<UBaseCombatComponent>(TEXT("CombatComponent"));
 	CombatComp->SetIsReplicated(true);
-	CharacterComponents.Add(CombatComp);
 	
 }
 
