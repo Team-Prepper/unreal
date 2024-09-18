@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerAbility.h"
+#include "Prepper/Interfaces/PlayerAbility.h"
 #include "UObject/Interface.h"
 #include "ItemEffect.generated.h"
 

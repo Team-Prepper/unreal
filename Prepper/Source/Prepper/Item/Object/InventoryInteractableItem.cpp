@@ -7,6 +7,10 @@
 
 AInventoryInteractableItem::AInventoryInteractableItem()
 {
+	TargetInventory = nullptr;
+	BoxCollision = nullptr;
+	WidgetComponent = nullptr;
+	WidgetInstance = nullptr;
 	PrimaryActorTick.bCanEverTick = false;
 }
 
@@ -17,13 +21,12 @@ void AInventoryInteractableItem::SetTargetInventory(UMapInventory* Inventory)
 
 void AInventoryInteractableItem::Interaction(APlayerCharacter* Target)
 {
-	if(TargetInventory->TryUseItem(ItemCode))
+	if (!TargetInventory->TryUseItem(ItemCode)) return;
+	
+	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Target);
+	if (TargetInventory->TryGetItemCount(ItemCode) == 0)
 	{
-		ItemManager::GetInstance()->GetItem(ItemCode)->Use(Target);
-		if(TargetInventory->TryGetItemCount(ItemCode) == 0)
-		{
-			DestroyInteractionItem();
-		}
+		DestroyInteractionItem();
 	}
 }
 
@@ -36,16 +39,15 @@ void AInventoryInteractableItem::ShowPickUpWidget(bool bShowWidget)
 
 void AInventoryInteractableItem::InitializeWidget()
 {
-	if (PickUpWidget && PickUpWidget->GetUserWidgetObject())
+	if (!PickUpWidget || !PickUpWidget->GetUserWidgetObject()) return;
+	if (PickUpWidget && PickUpWidget->GetUserWidgetObject()) return;
+	
+	UUserWidget* Widget = PickUpWidget->GetUserWidgetObject();
+	if (!Widget) return;
+	
+	UInventoryInteractionUI* ItemInfoWidget = Cast<UInventoryInteractionUI>(Widget);
+	if (ItemInfoWidget)
 	{
-		UUserWidget* Widget = PickUpWidget->GetUserWidgetObject();
-		if (Widget)
-		{
-			UInventoryInteractionUI* ItemInfoWidget = Cast<UInventoryInteractionUI>(Widget);
-			if (ItemInfoWidget)
-			{
-				ItemInfoWidget->InitializeWidget(ItemCode);
-			}
-		}
+		ItemInfoWidget->InitializeWidget(ItemCode);
 	}
 }

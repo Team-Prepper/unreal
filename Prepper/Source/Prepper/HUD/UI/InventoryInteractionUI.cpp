@@ -2,8 +2,8 @@
 
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
-#include "Prepper/Item/ItemData/ItemManager.h"
 #include "Prepper/HUD/ItemUIData.h"
+#include "Prepper/Item/ItemManager.h"
 
 class UItemUIData;
 

@@ -5,7 +5,7 @@
 #include "ItemCombinationData.h"
 #include "ItemData.h"
 
-FString ItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Code2)
+FString FItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Code2)
 {
 	if (Code1.Compare(Code2) > 0)
 	{
@@ -15,7 +15,7 @@ FString ItemDataGetter::ItemCombineCode(const FString& Code1, const FString& Cod
 	return Code2 + Code1;
 }
 
-ItemDataGetter::ItemDataGetter()
+FItemDataGetter::FItemDataGetter()
 {
 	static ConstructorHelpers::FObjectFinder<UDataTable>
 	ItemDataTable(TEXT("/Game/Data/ItemDataTable"));
@@ -42,36 +42,35 @@ ItemDataGetter::ItemDataGetter()
 		for (int i = 0; i < arr.Num(); ++i)
 		{
 			CombinationData.Add(ItemCombineCode(arr[i]->InputItemCode1, arr[i]->InputItemCode2), *arr[i]);
-			FCombinedItems Ingredients = FCombinedItems(arr[i]->InputItemCode1, arr[i]->InputItemCode2);
-			CombinationResultToIngredients.Add(*arr[i]->OutputItemCode,Ingredients);
 		}
 	}
 }
 
-ItemDataGetter::~ItemDataGetter()
+FItemDataGetter::~FItemDataGetter()
 {
     
 }
 
-bool ItemDataGetter::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName)
+bool FItemDataGetter::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName)
 {
 	if (!ItemData.Contains(ItemCode)) return false;
 
-	FItem* data = ItemData.Find(ItemCode);
+	const FItem* Data = ItemData.Find(ItemCode);
 
-	ItemIcon = data->ItemIcon;
-	ItemName = data->ItemName;
+	ItemIcon = Data->ItemIcon;
+	ItemName = Data->ItemName;
 	
 	return true;
 }
-FItem* ItemDataGetter::GetItem(const FString& ItemCode)
+
+FItem* FItemDataGetter::GetItem(const FString& ItemCode)
 {
 	if (!ItemData.Contains(ItemCode)) return nullptr;
 
 	return ItemData.Find(ItemCode);
 }
 
-bool ItemDataGetter::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
+bool FItemDataGetter::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
 {
 	const FString CombinationCode = ItemCombineCode(ItemCode1, ItemCode2);
 	

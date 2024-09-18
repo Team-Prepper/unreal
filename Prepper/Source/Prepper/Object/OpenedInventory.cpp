@@ -3,6 +3,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Prepper/Component/CustomCameraComponent.h"
 #include "Prepper/GameInstance/PrepperGameInstance.h"
+#include "Prepper/Item/ItemManager.h"
 #include "Prepper/Item/Object/InventoryInteractableItem.h"
 
 AOpenedInventory::AOpenedInventory()
@@ -12,7 +13,7 @@ AOpenedInventory::AOpenedInventory()
 
 	BaseActor = CreateDefaultSubobject<USceneComponent>(TEXT("BaseActor"));
 	SetRootComponent(BaseActor);
-	
+
 	InventoryMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("InventoryMesh"));
 	InventoryMesh->SetupAttachment(RootComponent);
 }
@@ -25,46 +26,45 @@ void AOpenedInventory::SetTargetInventory(UMapInventory* Inventory)
 
 void AOpenedInventory::InitInventory()
 {
-	if(!HasAuthority()) return;
-	
+	if (!HasAuthority()) return;
+
 	UE_LOG(LogTemp, Warning, TEXT("Opened Inven init"));
+	
 	UWorld* World = GetWorld();
-	if(!World)
+	if (!World)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NO WORLD"));
 		return;
 	}
-	FRotator SpawnRotation(0.0f, GetActorRotation().Yaw, 0.0f);
 	
+	const FRotator SpawnRotation(0.0f, GetActorRotation().Yaw, 0.0f);
+
 	TArray<IInventory::InventoryItem> Items = TargetInventory->GetIter();
+	
 	//UE_LOG(LogTemp, Warning, TEXT("Item Count : %d"), Items.Num());
 	for (int i = 0; i < Items.Num(); i++)
 	{
 		IInventory::InventoryItem Item = Items[i]; // 생성할 아이템 선택
 
-		UPrepperGameInstance* PrepperGameInstance = Cast<UPrepperGameInstance>(GetGameInstance());
-		if(PrepperGameInstance->GetItemInstance(Item.ItemCode))
-		{
-			InventoryInteractableItem = World->SpawnActor<AInventoryInteractableItem>(
-				*PrepperGameInstance->GetItemInstance(Item.ItemCode),
-				GetActorLocation()
-				+ GetActorForwardVector() * (RowPivot - 100.0f * (i % RowSize))
-				+ GetActorRightVector() * (ColPivot + 100.0f * (i/RowSize))
-				+ GetActorLocation().UpVector * HeightPivot,  
-				SpawnRotation
-				);
-			if(InventoryInteractableItem)
-			{
-				SpawnedActors.Add(InventoryInteractableItem);	
-			}
-			UE_LOG(LogTemp, Warning, TEXT("Spawn Inven Item"));
-		}
-		else
+		InventoryInteractableItem = ItemManager::GetInstance()->SpawnItemInteraction(GetWorld(), Item.ItemCode);
+	
+		if (!InventoryInteractableItem)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Check Game Instace!"));
+			continue;
 		}
-			
+		
+		InventoryInteractableItem->SetActorLocation(GetActorLocation()
+			+ GetActorForwardVector() * (RowPivot - 100.0f * (i % RowSize))
+			+ GetActorRightVector() * (ColPivot + 100.0f * (i / RowSize))
+			+ GetActorLocation().UpVector * HeightPivot);
+
+		InventoryInteractableItem->SetActorRotation(SpawnRotation);
 		InventoryInteractableItem->SetTargetInventory(TargetInventory);
+		
+		SpawnedActors.Add(InventoryInteractableItem);
+		
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Inven Item"));
 	}
 }
 
@@ -75,4 +75,3 @@ void AOpenedInventory::CloseInventory()
 		Item->Destroy();
 	}
 }
-

@@ -20,18 +20,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 	TMap<FString, TSubclassOf<class AInventoryInteractableItem>> InteractableItems;
 
+	UPROPERTY(EditAnywhere, Category="Item")
+	UDataTable* ItemDataTable;
+	UPROPERTY(EditAnywhere, Category="Item")
+	UDataTable* ItemCombinationDataTable;
 
 public:
 	UPrepperGameInstance();
-	
-	TMap<FString, FItem> ItemData;
 
-	virtual void Init() override {
-		UIManager::Initialize();
-	};	
-
-public:
-	bool GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FText& ItemName);
-	FItem* GetItem(const FString& ItemCode);
-	TSubclassOf<class AInventoryInteractableItem>* GetItemInstance(FString ItemCode);
+	virtual void Init() override;
 };

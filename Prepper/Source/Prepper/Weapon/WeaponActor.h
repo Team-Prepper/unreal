@@ -3,8 +3,7 @@
 #include "CoreMinimal.h"
 #include "WeaponTypes.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/Interfaces/Weapon.h"
-#include "Prepper/Interfaces/WeaponHandler.h"
+#include "Weapon.h"
 #include "Prepper/Object/InteractableActor.h"
 #include "Sound/SoundCue.h"
 #include "WeaponActor.generated.h"
@@ -19,12 +18,14 @@ public:
 	AWeaponActor();
 	
 	virtual EWeaponType GetWeaponType() override { return WeaponType; };
+	virtual void SetWeaponHandler(IWeaponHandler* NewOwner) override;
 	virtual void SetWeaponState(EWeaponState State) override;
+	virtual int GetLeftAmmo() override { return -1; }
+	
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	virtual void OnRep_Owner() override;
-	virtual void SetWeaponHandler(IWeaponHandler* NewOwner) override;
-	virtual int GetLeftAmmo() override { return -1; }
 
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 

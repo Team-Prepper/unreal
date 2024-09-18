@@ -2,14 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
-#include "Component/CharacterComponent.h"
 #include "Prepper/Component/CustomCameraComponent.h"
 #include "Prepper/Enums/TurningInPlace.h"
 #include "Prepper/Enums/CombatState.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
-#include "Prepper/Item/MapInventory.h"
+#include "Prepper/Item/Inventory/MapInventory.h"
+#include "Prepper/Weapon/WeaponActor.h"
 #include "PlayerCharacter.generated.h"
 
 class UFlexibleSpringArmComponent;
@@ -68,7 +68,6 @@ private:
 	class APrepperHUD* PrepperHUD;
 	
 	std::pmr::set<IObserver<UMapInventory>*> InventoryObservers;
-
 	
 public:
 

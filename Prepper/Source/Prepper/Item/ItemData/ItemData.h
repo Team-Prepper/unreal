@@ -13,17 +13,23 @@ struct PREPPER_API FItemData : public FTableRowBase
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
+	TSubclassOf<AActor> Object;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
+	TSubclassOf<AInventoryInteractableItem> Interaction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
+	UTexture2D* ItemIcon;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FString ItemCode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FText ItemName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FString ItemEffect;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
-	UTexture2D* ItemIcon;
-
-	FItem GetItem()
+	FItem GetItem() const
 	{
-		return FItem(ItemCode, ItemName, ItemEffect, ItemIcon);
+		return FItem(ItemCode, ItemName, ItemEffect, ItemIcon, Object, Interaction);
 	}
 };

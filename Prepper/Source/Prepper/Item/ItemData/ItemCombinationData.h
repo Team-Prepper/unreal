@@ -19,5 +19,16 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
 	FString OutputItemCode;
+	FItemCombinationData()
+		: InputItemCode1(TEXT("DefaultString1")), InputItemCode2(TEXT("DefaultString2"))
+	{
+	}
+	
+	// 오버로드된 생성자 선언
+	FItemCombinationData(const FString& InString1, const FString& InString2, const FString& OutString)
+		: InputItemCode1(InString1), InputItemCode2(InString2), OutputItemCode(OutString)
+	{
+		
+	}
 };
 

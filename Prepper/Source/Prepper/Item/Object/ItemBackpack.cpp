@@ -5,6 +5,7 @@
 #include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Prepper/Item/Inventory/MapInventory.h"
 #include "Prepper/Object/OpenedInventory.h"
 #include "Sound/SoundCue.h"
 
