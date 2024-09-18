@@ -5,9 +5,8 @@
 #include <set>
 
 #include "CoreMinimal.h"
+#include "Inventory.h"
 #include "Components/ActorComponent.h"
-#include "ItemData/ItemManager.h"
-#include "Prepper/Interfaces/Inventory.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "Net/UnrealNetwork.h" // 네트워크 관련 헤더 추가
 #include "MapInventory.generated.h"

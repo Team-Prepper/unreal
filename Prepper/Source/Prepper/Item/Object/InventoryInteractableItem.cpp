@@ -4,6 +4,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/HUD/UI/InventoryInteractionUI.h"
+#include "Prepper/Item/ItemManager.h"
+#include "Prepper/Character/PlayerCharacter.h"
 
 AInventoryInteractableItem::AInventoryInteractableItem()
 {
@@ -23,7 +25,7 @@ void AInventoryInteractableItem::Interaction(APlayerCharacter* Target)
 {
 	if (!TargetInventory->TryUseItem(ItemCode)) return;
 	
-	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Target);
+	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Cast<IPlayerAbility>(Target));
 	if (TargetInventory->TryGetItemCount(ItemCode) == 0)
 	{
 		DestroyInteractionItem();
