@@ -9,27 +9,16 @@
 #include "Prepper/Interfaces/PlayerAbility.h"
 #include "Item.generated.h"
 
-
-
 USTRUCT()
 struct PREPPER_API FItem
 {
 	GENERATED_BODY()
 
-	FString ItemCode;
-	FText ItemName;
-
-	UPROPERTY()
-	TObjectPtr<UTexture2D> ItemIcon;
-	UPROPERTY()
-	TSubclassOf<AActor> ItemObject;
-	TSubclassOf<AInventoryInteractableItem> ItemInteraction;
-
 	TArray<IItemEffect *> ItemEffects;
 	static IItemEffect* StringToItemEffect(const FString& Value);
 	
 	FItem();
-	FItem(const FString& Code, const FText& Name, const FString& ItemEffectCode, UTexture2D* Icon, TSubclassOf<AActor> Object, TSubclassOf<AInventoryInteractableItem> Interaction);
+	FItem(const FString& ItemEffectCode);
 	
 	void Use(IPlayerAbility* Target);
 };

@@ -6,6 +6,7 @@
 #include "Prepper/Item/ItemManager.h"
 #include "Prepper/Item/ItemData/ItemData.h"
 #include "Prepper/_Base/DataTableGetter.h"
+#include "Prepper/_Base/UISystem/UIManager.h"
 
 namespace EQSDebug
 {

@@ -5,6 +5,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Prepper/Character/Component/Status.h"
+#include "Prepper/Item/Inventory/MapInventory.h"
 #include "Prepper/_Base/ObserverPattern/Observer.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
 #include "CharacterOverlay.generated.h"

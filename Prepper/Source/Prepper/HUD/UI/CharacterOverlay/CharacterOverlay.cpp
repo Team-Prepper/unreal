@@ -42,7 +42,7 @@ void UCharacterOverlay::Update(const TArray<FItemConvertData>& NewData)
 	for (const auto& Elem : NewData)
 	{
 		UE_LOG(LogTemp, Log, TEXT("Key: %s, Value: %d"), *Elem.ItemCode, Elem.Count);
-		AddItemIcon(ItemManager::GetInstance()->GetItem(Elem.ItemCode)->ItemIcon);
+		AddItemIcon(ItemManager::GetInstance()->GetItemMeta(Elem.ItemCode)->ItemIcon);
 	}
 }
 

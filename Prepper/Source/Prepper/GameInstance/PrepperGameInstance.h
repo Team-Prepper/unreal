@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "Prepper/Item/ItemData/ItemDataGetter.h"
-#include "Prepper/_Base/UISystem/UIManager.h"
 #include "PrepperGameInstance.generated.h"
 
 /**

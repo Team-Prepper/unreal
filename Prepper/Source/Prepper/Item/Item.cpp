@@ -13,8 +13,8 @@ IItemEffect* FItem::StringToItemEffect(const FString& Value)
 		
 	TArray<FString> CodePiece; 
 	const TCHAR* Delims[] = { TEXT(":") };
-	const int32 nArraySize = Value.ParseIntoArray(CodePiece, Delims, 1);
-
+	const int32 ArraySize = Value.ParseIntoArray(CodePiece, Delims, 1);
+	
 	if (CodePiece[0].Compare("Heal"))
 		return new HealEffect(FCString::Atoi(*CodePiece[1]));
 	if (CodePiece[0].Compare("Eat"))
@@ -22,24 +22,18 @@ IItemEffect* FItem::StringToItemEffect(const FString& Value)
 	if (CodePiece[0].Compare("Drink"))
 		return new DrinkEffect(FCString::Atoi(*CodePiece[1]));
 
-	return new class HealEffect(FCString::Atoi(*CodePiece[1]));
+	return new HealEffect(FCString::Atoi(*CodePiece[1]));
 		
 }
 
 FItem::FItem()
 {
-	FItem("", FText::FromString(""), "", nullptr, nullptr, nullptr);
+	FItem("");
 		
 }
 
-FItem::FItem(const FString& Code, const FText& Name, const FString& ItemEffectCode, UTexture2D* Icon, TSubclassOf<AActor> Object, TSubclassOf<AInventoryInteractableItem> Interaction)
+FItem::FItem(const FString& ItemEffectCode)
 {
-	ItemCode = Code;
-	ItemName = Name;
-	ItemIcon = Icon;
-	ItemObject = Object;
-	ItemInteraction = Interaction;
-		
 	TArray<FString> CodePiece; 
 	const TCHAR* Delims[] = { TEXT(",") };
 	const int32 ArraySize = ItemEffectCode.ParseIntoArray(CodePiece, Delims, 1);

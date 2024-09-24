@@ -42,6 +42,7 @@ void ItemManager::Initial(const TObjectPtr<UDataTable> ItemDataTable, const TObj
 		for (int i = 0; i < arr.Num(); ++i)
 		{
 			ItemData.Add(arr[i]->ItemCode, arr[i]->GetItem());
+			ItemMetaData.Add(arr[i]->ItemCode, arr[i]->GetItemMeta());
 		}
 		UE_LOG(LogTemp, Warning, TEXT("ItemDataTableLoad: %d"), arr.Num());
 		
@@ -63,10 +64,10 @@ bool ItemManager::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FT
 {
 	if (!ItemData.Contains(ItemCode)) return false;
 
-	FItem* data = ItemData.Find(ItemCode);
+	const FItemMeta* Data = ItemMetaData.Find(ItemCode);
 
-	ItemIcon = data->ItemIcon;
-	ItemName = data->ItemName;
+	ItemIcon = Data->ItemIcon;
+	ItemName = Data->ItemName;
 	
 	return true;
 }
@@ -77,16 +78,24 @@ FItem* ItemManager::GetItem(const FString& ItemCode)
 	return ItemData.Find(ItemCode);
 }
 
+FItemMeta* ItemManager::GetItemMeta(const FString& ItemCode)
+{
+	if (!ItemMetaData.Contains(ItemCode)) return nullptr;
+
+	return ItemMetaData.Find(ItemCode);
+	
+}
+
 TObjectPtr<AActor> ItemManager::SpawnItem(UWorld* World, const FString& ItemCode)
 {
 	if (World == nullptr) return nullptr;
-	return World->SpawnActor<AActor>(ItemData.Find(ItemCode)->ItemObject);
+	return World->SpawnActor<AActor>(ItemMetaData.Find(ItemCode)->ItemObject);
 }
 
 TObjectPtr<AInventoryInteractableItem> ItemManager::SpawnItemInteraction(UWorld* World, const FString& ItemCode)
 {
 	if (World == nullptr) return nullptr;
-	return World->SpawnActor<AInventoryInteractableItem>(ItemData.Find(ItemCode)->ItemInteraction);
+	return World->SpawnActor<AInventoryInteractableItem>(ItemMetaData.Find(ItemCode)->ItemInteraction);
 }
 
 bool ItemManager::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
