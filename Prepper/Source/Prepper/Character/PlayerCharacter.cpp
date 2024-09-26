@@ -131,17 +131,7 @@ void APlayerCharacter::Elim()
 	ABasePlayerController* PrepperPlayerController = Cast<ABasePlayerController>(Controller);
 	PrepperPlayerController->ResetPlayer();
 
-	const bool bHideSniperScope = IsLocallyControlled() && 
-		CombatComp && 
-		CombatComp->bAiming && 
-		CombatComp->EquippedWeapon && 
-		CombatComp->EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle;
-	
-	if (bHideSniperScope)
-	{
-		ShowSniperScopeWidget(false);
-	}
-
+	Tags.Add("Death");
 	Super::Elim();
 	
 }

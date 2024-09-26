@@ -399,6 +399,14 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 void UCombatComponent::TargetElim()
 {
 	Super::TargetElim();
+	
+	if (Character->IsLocallyControlled() &&
+		bAiming && EquippedWeapon &&
+		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	{
+		AimingEffect->ShowSniperScopeWidget(false);
+	}
+		
 	if(SecondaryWeapon)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);

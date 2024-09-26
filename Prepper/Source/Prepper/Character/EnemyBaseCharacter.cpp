@@ -48,40 +48,43 @@ void AEnemyBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	if(IsElimed()) return;
+	if (CombatComp->GetCombatState() == ECombatState::ECS_Fire) return;
+	
+	if (!TargetAlive(PatrolTarget))
+	{
+		PatrolTarget = nullptr;
+		EnemyState = EEnemyState::EES_Patrolling;
+	}
 	
 	// 공격사거리 안에서 공격이 아닐떄 -> 공격!
-	if (InTargetRange(CombatTarget, AttackRadius))
+	if (InTargetRange(PatrolTarget, AttackRadius))
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("CODE : zombie Attack"));
 		AttackTrigger(true);
+		AttackTrigger(false);
 
 		//UE_LOG(LogTemp, Warning, TEXT("%hs"), CombatComp == nullptr ? "True":"False");
 		return;
 	}
 
-	AttackTrigger(false);
-
-	if (InTargetRange(CombatTarget, CombatRadius))
+	if (InTargetRange(PatrolTarget, CombatRadius))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
 		EnemyState = EEnemyState::EES_Chasing;
 		GetCharacterMovement()->MaxWalkSpeed = 600.f;
-		MoveToTarget(CombatTarget);
+		MoveToTarget(PatrolTarget);
 		return;
 	}
 
 	if (PatrolTarget != nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
-		CombatTarget = nullptr;
 		EnemyState = EEnemyState::EES_Patrolling;
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(PatrolTarget);
 	}
 
 	CheckPatrolTarget();
-	
-	return;
 }
 
 void AEnemyBaseCharacter::CheckPatrolTarget()
@@ -111,11 +114,20 @@ void AEnemyBaseCharacter::PatrolTimerFinished()
 	MoveToTarget(PatrolTarget);
 }
 
-bool AEnemyBaseCharacter::InTargetRange(AActor* Target, float Radius)
+bool AEnemyBaseCharacter::InTargetRange(const TObjectPtr<AActor> Target, const float Radius) const
 {
 	if (Target == nullptr) return false;
-	const float DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-	return DistanceToTarget <= Radius;
+	
+	const float DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).SizeSquared();
+	return DistanceToTarget <= Radius * Radius;
+}
+
+bool AEnemyBaseCharacter::TargetAlive(const TObjectPtr<AActor> Target) const
+{
+	if (!Target) return false;
+	if (Target->ActorHasTag("Death")) return false;
+	return true;
+	
 }
 
 void AEnemyBaseCharacter::MoveToTarget(AActor* Target)
@@ -156,17 +168,19 @@ AActor* AEnemyBaseCharacter::ChoosePatrolTarget()
 void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 {
 	if(IsElimed()) return;
-	if (!SeenPawn->ActorHasTag(FName("PlayerCharacter"))) return; 
+	if (!SeenPawn->ActorHasTag(FName("PlayerCharacter"))) return;
+	if (SeenPawn->ActorHasTag(FName("Death"))) return;
+	
 	// 엑터의 태그가 플레이어일때만
 	//UE_LOG(LogTemp, Warning, TEXT("zombie SEE -> chasing"));
+	
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	GetCharacterMovement()->MaxWalkSpeed = 600.f;
-	CombatTarget = SeenPawn;
+	PatrolTarget = SeenPawn;
 	
 	if (EnemyState != EEnemyState::EES_Attacking)
 	{
 		EnemyState = EEnemyState::EES_Chasing;
-		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
+		FVector TargetLocation = PatrolTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
 		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 	}
 	
@@ -175,17 +189,21 @@ void AEnemyBaseCharacter::PawnSeen(APawn* SeenPawn)
 void AEnemyBaseCharacter::PawnHearn(APawn *HearnPawn, const FVector &Location, float Volume)
 {
 	if(IsElimed()) return;
-	UE_LOG(LogTemp, Display, TEXT("CODE : zombie HEAR"));
+	
 	if (EnemyState == EEnemyState::EES_Chasing) return;
 	
+	if (!HearnPawn->ActorHasTag(FName("PlayerCharacter"))) return;
+	if (HearnPawn->ActorHasTag(FName("Death"))) return;
+	
+	UE_LOG(LogTemp, Display, TEXT("CODE : zombie HEAR"));
+	
 	GetWorldTimerManager().ClearTimer(PatrolTimer);
-	GetCharacterMovement()->MaxWalkSpeed = 100.f;
-	CombatTarget = HearnPawn;
+	PatrolTarget = HearnPawn;
 	
 	if (EnemyState != EEnemyState::EES_Attacking)
 	{
 		EnemyState = EEnemyState::EES_Chasing;
-		FVector TargetLocation = CombatTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
+		FVector TargetLocation = PatrolTarget->GetActorLocation(); // 플레이어의 위치를 복사하여 전달
 		MoveToLocation(TargetLocation); // 플레이어 위치로 이동
 	}
 }
