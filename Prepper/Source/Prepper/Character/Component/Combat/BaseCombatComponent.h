@@ -139,4 +139,6 @@ protected:
 	ECombatState CombatState = ECombatState::ECS_Unoccupied;
 	UFUNCTION()
 	void OnRep_CombatState();
+public:
+	ECombatState GetCombatState() const { return CombatState; }
 };

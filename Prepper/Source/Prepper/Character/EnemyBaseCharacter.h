@@ -71,7 +71,8 @@ protected:
 
 	EEnemyState EnemyState = EEnemyState::EES_Patrolling;
 
-	bool InTargetRange(AActor* Target, float Radius);
+	bool InTargetRange(const TObjectPtr<AActor> Target, const float Radius) const;
+	bool TargetAlive(const TObjectPtr<AActor> Target) const;
 	void MoveToTarget(AActor* Target);
 	void MoveToLocation(FVector &Location);
 	AActor* ChoosePatrolTarget();
@@ -95,8 +96,5 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeaponActor> WeaponActorClass;
-
-	UPROPERTY()
-	AActor* CombatTarget;
 	
 };
