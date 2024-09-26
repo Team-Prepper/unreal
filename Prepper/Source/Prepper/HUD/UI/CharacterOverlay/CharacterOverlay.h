@@ -18,40 +18,57 @@ class PREPPER_API UCharacterOverlay : public UUserWidget,
 										public IObserver<TArray<FItemConvertData>>
 {
 	GENERATED_BODY()
-	UPROPERTY(meta = (BindWidget))
+
+	// Health
+private:
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Health)
 	UProgressBar* HealthBar;
-
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Health)
 	UTextBlock* HealthText;
-
 public:
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* ScoreValue;
+	virtual void Update(const GaugeValue<float>& NewData) override;
 
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* DefeatsValue;
-
-	UPROPERTY(meta = (BindWidget))
+	// Weapon
+private:
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Weapon)
 	UTextBlock* WeaponAmmoValue;
-
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Weapon)
 	UTextBlock* CarriedAmmoValue;
 
-	UPROPERTY(meta = (BindWidget))
+public:
+	virtual void Update(const GaugeValue<int>& NewData) override;
+
+	// DeathMatch
+private:
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
+	UTextBlock* ScoreValue;
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
+	UTextBlock* DefeatsValue;
+public:
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
 	UTextBlock* MatchCountDownText;
+	void SetScore(float Score) const;
+	void SetDefeat(int Defeat) const;
+	void ToggleDeathMatch(bool On);
 
-	UPROPERTY(meta = (BindWidget))
+	// Story
+private:
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
 	UProgressBar* HungerBar;
-
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
 	UProgressBar* ThirstBar;
-
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
 	UProgressBar* InfectionBar;
-
+	
 	// UI에서 사용할 Vertical Box 변수
-	UPROPERTY(meta = (BindWidget))
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
 	class UVerticalBox* ItemBox;
+
+public:
+	void ToggleStory(bool On);
+	
+	virtual void Update(const Status& NewData) override;
+	virtual void Update(const TArray<FItemConvertData>& NewData) override;
 
 	// 아이콘을 Vertical Box에 추가하는 함수
 	UFUNCTION(BlueprintCallable, Category="Inventory")
@@ -59,9 +76,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Inventory")
 	void ClearAllItemIcons();
-	
-	virtual void Update(const GaugeValue<float>& NewData) override;
-	virtual void Update(const GaugeValue<int>& NewData) override;
-	virtual void Update(const Status& NewData) override;
-	virtual void Update(const TArray<FItemConvertData>& NewData) override;
 };

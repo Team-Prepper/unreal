@@ -14,5 +14,17 @@ class PREPPER_API AStoryPlayerController : public ABasePlayerController
 {
 	GENERATED_BODY()
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* Button1;
+
+	virtual void PollInit() override;
 	virtual void PossessPlayerCharacter() override;
+	virtual void SetInput(UEnhancedInputComponent* Input) override;
+	
+	void OpenInventoryPressed();
+
+	void QuickSlot1Use();
+
+	UFUNCTION(Server, Reliable)
+	void ServerToggleInventory();
 };

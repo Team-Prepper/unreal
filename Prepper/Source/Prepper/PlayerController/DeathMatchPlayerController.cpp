@@ -1,4 +1,6 @@
 #include "DeathMatchPlayerController.h"
+
+#include "EnhancedInputComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Components/Image.h"
@@ -21,6 +23,9 @@ void ADeathMatchPlayerController::BeginPlay()
 void ADeathMatchPlayerController::PollInit()
 {
 	Super::PollInit();
+
+	PrepperHUD->CharacterOverlay->ToggleDeathMatch(true);
+	PrepperHUD->CharacterOverlay->ToggleStory(false);
 	
 	SetHUDScore(HUDScore);
 	SetHUDDefeats(HUDDefeats);
@@ -42,13 +47,9 @@ void ADeathMatchPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimePro
 void ADeathMatchPlayerController::SetHUDScore(float Score)
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->CharacterOverlay &&
-					 PrepperHUD->CharacterOverlay->ScoreValue;
-	if(bHUDValid)
+	if (PrepperHUD && PrepperHUD->CharacterOverlay)
 	{
-		FString ScoreText = FString::Printf(TEXT("%d"),FMath::FloorToInt(Score));
-		PrepperHUD->CharacterOverlay->ScoreValue->SetText(FText::FromString(ScoreText));
+		PrepperHUD->CharacterOverlay->SetScore(Score);
 	}
 	else
 	{
@@ -59,13 +60,10 @@ void ADeathMatchPlayerController::SetHUDScore(float Score)
 void ADeathMatchPlayerController::SetHUDDefeats(int32 Defeats)
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->CharacterOverlay &&
-					 PrepperHUD->CharacterOverlay->DefeatsValue;
-	if(bHUDValid)
+	if (PrepperHUD &&
+		PrepperHUD->CharacterOverlay)
 	{
-		FString DefeatsText = FString::Printf(TEXT("%d"),Defeats);
-		PrepperHUD->CharacterOverlay->DefeatsValue->SetText(FText::FromString(DefeatsText));
+		PrepperHUD->CharacterOverlay->SetDefeat(Defeats);
 	}
 	else
 	{
@@ -76,17 +74,16 @@ void ADeathMatchPlayerController::SetHUDDefeats(int32 Defeats)
 void ADeathMatchPlayerController::SetHUDMatchCountdown(float CountdownTime)
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->CharacterOverlay &&
-					 PrepperHUD->CharacterOverlay->WeaponAmmoValue;
-	if (bHUDValid)
+
+	if (PrepperHUD &&
+		PrepperHUD->CharacterOverlay)
 	{
-		if(CountdownTime < 0.f)
+		if (CountdownTime < 0.f)
 		{
 			PrepperHUD->CharacterOverlay->MatchCountDownText->SetText(FText());
 			return;
 		}
-		
+
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 		int32 Seconds = CountdownTime - Minutes * 60;
 
@@ -99,16 +96,16 @@ void ADeathMatchPlayerController::SetHUDAnnouncementCountdown(float CountdownTim
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
 	bool bHUDValid = PrepperHUD &&
-					 PrepperHUD->Announcement &&
-					 PrepperHUD->Announcement->WarmupTime;
+		PrepperHUD->Announcement &&
+		PrepperHUD->Announcement->WarmupTime;
 	if (bHUDValid)
 	{
-		if(CountdownTime < 0.f)
+		if (CountdownTime < 0.f)
 		{
 			PrepperHUD->Announcement->WarmupTime->SetText(FText());
 			return;
 		}
-		
+
 		int32 Minutes = FMath::FloorToInt(CountdownTime / 60.f);
 		int32 Seconds = CountdownTime - Minutes * 60;
 
@@ -121,19 +118,25 @@ void ADeathMatchPlayerController::SetHUDTime()
 {
 	float TimeLeft = 0.f;
 	if (MatchState == MatchState::WaitingToStart) TimeLeft = WarmupTime - GetServerTime() + LevelStartingTime;
-	else if (MatchState == MatchState::InProgress) TimeLeft = WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
-	else if (MatchState == MatchState::Cooldown) TimeLeft = CooldownTime + WarmupTime + MatchTime - GetServerTime() + LevelStartingTime;
+	else if (MatchState == MatchState::InProgress)
+		TimeLeft = WarmupTime + MatchTime - GetServerTime() +
+			LevelStartingTime;
+	else if (MatchState == MatchState::Cooldown)
+		TimeLeft = CooldownTime + WarmupTime + MatchTime - GetServerTime() +
+			LevelStartingTime;
 	uint32 SecondsLeft = FMath::CeilToInt(TimeLeft);
 
-	if(HasAuthority())
+	if (HasAuthority())
 	{
-		DeathMatchGameMode = DeathMatchGameMode == nullptr ? Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this)) : DeathMatchGameMode;
-		if(DeathMatchGameMode)
+		DeathMatchGameMode = DeathMatchGameMode == nullptr
+			                     ? Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this))
+			                     : DeathMatchGameMode;
+		if (DeathMatchGameMode)
 		{
 			SecondsLeft = FMath::CeilToInt(DeathMatchGameMode->GetCountdownTime() + LevelStartingTime);
 		}
 	}
-	
+
 	if (CountdownInt != SecondsLeft)
 	{
 		if (MatchState == MatchState::WaitingToStart || MatchState == MatchState::Cooldown)
@@ -177,7 +180,7 @@ void ADeathMatchPlayerController::OnMatchStateSet(FName State)
 {
 	MatchState = State;
 
-	if(MatchState == MatchState::InProgress)
+	if (MatchState == MatchState::InProgress)
 	{
 		HandleMatchHasStarted();
 	}
@@ -189,7 +192,7 @@ void ADeathMatchPlayerController::OnMatchStateSet(FName State)
 
 void ADeathMatchPlayerController::OnRep_MatchState()
 {
-	if(MatchState == MatchState::InProgress)
+	if (MatchState == MatchState::InProgress)
 	{
 		HandleMatchHasStarted();
 	}
@@ -202,11 +205,9 @@ void ADeathMatchPlayerController::OnRep_MatchState()
 void ADeathMatchPlayerController::HandleMatchHasStarted()
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	if(PrepperHUD)
+	if (PrepperHUD)
 	{
-		if(PrepperHUD->CharacterOverlay == nullptr)
-			PrepperHUD->AddCharacterOverlay();
-		if(PrepperHUD->Announcement)
+		if (PrepperHUD->Announcement)
 		{
 			PrepperHUD->Announcement->SetVisibility(ESlateVisibility::Hidden);
 		}
@@ -216,25 +217,26 @@ void ADeathMatchPlayerController::HandleMatchHasStarted()
 void ADeathMatchPlayerController::HandleCooldown()
 {
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-	if(PrepperHUD)
+	if (PrepperHUD)
 	{
 		PrepperHUD->CharacterOverlay->RemoveFromParent();
 		bool bHUDValid = PrepperHUD->Announcement &&
-						 PrepperHUD->Announcement->AnnouncementText &&
-						 PrepperHUD->Announcement->InfoText;
-		if(bHUDValid)
+			PrepperHUD->Announcement->AnnouncementText &&
+			PrepperHUD->Announcement->InfoText;
+		if (bHUDValid)
 		{
 			PrepperHUD->Announcement->SetVisibility(ESlateVisibility::Visible);
 			FString AnnouncementText("New Match Starts In : ");
 			PrepperHUD->Announcement->AnnouncementText->SetText(FText::FromString(AnnouncementText));
-			
-			ADeathMatchGameState* DeathMatchGameState = Cast<ADeathMatchGameState>(UGameplayStatics::GetGameState(this));
+
+			ADeathMatchGameState* DeathMatchGameState = Cast<
+				ADeathMatchGameState>(UGameplayStatics::GetGameState(this));
 			ADeathMatchPlayerState* DeathMatchPlayerState = GetPlayerState<ADeathMatchPlayerState>();
-			if(DeathMatchGameState && DeathMatchPlayerState)
+			if (DeathMatchGameState && DeathMatchPlayerState)
 			{
 				TArray<ADeathMatchPlayerState*> TopPlayers = DeathMatchGameState->TopScoringPlayers;
 				FString InfoTexString;
-				if(TopPlayers.Num() == 0)
+				if (TopPlayers.Num() == 0)
 				{
 					InfoTexString = FString("There is no winner");
 				}
@@ -254,14 +256,13 @@ void ADeathMatchPlayerController::HandleCooldown()
 						InfoTexString.Append(FString::Printf(TEXT("%s\n"), *TiedPlayer->GetPlayerName()));
 					}
 				}
-				
+
 				PrepperHUD->Announcement->InfoText->SetText(FText::FromString(InfoTexString));
 			}
-			
 		}
 	}
 	PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-	if(PlayerCharacter && PlayerCharacter->GetCombatComponent())
+	if (PlayerCharacter && PlayerCharacter->GetCombatComponent())
 	{
 		PlayerCharacter->bDisableGamePlay = true;
 		PlayerCharacter->GetCombatComponent()->FireTrigger(false);
@@ -269,7 +270,7 @@ void ADeathMatchPlayerController::HandleCooldown()
 }
 
 void ADeathMatchPlayerController::ClientJoinMidGame_Implementation(FName StateOfMatch, float Warmup, float Match,
-	float Cooldown, float StartingTime)
+                                                                   float Cooldown, float StartingTime)
 {
 	WarmupTime = Warmup;
 	MatchTime = Match;
@@ -286,7 +287,7 @@ void ADeathMatchPlayerController::ClientJoinMidGame_Implementation(FName StateOf
 void ADeathMatchPlayerController::ServerCheckMatchState_Implementation()
 {
 	ADeathMatchGameMode* GameMode = Cast<ADeathMatchGameMode>(UGameplayStatics::GetGameMode(this));
-	if(GameMode)	
+	if (GameMode)
 	{
 		WarmupTime = GameMode->WarmupTime;
 		MatchTime = GameMode->MatchTime;
@@ -298,7 +299,7 @@ void ADeathMatchPlayerController::ServerCheckMatchState_Implementation()
 }
 
 void ADeathMatchPlayerController::ClientReportServerTime_Implementation(float TimeOfClientRequest,
-                                                                       float TimeServerReceivedClientRequest)
+                                                                        float TimeServerReceivedClientRequest)
 {
 	float RoundTripTime = GetWorld()->GetTimeSeconds() - TimeOfClientRequest;
 	float CurrentServerTime = TimeServerReceivedClientRequest + (0.5f * RoundTripTime);
@@ -309,4 +310,19 @@ void ADeathMatchPlayerController::ServerRequestServerTime_Implementation(float T
 {
 	float ServerTimeOfReceipt = GetWorld()->GetTimeSeconds();
 	ClientReportServerTime(TimeOfClientRequest, ServerTimeOfReceipt);
+}
+
+void ADeathMatchPlayerController::SetInput(UEnhancedInputComponent* Input)
+{
+	Super::SetInput(Input);
+	Input->BindAction(OpenInventory, ETriggerEvent::Started, this, &ADeathMatchPlayerController::OpenScoreBoard);
+	Input->BindAction(OpenInventory, ETriggerEvent::Completed, this, &ADeathMatchPlayerController::CloseScoreBoard);
+}
+
+void ADeathMatchPlayerController::OpenScoreBoard()
+{
+}
+
+void ADeathMatchPlayerController::CloseScoreBoard()
+{
 }

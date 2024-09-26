@@ -70,5 +70,9 @@ protected:
 
 	UFUNCTION(Client, Reliable)
 	void ClientJoinMidGame(FName StateOfMatch, float Warmup, float Match, float Cooldown, float StartingTime);
-	
+
+protected:
+	virtual void SetInput(UEnhancedInputComponent* Input) override;
+	void OpenScoreBoard();
+	void CloseScoreBoard();
 };

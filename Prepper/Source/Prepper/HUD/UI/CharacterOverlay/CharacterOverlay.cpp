@@ -29,6 +29,34 @@ void UCharacterOverlay::Update(const GaugeValue<int>& NewData)
 	CarriedAmmoValue->SetText(FText::FromString(CarriedText));
 }
 
+void UCharacterOverlay::SetScore(float Score) const
+{
+	FString ScoreText = FString::Printf(TEXT("%d"),FMath::FloorToInt(Score));
+	ScoreValue->SetText(FText::FromString(ScoreText));
+}
+
+void UCharacterOverlay::SetDefeat(int Defeat) const
+{
+	FString DefeatsText = FString::Printf(TEXT("%d"), Defeat);
+	DefeatsValue->SetText(FText::FromString(DefeatsText));
+}
+
+void UCharacterOverlay::ToggleDeathMatch(bool On)
+{
+	const ESlateVisibility OnVisibility = On ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+	ScoreValue->SetVisibility(OnVisibility);
+	DefeatsValue->SetVisibility(OnVisibility);
+	MatchCountDownText->SetVisibility(OnVisibility);
+}
+
+void UCharacterOverlay::ToggleStory(bool On)
+{
+	const ESlateVisibility OnVisibility = On ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+	HungerBar->SetVisibility(OnVisibility);
+	ThirstBar->SetVisibility(OnVisibility);
+	InfectionBar->SetVisibility(OnVisibility);
+}
+
 void UCharacterOverlay::Update(const Status& NewData)
 {
 	HungerBar->SetPercent(NewData.Hungry.GetRatio());
