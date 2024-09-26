@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "Effect/ItemEffect.h"
 #include "GameFramework/Actor.h"
-#include "Object/InventoryInteractableItem.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
 #include "Item.generated.h"
 
@@ -13,10 +12,11 @@ USTRUCT()
 struct PREPPER_API FItem
 {
 	GENERATED_BODY()
-
+private:
 	TArray<IItemEffect *> ItemEffects;
 	static IItemEffect* StringToItemEffect(const FString& Value);
 	
+public:
 	FItem();
 	FItem(const FString& ItemEffectCode);
 	

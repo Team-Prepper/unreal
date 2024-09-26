@@ -1,25 +1,27 @@
-﻿#pragma once
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/GameMode/PrepperGameMode.h"
-#include "UObject/Interface.h"
+#include "MissionChecker/MissionChecker.h"
+#include "MissionReward/MissionReward.h"
+#include "UObject/Object.h"
 #include "Mission.generated.h"
 
-UINTERFACE(MinimalAPI)
-class UMission : public UInterface
+/**
+ * 
+ */
+UCLASS()
+class PREPPER_API UMission : public UObject
 {
 	GENERATED_BODY()
-};
-
-class PREPPER_API IMission
-{
-	GENERATED_BODY()
+private:
+	IMissionChecker* Checker;
+	IMissionReward* Reward;
+	static TArray<FString> SplitString(const FString& Str);
+	static IMissionChecker* GetMissionChecker(const FString& Code);
+	static IMissionReward* GetMissionReward(const FString& Code);
 public:
-	virtual void SetTargetMode(APrepperGameMode* Target) PURE_VIRTUAL();
-	
-	virtual bool CheckClear() PURE_VIRTUAL( IMission::CheckClear, return false; );
-	virtual float GetClearRate() PURE_VIRTUAL( IMission:ClearRate, return 0.f; );
-	
-	virtual FString GetMissionName() PURE_VIRTUAL(IMission:GetMissionName, return FString("NONE"); );
-	virtual FString GetMissionContent() PURE_VIRTUAL(IMission:GetMissionContent, return FString("NONE"); );
+	UMission();
+	UMission(const FString& CheckerCode, const FString& RewardCode);
 };

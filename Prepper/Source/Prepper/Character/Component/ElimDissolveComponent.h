@@ -29,13 +29,19 @@ private:
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
 
+	UPROPERTY(EditAnywhere)
+	float DestroyDelayTime = 5.f;
+
 public:
 	// Sets default values for this pawn's properties
 	UElimDissolveComponent();
 	
 	virtual void SetCharacter(ABaseCharacter* Target) override;
 	virtual void TargetElim() override;
+	
 
 	UFUNCTION()
 	void UpdateDissolveMaterial(const float DissolveValue);
+	UFUNCTION()
+	void RemoveCharacter();
 };

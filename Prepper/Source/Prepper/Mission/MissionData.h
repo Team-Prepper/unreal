@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Mission.h"
 #include "GameFramework/Actor.h"
 #include "MissionData.generated.h"
 
@@ -12,14 +13,13 @@ struct PREPPER_API FMissionData : public FTableRowBase
 	GENERATED_BODY()
 	
 public:
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
-	FString ItemCode;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
-	FString MissionCode;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MissionInfo")
+	FString MissionCheckerCode;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MissionInfo")
+	FString MissionRewardCode;
 
-	FString GetItem() const
+	UMission GetMission() const
 	{
-		return MissionCode;
+		return UMission(MissionCheckerCode, MissionRewardCode);
 	}
 };

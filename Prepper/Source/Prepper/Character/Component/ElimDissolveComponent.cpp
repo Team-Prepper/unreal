@@ -45,6 +45,18 @@ void UElimDissolveComponent::TargetElim()
 		DissolveTimeline->Play();
 	}
 	
+	if (TargetCharacter)
+	{
+		FTimerHandle TimerHandle;
+		FTimerDelegate TimerDelegate;
+        
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, DestroyDelayTime, false);
+	}
+}
+
+void UElimDissolveComponent::RemoveCharacter()
+{
+	TargetCharacter->Destroy();
 }
 
 void UElimDissolveComponent::SetCharacter(ABaseCharacter* Target)

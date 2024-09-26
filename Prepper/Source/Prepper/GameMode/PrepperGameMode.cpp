@@ -15,27 +15,5 @@ void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter)
 	if (ElimmedCharacter)
 	{
 		ElimmedCharacter->Elim();
-		RemoveCharacterAfterDelay(ElimmedCharacter, DelayTime);
-	}
-}
-
-void APrepperGameMode::RemoveCharacterAfterDelay(ACharacter* Character, float Delay)
-{
-	if (Character)
-	{
-		FTimerHandle TimerHandle;
-		FTimerDelegate TimerDelegate;
-        
-		TimerDelegate.BindUObject(this, &APrepperGameMode::RemoveCharacter, Character);
-        
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDelegate, Delay, false);
-	}
-}
-
-void APrepperGameMode::RemoveCharacter(ACharacter* Character)
-{
-	if (Character)
-	{
-		Character->Destroy();
 	}
 }

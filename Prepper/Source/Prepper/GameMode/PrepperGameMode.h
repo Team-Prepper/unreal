@@ -19,12 +19,4 @@ public:
 									class ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController);
 
-	UFUNCTION(BlueprintCallable, Category = "Character")
-	void RemoveCharacterAfterDelay(ACharacter* Character, float Delay);
-
-private:
-	void RemoveCharacter(ACharacter* Character);
-
-	UPROPERTY(EditAnywhere)
-	float DelayTime = 5.f;
 };

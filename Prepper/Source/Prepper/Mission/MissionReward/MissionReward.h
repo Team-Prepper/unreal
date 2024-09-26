@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Prepper/Interfaces/PlayerAbility.h"
+#include "UObject/Interface.h"
 
-class PREPPER_API IItemEffect
+class PREPPER_API IMissionReward
 {
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual ~IItemEffect() = default;
-	virtual void Action(IPlayerAbility* Target) = 0;
+	virtual ~IMissionReward() = default;
+	virtual void GetReward() PURE_VIRTUAL();
 };
