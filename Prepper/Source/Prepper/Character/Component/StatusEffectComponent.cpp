@@ -5,7 +5,6 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 
 UStatusEffectComponent::UStatusEffectComponent()
 {
@@ -19,10 +18,8 @@ void UStatusEffectComponent::BeginPlay()
 
 	if(!Character) return;
 	UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
-	PrepperPlayerController = Cast<APrepperPlayerController>(Character->GetController());
 	StatusFlags.ClearAllEffects();
 	InitStateEffectMap();
-	StatusTimerStart();
 }
 
 void UStatusEffectComponent::Attach(IObserver<Status>* Observer)
@@ -120,7 +117,7 @@ void UStatusEffectComponent::UpdateStatusEffect()
 		UGameplayStatics::ApplyDamage(
 			Character,
 			EffectThresholds[0].DebuffValue,
-			PrepperPlayerController,
+			Character->GetController(),
 			Character,
 			UDamageType::StaticClass()
 		);

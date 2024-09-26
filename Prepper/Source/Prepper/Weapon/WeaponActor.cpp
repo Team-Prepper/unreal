@@ -7,7 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
+#include "Prepper/PlayerController/BasePlayerController.h"
 
 AWeaponActor::AWeaponActor()
 {
@@ -149,7 +149,7 @@ void AWeaponActor::OnEquipped()
 	if (!bUseServerSideRewind) return;
 	
 	PlayerOwnerController = PlayerOwnerController == nullptr ?
-		Cast<APrepperPlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
+		Cast<ABasePlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
 	
 	if (PlayerOwnerController && HasAuthority() && !PlayerOwnerController->HighPingDelegate.IsBound())
 	{
@@ -173,7 +173,7 @@ void AWeaponActor::OnDropped()
 	if (!OwnerCharacter) return;
 	
 	PlayerOwnerController = PlayerOwnerController == nullptr ?
-		Cast<APrepperPlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
+		Cast<ABasePlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
 	OwnerCharacter = nullptr;
 	
 	PlayerOwnerController = nullptr;
@@ -198,7 +198,7 @@ void AWeaponActor::OnEquippedSecondary()
 	PlayEquipWeaponSound();
 	
 	PlayerOwnerController = PlayerOwnerController == nullptr ?
-		Cast<APrepperPlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
+		Cast<ABasePlayerController>(OwnerCharacter->Controller) : PlayerOwnerController;
 	if (PlayerOwnerController && HasAuthority() && PlayerOwnerController->HighPingDelegate.IsBound())
 	{
 		PlayerOwnerController->HighPingDelegate.RemoveDynamic(this, &AWeaponActor::OnPingTooHigh);

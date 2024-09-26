@@ -1,8 +1,8 @@
 #include "CraftingTable.h"
 
+#include "Prepper/Character/PlayerCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 
 ACraftingTable::ACraftingTable()
 {

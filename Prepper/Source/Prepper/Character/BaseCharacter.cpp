@@ -5,8 +5,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
+#include "Prepper/PlayerController/BasePlayerController.h"
 #include "Prepper/_Base/Util/GaugeFloat.h"
 
 // Actor
@@ -122,8 +122,8 @@ void ABaseCharacter::ReceiveDamage(float Damage, AController* InstigatorControll
 	
 	if(PrepperGameMode == nullptr) return;
 	
-	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
-	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+	ABasePlayerController* PrepperPlayerController = Cast<ABasePlayerController>(Controller);
+	ABasePlayerController* AttackerController = Cast<ABasePlayerController>(InstigatorController);
 	
 	PrepperGameMode->PlayerEliminated(this, PrepperPlayerController, AttackerController);
 }

@@ -9,7 +9,6 @@
 #include "Status.h"
 #include "Prepper/Enums/StatusEffect.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "StatusEffectComponent.generated.h"
 
@@ -44,8 +43,6 @@ private:
 	UPROPERTY()
 	ABaseCharacter* Character;
 	
-	UPROPERTY()
-	APrepperPlayerController* PrepperPlayerController;
 public:
 	virtual void SetCharacter(ABaseCharacter* Target) override;
 	virtual void TargetElim() override {};

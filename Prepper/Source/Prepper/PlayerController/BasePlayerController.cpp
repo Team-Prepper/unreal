@@ -6,8 +6,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerState.h"
 #include "Prepper/Character/Component/Combat/CombatComponent.h"
-#include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
+#include "Prepper/HUD/UI/Compass.h"
 
 
 void ABasePlayerController::BeginPlay()
@@ -18,6 +18,8 @@ void ABasePlayerController::BeginPlay()
 		Subsystem->AddMappingContext(PlayerMappingContext, 0);
 	}
 	SetPossessPawn();
+	SetInputMode(FInputModeGameOnly());
+	PrepperHUD = Cast<APrepperHUD>(GetHUD());
 }
 
 void ABasePlayerController::OnPossess(APawn* InPawn)
@@ -32,11 +34,6 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 void ABasePlayerController::SetPossessPawn()
 {
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABasePlayerController::PossessNewPawn, 0.1f, true);
-}
-
-void ABasePlayerController::ResetPlayer()
-{
-	PlayerCharacter = nullptr;
 }
 
 void ABasePlayerController::PossessNewPawn()
@@ -65,15 +62,43 @@ void ABasePlayerController::PossessPawn()
 	
 	if(!IsLocalController()) return;
 
-	PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	PollInit();
+	
+}
+
+void ABasePlayerController::PollInit()
+{
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
 	
-	if (!PrepperHUD || !PlayerCharacter || !PrepperHUD->CharacterOverlay) return;
+	if (!PrepperHUD || !PrepperHUD->CharacterOverlay) return;
 	
+	PrepperHUD->ResetCrossHair();
+
+	if(PrepperHUD->Compass)
+	{
+		PrepperHUD->Compass->SetTargetCamera(TargetControllerable->GetFollowCamera());
+		UE_LOG(LogTemp,Warning,TEXT("[PrepperPlayerController] : Set Compass"));
+	}
+	
+	if(Cast<APlayerCharacter>(GetPawn()))
+	{
+		PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
+	}
+
+	if (!PlayerCharacter) return;
+
+	PossessPlayerCharacter();
+}
+
+void ABasePlayerController::PossessPlayerCharacter()
+{
 	PlayerCharacter->Attach(PrepperHUD->CharacterOverlay);
 	PlayerCharacter->GetCombatComponent()->Attach(PrepperHUD->CharacterOverlay);
-	PlayerCharacter->GetStatusEffectComponent()->Attach(PrepperHUD->CharacterOverlay);
-	
+}
+
+void ABasePlayerController::ResetPlayer()
+{
+	PlayerCharacter = nullptr;
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
@@ -248,5 +273,3 @@ void ABasePlayerController::ServerToggleInventory_Implementation()
 	if (!TargetControllerable) return;
 	TargetControllerable->ToggleInventory();
 }
-
-

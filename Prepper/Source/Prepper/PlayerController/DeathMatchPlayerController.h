@@ -1,10 +1,10 @@
 #pragma once
 
-#include "PrepperPlayerController.h"
+#include "BasePlayerController.h"
 #include "DeathMatchPlayerController.generated.h"
 
 UCLASS()
-class PREPPER_API ADeathMatchPlayerController : public APrepperPlayerController
+class PREPPER_API ADeathMatchPlayerController : public ABasePlayerController
 {
 	GENERATED_BODY()
 

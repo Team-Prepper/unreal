@@ -41,8 +41,6 @@ protected:
 
 	UPROPERTY(Replicated)
 	class APlayerCharacter* PlayerOwnerCharacter;
-	UPROPERTY()
-	class APrepperPlayerController* PlayerOwnerController;
 
 	UPROPERTY(ReplicatedUsing = OnRep_BackpackState, VisibleAnywhere)
 	EBackpackState BackpackState;

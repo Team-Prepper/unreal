@@ -9,6 +9,9 @@
 #include "WeaponActor.generated.h"
 
 
+class ABasePlayerController;
+class ABaseCharacter;
+
 UCLASS()
 class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
 {
@@ -95,7 +98,7 @@ protected:
 	UPROPERTY()
 	ABaseCharacter* OwnerCharacter;
 	UPROPERTY()
-	class APrepperPlayerController* PlayerOwnerController;
+	ABasePlayerController* PlayerOwnerController;
 	
 	IWeaponHandler* WeaponHandler;
 

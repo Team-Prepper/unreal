@@ -13,12 +13,12 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/GameMode/DeathMatchGameMode.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Prepper/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
+#include "Prepper/PlayerController/BasePlayerController.h"
 
 // Actor
 APlayerCharacter::APlayerCharacter()
@@ -128,7 +128,7 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 void APlayerCharacter::Elim()
 {
 	
-	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(Controller);
+	ABasePlayerController* PrepperPlayerController = Cast<ABasePlayerController>(Controller);
 	PrepperPlayerController->ResetPlayer();
 
 	const bool bHideSniperScope = IsLocallyControlled() && 

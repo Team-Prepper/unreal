@@ -1,8 +1,8 @@
 #include "MeleeWeapon.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prepper/Interfaces/Damageable.h"
 #include "Sound/SoundCue.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
 
 
 AMeleeWeapon::AMeleeWeapon()

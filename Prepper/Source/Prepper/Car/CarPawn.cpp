@@ -13,7 +13,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/GameMode/PrepperGameMode.h"
-#include "Prepper/PlayerController/PrepperPlayerController.h"
+#include "Prepper/PlayerController/BasePlayerController.h"
 
 #define LOCTEXT_NAMESPACE "VehiclePawn"
 
@@ -256,8 +256,8 @@ void ACarPawn::ReceiveDamage(float Damage, AController* InstigatorController, AA
 	
 	if(PrepperGameMode == nullptr) return;
 	
-	APrepperPlayerController* PrepperPlayerController = Cast<APrepperPlayerController>(GetController());
-	APrepperPlayerController* AttackerController = Cast<APrepperPlayerController>(InstigatorController);
+	ABasePlayerController* PrepperPlayerController = Cast<ABasePlayerController>(GetController());
+	ABasePlayerController* AttackerController = Cast<ABasePlayerController>(InstigatorController);
 	PrepperGameMode->PlayerEliminated(Driver, PrepperPlayerController, AttackerController);
 }
 

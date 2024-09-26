@@ -21,18 +21,9 @@ void ADeathMatchPlayerController::BeginPlay()
 void ADeathMatchPlayerController::PollInit()
 {
 	Super::PollInit();
-	if(CharacterOverlay == nullptr)
-	{
-		if(PrepperHUD && PrepperHUD->CharacterOverlay)
-		{
-			CharacterOverlay = PrepperHUD->CharacterOverlay;
-			if(CharacterOverlay)
-			{
-				SetHUDScore(HUDScore);
-				SetHUDDefeats(HUDDefeats);
-			}
-		}
-	}
+	
+	SetHUDScore(HUDScore);
+	SetHUDDefeats(HUDDefeats);
 }
 
 void ADeathMatchPlayerController::Tick(float DeltaTime)
@@ -61,7 +52,6 @@ void ADeathMatchPlayerController::SetHUDScore(float Score)
 	}
 	else
 	{
-		bInitCharacterOverlay = true;
 		HUDScore = Score;
 	}
 }
@@ -79,7 +69,6 @@ void ADeathMatchPlayerController::SetHUDDefeats(int32 Defeats)
 	}
 	else
 	{
-		bInitCharacterOverlay = true;
 		HUDDefeats = Defeats;
 	}
 }
