@@ -13,13 +13,6 @@ UCLASS()
 class PREPPER_API ADeathMatchPlayerState : public APlayerState
 {
 	GENERATED_BODY()
-public:
-	virtual void  GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	// REPLICATION NOTIFY
-	virtual void OnRep_Score() override;
-	
-	void AddToScore(float ScoreValue);
 	
 private:
 	UPROPERTY()
@@ -29,7 +22,16 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
+	
 public:
+	virtual void  GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	// REPLICATION NOTIFY
+	virtual void OnRep_Score() override;
+	
+	void AddToScore(float ScoreValue);
+	int GetDefeat() const {return Defeats;}
+	
 	UFUNCTION()
 	virtual void OnRep_Defeats();
 	void AddToDefeats(int32 DefeatsValue);

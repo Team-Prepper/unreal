@@ -2,23 +2,43 @@
 
 #pragma once
 
+#include <set>
+
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "DeathMatchGameState.generated.h"
 
+class ADeathMatchPlayerState;
 
 UCLASS()
-class PREPPER_API ADeathMatchGameState : public AGameState
+class PREPPER_API ADeathMatchGameState : public AGameState, public ISubject<TArray<TObjectPtr<ADeathMatchPlayerState>>>
 {
 	GENERATED_BODY()
-public:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&) const override;
-	void UpdateTopScore(class ADeathMatchPlayerState* ScoringPlayer);
-	
-	UPROPERTY(Replicated)
-	TArray<ADeathMatchPlayerState* >TopScoringPlayers;
-	
+
 private:
 	float TopScore = 0.f;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Player)
+	TArray<TObjectPtr<ADeathMatchPlayerState>> Players;
+	UPROPERTY(Replicated)
+	TArray<ADeathMatchPlayerState*> TopScoringPlayers;
+	
+	UFUNCTION()
+	void OnRep_Player();
+public:
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&) const override;
+	void UpdateTopScore(ADeathMatchPlayerState* ScoringPlayer);
+
+	TArray<TObjectPtr<ADeathMatchPlayerState>> GetAllPlayerState() const { return Players; }
+	FString GetMatchResultStr(const ADeathMatchPlayerState* Player);
+	
+private:
+	std::pmr::set<IObserver<TArray<TObjectPtr<ADeathMatchPlayerState>>>*> Observers;
+
+public:
+	virtual void Attach(IObserver<TArray<TObjectPtr<ADeathMatchPlayerState>>>* Observer) override;
+	virtual void Detach(IObserver<TArray<TObjectPtr<ADeathMatchPlayerState>>>* Observer) override;
+	virtual void Notify() override;
 	
 };

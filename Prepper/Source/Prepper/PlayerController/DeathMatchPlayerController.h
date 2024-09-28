@@ -3,11 +3,16 @@
 #include "BasePlayerController.h"
 #include "DeathMatchPlayerController.generated.h"
 
+class UScoreBoard;
 UCLASS()
 class PREPPER_API ADeathMatchPlayerController : public ABasePlayerController
 {
 	GENERATED_BODY()
-
+private:
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UScoreBoard> ScoreBoardClass;
+	UPROPERTY()
+	TObjectPtr<UScoreBoard> ScoreBoard;
 protected:
 	virtual void BeginPlay() override;
 	virtual void PollInit() override;

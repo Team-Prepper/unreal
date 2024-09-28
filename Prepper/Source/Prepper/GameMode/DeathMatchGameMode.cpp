@@ -118,16 +118,14 @@ void ADeathMatchGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AControll
 		ElimmedCharacter->Reset();
 		ElimmedCharacter->Destroy();
 	}
-	if (ElimmedController)
+	if (!ElimmedController) return;
+	
+	TArray<AActor*> PlayerStarts;
+	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
+	const int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
+	RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
+	if(ABasePlayerController* ElimmedPlayerController = Cast<ABasePlayerController>(ElimmedController))
 	{
-		TArray<AActor*> PlayerStarts;
-		UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
-		int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
-		RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
-		ABasePlayerController* ElimmedPlayerController = Cast<ABasePlayerController>(ElimmedController);
-		if(ElimmedPlayerController)
-		{
-			ElimmedPlayerController->SetPossessPawn();
-		}
+		ElimmedPlayerController->SetPossessPawn();
 	}
 }

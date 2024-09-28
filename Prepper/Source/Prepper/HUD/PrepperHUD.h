@@ -41,7 +41,8 @@ public:
 	class UCompass* Compass;
 	UPROPERTY()
 	class UAnnouncement* Announcement;
-	
+
+	void AddWidget(TSubclassOf<UUserWidget> Widget);
 	void AddAnnouncement();
 
 	UFUNCTION()
@@ -68,9 +69,6 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax = 16.f;
-
-	UPROPERTY()
-	APlayerCharacter* TargetPlayerCharacter;
 
 	void DrawCrosshair();
 	void DrawCrosshairUnit(UTexture2D* Texture, const FVector2D& ViewportCenter, const FVector2D& Spread, const FLinearColor& CrosshairColor);
