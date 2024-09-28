@@ -19,7 +19,6 @@ class PREPPER_API ADeathMatchGameState : public AGameState, public ISubject<TArr
 private:
 	float TopScore = 0.f;
 
-	UPROPERTY(ReplicatedUsing = OnRep_Player)
 	TArray<TObjectPtr<ADeathMatchPlayerState>> Players;
 	UPROPERTY(Replicated)
 	TArray<ADeathMatchPlayerState*> TopScoringPlayers;
@@ -28,6 +27,7 @@ private:
 	void OnRep_Player();
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&) const override;
+	virtual void AddPlayerState(APlayerState* PlayerState) override;
 	void UpdateTopScore(ADeathMatchPlayerState* ScoringPlayer);
 
 	TArray<TObjectPtr<ADeathMatchPlayerState>> GetAllPlayerState() const { return Players; }

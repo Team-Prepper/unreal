@@ -9,27 +9,35 @@
 void ADeathMatchGameState::OnRep_Player()
 {
 	Notify();
+	UE_LOG(LogTemp, Warning, TEXT("ADD PLAYER(%d)"), Players.Num());
 }
 
 void ADeathMatchGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ADeathMatchGameState, Players);
 	DOREPLIFETIME(ADeathMatchGameState, TopScoringPlayers);
+}
+
+void ADeathMatchGameState::AddPlayerState(APlayerState* PlayerState)
+{
+	Super::AddPlayerState(PlayerState);
+
+	ADeathMatchPlayerState* Player = Cast<ADeathMatchPlayerState>(PlayerState);
+	if (!Player) return;
+	
+	Players.AddUnique(Player);
+	Notify();
+	
 }
 
 void ADeathMatchGameState::UpdateTopScore(ADeathMatchPlayerState* ScoringPlayer)
 {
-	if (!Players.Contains(ScoringPlayer))
-	{
-		Players.Add(ScoringPlayer);
-	}
-	
-	Players.Sort([](const TObjectPtr<ADeathMatchPlayerState> A,
-		const TObjectPtr<ADeathMatchPlayerState> B) {
-		return A->GetScore() > B->GetScore();
-	});
+	Players.Sort(
+		[](const TObjectPtr<ADeathMatchPlayerState> A,
+			const TObjectPtr<ADeathMatchPlayerState> B) {
+			return A->GetScore() > B->GetScore();
+		});
 
 	TopScore = Players[0]->GetScore();
 	
