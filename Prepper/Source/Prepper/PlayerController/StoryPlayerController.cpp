@@ -18,11 +18,13 @@ void AStoryPlayerController::PollInit()
 void AStoryPlayerController::PossessPlayerCharacter()
 {
 	Super::PossessPlayerCharacter();
+
+	if (!PrepperHUD || !PrepperHUD->CharacterOverlay) return;
 	
 	if(PlayerCharacter && PlayerCharacter->GetStatusEffectComponent())
 	{
-		PlayerCharacter->GetStatusEffectComponent()->Attach(PrepperHUD->CharacterOverlay);
 		PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
+		PlayerCharacter->GetStatusEffectComponent()->Attach(PrepperHUD->CharacterOverlay);
 	}
 }
 

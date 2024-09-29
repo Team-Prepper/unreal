@@ -17,9 +17,6 @@ void UStatusEffectComponent::BeginPlay()
 	Super::BeginPlay();
 
 	if(!Character) return;
-	UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
-	StatusFlags.ClearAllEffects();
-	InitStateEffectMap();
 }
 
 void UStatusEffectComponent::Attach(IObserver<Status>* Observer)
@@ -55,6 +52,7 @@ void UStatusEffectComponent::SetCharacter(ABaseCharacter* Target)
 
 void UStatusEffectComponent::InitStateEffectMap()
 {
+	
 	UE_LOG(LogTemp,Warning,TEXT("SET STATUS EFFECT LEVEL"));
 	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, 100);
 	StateEffectMap.Emplace(EStatusEffect::ESE_THIRSTY, 100);
@@ -70,6 +68,11 @@ void UStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UStatusEffectComponent::StatusTimerStart()
 {
 	if(!Character || !Character->IsLocallyControlled()) return;
+	
+	UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
+	StatusFlags.ClearAllEffects();
+	InitStateEffectMap();
+
 	GetWorld()->GetTimerManager().SetTimer(
 		StatusTimerHandle,
 		this,
