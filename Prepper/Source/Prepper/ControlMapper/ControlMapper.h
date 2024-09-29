@@ -6,8 +6,9 @@ class IControlMapper
 {
 public:
 	virtual ~IControlMapper() = default;
-	
-	virtual void ToggleControlWidget(bool Toggle) = 0;
+
+	virtual void Connect(APlayerController* TargetController) = 0;
+	virtual void Disconnect() = 0;
 	
 	virtual void Move(const FInputActionValue& Value) = 0;
 	virtual void Look(const FInputActionValue& Value) = 0;

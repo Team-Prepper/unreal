@@ -15,12 +15,14 @@ void APrepperHUD::AddCharacterOverlay()
 	APlayerController* PlayerController = GetOwningPlayerController();
 	
 	if(!PlayerController) return;
-	
+
+	/*
 	if(CharacterOverlayClass)
 	{
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
 		CharacterOverlay->AddToViewport();
 	}
+	*/
 	
 	if(CompassHUDClass)
 	{

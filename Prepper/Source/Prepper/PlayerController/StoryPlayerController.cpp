@@ -10,6 +10,8 @@
 void AStoryPlayerController::PollInit()
 {
 	Super::PollInit();
+
+	if (!PrepperHUD->CharacterOverlay) return;
 	
 	PrepperHUD->CharacterOverlay->ToggleDeathMatch(false);
 	PrepperHUD->CharacterOverlay->ToggleStory(true);

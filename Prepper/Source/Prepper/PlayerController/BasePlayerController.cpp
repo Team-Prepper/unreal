@@ -58,10 +58,16 @@ void ABasePlayerController::PossessPawn()
 	// 로컬에서도 동작하게 설계함
 	if (Cast<IControllable>(GetPawn()))
 	{
+		if (TargetControlMapper)
+		{
+			TargetControlMapper->Disconnect();
+		}
 		TargetControlMapper = Cast<IControllable>(GetPawn())->GetControlMapper();
 	}
 
 	if (!IsLocalController()) return;
+
+	TargetControlMapper->Connect(this);
 
 	PollInit();
 }
@@ -71,13 +77,9 @@ void ABasePlayerController::PollInit()
 	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
 
 	if (!PrepperHUD) return;
-	if (!PrepperHUD->CharacterOverlay)
+	if (!PrepperHUD->Compass)
 	{
 		PrepperHUD->AddCharacterOverlay();
-	}
-	if (!PrepperHUD->CharacterOverlay)
-	{
-		return;
 	}
 
 	PrepperHUD->ResetCrossHair();

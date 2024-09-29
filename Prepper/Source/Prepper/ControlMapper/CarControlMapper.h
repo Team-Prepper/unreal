@@ -14,18 +14,22 @@ class PREPPER_API UCarControlMapper: public UObject, public IControlMapper
 {
 	GENERATED_BODY()
 private:
-
 	UPROPERTY(EditAnywhere, Category="Widget")
 	TSubclassOf<UUserWidget> CharacterOverlayClass;
-
 	UPROPERTY()
 	UUserWidget* CharacterOverlay;
 	
+	void ToggleControlWidget(bool Toggle, APlayerController* TargetController);
+	
 public:
+	UCarControlMapper():
+		CharacterOverlay(nullptr), TargetCar(nullptr) { } ;
+	
 	UPROPERTY()
 	ACarPawn* TargetCar;
-	
-	virtual void ToggleControlWidget(bool Toggle) override;
+
+	virtual void Connect(APlayerController* TargetController) override;
+	virtual void Disconnect() override;
 	
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;

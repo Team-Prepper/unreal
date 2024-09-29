@@ -162,7 +162,7 @@ IControlMapper* ACarPawn::GetControlMapper()
 {
 	if (!CarControlMapper)
 	{
-		CarControlMapper = NewObject<UCarControlMapper>(MapperClass);
+		CarControlMapper = MapperClass->GetDefaultObject<UCarControlMapper>();
 		CarControlMapper->TargetCar = this;
 	}
 	

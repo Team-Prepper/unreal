@@ -6,6 +6,7 @@
 #include "ControlMapper.h"
 #include "CharacterControlMapper.generated.h"
 
+class UCharacterOverlay;
 class APlayerCharacter;
 class UUserWidget;
 
@@ -13,18 +14,22 @@ UCLASS(Blueprintable, BlueprintType)
 class PREPPER_API UCharacterControlMapper: public UObject, public IControlMapper
 {
 	GENERATED_BODY()
-private:
-	UPROPERTY(EditAnywhere, Category="Widget")
-	TSubclassOf<UUserWidget> CharacterOverlayClass;
-
-	UPROPERTY()
-	UUserWidget* CharacterOverlay;
 	
 public:
+	UPROPERTY(EditAnywhere, Category="Widget")
+	TSubclassOf<UUserWidget> CharacterOverlayClass;
+	UPROPERTY()
+	UCharacterOverlay* CharacterOverlay;
+	
+	void ToggleControlWidget(bool Toggle, APlayerController* TargetController);
+	
+	UCharacterControlMapper():
+		CharacterOverlay(nullptr), TargetCharacter(nullptr) { } ;
 	UPROPERTY()
 	APlayerCharacter* TargetCharacter;
 	
-	virtual void ToggleControlWidget(bool Toggle) override;
+	virtual void Connect(APlayerController* TargetController) override;
+	virtual void Disconnect() override;
 	
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;

@@ -6,6 +6,9 @@
 #include "GameFramework/GameMode.h"
 #include "PrepperGameMode.generated.h"
 
+class ABaseCharacter;
+class ABasePlayerController;
+
 /**
  * 
  */
@@ -14,9 +17,10 @@ class PREPPER_API APrepperGameMode : public AGameMode
 {
 	GENERATED_BODY()
 public:
-	virtual void PlayerEliminated(class ABaseCharacter* ElimmedCharacter);
-	virtual void PlayerEliminated(class ABaseCharacter* ElimmedCharacter,
-									class ABasePlayerController* VictimController,
+	
+	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter);
+	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
+									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController);
 
 };

@@ -22,6 +22,7 @@ void UStatusEffectComponent::BeginPlay()
 void UStatusEffectComponent::Attach(IObserver<Status>* Observer)
 {
 	Observers.insert(Observer);
+	if (StateEffectMap.IsEmpty()) return; 
 	Observer->Update(
 		Status(	FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
 						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
@@ -35,6 +36,8 @@ void UStatusEffectComponent::Detach(IObserver<Status>* Observer)
 
 void UStatusEffectComponent::Notify()
 {
+	if (StateEffectMap.IsEmpty()) return;
+	
 	const Status Value(	FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
 						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
 						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100));
@@ -52,7 +55,6 @@ void UStatusEffectComponent::SetCharacter(ABaseCharacter* Target)
 
 void UStatusEffectComponent::InitStateEffectMap()
 {
-	
 	UE_LOG(LogTemp,Warning,TEXT("SET STATUS EFFECT LEVEL"));
 	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, 100);
 	StateEffectMap.Emplace(EStatusEffect::ESE_THIRSTY, 100);
@@ -79,6 +81,8 @@ void UStatusEffectComponent::StatusTimerStart()
 		&UStatusEffectComponent::StatusTimerFinish,
 		1.0f,
 		true);
+
+	Notify();
 }
 
 void UStatusEffectComponent::StatusTimerFinish()

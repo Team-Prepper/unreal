@@ -32,8 +32,11 @@ void ADeathMatchPlayerController::PollInit()
 		ScoreBoard->SetVisibility(ESlateVisibility::Hidden);
 	}
 
-	PrepperHUD->CharacterOverlay->ToggleDeathMatch(true);
-	PrepperHUD->CharacterOverlay->ToggleStory(false);
+	if (PrepperHUD->CharacterOverlay)
+	{
+		PrepperHUD->CharacterOverlay->ToggleDeathMatch(true);
+		PrepperHUD->CharacterOverlay->ToggleStory(false);
+	}
 	
 	SetHUDScore(HUDScore);
 	SetHUDDefeats(HUDDefeats);

@@ -1,21 +1,42 @@
 ﻿#include "CharacterControlMapper.h"
 
+#include "Blueprint/UserWidget.h"
 #include "Prepper/Character/BaseCharacter.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/Character/Component/StatusEffectComponent.h"
+#include "Prepper/HUD/UI/CharacterOverlay/CharacterOverlay.h"
 
-void UCharacterControlMapper::ToggleControlWidget(bool Toggle)
+void UCharacterControlMapper::ToggleControlWidget(bool Toggle, APlayerController* TargetController)
 {
-	/*
-	if (CharacterOverlay == nullptr)
-	{
-		CharacterOverlay = CreateWidget<UUserWidget>(TargetCharacter->Controller, CharacterOverlayClass);
-	}
-
-	const ESlateVisibility Visibility =
-		Toggle ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
 	
-	CharacterOverlay->SetVisibility(Visibility);
-*/
+}
+
+void UCharacterControlMapper::Connect(APlayerController* TargetController)
+{
+	UE_LOG(LogTemp, Warning, TEXT("TEXT00"));
+	
+	if (!CharacterOverlayClass) return;
+	
+	UE_LOG(LogTemp, Warning, TEXT("TEXT11"));
+	
+	CharacterOverlay = CreateWidget<UCharacterOverlay>(TargetController, CharacterOverlayClass);
+
+	UE_LOG(LogTemp, Warning, TEXT("TEXT22"));
+	
+	if (!CharacterOverlay) return;
+	CharacterOverlay->AddToViewport();
+
+	TargetCharacter->Attach(CharacterOverlay);
+	TargetCharacter->GetCombatComponent()->Attach(CharacterOverlay);
+	TargetCharacter->GetStatusEffectComponent()->Attach(CharacterOverlay);
+
+	UE_LOG(LogTemp, Warning, TEXT("TEXT33"));
+}
+
+void UCharacterControlMapper::Disconnect()
+{
+	if (!CharacterOverlay) return;
+	CharacterOverlay->BeginDestroy();
 }
 
 void UCharacterControlMapper::Move(const FInputActionValue& Value)

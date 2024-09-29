@@ -7,14 +7,15 @@
 #include "Prepper/ControlMapper/Controllable.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
-#include "Prepper/Item/Inventory/MapInventory.h"
-#include "Prepper/Weapon/WeaponActor.h"
 #include "PlayerCharacter.generated.h"
 
 class UFlexibleSpringArmComponent;
 class UInputAction;
-enum class ETurningInPlace : uint8;
+class UCustomCameraComponent;
+class UMapInventory;
+class AWeaponActor;
 struct FInputActionValue;
+enum class ETurningInPlace : uint8;
 
 UCLASS()
 class PREPPER_API APlayerCharacter : public ABaseCharacter,
