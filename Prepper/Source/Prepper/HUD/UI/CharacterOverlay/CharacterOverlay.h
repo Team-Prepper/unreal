@@ -10,6 +10,8 @@
 #include "Prepper/_Base/Util/GaugeValue.h"
 #include "CharacterOverlay.generated.h"
 
+class UCanvasPanel;
+
 UCLASS()
 class PREPPER_API UCharacterOverlay : public UUserWidget,
 										public IObserver<GaugeValue<float>>,
@@ -41,6 +43,9 @@ public:
 	// DeathMatch
 private:
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
+	UCanvasPanel* DeathMatchWidget;
+	
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
 	UTextBlock* ScoreValue;
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
 	UTextBlock* DefeatsValue;
@@ -53,6 +58,8 @@ public:
 
 	// Story
 private:
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
+	UCanvasPanel* StoryWidget;
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
 	UProgressBar* HungerBar;
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)

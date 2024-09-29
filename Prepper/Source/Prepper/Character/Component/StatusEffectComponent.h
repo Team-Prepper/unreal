@@ -7,8 +7,8 @@
 #include "CoreMinimal.h"
 #include "CharacterComponent.h"
 #include "Status.h"
-#include "Prepper/Enums/StatusEffect.h"
 #include "Components/ActorComponent.h"
+#include "Prepper/Character/Enums/StatusEffect.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "StatusEffectComponent.generated.h"
 

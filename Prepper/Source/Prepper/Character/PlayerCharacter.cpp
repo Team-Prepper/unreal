@@ -17,7 +17,11 @@
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Components/PawnNoiseEmitterComponent.h"
+#include "Enums/CombatState.h"
+#include "Enums/StatusEffect.h"
+#include "Enums/TurningInPlace.h"
 #include "Prepper/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
+#include "Prepper/ControlMapper/CharacterControlMapper.h"
 #include "Prepper/PlayerController/BasePlayerController.h"
 
 // Actor
@@ -72,7 +76,6 @@ APlayerCharacter::APlayerCharacter()
 	MinNetUpdateFrequency = 33.f;
 
 	bBeforeSeat = false;
-
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 }
@@ -294,38 +297,6 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::SpacePressed()
-{
-	if(bDisableGamePlay) return;
-	Jump();
-}
-
-void APlayerCharacter::SpaceReleased()
-{
-	if(bDisableGamePlay) return;
-	StopJumping();
-}
-
-void APlayerCharacter::ShiftPressed()
-{
-	if(bDisableGamePlay) return;
-	if(StatusEffect && StatusEffect->StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("THIRSTY : Can't Sprint"));
-		SetMovementState(EMovementState::EMS_Idle);
-		return;
-	}
-	if(MovementState == EMovementState::EMS_Sprint) return;
-	
-	SetMovementState(EMovementState::EMS_Sprint);
-}
-
-void APlayerCharacter::ShiftReleased()
-{
-	if(bDisableGamePlay) return;
-	SetMovementState(EMovementState::EMS_Idle);
-}
-
 void APlayerCharacter::EPressed()
 {
 	if(bDisableGamePlay) return;
@@ -366,38 +337,15 @@ void APlayerCharacter::ControlPressed()
 	}
 }
 
-void APlayerCharacter::MouseLeftPressed()
+IControlMapper* APlayerCharacter::GetControlMapper()
 {
-	if(bDisableGamePlay) return;
-	AttackTrigger(true);
-}
-
-void APlayerCharacter::MouseLeftReleased()
-{
-	if(bDisableGamePlay) return;
-	AttackTrigger(false);
-}
-
-void APlayerCharacter::MouseRightPressed()
-{
-	if(bDisableGamePlay) return;
-	AimTrigger(true);
-}
-
-void APlayerCharacter::MouseRightReleased()
-{
-	if(bDisableGamePlay) return;
-	AimTrigger(false);
-}
-
-void APlayerCharacter::ToggleInventory()
-{ 
-	if(!EquippedBackpack) return;
+	if (!CharacterControlMapper)
+	{
+		CharacterControlMapper = NewObject<UCharacterControlMapper>(MapperClass);
+		CharacterControlMapper->TargetCharacter = this;
+	}
 	
-	UE_LOG(LogTemp,Warning,TEXT("InvenToggle"));
-	EquippedBackpack->OpenInventory();
-	
-	MulticastToggleInventory();
+	return CharacterControlMapper;
 }
 
 void APlayerCharacter::SeatToggle(const bool Seat)

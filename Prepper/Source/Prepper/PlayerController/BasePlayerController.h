@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/ControlMapper/ControlMapper.h"
 #include "BasePlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
@@ -63,7 +64,7 @@ public:
 public:
 	virtual void SetupInputComponent() override;
 
-	TScriptInterface<IControllable> TargetControllerable = nullptr;
+	IControlMapper* TargetControlMapper = nullptr;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	class UInputMappingContext* PlayerMappingContext;

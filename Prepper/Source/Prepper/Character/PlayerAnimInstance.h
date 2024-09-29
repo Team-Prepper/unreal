@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "Prepper/Enums/TurningInPlace.h"
 #include "PlayerAnimInstance.generated.h"
+
+enum class ETurningInPlace : uint8;
 
 UCLASS()
 class PREPPER_API UPlayerAnimInstance : public UAnimInstance

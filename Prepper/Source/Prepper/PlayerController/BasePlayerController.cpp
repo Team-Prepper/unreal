@@ -58,7 +58,7 @@ void ABasePlayerController::PossessPawn()
 	// 로컬에서도 동작하게 설계함
 	if (Cast<IControllable>(GetPawn()))
 	{
-		TargetControllerable = GetPawn();
+		TargetControlMapper = Cast<IControllable>(GetPawn())->GetControlMapper();
 	}
 
 	if (!IsLocalController()) return;
@@ -84,7 +84,7 @@ void ABasePlayerController::PollInit()
 
 	if (PrepperHUD->Compass)
 	{
-		PrepperHUD->Compass->SetTargetCamera(TargetControllerable->GetFollowCamera());
+		PrepperHUD->Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
 		UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
 	}
 
@@ -200,38 +200,38 @@ void ABasePlayerController::SetInput(UEnhancedInputComponent* Input)
 
 void ABasePlayerController::Move(const FInputActionValue& Value)
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->Move(Value);
+	if (!TargetControlMapper) return;
+	TargetControlMapper->Move(Value);
 }
 
 void ABasePlayerController::Look(const FInputActionValue& Value)
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->Look(Value);
+	if (!TargetControlMapper) return;
+	TargetControlMapper->Look(Value);
 }
 
 void ABasePlayerController::JumpButtonPressed()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->SpacePressed();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->SpacePressed();
 }
 
 void ABasePlayerController::JumpButtonReleased()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->SpaceReleased();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->SpaceReleased();
 }
 
 void ABasePlayerController::SprintButtonPressed()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->ShiftPressed();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->ShiftPressed();
 }
 
 void ABasePlayerController::SprintButtonReleased()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->ShiftReleased();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->ShiftReleased();
 }
 
 void ABasePlayerController::EquipButtonPressed()
@@ -241,43 +241,43 @@ void ABasePlayerController::EquipButtonPressed()
 
 void ABasePlayerController::CrouchButtonPressed()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->ControlPressed();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->ControlPressed();
 }
 
 void ABasePlayerController::ReloadButtonPressed()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->RPressed();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->RPressed();
 }
 
 void ABasePlayerController::AimButtonPressed()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->MouseRightPressed();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->MouseRightPressed();
 }
 
 void ABasePlayerController::AimButtonReleased()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->MouseRightReleased();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->MouseRightReleased();
 }
 
 void ABasePlayerController::FireButtonPressed()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->MouseLeftPressed();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->MouseLeftPressed();
 }
 
 void ABasePlayerController::FireButtonReleased()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->MouseLeftReleased();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->MouseLeftReleased();
 }
 
 
 void ABasePlayerController::ServerInteractionPressed_Implementation()
 {
-	if (!TargetControllerable) return;
-	TargetControllerable->EPressed();
+	if (!TargetControlMapper) return;
+	TargetControlMapper->EPressed();
 }

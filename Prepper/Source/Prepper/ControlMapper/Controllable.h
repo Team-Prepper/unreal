@@ -6,6 +6,7 @@
 #include "Controllable.generated.h"
 
 class UCameraComponent;
+class IControlMapper;
 
 UINTERFACE(MinimalAPI)
 class UControllable : public UInterface
@@ -17,25 +18,15 @@ class PREPPER_API IControllable
 {
 	GENERATED_BODY()
 public:
+	virtual IControlMapper* GetControlMapper() PURE_VIRTUAL(IControllable::GetControlMapper, return nullptr;  );
+	
 	virtual void Move(const FInputActionValue& Value) PURE_VIRTUAL(IControllable::Move, );
 	virtual void Look(const FInputActionValue& Value) PURE_VIRTUAL(IControllable::Look, );
 
-	virtual void ShiftPressed() PURE_VIRTUAL(IControllable::ShiftPressed, );
-	virtual void ShiftReleased() PURE_VIRTUAL(IControllable::ShiftReleased, );
-
-	virtual void SpacePressed() PURE_VIRTUAL(IControllable::SpacePressed, );
-	virtual void SpaceReleased() PURE_VIRTUAL(IControllable::SpaceReleased, );
 	virtual void EPressed() PURE_VIRTUAL(IControllable::EPressed, );
 	virtual void RPressed() PURE_VIRTUAL(IControllable::RPressed, );
 
 	virtual void ControlPressed() PURE_VIRTUAL(IControllable::ControlPressed, );
-
-	virtual void MouseLeftPressed() PURE_VIRTUAL(IControllable::MouseLeftPressed, );
-	virtual void MouseLeftReleased() PURE_VIRTUAL(IControllable::MouseLeftReleased, );
-	virtual void MouseRightPressed() PURE_VIRTUAL(IControllable::MouseRightPressed, );
-	virtual void MouseRightReleased() PURE_VIRTUAL(IControllable::MouseRightReleased, );
-
-	virtual void ToggleInventory() PURE_VIRTUAL();
-
+	
 	virtual UCameraComponent* GetFollowCamera() PURE_VIRTUAL(IControllable::GetFollowCamera, return nullptr;);
 };

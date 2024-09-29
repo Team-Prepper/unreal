@@ -1,7 +1,9 @@
 #include "CharacterOverlay.h"
 
+#include "Components/CanvasPanel.h"
 #include "Components/Image.h"
 #include "Components/VerticalBox.h"
+#include "Engine/Canvas.h"
 #include "Prepper/Item/ItemManager.h"
 
 void UCharacterOverlay::Update(const GaugeValue<float>& NewData)
@@ -44,17 +46,13 @@ void UCharacterOverlay::SetDefeat(int Defeat) const
 void UCharacterOverlay::ToggleDeathMatch(bool On)
 {
 	const ESlateVisibility OnVisibility = On ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-	ScoreValue->SetVisibility(OnVisibility);
-	DefeatsValue->SetVisibility(OnVisibility);
-	MatchCountDownText->SetVisibility(OnVisibility);
+	DeathMatchWidget->SetVisibility(OnVisibility);
 }
 
 void UCharacterOverlay::ToggleStory(bool On)
 {
 	const ESlateVisibility OnVisibility = On ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-	HungerBar->SetVisibility(OnVisibility);
-	ThirstBar->SetVisibility(OnVisibility);
-	InfectionBar->SetVisibility(OnVisibility);
+	StoryWidget->SetVisibility(OnVisibility);
 }
 
 void UCharacterOverlay::Update(const Status& NewData)

@@ -44,8 +44,10 @@ void AStoryPlayerController::OpenInventoryPressed()
 
 void AStoryPlayerController::ServerToggleInventory_Implementation()
 {
+	/*
 	if (!TargetControllerable) return;
 	TargetControllerable->ToggleInventory();
+	*/
 }
 
 void AStoryPlayerController::QuickSlot1Use()

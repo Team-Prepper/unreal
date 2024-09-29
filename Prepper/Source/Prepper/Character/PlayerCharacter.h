@@ -3,10 +3,9 @@
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
 #include "Prepper/Component/CustomCameraComponent.h"
-#include "Prepper/Enums/TurningInPlace.h"
-#include "Prepper/Enums/CombatState.h"
+#include "Prepper/ControlMapper/CharacterControlMapper.h"
+#include "Prepper/ControlMapper/Controllable.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
-#include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
 #include "Prepper/Item/Inventory/MapInventory.h"
 #include "Prepper/Weapon/WeaponActor.h"
@@ -14,8 +13,9 @@
 
 class UFlexibleSpringArmComponent;
 class UInputAction;
-
+enum class ETurningInPlace : uint8;
 struct FInputActionValue;
+
 UCLASS()
 class PREPPER_API APlayerCharacter : public ABaseCharacter,
 									 public IInteractWithCrosshairInterface,
@@ -50,7 +50,7 @@ public:
 	
 protected:
 	virtual void PlayHitReactMontage() override;
-	
+public:
 	/* 행동관련 */
 	virtual void Jump() override;
 // IPlayerAbility
@@ -99,7 +99,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCustomCameraComponent* FollowCamera;
-
+	
+	UPROPERTY(EditAnywhere, Category=Control)
+	TSubclassOf<UCharacterControlMapper> MapperClass;
+	UPROPERTY()
+	TObjectPtr<UCharacterControlMapper> CharacterControlMapper;
+	
 	float AO_Yaw;
 	float InterpAO_Yaw;
 	float AO_Pitch;
@@ -111,23 +116,11 @@ public:
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 
-	virtual void SpacePressed() override;
-	virtual void SpaceReleased() override;
-
-	virtual void ShiftPressed() override;
-	virtual void ShiftReleased() override;
-
 	virtual void EPressed() override;
 	virtual void RPressed() override;
 	virtual void ControlPressed() override;
 
-	virtual void MouseLeftPressed() override;
-	virtual void MouseLeftReleased() override;
-	virtual void MouseRightPressed() override;
-	virtual void MouseRightReleased() override;
-
-	virtual void ToggleInventory() override;
-
+	virtual IControlMapper* GetControlMapper() override;
 	virtual void SeatToggle(const bool Seat) override;
 
 	UFUNCTION(NetMulticast, Reliable)

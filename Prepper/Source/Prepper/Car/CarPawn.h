@@ -6,12 +6,12 @@
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/Interfaces/Controllable.h"
 #include "Prepper/Interfaces/Damageable.h"
 #include "Prepper/Interfaces/Interactable.h"
 
 #include "CarPawn.generated.h"
 
+class UCarControlMapper;
 class UCameraComponent;
 class USpringArmComponent;
 class UInputAction;
@@ -43,32 +43,29 @@ class ACarPawn : public AWheeledVehiclePawn, public IControllable, public IInter
 	/** Cast pointer to the Chaos Vehicle movement component */
 	TObjectPtr<UChaosWheeledVehicleMovementComponent> ChaosVehicleMovement;
 
+	UPROPERTY()
 	TObjectPtr<APlayerCharacter> Driver;
 
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
 	class USphereComponent* AreaSphere;
 
+	UPROPERTY(EditAnywhere, Category=Control)
+	TSubclassOf<UCarControlMapper> MapperClass;
+	UPROPERTY()
+	TObjectPtr<UCarControlMapper> CarControlMapper;
+
 public:
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 
-	virtual void ShiftPressed() override;
-	virtual void ShiftReleased() override;
-
-	virtual void SpacePressed() override;
-	virtual void SpaceReleased() override;
 	virtual void EPressed() override;
 	virtual void RPressed() override;
 
 	virtual void ControlPressed() override;
-
-	virtual void MouseLeftPressed() override;
-	virtual void MouseLeftReleased() override;
-	virtual void MouseRightPressed() override;
-	virtual void MouseRightReleased() override;
-
+	
 	virtual UCameraComponent* GetFollowCamera() override;
-
+	virtual IControlMapper* GetControlMapper() override;
+	
 	virtual void Interaction(APlayerCharacter* Target) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;

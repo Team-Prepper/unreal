@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "../CharacterComponent.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/Enums/CombatState.h"
+#include "Prepper/Character/Enums/CombatState.h"
 #include "Prepper/Weapon/WeaponHandler.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "Prepper/_Base/Util/GaugeInt.h"

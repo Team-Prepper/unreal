@@ -12,6 +12,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/ControlMapper/CarControlMapper.h"
 #include "Prepper/GameMode/PrepperGameMode.h"
 #include "Prepper/PlayerController/BasePlayerController.h"
 
@@ -133,11 +134,6 @@ void ACarPawn::Look(const FInputActionValue& Value)
 	
 }
 
-void ACarPawn::ShiftPressed() {}
-void ACarPawn::ShiftReleased() {}
-
-void ACarPawn::SpacePressed() {}
-void ACarPawn::SpaceReleased() {}
 void ACarPawn::EPressed()
 {
 	Controller->Possess(Driver);
@@ -145,6 +141,7 @@ void ACarPawn::EPressed()
 	Driver->SetActorLocation(GetActorLocation() + FVector(0, 0, 200));
 	Driver->SetMovementState(EMovementState::EMS_Idle);
 }
+
 void ACarPawn::RPressed() {}
 
 void ACarPawn::ControlPressed()
@@ -156,14 +153,20 @@ void ACarPawn::ControlPressed()
 	BackCamera->SetActive(!bFrontCameraActive);
 }
 
-void ACarPawn::MouseLeftPressed() {}
-void ACarPawn::MouseLeftReleased() {}
-void ACarPawn::MouseRightPressed() {}
-void ACarPawn::MouseRightReleased() {}
-
 UCameraComponent* ACarPawn::GetFollowCamera()
 {
 	return bFrontCameraActive ? FrontCamera : BackCamera;
+}
+
+IControlMapper* ACarPawn::GetControlMapper()
+{
+	if (!CarControlMapper)
+	{
+		CarControlMapper = NewObject<UCarControlMapper>(MapperClass);
+		CarControlMapper->TargetCar = this;
+	}
+	
+	return CarControlMapper;
 }
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
