@@ -16,7 +16,6 @@ class PREPPER_API ADeathMatchGameState : public AGameState, public ISubject<TArr
 {
 	GENERATED_BODY()
 
-private:
 	float TopScore = 0.f;
 
 	TArray<TObjectPtr<ADeathMatchPlayerState>> Players;
@@ -40,5 +39,6 @@ public:
 	virtual void Attach(IObserver<TArray<TObjectPtr<ADeathMatchPlayerState>>>* Observer) override;
 	virtual void Detach(IObserver<TArray<TObjectPtr<ADeathMatchPlayerState>>>* Observer) override;
 	virtual void Notify() override;
+private:
 	
 };

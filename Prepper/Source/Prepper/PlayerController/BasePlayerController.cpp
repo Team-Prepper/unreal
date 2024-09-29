@@ -100,8 +100,14 @@ void ABasePlayerController::PollInit()
 
 void ABasePlayerController::PossessPlayerCharacter()
 {
-	PlayerCharacter->Attach(PrepperHUD->CharacterOverlay);
-	PlayerCharacter->GetCombatComponent()->Attach(PrepperHUD->CharacterOverlay);
+	if (PlayerCharacter && PrepperHUD && PrepperHUD->CharacterOverlay)
+	{
+		PlayerCharacter->Attach(PrepperHUD->CharacterOverlay);
+		if (PlayerCharacter->GetCombatComponent())
+		{
+			PlayerCharacter->GetCombatComponent()->Attach(PrepperHUD->CharacterOverlay);
+		}
+	}
 }
 
 void ABasePlayerController::ResetPlayer()
