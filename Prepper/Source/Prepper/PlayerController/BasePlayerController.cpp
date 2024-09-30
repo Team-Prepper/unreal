@@ -48,7 +48,6 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 	// 서버에서만 동작하는 함수
 	Super::OnPossess(InPawn);
 	OnPossess();
-	
 
 }
 
@@ -70,7 +69,7 @@ void ABasePlayerController::OnPossess()
 	// 로컬에서도 동작하게 설계함
 	if (Cast<IControllable>(GetPawn()))
 	{
-		if (TargetControlMapper)
+		if (TargetControlMapper && IsLocalController())
 		{
 			TargetControlMapper->Disconnect();
 		}
@@ -292,7 +291,6 @@ void ABasePlayerController::FireButtonReleased()
 	if (!TargetControlMapper) return;
 	TargetControlMapper->MouseLeftReleased();
 }
-
 
 void ABasePlayerController::ServerInteractionPressed_Implementation()
 {
