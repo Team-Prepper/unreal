@@ -2,8 +2,11 @@
 
 
 #include "DeathMatchGameMode.h"
+
+#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "Prepper/Character/BaseCharacter.h"
 #include "Prepper/GameState/DeathMatchGameState.h"
 #include "Prepper/PlayerController/DeathMatchPlayerController.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
@@ -124,8 +127,9 @@ void ADeathMatchGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AControll
 	UGameplayStatics::GetAllActorsOfClass(this, APlayerStart::StaticClass(), PlayerStarts);
 	const int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
 	RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
+	
 	if(ABasePlayerController* ElimmedPlayerController = Cast<ABasePlayerController>(ElimmedController))
 	{
-		ElimmedPlayerController->SetPossessPawn();
+		//ElimmedPlayerController->SetPossessPawn();
 	}
 }

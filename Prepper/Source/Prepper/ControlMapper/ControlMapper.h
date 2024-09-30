@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+struct FInputActionValue;
 class UCameraComponent;
 
 class IControlMapper

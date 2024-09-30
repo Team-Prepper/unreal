@@ -1,7 +1,6 @@
 #include "PrepperHUD.h"
 
 #include "UI/Announcement.h"
-#include "UI/Compass.h"
 #include "Blueprint/UserWidget.h"
 #include "GameFramework/PlayerController.h"
 
@@ -15,20 +14,6 @@ void APrepperHUD::AddCharacterOverlay()
 	APlayerController* PlayerController = GetOwningPlayerController();
 	
 	if(!PlayerController) return;
-
-	/*
-	if(CharacterOverlayClass)
-	{
-		CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
-		CharacterOverlay->AddToViewport();
-	}
-	*/
-	
-	if(CompassHUDClass)
-	{
-		Compass = CreateWidget<UCompass>(PlayerController, CompassHUDClass);
-		Compass->AddToViewport();
-	}
 }
 
 void APrepperHUD::AddAnnouncement()
@@ -44,8 +29,6 @@ void APrepperHUD::AddAnnouncement()
 void APrepperHUD::DrawHUD()
 {
 	Super::DrawHUD();
-	if (Compass)
-		Compass->SetDirection();
 	DrawCrosshair();
 }
 

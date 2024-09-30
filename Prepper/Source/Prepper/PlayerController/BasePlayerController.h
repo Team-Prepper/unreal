@@ -2,9 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/ControlMapper/ControlMapper.h"
 #include "BasePlayerController.generated.h"
+
+class UCharacterOverlay;
+class UCompass;
+class APrepperHUD;
+class APlayerCharacter;
+class UInputAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
 
@@ -15,25 +20,31 @@ class PREPPER_API ABasePlayerController : public APlayerController
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void PollInit();
-	void SetPossessPawn();
+	virtual void OnRep_Pawn() override;
+	virtual void OnPossess();
+	virtual void PlayerTick(float DeltaTime) override;
 	void ResetPlayer();
 protected:
-	FTimerHandle TimerHandle;
-	
 	virtual void BeginPlay() override;
-	virtual void PossessPawn();
 	virtual void PossessPlayerCharacter();
-	
-	void PossessNewPawn();
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastPossessNewPawn();
 
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UCharacterOverlay> CharacterOverlayClass;
+	UPROPERTY()
+	UCharacterOverlay* CharacterOverlay;
+
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UCompass> CompassHUDClass;
+	UPROPERTY()
+	UCompass* Compass;
+	
 	UPROPERTY()
 	APlayerCharacter* PlayerCharacter;
 
 	UPROPERTY()
-	class APrepperHUD* PrepperHUD;
+	APrepperHUD* PrepperHUD;
+	APrepperHUD* GetPrepperHUD();
+	
 public:
 	/* NetWork */
 	FHighPingDelegate HighPingDelegate;

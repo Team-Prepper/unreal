@@ -6,9 +6,8 @@
 #include "ControlMapper.h"
 #include "CharacterControlMapper.generated.h"
 
-class UCharacterOverlay;
+class UWeaponWidget;
 class APlayerCharacter;
-class UUserWidget;
 
 UCLASS(Blueprintable, BlueprintType)
 class PREPPER_API UCharacterControlMapper: public UObject, public IControlMapper
@@ -17,14 +16,15 @@ class PREPPER_API UCharacterControlMapper: public UObject, public IControlMapper
 	
 public:
 	UPROPERTY(EditAnywhere, Category="Widget")
-	TSubclassOf<UUserWidget> CharacterOverlayClass;
+	TSubclassOf<UWeaponWidget> WeaponOverlayClass;
 	UPROPERTY()
-	UCharacterOverlay* CharacterOverlay;
+	TObjectPtr<UWeaponWidget> WeaponOverlay;
 	
 	void ToggleControlWidget(bool Toggle, APlayerController* TargetController);
 	
 	UCharacterControlMapper():
-		CharacterOverlay(nullptr), TargetCharacter(nullptr) { } ;
+		WeaponOverlay(nullptr), TargetCharacter(nullptr) { } ;
+	
 	UPROPERTY()
 	APlayerCharacter* TargetCharacter;
 	

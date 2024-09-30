@@ -13,40 +13,7 @@ void UCharacterOverlay::Update(const GaugeValue<float>& NewData)
 	const FString Text = FString::Printf(TEXT("%d/%d"),
 		FMath::CeilToInt(NewData.GetCurValue()), FMath::CeilToInt(NewData.GetMaxValue()));
 	HealthText->SetText(FText::FromString(Text));
-
-	if (NewData.GetCurValue() > 0.0f) return;
-
-	const FString Minus1 = FString::Printf(TEXT("%d"), -1);
-	WeaponAmmoValue->SetText(FText::FromString(Minus1));
-	CarriedAmmoValue->SetText(FText::FromString(Minus1));
 	
-}
-
-void UCharacterOverlay::Update(const GaugeValue<int>& NewData)
-{
-	const FString AmmoText = FString::Printf(TEXT("%d"), NewData.GetCurValue());
-	WeaponAmmoValue->SetText(FText::FromString(AmmoText));
-	
-	const FString CarriedText = FString::Printf(TEXT("%d"), NewData.GetMaxValue());
-	CarriedAmmoValue->SetText(FText::FromString(CarriedText));
-}
-
-void UCharacterOverlay::SetScore(float Score) const
-{
-	FString ScoreText = FString::Printf(TEXT("%d"),FMath::FloorToInt(Score));
-	ScoreValue->SetText(FText::FromString(ScoreText));
-}
-
-void UCharacterOverlay::SetDefeat(int Defeat) const
-{
-	FString DefeatsText = FString::Printf(TEXT("%d"), Defeat);
-	DefeatsValue->SetText(FText::FromString(DefeatsText));
-}
-
-void UCharacterOverlay::ToggleDeathMatch(bool On)
-{
-	const ESlateVisibility OnVisibility = On ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-	DeathMatchWidget->SetVisibility(OnVisibility);
 }
 
 void UCharacterOverlay::ToggleStory(bool On)

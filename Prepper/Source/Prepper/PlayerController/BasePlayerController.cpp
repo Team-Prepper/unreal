@@ -5,7 +5,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/PlayerState.h"
-#include "Prepper/Character/Component/Combat/CombatComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/HUD/UI/Compass.h"
 
@@ -13,48 +12,61 @@
 void ABasePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
 		GetLocalPlayer()))
 	{
 		Subsystem->AddMappingContext(PlayerMappingContext, 0);
 	}
-	SetPossessPawn();
+
+	if (!IsLocalController()) return;
+	
 	SetInputMode(FInputModeGameOnly());
-	PrepperHUD = Cast<APrepperHUD>(GetHUD());
+	PrepperHUD = GetPrepperHUD();
+
+	if (CharacterOverlayClass)
+	{
+		CharacterOverlay = CreateWidget<UCharacterOverlay>(this, CharacterOverlayClass);
+		CharacterOverlay->AddToViewport();
+		PossessPlayerCharacter();
+	}
+	
+	if (CompassHUDClass)
+	{
+		Compass = CreateWidget<UCompass>(this, CompassHUDClass);
+		Compass->AddToViewport();
+		if (TargetControlMapper)
+		{
+			Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
+		}
+	}
+
 }
 
 void ABasePlayerController::OnPossess(APawn* InPawn)
 {
 	// 서버에서만 동작하는 함수
 	Super::OnPossess(InPawn);
-	PlayerCharacter = Cast<APlayerCharacter>(InPawn);
-	SetPossessPawn();
-	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"), *GetPawn()->GetName(), *GetName());
+	OnPossess();
+	
+
 }
 
-void ABasePlayerController::SetPossessPawn()
+void ABasePlayerController::OnRep_Pawn()
 {
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &ABasePlayerController::PossessNewPawn, 0.1f, true);
+	Super::OnRep_Pawn();
+	OnPossess();
+	
 }
 
-void ABasePlayerController::PossessNewPawn()
+void ABasePlayerController::OnPossess()
 {
 	if (!GetPawn()) return;
-
-	if (GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
-	{
-		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
-	}
-	MulticastPossessNewPawn();
-}
-
-void ABasePlayerController::MulticastPossessNewPawn_Implementation()
-{
-	PossessPawn();
-}
-
-void ABasePlayerController::PossessPawn()
-{
+	
+	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"),
+		*GetPawn()->GetName(), *GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Testing"));
+	
 	// 로컬에서도 동작하게 설계함
 	if (Cast<IControllable>(GetPawn()))
 	{
@@ -69,27 +81,14 @@ void ABasePlayerController::PossessPawn()
 
 	TargetControlMapper->Connect(this);
 
-	PollInit();
-}
-
-void ABasePlayerController::PollInit()
-{
-	PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(GetHUD()) : PrepperHUD;
-
-	if (!PrepperHUD) return;
-	if (!PrepperHUD->Compass)
+	if (Compass)
 	{
-		PrepperHUD->AddCharacterOverlay();
-	}
-
-	PrepperHUD->ResetCrossHair();
-
-	if (PrepperHUD->Compass)
-	{
-		PrepperHUD->Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
+		Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
 		UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
 	}
 
+	PrepperHUD = GetPrepperHUD();
+	
 	if (Cast<APlayerCharacter>(GetPawn()))
 	{
 		PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
@@ -100,15 +99,19 @@ void ABasePlayerController::PollInit()
 	PossessPlayerCharacter();
 }
 
+void ABasePlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+	
+	if (Compass)
+		Compass->SetDirection();
+}
+
 void ABasePlayerController::PossessPlayerCharacter()
 {
-	if (!PrepperHUD || !PrepperHUD->CharacterOverlay) return;
+	if (!CharacterOverlay) return;
 	
-	PlayerCharacter->Attach(PrepperHUD->CharacterOverlay);
-	if (PlayerCharacter->GetCombatComponent())
-	{
-		PlayerCharacter->GetCombatComponent()->Attach(PrepperHUD->CharacterOverlay);
-	}
+	PlayerCharacter->Attach(CharacterOverlay);
 }
 
 void ABasePlayerController::ResetPlayer()
@@ -119,6 +122,19 @@ void ABasePlayerController::ResetPlayer()
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
 {
 	HighPingDelegate.Broadcast(bHighPing);
+}
+
+APrepperHUD* ABasePlayerController::GetPrepperHUD()
+{
+	if (PrepperHUD) return PrepperHUD;
+	
+	PrepperHUD = Cast<APrepperHUD>(GetHUD());
+
+	if (PrepperHUD == nullptr) return nullptr;
+
+	PrepperHUD->ResetCrossHair();
+	
+	return PrepperHUD;
 }
 
 void ABasePlayerController::Tick(float DeltaTime)

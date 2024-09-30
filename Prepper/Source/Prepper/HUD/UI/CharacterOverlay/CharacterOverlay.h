@@ -15,7 +15,6 @@ class UCanvasPanel;
 UCLASS()
 class PREPPER_API UCharacterOverlay : public UUserWidget,
 										public IObserver<GaugeValue<float>>,
-										public IObserver<GaugeValue<int>>,
 										public IObserver<Status>,
 										public IObserver<TArray<FItemConvertData>>
 {
@@ -30,31 +29,10 @@ private:
 public:
 	virtual void Update(const GaugeValue<float>& NewData) override;
 
-	// Weapon
-private:
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Weapon)
-	UTextBlock* WeaponAmmoValue;
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Weapon)
-	UTextBlock* CarriedAmmoValue;
-
-public:
-	virtual void Update(const GaugeValue<int>& NewData) override;
-
 	// DeathMatch
-private:
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
-	UCanvasPanel* DeathMatchWidget;
-	
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
-	UTextBlock* ScoreValue;
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
-	UTextBlock* DefeatsValue;
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
 	UTextBlock* MatchCountDownText;
-	void SetScore(float Score) const;
-	void SetDefeat(int Defeat) const;
-	void ToggleDeathMatch(bool On);
 
 	// Story
 private:

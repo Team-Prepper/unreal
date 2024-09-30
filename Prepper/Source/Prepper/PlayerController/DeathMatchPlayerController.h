@@ -3,6 +3,7 @@
 #include "BasePlayerController.h"
 #include "DeathMatchPlayerController.generated.h"
 
+class UScoreWidget;
 class UScoreBoard;
 UCLASS()
 class PREPPER_API ADeathMatchPlayerController : public ABasePlayerController
@@ -13,12 +14,18 @@ private:
 	TSubclassOf<UScoreBoard> ScoreBoardClass;
 	UPROPERTY()
 	TObjectPtr<UScoreBoard> ScoreBoard;
+	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UScoreWidget> ScoreWidgetClass;
+	UPROPERTY()
+	TObjectPtr<UScoreWidget> ScoreWidget;
+	
 protected:
 	virtual void BeginPlay() override;
-	virtual void PollInit() override;
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PossessPlayerCharacter() override;
 
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Defeats);

@@ -130,10 +130,6 @@ void APlayerCharacter::UnCrouch(bool bClientSimulation)
 
 void APlayerCharacter::Elim()
 {
-	
-	ABasePlayerController* PrepperPlayerController = Cast<ABasePlayerController>(Controller);
-	PrepperPlayerController->ResetPlayer();
-
 	Tags.Add("Death");
 	Super::Elim();
 	
@@ -210,13 +206,14 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 		else
 			UE_LOG(LogTemp, Warning, TEXT("!!!!! SOMETHING TERRIBLE ERROR !!!!! : NO CONTORLLER"));
 	
-	
+		/*
 		if (!PrepperHUD || !PrepperHUD->CharacterOverlay)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
 			return;
 		}
 		EquippedBackpack->GetInventory()->Attach(PrepperHUD->CharacterOverlay);
+		*/
 	}
 }
 
@@ -341,7 +338,8 @@ IControlMapper* APlayerCharacter::GetControlMapper()
 {
 	if (!CharacterControlMapper)
 	{
-		CharacterControlMapper = MapperClass->GetDefaultObject<UCharacterControlMapper>();
+		CharacterControlMapper =
+			DuplicateObject(MapperClass->GetDefaultObject<UCharacterControlMapper>(), nullptr);
 		CharacterControlMapper->TargetCharacter = this;
 	}
 	
@@ -361,7 +359,8 @@ void APlayerCharacter::MulticastToggleInventory_Implementation()
 	{
 		APlayerController* PlayerController = Cast<APlayerController>(GetController());
 		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(PlayerController->GetHUD()) : PrepperHUD;
-	
+
+		/*
 		if (PrepperHUD && PrepperHUD->CharacterOverlay)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Complete Detach inventory Observer"));
@@ -370,7 +369,7 @@ void APlayerCharacter::MulticastToggleInventory_Implementation()
 		}else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
-		}
+		}*/
 	}
 	
 	EquippedBackpack = nullptr;

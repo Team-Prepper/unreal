@@ -39,11 +39,6 @@ public:
 	virtual void DrawHUD() override;
 
 	void AddCharacterOverlay();
-
-	UPROPERTY()
-	UCharacterOverlay* CharacterOverlay;
-	UPROPERTY()
-	class UCompass* Compass;
 	UPROPERTY()
 	class UAnnouncement* Announcement;
 
@@ -56,14 +51,9 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UUserWidget> CharacterOverlayClass;
 
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UUserWidget> InventoryHUDClass;
-	
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UUserWidget> CompassHUDClass;
 	
 	UPROPERTY(EditAnywhere, Category = "Annoucement")
 	TSubclassOf<UUserWidget> AnnouncementClass;

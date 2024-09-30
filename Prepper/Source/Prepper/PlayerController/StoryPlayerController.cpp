@@ -7,26 +7,18 @@
 #include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 
-void AStoryPlayerController::PollInit()
-{
-	Super::PollInit();
-
-	if (!PrepperHUD->CharacterOverlay) return;
-	
-	PrepperHUD->CharacterOverlay->ToggleDeathMatch(false);
-	PrepperHUD->CharacterOverlay->ToggleStory(true);
-}
-
 void AStoryPlayerController::PossessPlayerCharacter()
 {
 	Super::PossessPlayerCharacter();
-
-	if (!PrepperHUD || !PrepperHUD->CharacterOverlay) return;
+	
+	if (!CharacterOverlay) return;
+	
+	CharacterOverlay->ToggleStory(true);
 	
 	if(PlayerCharacter && PlayerCharacter->GetStatusEffectComponent())
 	{
 		PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
-		PlayerCharacter->GetStatusEffectComponent()->Attach(PrepperHUD->CharacterOverlay);
+		PlayerCharacter->GetStatusEffectComponent()->Attach(CharacterOverlay);
 	}
 }
 

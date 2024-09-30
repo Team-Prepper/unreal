@@ -6,6 +6,7 @@
 #include "BasePlayerController.h"
 #include "StoryPlayerController.generated.h"
 
+class UInputAction;
 /**
  * 
  */
@@ -16,8 +17,7 @@ class PREPPER_API AStoryPlayerController : public ABasePlayerController
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* Button1;
-
-	virtual void PollInit() override;
+	
 	virtual void PossessPlayerCharacter() override;
 	virtual void SetInput(UEnhancedInputComponent* Input) override;
 	

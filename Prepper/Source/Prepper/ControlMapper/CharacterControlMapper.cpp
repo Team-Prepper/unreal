@@ -5,6 +5,8 @@
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/UI/CharacterOverlay/CharacterOverlay.h"
+#include "Prepper/HUD/UI/CharacterOverlay/WeaponWidget.h"
+#include "Prepper/Weapon/Weapon.h"
 
 void UCharacterControlMapper::ToggleControlWidget(bool Toggle, APlayerController* TargetController)
 {
@@ -13,30 +15,26 @@ void UCharacterControlMapper::ToggleControlWidget(bool Toggle, APlayerController
 
 void UCharacterControlMapper::Connect(APlayerController* TargetController)
 {
-	UE_LOG(LogTemp, Warning, TEXT("TEXT00"));
+	if (!WeaponOverlay)
+	{
+		if (!WeaponOverlayClass) return;
+		
+		WeaponOverlay = CreateWidget<UWeaponWidget>(TargetController, WeaponOverlayClass);
+	}
 	
-	if (!CharacterOverlayClass) return;
-	
-	UE_LOG(LogTemp, Warning, TEXT("TEXT11"));
-	
-	CharacterOverlay = CreateWidget<UCharacterOverlay>(TargetController, CharacterOverlayClass);
+	if (!WeaponOverlay) return;
 
-	UE_LOG(LogTemp, Warning, TEXT("TEXT22"));
-	
-	if (!CharacterOverlay) return;
-	CharacterOverlay->AddToViewport();
+	WeaponOverlay->AddToViewport();
+	TargetCharacter->GetCombatComponent()->Attach(WeaponOverlay);
 
-	TargetCharacter->Attach(CharacterOverlay);
-	TargetCharacter->GetCombatComponent()->Attach(CharacterOverlay);
-	TargetCharacter->GetStatusEffectComponent()->Attach(CharacterOverlay);
-
-	UE_LOG(LogTemp, Warning, TEXT("TEXT33"));
 }
 
 void UCharacterControlMapper::Disconnect()
 {
-	if (!CharacterOverlay) return;
-	CharacterOverlay->BeginDestroy();
+	if (!WeaponOverlay) return;
+	
+	TargetCharacter->GetCombatComponent()->Detach(WeaponOverlay);
+	WeaponOverlay->RemoveFromParent();
 }
 
 void UCharacterControlMapper::Move(const FInputActionValue& Value)
