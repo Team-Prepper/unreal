@@ -351,6 +351,12 @@ void APlayerCharacter::SeatToggle(const bool Seat)
 	SetActorEnableCollision(!Seat);
 	SetActorHiddenInGame(Seat);
 	SetPlayerEquipmentHiddenInGame(Seat);
+	
+	if (Seat)
+		GetCharacterMovement()->DisableMovement();
+	else
+		GetCharacterMovement()->SetDefaultMovementMode();
+	
 }
 
 void APlayerCharacter::MulticastToggleInventory_Implementation()

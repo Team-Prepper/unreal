@@ -137,9 +137,12 @@ void ACarPawn::Look(const FInputActionValue& Value)
 void ACarPawn::EPressed()
 {
 	Controller->Possess(Driver);
+	
 	Driver->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Driver->SetActorLocation(GetActorLocation() + FVector(0, 0, 200));
 	Driver->SetMovementState(EMovementState::EMS_Idle);
+
+	Driver = nullptr;
 }
 
 void ACarPawn::RPressed() {}
@@ -172,6 +175,8 @@ IControlMapper* ACarPawn::GetControlMapper()
 
 void ACarPawn::Interaction(APlayerCharacter* Target)
 {
+	if (Driver) return;
+	
 	Driver = Target;
 
 	Target->Controller->Possess(this);
@@ -180,17 +185,16 @@ void ACarPawn::Interaction(APlayerCharacter* Target)
 	MulticastInteraction(Target);
 }
 
+void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
+{
+	Driver = Target;
+	Target->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+}
+
 void ACarPawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ACarPawn, CurrentHealth);
-}
-
-void ACarPawn::MulticastInteraction_Implementation(APlayerCharacter* Target)
-{
-	if(!IsLocallyControlled()) return;
-	Driver = Target;
-	Driver->SetActorEnableCollision(false);
 }
 
 void ACarPawn::ShowPickUpWidget(bool bShowWidget)

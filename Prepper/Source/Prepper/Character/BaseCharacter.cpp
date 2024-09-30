@@ -18,6 +18,8 @@ ABaseCharacter::ABaseCharacter()
 	ElimEvent = CreateDefaultSubobject<UElimDissolveComponent>(TEXT("ElimEventComponent"));
 
 	ElimEvent->SetIsReplicated(true);
+	
+	MovementState = EMovementState::EMS_Idle;
 }
 
 void ABaseCharacter::OnConstruction(const FTransform& Transform)
@@ -47,6 +49,7 @@ void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	MovementState = EMovementState::EMS_Idle;
 	ElimEvent->SetCharacter(this);
 	if (HasAuthority())
 	{
@@ -200,7 +203,6 @@ void ABaseCharacter::SetMovementState(const EMovementState& State)
 
 void ABaseCharacter::ServerConvertMovementState_Implementation(const EMovementState& State)
 {
-	if(!HasAuthority()) return;
 	MulticastConvertMovementState(State);
 }
 
@@ -211,6 +213,7 @@ void ABaseCharacter::MulticastConvertMovementState_Implementation(const EMovemen
 
 void ABaseCharacter::ConvertMovementState(const EMovementState& State)
 {
+	UE_LOG(LogTemp, Warning, TEXT("%hhd"), MovementState);
 	if(MovementState == EMovementState::EMS_Seat)
 	{
 		SeatToggle(false);
