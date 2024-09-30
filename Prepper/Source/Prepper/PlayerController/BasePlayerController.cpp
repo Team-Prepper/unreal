@@ -22,13 +22,18 @@ void ABasePlayerController::BeginPlay()
 	if (!IsLocalController()) return;
 	
 	SetInputMode(FInputModeGameOnly());
-	PrepperHUD = GetPrepperHUD();
+	BeginWidget();
 
+	PossessPlayerCharacter();
+
+}
+
+void ABasePlayerController::BeginWidget()
+{
 	if (CharacterOverlayClass)
 	{
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(this, CharacterOverlayClass);
 		CharacterOverlay->AddToViewport();
-		PossessPlayerCharacter();
 	}
 	
 	if (CompassHUDClass)
@@ -40,7 +45,6 @@ void ABasePlayerController::BeginPlay()
 			Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
 		}
 	}
-
 }
 
 void ABasePlayerController::OnPossess(APawn* InPawn)
@@ -85,8 +89,6 @@ void ABasePlayerController::OnPossess()
 		Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
 		UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
 	}
-
-	PrepperHUD = GetPrepperHUD();
 	
 	if (Cast<APlayerCharacter>(GetPawn()))
 	{
@@ -109,13 +111,9 @@ void ABasePlayerController::PlayerTick(float DeltaTime)
 void ABasePlayerController::PossessPlayerCharacter()
 {
 	if (!CharacterOverlay) return;
+	if (!PlayerCharacter) return;
 	
 	PlayerCharacter->Attach(CharacterOverlay);
-}
-
-void ABasePlayerController::ResetPlayer()
-{
-	PlayerCharacter = nullptr;
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)

@@ -4,19 +4,28 @@
 
 #include "CoreMinimal.h"
 #include "BasePlayerController.h"
-#include "StoryPlayerController.generated.h"
+#include "SurvivorController.generated.h"
 
+class UStatusWidget;
 class UInputAction;
 /**
  * 
  */
 UCLASS()
-class PREPPER_API AStoryPlayerController : public ABasePlayerController
+class PREPPER_API ASurvivorController : public ABasePlayerController
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UStatusWidget> StatusWidgetClass;
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TObjectPtr<UStatusWidget> StatusWidget;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* Button1;
+	
+	virtual void BeginWidget() override;
 	
 	virtual void PossessPlayerCharacter() override;
 	virtual void SetInput(UEnhancedInputComponent* Input) override;

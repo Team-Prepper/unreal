@@ -3,13 +3,13 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 
-class AStoryGameMode;
+class ASurvivorGameMode;
 
 class PREPPER_API IMissionChecker
 {
 public:
 	virtual ~IMissionChecker() = default;
-	virtual void SetTargetMode(AStoryGameMode* Target) = 0;
+	virtual void SetTargetMode(ASurvivorGameMode* Target) = 0;
 	
 	virtual bool CheckClear() = 0;
 	virtual float GetClearRate() = 0;

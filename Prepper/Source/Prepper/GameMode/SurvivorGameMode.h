@@ -6,13 +6,13 @@
 #include "PrepperGameMode.h"
 #include "Prepper/Mission/Mission.h"
 #include "UObject/Object.h"
-#include "StoryGameMode.generated.h"
+#include "SurvivorGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PREPPER_API AStoryGameMode : public APrepperGameMode
+class PREPPER_API ASurvivorGameMode : public APrepperGameMode
 {
 	GENERATED_BODY()
 private:

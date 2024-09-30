@@ -4,22 +4,26 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ScoreWidget.generated.h"
+#include "DeathMatchWidget.generated.h"
 
 class UTextBlock;
 /**
  * 
  */
 UCLASS()
-class PREPPER_API UScoreWidget : public UUserWidget
+class PREPPER_API UDeathMatchWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
+	TObjectPtr<UTextBlock> MatchTime;
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
+	TObjectPtr<UTextBlock> ScoreValue;
+	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
+	TObjectPtr<UTextBlock> DefeatsValue;
 	
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
-	UTextBlock* ScoreValue;
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
-	UTextBlock* DefeatsValue;
 public:
+	void SetMatchTime(int Minutes, int Seconds);
 	void SetScore(float Score) const;
 	void SetDefeat(int Defeat) const;
 };

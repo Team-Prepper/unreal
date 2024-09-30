@@ -15,7 +15,6 @@ class UCanvasPanel;
 UCLASS()
 class PREPPER_API UCharacterOverlay : public UUserWidget,
 										public IObserver<GaugeValue<float>>,
-										public IObserver<Status>,
 										public IObserver<TArray<FItemConvertData>>
 {
 	GENERATED_BODY()
@@ -26,33 +25,16 @@ private:
 	UProgressBar* HealthBar;
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Health)
 	UTextBlock* HealthText;
+	
 public:
 	virtual void Update(const GaugeValue<float>& NewData) override;
 
-	// DeathMatch
-public:
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=DeathMatch)
-	UTextBlock* MatchCountDownText;
-
-	// Story
-private:
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
-	UCanvasPanel* StoryWidget;
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
-	UProgressBar* HungerBar;
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
-	UProgressBar* ThirstBar;
-	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
-	UProgressBar* InfectionBar;
 	
 	// UI에서 사용할 Vertical Box 변수
 	UPROPERTY(EditAnywhere, meta = (BindWidget), Category=Story)
 	class UVerticalBox* ItemBox;
 
 public:
-	void ToggleStory(bool On);
-	
-	virtual void Update(const Status& NewData) override;
 	virtual void Update(const TArray<FItemConvertData>& NewData) override;
 
 	// 아이콘을 Vertical Box에 추가하는 함수

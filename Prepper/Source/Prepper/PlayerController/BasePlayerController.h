@@ -17,32 +17,37 @@ UCLASS()
 class PREPPER_API ABasePlayerController : public APlayerController
 {
 	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UCharacterOverlay> CharacterOverlayClass;
+	UPROPERTY()
+	TObjectPtr<UCharacterOverlay> CharacterOverlay;
+
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UCompass> CompassHUDClass;
+	UPROPERTY()
+	TObjectPtr<UCompass> Compass;
+
+	UPROPERTY()
+	APrepperHUD* PrepperHUD;
+	
+	UPROPERTY()
+	APlayerCharacter* PlayerCharacter;
+	
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;
 	virtual void OnPossess();
 	virtual void PlayerTick(float DeltaTime) override;
-	void ResetPlayer();
+	
 protected:
 	virtual void BeginPlay() override;
+	virtual void BeginWidget();
 	virtual void PossessPlayerCharacter();
-
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UCharacterOverlay> CharacterOverlayClass;
-	UPROPERTY()
-	UCharacterOverlay* CharacterOverlay;
-
-	UPROPERTY(EditAnywhere, Category = "Player HUD")
-	TSubclassOf<UCompass> CompassHUDClass;
-	UPROPERTY()
-	UCompass* Compass;
 	
-	UPROPERTY()
-	APlayerCharacter* PlayerCharacter;
-
-	UPROPERTY()
-	APrepperHUD* PrepperHUD;
 	APrepperHUD* GetPrepperHUD();
 	
 public:

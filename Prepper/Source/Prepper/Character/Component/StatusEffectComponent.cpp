@@ -22,7 +22,8 @@ void UStatusEffectComponent::BeginPlay()
 void UStatusEffectComponent::Attach(IObserver<Status>* Observer)
 {
 	Observers.insert(Observer);
-	if (StateEffectMap.IsEmpty()) return; 
+	if (StateEffectMap.IsEmpty()) return;
+	
 	Observer->Update(
 		Status(	FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
 						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),

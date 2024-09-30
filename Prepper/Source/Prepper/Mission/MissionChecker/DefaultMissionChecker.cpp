@@ -7,7 +7,7 @@ UDefaultMissionChecker::UDefaultMissionChecker(const TArray<FString>& Code)
 {
 }
 
-void UDefaultMissionChecker::SetTargetMode(AStoryGameMode* Target)
+void UDefaultMissionChecker::SetTargetMode(ASurvivorGameMode* Target)
 {
 	
 }

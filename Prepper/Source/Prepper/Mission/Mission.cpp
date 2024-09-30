@@ -5,7 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "MissionChecker/DefaultMissionChecker.h"
-#include "Prepper/GameMode/StoryGameMode.h"
+#include "Prepper/GameMode/SurvivorGameMode.h"
 
 TArray<FString> UMission::SplitString(const FString& Str)
 {
@@ -39,7 +39,7 @@ UMission::UMission()
 UMission::UMission(const FString& CheckerCode, const FString& RewardCode)
 {
 	Checker = GetMissionChecker(CheckerCode);
-	Checker->SetTargetMode(Cast<AStoryGameMode>(UGameplayStatics::GetGameMode(this)));
+	Checker->SetTargetMode(Cast<ASurvivorGameMode>(UGameplayStatics::GetGameMode(this)));
 	
 	Reward = GetMissionReward(RewardCode);
 }

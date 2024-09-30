@@ -16,19 +16,6 @@ void UCharacterOverlay::Update(const GaugeValue<float>& NewData)
 	
 }
 
-void UCharacterOverlay::ToggleStory(bool On)
-{
-	const ESlateVisibility OnVisibility = On ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-	StoryWidget->SetVisibility(OnVisibility);
-}
-
-void UCharacterOverlay::Update(const Status& NewData)
-{
-	HungerBar->SetPercent(NewData.Hungry.GetRatio());
-	ThirstBar->SetPercent(NewData.Thirsty.GetRatio());
-	InfectionBar->SetPercent(NewData.Infected.GetRatio());
-}
-
 void UCharacterOverlay::Update(const TArray<FItemConvertData>& NewData)
 {
 	ClearAllItemIcons();

@@ -9,6 +9,8 @@
 /**
  * 
  */
+class UTextBlock;
+
 UCLASS()
 class PREPPER_API UAnnouncement : public UUserWidget
 {
@@ -17,11 +19,14 @@ class PREPPER_API UAnnouncement : public UUserWidget
 public:
 	
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* AnnouncementText;
-	
+	UTextBlock* AnnouncementText;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* WarmupTime;
-	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* InfoText;
+	
+	void Announce(const FString& Content) const;
+	void SetInformation(const FString& Content) const;
+
+	void SetWarmupTime(int Minute, int Second);
 };
