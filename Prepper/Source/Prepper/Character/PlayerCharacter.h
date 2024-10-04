@@ -7,13 +7,19 @@
 #include "Prepper/ControlMapper/Controllable.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
+#include "Prepper/Item/Inventory/Inventory.h"
 #include "PlayerCharacter.generated.h"
 
+class UWidgetComponent;
+class UInteractionComponent;
+class UCombatComponent;
+class APrepperHUD;
 class UFlexibleSpringArmComponent;
 class UInputAction;
 class UCustomCameraComponent;
 class UMapInventory;
 class AWeaponActor;
+class UStatusEffectComponent;
 struct FInputActionValue;
 enum class ETurningInPlace : uint8;
 
@@ -63,19 +69,20 @@ private:
 	AItemBackpack* EquippedBackpack;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	class UStatusEffectComponent* StatusEffect;
+	UStatusEffectComponent* StatusEffect;
 
 	UPROPERTY()
-	class APrepperHUD* PrepperHUD;
+	APrepperHUD* PrepperHUD;
 	
-	std::pmr::set<IObserver<UMapInventory>*> InventoryObservers;
+	std::pmr::set<IObserver<TArray<IInventory::InventoryItem>>*> InventoryObservers;
 	
 public:
+	virtual UMapInventory* GetInventory() const;
 
 	virtual void AddItem(const FString& ItemCode) override;
 	virtual void UseQuickSlotItem(int Idx) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
-	virtual void EquipBackpack(class AItemBackpack* BackpackToEquip) override;
+	virtual void EquipBackpack(AItemBackpack* BackpackToEquip) override;
 	
 	virtual void Heal(float Amount) override;
 	virtual void Eat(float Amount) override;
@@ -90,10 +97,10 @@ private:
 // IControllable
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	class UCombatComponent* Combat;
+	UCombatComponent* Combat;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	class UInteractionComponent* InteractionComponent;
+	UInteractionComponent* InteractionComponent;
 	
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UFlexibleSpringArmComponent* FlexibleCameraBoom;
@@ -153,7 +160,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Skin)
 	UStaticMeshComponent* Hair;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	class UWidgetComponent* OverheadWidget;
+	UWidgetComponent* OverheadWidget;
 
 	void SetPlayerEquipmentHiddenInGame(bool visible);
 	void SetEquipmentHidden(AActor* Target, bool visible);

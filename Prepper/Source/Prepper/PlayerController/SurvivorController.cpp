@@ -7,6 +7,7 @@
 #include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/HUD/UI/CharacterOverlay/StatusWidget.h"
+#include "Prepper/HUD/UI/Inventory/InventoryUI.h"
 
 void ASurvivorController::BeginWidget()
 {
@@ -16,6 +17,13 @@ void ASurvivorController::BeginWidget()
 	{
 		StatusWidget = CreateWidget<UStatusWidget>(this, StatusWidgetClass);
 		StatusWidget->AddToViewport();
+	}
+	
+	if (InventoryWidgetClass && InventoryWidget == nullptr)
+	{
+		InventoryWidget = CreateWidget<UInventoryUI>(this, InventoryWidgetClass);
+		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
+		InventoryWidget->AddToViewport();
 	}
 }
 
@@ -30,6 +38,7 @@ void ASurvivorController::PossessPlayerCharacter()
 	
 	PlayerCharacter->GetStatusEffectComponent()->Attach(StatusWidget);
 	PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
+	PlayerCharacter->GetInventory()->Attach(InventoryWidget);
 }
 
 void ASurvivorController::SetInput(UEnhancedInputComponent* Input)
@@ -43,7 +52,9 @@ void ASurvivorController::SetInput(UEnhancedInputComponent* Input)
 
 void ASurvivorController::OpenInventoryPressed()
 {
-	ServerToggleInventory();
+	if (!InventoryWidget) return;
+	InventoryWidget->SetVisibility(ESlateVisibility::Visible);
+	//ServerToggleInventory();
 }
 
 void ASurvivorController::ServerToggleInventory_Implementation()
