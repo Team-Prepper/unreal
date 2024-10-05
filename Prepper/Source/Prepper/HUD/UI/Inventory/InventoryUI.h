@@ -10,6 +10,7 @@
 
 class UListView;
 class UButton;
+class APlayerCharacter;
 /**
  * 
  */
@@ -25,11 +26,15 @@ private:
 	TObjectPtr<UListView> InventoryView;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UButton> CloseButton;
+
+	UPROPERTY()
+	TObjectPtr<APlayerCharacter> TargetPlayer;
 public:
 	virtual void NativeOnInitialized() override;
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 	virtual void Update(IInventory* const& newData) override;
-
+	void SetTargetPlayer(APlayerCharacter* Target);
+	
 	UFUNCTION()
 	void Close();
 	

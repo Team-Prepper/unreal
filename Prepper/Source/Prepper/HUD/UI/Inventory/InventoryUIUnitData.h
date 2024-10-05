@@ -14,6 +14,8 @@ class PREPPER_API UInventoryUIUnitData : public UObject
 {
 	GENERATED_BODY()
 public:
+	UPROPERTY()
+	APlayerCharacter* TargetPlayer;
 	FString ItemName;
 	FString ItemCode;
 	unsigned int ItemCount;

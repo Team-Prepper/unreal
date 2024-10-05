@@ -38,7 +38,7 @@ void ASurvivorController::PossessPlayerCharacter()
 	
 	PlayerCharacter->GetStatusEffectComponent()->Attach(StatusWidget);
 	PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
-	PlayerCharacter->GetInventory()->Attach(InventoryWidget);
+	InventoryWidget->SetTargetPlayer(PlayerCharacter);
 }
 
 void ASurvivorController::SetInput(UEnhancedInputComponent* Input)

@@ -7,7 +7,9 @@
 #include "Components/Button.h"
 #include "Components/ListView.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Item/Inventory/Inventory.h"
+#include "Prepper/Item/Inventory/MapInventory.h"
 
 void UInventoryUI::NativeOnInitialized()
 {
@@ -19,18 +21,21 @@ void UInventoryUI::SetVisibility(ESlateVisibility InVisibility)
 {
 	Super::SetVisibility(InVisibility);
 
+	if (TargetPlayer == nullptr) return;
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (PC == nullptr) return;
 	if (InVisibility == ESlateVisibility::Visible)
 	{
 		PC->SetInputMode(FInputModeGameAndUI());
 		PC->SetShowMouseCursor(true);
+		TargetPlayer->GetInventory()->Attach(this);
 		SetFocus();
 		return;
 	}
 	
 	PC->SetInputMode(FInputModeGameOnly());
 	PC->SetShowMouseCursor(false);
+	TargetPlayer->GetInventory()->Detach(this);
 	
 }
 
@@ -45,6 +50,7 @@ void UInventoryUI::Update(IInventory* const& newData)
 		UInventoryUIUnitData* Data =
 			NewObject<UInventoryUIUnitData>(GetWorld(), UInventoryUIUnitData::StaticClass());
 
+		Data->TargetPlayer = TargetPlayer;
 		Data->ItemCode = Items[i].ItemCode;
 		Data->ItemCount = Items[i].Count;
 		
@@ -58,11 +64,17 @@ void UInventoryUI::Update(IInventory* const& newData)
 		UInventoryUIUnitData* Data =
 			NewObject<UInventoryUIUnitData>(GetWorld(), UInventoryUIUnitData::StaticClass());
 
+		Data->TargetPlayer = TargetPlayer;
 		Data->ItemCode = QuickSlots[i].ItemCode;
 		Data->ItemCount = QuickSlots[i].Count;
 		
 		QuickSlotView->AddItem(Data);
 	}
+}
+
+void UInventoryUI::SetTargetPlayer(APlayerCharacter* Target)
+{
+	TargetPlayer = Target;
 }
 
 void UInventoryUI::Close()
