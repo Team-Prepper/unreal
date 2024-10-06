@@ -8,6 +8,7 @@
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/HUD/UI/CharacterOverlay/StatusWidget.h"
 #include "Prepper/HUD/UI/Inventory/InventoryUI.h"
+#include "Prepper/HUD/UI/ItemCombination/ItemCombinationUI.h"
 
 void ASurvivorController::BeginWidget()
 {
@@ -67,6 +68,15 @@ void ASurvivorController::ServerToggleInventory_Implementation()
 
 void ASurvivorController::QuickSlot1Use()
 {
+	if (ItemCombinationClass == nullptr) return;
+	TObjectPtr<UItemCombinationUI> Tmp =
+		CreateWidget<UItemCombinationUI>(this, ItemCombinationClass);
+	
+	Tmp->SetTargetPlayer(PlayerCharacter);
+	Tmp->SetVisibility(ESlateVisibility::Visible);
+	Tmp->AddToViewport();
+	
+	return;
 	UE_LOG(LogTemp, Warning, TEXT("Button1Pressed"));
 	if (!PlayerCharacter) return;
 	PlayerCharacter->UseQuickSlotItem(0);

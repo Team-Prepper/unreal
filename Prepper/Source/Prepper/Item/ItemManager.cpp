@@ -55,7 +55,7 @@ void ItemManager::Initial(const TObjectPtr<UDataTable> ItemDataTable, const TObj
 		
 		for (int i = 0; i < arr.Num(); ++i)
 		{
-			CombinationData.Add(ItemCombineCode(arr[i]->InputItemCode1, arr[i]->InputItemCode2), *arr[i]);
+			CombinationData.Add(arr[i]->OutputItemCode, *arr[i]);
 		}
 	}
 }
@@ -98,6 +98,32 @@ TObjectPtr<AInventoryInteractableItem> ItemManager::SpawnItemInteraction(UWorld*
 	return World->SpawnActor<AInventoryInteractableItem>(ItemMetaData.Find(ItemCode)->ItemInteraction);
 }
 
+TArray<FString> ItemManager::GetPossibleCombination() const
+{
+	TArray<FString> Retval;
+	CombinationData.GetKeys(Retval);
+	
+	return Retval;
+}
+
+bool ItemManager::TryCombinationItem(const FString& ResultCode, FString& ItemCode1, int& Item1Cnt, FString& ItemCode2,
+                                     int& Item2Cnt)
+{
+	if (!CombinationData.Contains(ResultCode))
+	{
+		return false;
+	}
+	FItemCombinationData Data = CombinationData[ResultCode];
+	
+	ItemCode1 = Data.InputItemCode1;
+	Item1Cnt = Data.Item1NeedCnt;
+	ItemCode2 = Data.InputItemCode2;
+	Item2Cnt = Data.Item2NeedCnt;
+	
+	return true;
+	
+}
+/*
 bool ItemManager::TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode)
 {
 	const FString CombinationCode = ItemCombineCode(ItemCode1, ItemCode2);
@@ -110,7 +136,7 @@ bool ItemManager::TryCombinationItem(const FString& ItemCode1, const FString& It
 	ResultCode = CombinationData.Find(CombinationCode)->OutputItemCode;
 
 	return true;
-}
+}*/
 
 int ItemManager::CountCombinationData()
 {

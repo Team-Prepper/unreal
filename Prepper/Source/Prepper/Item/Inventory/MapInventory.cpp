@@ -2,16 +2,33 @@
 #include "Engine/GameInstance.h"
 #include "UObject/ConstructorHelpers.h"
 
+#define DEFAULT_QUICK_SLOT_ITEM FString("")
+
 UMapInventory::UMapInventory()
 {
 	Owner = nullptr;
 	BulletCount = 0;
+
+	for (int i = 0; i < MAX_QUICK_SLOT; i++)
+	{
+		QuickSlotItem[i] = DEFAULT_QUICK_SLOT_ITEM;
+	}
 }
 
 bool UMapInventory::TryAddItem(const FString& ItemCode, const int Count)
 {
 	// 아이템이 존재한다면
 	// 그 아이템의 소지수를 1 늘리고 true 반환
+	if (QuickSlot.Contains(ItemCode)) {
+		
+		const uint8 ItemCount = *QuickSlot.Find(ItemCode) + Count;
+		QuickSlot.Add(ItemCode, ItemCount);
+		
+		UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
+		Notify();
+		return true;
+	
+	}
 	if (ItemUnits.Contains(ItemCode))
 	{
 		const uint8 ItemCount = *ItemUnits.Find(ItemCode) + Count;
@@ -105,12 +122,31 @@ bool UMapInventory::CheckOwnItem(const FString& ItemCode)
 	return false;
 }
 
-void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Count, const int Idx)
+void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx = 0)
 {
 	if (Idx >= MAX_QUICK_SLOT) return;
+
+	int TargetIdx = Idx;
+
+	for (int i = 0; i < MAX_QUICK_SLOT; i++)
+	{
+		TargetIdx = Idx + i % MAX_QUICK_SLOT;
+		if (QuickSlotItem[i].Compare(DEFAULT_QUICK_SLOT_ITEM) == 0) break;
+	}
+
+	if (QuickSlotItem[TargetIdx].Compare(DEFAULT_QUICK_SLOT_ITEM) != 0)
+	{
+		ItemUnits.Add(QuickSlotItem[TargetIdx], QuickSlot[QuickSlotItem[TargetIdx]]);
+		
+	}
+
+	const int Count = TryGetItemCount(ItemCode);
+	ItemUnits.Remove(ItemCode);
 	
-	QuickSlotItem[Idx] = ItemCode;
+	QuickSlotItem[TargetIdx] = ItemCode;
 	QuickSlot.Add(ItemCode, Count);
+
+	Notify();
 
 	UE_LOG(LogTemp, Warning, TEXT("Add Item To QuickSlot:%s"), *ItemCode);
 }

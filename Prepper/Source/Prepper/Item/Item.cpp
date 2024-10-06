@@ -15,11 +15,11 @@ IItemEffect* FItem::StringToItemEffect(const FString& Value)
 	const TCHAR* Delims[] = { TEXT(":") };
 	const int32 ArraySize = Value.ParseIntoArray(CodePiece, Delims, 1);
 	
-	if (CodePiece[0].Compare("Heal"))
+	if (CodePiece[0].Compare("Heal") == 0)
 		return new HealEffect(FCString::Atoi(*CodePiece[1]));
-	if (CodePiece[0].Compare("Eat"))
+	if (CodePiece[0].Compare("Eat") == 0)
 		return new EatEffect(FCString::Atoi(*CodePiece[1]));
-	if (CodePiece[0].Compare("Drink"))
+	if (CodePiece[0].Compare("Drink") == 0)
 		return new DrinkEffect(FCString::Atoi(*CodePiece[1]));
 
 	return new HealEffect(FCString::Atoi(*CodePiece[1]));

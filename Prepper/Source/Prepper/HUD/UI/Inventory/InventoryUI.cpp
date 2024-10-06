@@ -42,6 +42,7 @@ void UInventoryUI::SetVisibility(ESlateVisibility InVisibility)
 void UInventoryUI::Update(IInventory* const& newData)
 {
 	InventoryView->ClearListItems();
+	QuickSlotView->ClearListItems();
 
 	TArray<IInventory::InventoryItem> Items = newData->GetIter();
 	
@@ -58,6 +59,8 @@ void UInventoryUI::Update(IInventory* const& newData)
 	}
 	
 	TArray<IInventory::InventoryItem> QuickSlots = newData->GetQuickSlotIter();
+
+	UE_LOG(LogTemp, Warning, TEXT("QuickSlotCnt: %d"), QuickSlots.Num());
 	
 	for (int i = 0; i < QuickSlots.Num(); i++)
 	{
@@ -72,7 +75,7 @@ void UInventoryUI::Update(IInventory* const& newData)
 	}
 }
 
-void UInventoryUI::SetTargetPlayer(APlayerCharacter* Target)
+void UInventoryUI::SetTargetPlayer(TObjectPtr<APlayerCharacter> Target)
 {
 	TargetPlayer = Target;
 }

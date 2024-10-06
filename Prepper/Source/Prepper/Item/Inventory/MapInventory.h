@@ -60,7 +60,7 @@ public:
 	virtual int TryGetItemCount(const FString& ItemCode) override;
 	virtual bool CheckOwnItem(const FString& ItemCode) override;
 
-	virtual void QuickSlotAdd(const FString& ItemCode, const int Count, const int Idx) override;
+	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) override;
 	virtual void UseItemAtQuickSlot(const int Idx) override;
 
 	virtual TArray<InventoryItem> GetIter() const override;

@@ -33,7 +33,7 @@ public:
 	virtual void NativeOnInitialized() override;
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 	virtual void Update(IInventory* const& newData) override;
-	void SetTargetPlayer(APlayerCharacter* Target);
+	void SetTargetPlayer(TObjectPtr<APlayerCharacter> Target);
 	
 	UFUNCTION()
 	void Close();

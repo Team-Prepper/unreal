@@ -48,7 +48,6 @@ public:
 	virtual void SetVisibility(ESlateVisibility InVisibility) override;
 	virtual void NativeOnInitialized() override;
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
-	
 
 	UFUNCTION()
 	void MenuOpen();

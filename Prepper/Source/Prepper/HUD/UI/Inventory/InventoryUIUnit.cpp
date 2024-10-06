@@ -67,11 +67,8 @@ void UInventoryUIUnit::CancelButtonAction()
 void UInventoryUIUnit::QuickSlotButtonAction()
 {
 	IInventory* Inventory = TargetPlayer->GetInventory();
-
-	const int Count = Inventory->TryGetItemCount(ItemCode);
 	
-	Inventory->TryUseItem(ItemCode, Count);
-	Inventory->QuickSlotAdd(ItemCode, Count, 0);
+	Inventory->QuickSlotAdd(ItemCode, 0);
 	MenuPanel->SetVisibility(ESlateVisibility::Hidden);
 }
 

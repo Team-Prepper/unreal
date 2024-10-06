@@ -6,6 +6,7 @@
 #include "BasePlayerController.h"
 #include "SurvivorController.generated.h"
 
+class UItemCombinationUI;
 class UInventoryUI;
 class UStatusWidget;
 class UInputAction;
@@ -27,6 +28,8 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	UPROPERTY()
 	TObjectPtr<UInventoryUI> InventoryWidget;
 	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UItemCombinationUI> ItemCombinationClass;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))

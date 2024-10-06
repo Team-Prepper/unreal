@@ -15,20 +15,27 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
 	FString InputItemCode1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
+	int Item1NeedCnt;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
 	FString InputItemCode2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
+	int Item2NeedCnt;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LevelUp")
 	FString OutputItemCode;
+	
 	FItemCombinationData()
-		: InputItemCode1(TEXT("DefaultString1")), InputItemCode2(TEXT("DefaultString2"))
+		: InputItemCode1(TEXT("DefaultString1")), Item1NeedCnt(0), InputItemCode2(TEXT("DefaultString2")),
+		  Item2NeedCnt(0)
 	{
 	}
-	
+
 	// 오버로드된 생성자 선언
-	FItemCombinationData(const FString& InString1, const FString& InString2, const FString& OutString)
-		: InputItemCode1(InString1), InputItemCode2(InString2), OutputItemCode(OutString)
+	FItemCombinationData(const FString& InString1, const int InCnt1, const FString& InString2, const int InCnt2, const FString& OutString)
+		: InputItemCode1(InString1), Item1NeedCnt(InCnt1), InputItemCode2(InString2), Item2NeedCnt(InCnt2),
+		  OutputItemCode(OutString)
 	{
-		
 	}
 };
 

@@ -24,7 +24,9 @@ public:
 	
 	TObjectPtr<AActor> SpawnItem(UWorld* World, const FString& ItemCode);
 	TObjectPtr<AInventoryInteractableItem> SpawnItemInteraction(UWorld* World, const FString& ItemCode);
+
+	TArray<FString> GetPossibleCombination() const;
+	bool TryCombinationItem(const FString& ResultCode, FString& ItemCode1, int& Item1Cnt, FString& ItemCode2, int& Item2Cnt);
 	
-	bool TryCombinationItem(const FString& ItemCode1, const FString& ItemCode2, FString& ResultCode);
 	int CountCombinationData();
 };
