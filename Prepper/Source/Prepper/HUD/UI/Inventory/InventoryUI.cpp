@@ -54,6 +54,7 @@ void UInventoryUI::Update(IInventory* const& newData)
 		Data->TargetPlayer = TargetPlayer;
 		Data->ItemCode = Items[i].ItemCode;
 		Data->ItemCount = Items[i].Count;
+		Data->Idx = i;
 		
 		InventoryView->AddItem(Data);
 	}
@@ -70,6 +71,7 @@ void UInventoryUI::Update(IInventory* const& newData)
 		Data->TargetPlayer = TargetPlayer;
 		Data->ItemCode = QuickSlots[i].ItemCode;
 		Data->ItemCount = QuickSlots[i].Count;
+		Data->Idx = i;
 		
 		QuickSlotView->AddItem(Data);
 	}

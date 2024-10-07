@@ -157,6 +157,7 @@ void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx = 0)
 	if (QuickSlotItem[TargetIdx].Compare(DEFAULT_QUICK_SLOT_ITEM) != 0)
 	{
 		ItemUnits.Add(QuickSlotItem[TargetIdx], QuickSlot[QuickSlotItem[TargetIdx]]);
+		QuickSlot.Remove(QuickSlotItem[TargetIdx]);
 		
 	}
 
@@ -169,6 +170,18 @@ void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx = 0)
 	Notify();
 
 	UE_LOG(LogTemp, Warning, TEXT("Add Item To QuickSlot:%s"), *ItemCode);
+}
+
+void UMapInventory::QuickSlotRemove(const int Idx)
+{
+	if (QuickSlotItem[Idx].Compare(DEFAULT_QUICK_SLOT_ITEM) == 0) return;
+	
+	ItemUnits.Add(QuickSlotItem[Idx], QuickSlot[QuickSlotItem[Idx]]);
+	QuickSlot.Remove(QuickSlotItem[Idx]);
+	
+	QuickSlotItem[Idx] = DEFAULT_QUICK_SLOT_ITEM;
+
+	Notify();
 }
 
 void UMapInventory::UseItemAtQuickSlot(const int Idx)
@@ -190,9 +203,14 @@ TArray<IInventory::InventoryItem> UMapInventory::GetIter() const
 TArray<IInventory::InventoryItem> UMapInventory::GetQuickSlotIter() const
 {
 	TArray<InventoryItem> Retval;
-	for (auto Iter = QuickSlot.CreateConstIterator(); Iter; ++Iter)
+	for (int i = 0; i < MAX_QUICK_SLOT; i++)
 	{
-		Retval.Add(InventoryItem(Iter.Key(), Iter.Value()));
+		int Cnt = 0;
+		if (QuickSlot.Contains(QuickSlotItem[i]))
+		{
+			Cnt = QuickSlot[QuickSlotItem[i]];
+		}
+		Retval.Add(InventoryItem(QuickSlotItem[i], Cnt));
 	}
 	return Retval;
 }
