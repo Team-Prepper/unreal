@@ -83,7 +83,12 @@ void UItemCombinationUI::SetCombinationTarget(const FString& CombinationTarget)
 
 void UItemCombinationUI::Combination()
 {
+	bool b = TargetPlayer->GetInventory()->TryUseItem(SourceItem1, Cnt1)
+			&& TargetPlayer->GetInventory()->TryUseItem(SourceItem2, Cnt2);
+
+	if (!b) return;
 	
+	TargetPlayer->GetInventory()->TryAddItem(TargetItem, 1);
 }
 
 void UItemCombinationUI::Close()

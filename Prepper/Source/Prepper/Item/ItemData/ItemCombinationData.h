@@ -26,8 +26,8 @@ public:
 	FString OutputItemCode;
 	
 	FItemCombinationData()
-		: InputItemCode1(TEXT("DefaultString1")), Item1NeedCnt(0), InputItemCode2(TEXT("DefaultString2")),
-		  Item2NeedCnt(0)
+		: InputItemCode1(TEXT("DefaultString1")), Item1NeedCnt(1), InputItemCode2(TEXT("DefaultString2")),
+		  Item2NeedCnt(1)
 	{
 	}
 
