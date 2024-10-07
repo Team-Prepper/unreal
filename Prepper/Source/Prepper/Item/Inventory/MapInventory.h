@@ -25,7 +25,7 @@ struct FItemConvertData
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class PREPPER_API UMapInventory : public UActorComponent, public IInventory, public ISubject<TArray<FItemConvertData>>
+class PREPPER_API UMapInventory : public UActorComponent, public IInventory, public ISubject<IInventory*>
 {
 	GENERATED_BODY()
 private:
@@ -38,6 +38,7 @@ private:
 	TArray<FItemConvertData> ReplicatedItemUnits;
 
 	TMap<FString, uint8> ItemUnits; // 실제 아이템 저장용
+	TMap<FString, uint8> QuickSlot;
 
 	FString QuickSlotItem[MAX_QUICK_SLOT];
 
@@ -45,13 +46,17 @@ private:
 	uint8 InventorySize = 16;
 
 private:
-	std::pmr::set<IObserver<TArray<FItemConvertData>>*> Observers;
+	std::pmr::set<IObserver<IInventory*>*> Observers;
 
 public:
+	virtual void Attach(IObserver<IInventory*>* Observer) override;
+	virtual void Detach(IObserver<IInventory*>* Observer) override;
+	virtual void Notify() override;
+	
 	UMapInventory();
-	virtual bool TryAddItem(const FString& ItemCode) override;
-	virtual bool TryUseItem(const FString& ItemCode) override;
-	virtual bool TryDiscardItem(const FString& ItemCode) override;
+	virtual bool TryAddItem(const FString& ItemCode, const int Count) override;
+	virtual bool TryUseItem(const FString& ItemCode, const int Count) override;
+	virtual bool TryDiscardItem(const FString& ItemCode, const int Count) override;
 	virtual int TryGetItemCount(const FString& ItemCode) override;
 	virtual bool CheckOwnItem(const FString& ItemCode) override;
 
@@ -59,13 +64,7 @@ public:
 	virtual void UseItemAtQuickSlot(const int Idx) override;
 
 	virtual TArray<InventoryItem> GetIter() const override;
-
-	void AddBullet(uint8 Count);
-	uint8 GetBulletCount() const;
-
-	virtual void Attach(IObserver<TArray<FItemConvertData>>* Observer) override;
-	virtual void Detach(IObserver<TArray<FItemConvertData>>* Observer) override;
-	virtual void Notify() override;
+	virtual TArray<InventoryItem> GetQuickSlotIter() const override;
 
 	// 클라이언트에서 호출되는 RepNotify 함수
 	UFUNCTION()

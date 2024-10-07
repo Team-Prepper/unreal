@@ -23,7 +23,7 @@ void AInventoryInteractableItem::SetTargetInventory(UMapInventory* Inventory)
 
 void AInventoryInteractableItem::Interaction(APlayerCharacter* Target)
 {
-	if (!TargetInventory->TryUseItem(ItemCode)) return;
+	if (!TargetInventory->TryUseItem(ItemCode, 1)) return;
 	
 	ItemManager::GetInstance()->GetItem(ItemCode)->Use(Cast<IPlayerAbility>(Target));
 	if (TargetInventory->TryGetItemCount(ItemCode) == 0)

@@ -27,15 +27,19 @@ public:
 		uint8 Count;
 	};
 	
-	virtual bool TryAddItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryAddItem, return 0; ); 
-	virtual bool TryUseItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryUseItem, return 0; );
-	virtual bool TryDiscardItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryDiscardItem, return 0; );
+	virtual bool TryAddItem(const FString& ItemCode, int Count) PURE_VIRTUAL(IInventory::TryAddItem, return 0; ); 
+	virtual bool TryUseItem(const FString& ItemCode, int Count) PURE_VIRTUAL(IInventory::TryUseItem, return 0; );
+	virtual bool TryDiscardItem(const FString& ItemCode, int Count) PURE_VIRTUAL(IInventory::TryDiscardItem, return 0; );
+	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) PURE_VIRTUAL(); 
+	virtual void UseItemAtQuickSlot(const int Idx) PURE_VIRTUAL();
 
 	virtual int TryGetItemCount(const FString& ItemCode) PURE_VIRTUAL(IInventory::TryGetItemCount, return 0; );
 	
 	virtual bool CheckOwnItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::CheckOwnItem, return 0; );
-	virtual void QuickSlotAdd(const FString& ItemCode, const int Idx) PURE_VIRTUAL(); 
-	virtual void UseItemAtQuickSlot(const int Idx) PURE_VIRTUAL();
 
-	virtual TArray<InventoryItem> GetIter() const PURE_VIRTUAL(IInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
+	virtual TArray<InventoryItem> GetIter() const
+	PURE_VIRTUAL(IInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
+	virtual TArray<InventoryItem> GetQuickSlotIter() const
+	PURE_VIRTUAL(IInventory::GetQuickSlotIter, TArray<InventoryItem> Retval; return Retval; );
+
 };

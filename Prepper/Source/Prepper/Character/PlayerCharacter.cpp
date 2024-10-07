@@ -170,6 +170,10 @@ void APlayerCharacter::Jump()
 }
 
 // IPlayerAbility
+UMapInventory* APlayerCharacter::GetInventory() const
+{
+	return Inventory;
+}
 
 void APlayerCharacter::AddItem(const FString& ItemCode)
 {
@@ -196,6 +200,7 @@ void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 {
 	if(BackpackToEquip == nullptr) return;
 
+	Inventory = EquippedBackpack->GetInventory();
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
 
@@ -249,11 +254,11 @@ void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 	if(EquippedBackpack)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Backpack : Add Item %s"), *ItemCode);
-		if(EquippedBackpack->GetInventory()->TryAddItem(ItemCode))
+		if(EquippedBackpack->GetInventory()->TryAddItem(ItemCode, 1))
 			return;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("pocket : Add Item %s"), *ItemCode);
-	Inventory->TryAddItem(ItemCode);
+	Inventory->TryAddItem(ItemCode, 1);
 }
 
 // IControllable

@@ -5,11 +5,11 @@
 #include "Prepper/ControlMapper/ControlMapper.h"
 #include "BasePlayerController.generated.h"
 
+class UInputAction;
 class UCharacterOverlay;
 class UCompass;
 class APrepperHUD;
 class APlayerCharacter;
-class UInputAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHighPingDelegate, bool, bPingTooHigh);
 

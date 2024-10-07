@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Components/ListView.h"
 #include "Prepper/PlayerState/DeathMatchPlayerState.h"
 #include "Prepper/_Base/ObserverPattern/Observer.h"
 #include "UObject/Object.h"
 #include "ScoreBoard.generated.h"
 
-
+class UListView;
 /**
  * 
  */

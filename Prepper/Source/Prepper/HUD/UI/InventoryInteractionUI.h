@@ -4,6 +4,10 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryInteractionUI.generated.h"
 
+class UImage;
+class UTextBlock;
+class UButton;
+
 UCLASS()
 class PREPPER_API UInventoryInteractionUI : public UUserWidget
 {
@@ -14,19 +18,19 @@ public:
 	FString ItemCode;
 	
 	UPROPERTY()
-	class UImage* ItemIcon;
+	UImage* ItemIcon;
 
 	UPROPERTY()
-	class UTextBlock* ItemName;
+	UTextBlock* ItemName;
 
 	UPROPERTY()
-	class UTextBlock* ItemDescription;
+	UTextBlock* ItemDescription;
 
 	UPROPERTY()
-	class UButton* UseButton;
+	UButton* UseButton;
 
 	UPROPERTY()
-	class UButton* DiscardButton;
+	UButton* DiscardButton;
 
 	void InitializeWidget(const FString& InitItemCode);
 };
