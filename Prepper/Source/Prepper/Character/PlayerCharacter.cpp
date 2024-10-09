@@ -199,27 +199,13 @@ void APlayerCharacter::EquipWeapon(AWeaponActor* Weapon)
 void APlayerCharacter::EquipBackpack(AItemBackpack* BackpackToEquip)
 {
 	if(BackpackToEquip == nullptr) return;
-
-	Inventory = EquippedBackpack->GetInventory();
+	
 	EquippedBackpack = BackpackToEquip;
 	EquippedBackpack->SetBackpackState(EBackpackState::EBS_Equipped);
-
-	if(IsLocallyControlled())
-	{
-		if(GetController())
-			PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(Cast<APlayerController>(GetController())->GetHUD()) : PrepperHUD;
-		else
-			UE_LOG(LogTemp, Warning, TEXT("!!!!! SOMETHING TERRIBLE ERROR !!!!! : NO CONTORLLER"));
 	
-		/*
-		if (!PrepperHUD || !PrepperHUD->CharacterOverlay)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
-			return;
-		}
-		EquippedBackpack->GetInventory()->Attach(PrepperHUD->CharacterOverlay);
-		*/
-	}
+	Inventory->ChangingInventory(EquippedBackpack->GetInventory());
+	Inventory = EquippedBackpack->GetInventory();
+	
 }
 
 void APlayerCharacter::Heal(float Amount)
@@ -366,23 +352,6 @@ void APlayerCharacter::SeatToggle(const bool Seat)
 
 void APlayerCharacter::MulticastToggleInventory_Implementation()
 {
-	if(IsLocallyControlled())
-	{
-		APlayerController* PlayerController = Cast<APlayerController>(GetController());
-		PrepperHUD = PrepperHUD == nullptr ? Cast<APrepperHUD>(PlayerController->GetHUD()) : PrepperHUD;
-
-		/*
-		if (PrepperHUD && PrepperHUD->CharacterOverlay)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Complete Detach inventory Observer"));
-			EquippedBackpack->GetInventory()->Detach(PrepperHUD->CharacterOverlay);
-			PrepperHUD->CharacterOverlay->ClearAllItemIcons();
-		}else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("INVENTORY OBSERVER : NO PREPPER HUD"));
-		}*/
-	}
-	
 	EquippedBackpack = nullptr;
 }
 

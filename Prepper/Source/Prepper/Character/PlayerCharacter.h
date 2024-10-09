@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "Enums/CombatState.h"
 #include "Prepper/Component/CustomCameraComponent.h"
 #include "Prepper/ControlMapper/CharacterControlMapper.h"
 #include "Prepper/ControlMapper/Controllable.h"
 #include "Prepper/Interfaces/InteractWithCrosshairInterface.h"
 #include "Prepper/Interfaces/PlayerAbility.h"
-#include "Prepper/Item/Inventory/Inventory.h"
 #include "PlayerCharacter.generated.h"
 
 class UWidgetComponent;
@@ -63,18 +63,13 @@ public:
 // IPlayerAbility
 private:
 	UPROPERTY()
-	UMapInventory* Inventory;
+	TObjectPtr<UMapInventory> Inventory;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedBackpack)
-	AItemBackpack* EquippedBackpack;
+	TObjectPtr<AItemBackpack> EquippedBackpack;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	UStatusEffectComponent* StatusEffect;
-
-	UPROPERTY()
-	APrepperHUD* PrepperHUD;
-	
-	std::pmr::set<IObserver<TArray<IInventory::InventoryItem>>*> InventoryObservers;
+	TObjectPtr<UStatusEffectComponent> StatusEffect;
 	
 public:
 	virtual UMapInventory* GetInventory() const;

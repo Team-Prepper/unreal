@@ -1,17 +1,15 @@
 ﻿#pragma once
 
-#include <set>
-
 #include "CoreMinimal.h"
-#include "Component/CharacterComponent.h"
-#include "Component/ElimDissolveComponent.h"
-#include "Component/Combat/BaseCombatComponent.h"
-#include "GameFramework/Character.h"
-#include "Prepper/Interfaces/Damageable.h"
 #include "Prepper/_Base/ObserverPattern/Subject.h"
 #include "Prepper/_Base/Util/GaugeValue.h"
+#include "Prepper/Interfaces/Damageable.h"
+#include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UCharacterComponent;
+class UElimDissolveComponent;
+class UBaseCombatComponent;
 
 UENUM(BlueprintType)
 enum class EMovementState : uint8
@@ -42,7 +40,7 @@ protected:
 	TArray<TObjectPtr<UCharacterComponent>> CharacterComponents;
 	
 private:
-	std::pmr::set<IObserver<GaugeValue<float>>*> Observers;
+	TSet<IObserver<GaugeValue<float>>*> Observers;
 public:
 	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
 	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
@@ -56,12 +54,12 @@ protected:
 	
 	/* 데미지 처리 */
 	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* HitReactMontage;
+	TObjectPtr<UAnimMontage> HitReactMontage;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
-	UElimDissolveComponent* ElimEvent;
+	TObjectPtr<UElimDissolveComponent> ElimEvent;
 	UPROPERTY(EditAnywhere, Category = Combat)
-	UAnimMontage* ElimMontage;
+	TObjectPtr<UAnimMontage> ElimMontage;
 
 	TSet<TObjectPtr<AActor>> AttachedActor;
 	

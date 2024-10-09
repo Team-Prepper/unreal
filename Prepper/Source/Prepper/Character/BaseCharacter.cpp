@@ -1,5 +1,7 @@
 ﻿#include "BaseCharacter.h"
 
+#include "Component/ElimDissolveComponent.h"
+#include "Component/Combat/BaseCombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -60,21 +62,22 @@ void ABaseCharacter::BeginPlay()
 // Observer Pattern
 void ABaseCharacter::Attach(IObserver<GaugeValue<float>>* Observer)
 {
-	Observers.insert(Observer);
+	Observers.Add(Observer);;
 	Observer->Update(FGaugeFloat(CurrentHealth, MaxHealth));
 }
 
 void ABaseCharacter::Detach(IObserver<GaugeValue<float>>* Observer)
 {
-	Observers.erase(Observer);
+	Observers.Remove(Observer);
 }
 
 void ABaseCharacter::Notify()
 {
 	const FGaugeFloat Value(FGaugeFloat(CurrentHealth, MaxHealth));
-	std::ranges::for_each(Observers, [&](IObserver<GaugeValue<float>>* Observer) {
+	for (const auto Observer : Observers)
+	{
 		Observer->Update(Value);
-	});
+	}
 }
 
 

@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "InventoryUIUnitData.generated.h"
 
+class APlayerCharacter;
 /**
  * 
  */
@@ -15,8 +16,9 @@ class PREPPER_API UInventoryUIUnitData : public UObject
 	GENERATED_BODY()
 public:
 	UPROPERTY()
-	APlayerCharacter* TargetPlayer;
+	TObjectPtr<APlayerCharacter> TargetPlayer;
 	FString ItemName;
 	FString ItemCode;
 	unsigned int ItemCount;
+	int Idx;
 };

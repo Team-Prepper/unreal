@@ -71,6 +71,7 @@ bool ItemManager::GetItemData(const FString& ItemCode, UTexture2D*& ItemIcon, FT
 	
 	return true;
 }
+
 FItem* ItemManager::GetItem(const FString& ItemCode)
 {
 	if (!ItemData.Contains(ItemCode)) return nullptr;
