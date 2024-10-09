@@ -2,8 +2,6 @@
 
 #define MAX_QUICK_SLOT 5
 
-#include <set>
-
 #include "CoreMinimal.h"
 #include "Inventory.h"
 #include "Components/ActorComponent.h"
@@ -45,13 +43,16 @@ private:
 	UPROPERTY(EditAnywhere)
 	uint8 InventorySize = 16;
 
-private:
-	std::pmr::set<IObserver<IInventory*>*> Observers;
+	TSet<IObserver<IInventory*>*> Observers;
+
+	bool TryAddMapExist(TMap<FString, uint8>& Target, const FString& ItemCode, const int Count);
+	bool TryUseMapExist(TMap<FString, uint8>& Target, const FString& ItemCode, const int Count);
 
 public:
 	virtual void Attach(IObserver<IInventory*>* Observer) override;
 	virtual void Detach(IObserver<IInventory*>* Observer) override;
 	virtual void Notify() override;
+	void ChangingInventory(TObjectPtr<UMapInventory> NewInventory);
 	
 	UMapInventory();
 	virtual bool TryAddItem(const FString& ItemCode, const int Count) override;

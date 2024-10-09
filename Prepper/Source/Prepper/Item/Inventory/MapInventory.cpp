@@ -15,27 +15,49 @@ UMapInventory::UMapInventory()
 	}
 }
 
+bool UMapInventory::TryAddMapExist(TMap<FString, uint8>& Target, const FString& ItemCode, const int Count)
+{
+	if (!Target.Contains(ItemCode)) return false;
+	
+	const uint8 ItemCount = *Target.Find(ItemCode) + Count;
+	Target.Add(ItemCode, ItemCount);
+		
+	UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
+	Notify();
+	return true;
+}
+
+bool UMapInventory::TryUseMapExist(TMap<FString, uint8>& Target, const FString& ItemCode, const int Count)
+{
+	if (!Target.Contains(ItemCode)) return false;
+	
+	const int32 ItemCount = *Target.Find(ItemCode) - Count;
+
+	if (ItemCount < 0) return false;
+
+	// 아이템 사용 후의 개수가 0인 경우 삭제
+	if (ItemCount == 0)
+	{
+		Target.Remove(ItemCode);	
+	}
+	// 아닌 경우 아이템의 소지 수 -Count
+	else
+	{
+		Target.Add(ItemCode, ItemCount);
+	}
+	Notify();
+	return true;
+}
+
 bool UMapInventory::TryAddItem(const FString& ItemCode, const int Count)
 {
 	// 아이템이 존재한다면
 	// 그 아이템의 소지수를 1 늘리고 true 반환
-	if (QuickSlot.Contains(ItemCode)) {
-		
-		const uint8 ItemCount = *QuickSlot.Find(ItemCode) + Count;
-		QuickSlot.Add(ItemCode, ItemCount);
-		
-		UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
-		Notify();
+	if (TryAddMapExist(QuickSlot, ItemCode, Count)) {
 		return true;
-	
 	}
-	if (ItemUnits.Contains(ItemCode))
+	if (TryAddMapExist(ItemUnits, ItemCode, Count))
 	{
-		const uint8 ItemCount = *ItemUnits.Find(ItemCode) + Count;
-		ItemUnits.Add(ItemCode, ItemCount);
-		
-		UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
-		Notify();
 		return true;
 	}
 
@@ -59,49 +81,11 @@ bool UMapInventory::TryUseItem(const FString& ItemCode, const int Count)
 	// 여기서는 아이템의 갯수만 제어
 	// 효과 적용은 해당 아이템에서 직접 적용
 	// 아이템이 충분히 존재하지 않는다면 return false
-	if (QuickSlot.Contains(ItemCode))
-	{
-		const int32 ItemCount = *QuickSlot.Find(ItemCode) - Count;
 
-		if (ItemCount < 0) return false;
-
-		// 아이템 사용 후의 개수가 0인 경우 삭제
-		if (ItemCount == 0)
-		{
-			QuickSlot.Remove(ItemCode);	
-		}
-		// 아닌 경우 아이템의 소지 수 -Count
-		else
-		{
-			QuickSlot.Add(ItemCode, ItemCount);
-		}
-		Notify();
-		return true;
-		
-	}
-	if (!ItemUnits.Contains(ItemCode))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("UseItem : No Item %s"), *ItemCode);
-		return false;
-	}
-	const int32 ItemCount = *ItemUnits.Find(ItemCode) - Count;
-
-	if (ItemCount < 0) return false;
-
-	// 아이템 사용 후의 개수가 0인 경우 삭제
-	if (ItemCount == 0)
-	{
-		ItemUnits.Remove(ItemCode);	
-	}
-	// 아닌 경우 아이템의 소지 수 -Count
-	else
-	{
-		ItemUnits.Add(ItemCode, ItemCount);
-	}
+	if (TryUseMapExist(QuickSlot, ItemCode, Count)) return true;
+	if (!TryUseMapExist(ItemUnits, ItemCode, Count)) return false;
 	
-	UE_LOG(LogTemp, Warning, TEXT("Current Item :%s / Count : %d"), *ItemCode, ItemCount);
 	ConvertMapToArray();
-	Notify();
 	return true;
 }
 
@@ -218,20 +202,47 @@ TArray<IInventory::InventoryItem> UMapInventory::GetQuickSlotIter() const
 // OBSERVER
 void UMapInventory::Attach(IObserver<IInventory*>* Observer)
 {
-	Observers.insert(Observer);
+	Observers.Add(Observer);
 	Observer->Update(this);
 }
 
 void UMapInventory::Detach(IObserver<IInventory*>* Observer)
 {
-	Observers.erase(Observer);
+	Observers.Remove(Observer);
 }
 
 void UMapInventory::Notify()
 {
-	std::ranges::for_each(Observers, [&](IObserver<IInventory*>* Observer) {
+	for (auto Observer : Observers)
+	{
 		Observer->Update(this);
-	});
+		
+	}
+}
+
+void UMapInventory::ChangingInventory(const TObjectPtr<UMapInventory> NewInventory)
+{
+	for (int i = 0; i < MAX_QUICK_SLOT; i++)
+	{
+		NewInventory->QuickSlotItem[i] = QuickSlotItem[i];
+		QuickSlotItem[i] = DEFAULT_QUICK_SLOT_ITEM;
+	}
+	for (auto Item : QuickSlot)
+	{
+		NewInventory->QuickSlot.Add(Item.Key, Item.Value);
+	}
+	for (auto Item : ItemUnits)
+	{
+		NewInventory->ItemUnits.Add(Item.Key, Item.Value);
+	}
+	for (auto Observer : Observers)
+	{
+		NewInventory->Observers.Add(Observer);
+	}
+	NewInventory->Notify();
+	QuickSlot.Empty();
+	ItemUnits.Empty();
+	Observers.Empty();
 }
 
 void UMapInventory::ConvertMapToArray()
