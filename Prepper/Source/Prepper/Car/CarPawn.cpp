@@ -9,7 +9,6 @@
 #include "InputActionValue.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "Components/SphereComponent.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/ControlMapper/CarControlMapper.h"
@@ -165,8 +164,7 @@ IControlMapper* ACarPawn::GetControlMapper()
 {
 	if (!CarControlMapper)
 	{
-		CarControlMapper =
-			DuplicateObject(MapperClass->GetDefaultObject<UCarControlMapper>(), nullptr);
+		CarControlMapper = NewObject<UCarControlMapper>(this, MapperClass);
 		CarControlMapper->TargetCar = this;
 	}
 	

@@ -78,8 +78,8 @@ TArray<FVector_NetQuantize> ARangeWeapon::GetTarget(FVector& HitTarget)
 	return HitTargets;
 }
 
-void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, UTexture2D*& Center, UTexture2D*& Left,
-	UTexture2D*& Right, UTexture2D*& Top, UTexture2D*& Bottom, float &Spread)
+void ARangeWeapon::GetCrosshair(float DeltaTime, bool bIsAiming, TObjectPtr<UTexture2D>& Center, TObjectPtr<UTexture2D>& Left,
+                                TObjectPtr<UTexture2D>& Right, TObjectPtr<UTexture2D>& Top, TObjectPtr<UTexture2D>& Bottom, float &Spread)
 {
 	Center = CrosshairCenter;
 	Left   = CrosshairLeft;

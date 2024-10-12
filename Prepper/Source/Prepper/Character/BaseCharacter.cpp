@@ -216,7 +216,6 @@ void ABaseCharacter::MulticastConvertMovementState_Implementation(const EMovemen
 
 void ABaseCharacter::ConvertMovementState(const EMovementState& State)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%hhd"), MovementState);
 	if(MovementState == EMovementState::EMS_Seat)
 	{
 		SeatToggle(false);

@@ -329,8 +329,7 @@ IControlMapper* APlayerCharacter::GetControlMapper()
 {
 	if (!CharacterControlMapper)
 	{
-		CharacterControlMapper =
-			DuplicateObject(MapperClass->GetDefaultObject<UCharacterControlMapper>(), nullptr);
+		CharacterControlMapper = NewObject<UCharacterControlMapper>(this, MapperClass);
 		CharacterControlMapper->TargetCharacter = this;
 	}
 	
