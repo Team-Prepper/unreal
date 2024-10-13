@@ -22,7 +22,6 @@ class PREPPER_API UZoomInEffect : public UPlayerAimingEffect
 	UPROPERTY(EditAnywhere, Category=ZoomIn)
 	float ZoomSpeed;
 	
-	float DefaultFOV;
 public:
 	virtual void PlayerAimingStart(TObjectPtr<APlayerCharacter>) override;
 	virtual void PlayerAimingEnd() override;
