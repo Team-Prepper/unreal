@@ -1,5 +1,6 @@
 #include "WeaponActor.h"
 
+#include "AimingEffect/PlayerAimingEffect.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -8,6 +9,7 @@
 #include "Prepper/Prepper.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/PlayerController/BasePlayerController.h"
+#include "Sound/SoundCue.h"
 
 AWeaponActor::AWeaponActor()
 {
@@ -47,6 +49,18 @@ AWeaponActor::AWeaponActor()
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 	
+}
+
+TArray<UPlayerAimingEffect*> AWeaponActor::GetAimingEffect()
+{
+	if (AimingEffectClasses.Num() != AimingEffects.Num())
+	{
+		for (TSubclassOf<UPlayerAimingEffect> EffectClass : AimingEffectClasses)
+		{
+			AimingEffects.Add(NewObject<UPlayerAimingEffect>(this, EffectClass));
+		}
+	}
+	return AimingEffects;
 }
 
 void AWeaponActor::PlayEquipWeaponSound()
@@ -218,8 +232,8 @@ void AWeaponActor::OnPingTooHigh(bool bPingTooHigh)
 }
 
 
-void AWeaponActor::GetCrosshair(float DeltaTime, bool bIsAiming, UTexture2D* &Center, UTexture2D* &Left,
-	UTexture2D* &Right, UTexture2D* &Top, UTexture2D* &Bottom, float &Spread)
+void AWeaponActor::GetCrosshair(float DeltaTime, bool bIsAiming, TObjectPtr<UTexture2D>& Center, TObjectPtr<UTexture2D>& Left,
+                                TObjectPtr<UTexture2D>& Right, TObjectPtr<UTexture2D>& Top, TObjectPtr<UTexture2D>& Bottom, float &Spread)
 {
 	Center = nullptr;
 	Left = nullptr;

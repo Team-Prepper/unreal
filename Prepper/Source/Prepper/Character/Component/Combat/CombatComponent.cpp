@@ -6,6 +6,7 @@
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/WeaponActor.h"
+#include "Prepper/Weapon/AimingEffect/PlayerAimingEffect.h"
 #include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
 #include "Prepper/_Base/Util/GaugeInt.h"
 
@@ -67,11 +68,6 @@ void UCombatComponent::BeginPlay()
 	if (!Character) return;
 	
 	UE_LOG(LogTemp, Warning, TEXT("CombatComponentReady"));
-
-	AimingEffect = Cast<UCustomCameraComponent>
-	(Character->GetComponentByClass(UCustomCameraComponent::StaticClass()));
-	
-	DefaultFOV = AimingEffect == nullptr ? 0 : AimingEffect->GetDefaultFieldOfView();
 }
 
 // Equipped Weapon
@@ -145,6 +141,11 @@ void UCombatComponent::DropEquippedWeapon()
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
 	EquippedMeleeWeapon = nullptr;
 	EquippedRangeWeapon = nullptr;
+
+	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
+	{
+		Effect->PlayerAimingEnd();
+	}
 }
 
 void UCombatComponent::SetWeaponType()
@@ -287,6 +288,7 @@ int32 UCombatComponent::AmountToReload()
 void UCombatComponent::SetAiming(bool bIsAiming)
 {
 	if (Character == nullptr || EquippedWeapon == nullptr) return;
+	if (bAiming == bIsAiming) return;
 	
 	Super::SetAiming(bIsAiming);
 	
@@ -295,22 +297,24 @@ void UCombatComponent::SetAiming(bool bIsAiming)
 	EMovementState NewState = bIsAiming ? EMovementState::EMS_Aim : EMovementState::EMS_Idle;
 	Character->SetMovementState(NewState);
 
-	if (AimingEffect == nullptr) return;
-	
-	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
+	if (!bIsAiming)
 	{
-		AimingEffect->ShowSniperScopeWidget(bIsAiming);
-	}
-
-	if (bIsAiming)
-	{
-		AimingEffect->InterpFOV(EquippedRangeWeapon->GetZoomedFOV(),
-			EquippedRangeWeapon->GetZoomedFOV());
+		for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
+		{
+			Effect->PlayerAimingEnd();
+		}
 		return;
 	}
 
-	AimingEffect->InterpFOV(DefaultFOV,
-			EquippedRangeWeapon->GetZoomedFOV());
+	TObjectPtr<APlayerCharacter> Player = Cast<APlayerCharacter>(Character);
+
+	if (Player == nullptr) return;
+	
+	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
+	{
+		Effect->PlayerAimingStart(Player);
+	}
+
 }
 
 void UCombatComponent::ServerSetAiming(bool bIsAiming)
@@ -342,12 +346,12 @@ void UCombatComponent::SetHUDCrosshair(float DeltaTime, const FLinearColor& Cros
 	FHUDPackage HUDPackage;
 	
 	EquippedWeapon->GetCrosshair(DeltaTime, bAiming,
-								HUDPackage.CrosshairCenter,
-								HUDPackage.CrosshairLeft,
-								HUDPackage.CrosshairRight,
-								HUDPackage.CrosshairTop,
-								HUDPackage.CrosshairBottom,
-								HUDPackage.CrosshairSpread);
+	                             HUDPackage.CrosshairCenter,
+	                             HUDPackage.CrosshairLeft,
+	                             HUDPackage.CrosshairRight,
+	                             HUDPackage.CrosshairTop,
+	                             HUDPackage.CrosshairBottom,
+	                             HUDPackage.CrosshairSpread);
 
 	HUDPackage.CrosshairColor = CrosshairColor;
 	
@@ -399,17 +403,17 @@ void UCombatComponent::TraceUnderCrosshair(FHitResult& TraceHitResult)
 void UCombatComponent::TargetElim()
 {
 	Super::TargetElim();
-	
-	if (Character->IsLocallyControlled() &&
-		bAiming && EquippedWeapon &&
-		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SniperRifle)
-	{
-		AimingEffect->ShowSniperScopeWidget(false);
-	}
 		
 	if(SecondaryWeapon)
 	{
 		SecondaryWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
+	}
+
+	if (EquippedWeapon == nullptr) return;
+	
+	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
+	{
+		Effect->PlayerAimingEnd();
 	}
 }
 

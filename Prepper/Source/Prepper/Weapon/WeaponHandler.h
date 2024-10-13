@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Prepper/Weapon/WeaponTypes.h"
 #include "WeaponHandler.generated.h"
 
 // This class does not need to be modified.

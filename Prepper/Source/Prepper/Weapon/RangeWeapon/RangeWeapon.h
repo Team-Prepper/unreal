@@ -23,12 +23,12 @@ class PREPPER_API ARangeWeapon : public AWeaponActor
 
 public:
 	virtual void GetCrosshair(
-		float DeltaTime, bool bIsAiming, 
-		UTexture2D*& Center,
-		UTexture2D*& Left,
-		UTexture2D*& Right,
-		UTexture2D*& Top,
-		UTexture2D*& Bottom,
+		float DeltaTime, bool bIsAiming,
+		TObjectPtr<UTexture2D>& Center,
+		TObjectPtr<UTexture2D>& Left,
+		TObjectPtr<UTexture2D>& Right,
+		TObjectPtr<UTexture2D>& Top,
+		TObjectPtr<UTexture2D>& Bottom,
 		float &Spread) override;
 	/* CROSS HAIRS - 조준선 */
 	UPROPERTY(EditAnywhere, Category = Crosshiar)

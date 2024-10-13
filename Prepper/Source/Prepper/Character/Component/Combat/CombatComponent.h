@@ -1,9 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AimingEffect.h"
 #include "BaseCombatComponent.h"
-#include "../CharacterComponent.h"
 #include "Components/ActorComponent.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/Weapon/WeaponTypes.h"
@@ -120,9 +118,6 @@ private:
 private:
 	// Aiming FOV
 	float DefaultFOV;
-
-	UPROPERTY(EditAnywhere)
-	UCustomCameraComponent* AimingEffect;
 	
 public:
 	virtual void SetAiming(bool bIsAiming) override;

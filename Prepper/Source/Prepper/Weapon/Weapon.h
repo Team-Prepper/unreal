@@ -8,6 +8,7 @@
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "Weapon.generated.h"
 
+class UPlayerAimingEffect;
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
 class UWeapon : public UInterface
@@ -28,14 +29,17 @@ public:
 	PURE_VIRTUAL();
 
 	virtual void GetCrosshair(
-		float DeltaTime, bool bIsAiming, 
-		UTexture2D* &Center,
-		UTexture2D* &Left,
-		UTexture2D* &Right,
-		UTexture2D* &Top,
-		UTexture2D* &Bottom,
+		float DeltaTime, bool bIsAiming,
+		TObjectPtr<UTexture2D>& Center,
+		TObjectPtr<UTexture2D>& Left,
+		TObjectPtr<UTexture2D>& Right,
+		TObjectPtr<UTexture2D>& Top,
+		TObjectPtr<UTexture2D>& Bottom,
 		float &Spread)
 	PURE_VIRTUAL();
+
+	virtual TArray<UPlayerAimingEffect*> GetAimingEffect()
+	PURE_VIRTUAL(IWeapon::GetAimingEffect, TArray<UPlayerAimingEffect*> arr; return arr; );
 	
 	virtual void SetWeaponState(EWeaponState State)
 	PURE_VIRTUAL();

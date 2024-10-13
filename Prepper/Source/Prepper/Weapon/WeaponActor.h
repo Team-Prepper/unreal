@@ -5,7 +5,6 @@
 #include "GameFramework/Actor.h"
 #include "Weapon.h"
 #include "Prepper/Object/InteractableActor.h"
-#include "Sound/SoundCue.h"
 #include "WeaponActor.generated.h"
 
 
@@ -16,9 +15,17 @@ UCLASS()
 class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<UPlayerAimingEffect>> AimingEffectClasses;
+	UPROPERTY()
+	TArray<UPlayerAimingEffect*> AimingEffects;
 	
 public:	
 	AWeaponActor();
+
+	virtual TArray<UPlayerAimingEffect*> GetAimingEffect() override;
 	
 	virtual EWeaponType GetWeaponType() override { return WeaponType; };
 	virtual void SetWeaponHandler(IWeaponHandler* NewOwner) override;
@@ -33,12 +40,12 @@ public:
 	virtual TArray<FVector_NetQuantize> GetTarget(FVector& HitTarget) override;
 
 	virtual void GetCrosshair(
-		float DeltaTime, bool bIsAiming, 
-		UTexture2D* &Center,
-		UTexture2D* &Left,
-		UTexture2D* &Right,
-		UTexture2D* &Top,
-		UTexture2D* &Bottom,
+		float DeltaTime, bool bIsAiming,
+		TObjectPtr<UTexture2D>& Center,
+		TObjectPtr<UTexture2D>& Left,
+		TObjectPtr<UTexture2D>& Right,
+		TObjectPtr<UTexture2D>& Top,
+		TObjectPtr<UTexture2D>& Bottom,
 		float &Spread) override;
 
 	UPROPERTY(EditAnywhere, Category = Combat)

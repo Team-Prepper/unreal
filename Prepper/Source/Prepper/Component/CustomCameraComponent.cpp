@@ -10,6 +10,7 @@ void UCustomCameraComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DefaultFOV = FieldOfView;
 	GoalFOV = FieldOfView;
 	
 }

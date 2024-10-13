@@ -113,9 +113,10 @@ private:
 	float AO_Pitch;
 	FRotator StartingAimRotation;
 	float TimeSinceLastMovementReplication;
+	float Sensitivity = 1;
 	
 public:
-	// 서버에서만 실행되는 함수들 
+	void SetSensitivity(float Value);
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 

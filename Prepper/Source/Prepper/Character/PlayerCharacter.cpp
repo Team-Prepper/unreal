@@ -249,6 +249,11 @@ void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
 
 // IControllable
 
+void APlayerCharacter::SetSensitivity(float Value)
+{
+	Sensitivity = Value;
+}
+
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	if(bDisableGamePlay) return;
@@ -280,8 +285,8 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// add yaw and pitch input to controller
-		AddControllerYawInput(LookAxisVector.X);
-		AddControllerPitchInput(LookAxisVector.Y);
+		AddControllerYawInput(LookAxisVector.X * Sensitivity);
+		AddControllerPitchInput(LookAxisVector.Y * Sensitivity);
 	}
 }
 
@@ -329,8 +334,7 @@ IControlMapper* APlayerCharacter::GetControlMapper()
 {
 	if (!CharacterControlMapper)
 	{
-		CharacterControlMapper =
-			DuplicateObject(MapperClass->GetDefaultObject<UCharacterControlMapper>(), nullptr);
+		CharacterControlMapper = NewObject<UCharacterControlMapper>(this, MapperClass);
 		CharacterControlMapper->TargetCharacter = this;
 	}
 	
