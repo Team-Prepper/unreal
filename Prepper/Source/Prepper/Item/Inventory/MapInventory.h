@@ -49,6 +49,7 @@ private:
 	bool TryUseMapExist(TMap<FString, uint8>& Target, const FString& ItemCode, const int Count);
 
 public:
+	void SetOwner(IPlayerAbility* NewOwner);
 	virtual void Attach(IObserver<IInventory*>* Observer) override;
 	virtual void Detach(IObserver<IInventory*>* Observer) override;
 	virtual void Notify() override;

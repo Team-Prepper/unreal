@@ -5,6 +5,7 @@
 #include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Item/Inventory/MapInventory.h"
 #include "Prepper/Object/OpenedInventory.h"
 #include "Sound/SoundCue.h"
@@ -65,6 +66,7 @@ void AItemBackpack::Interaction(APlayerCharacter* Target)
 	SetOwner(Target);
 	
 	PlayerOwnerCharacter->EquipBackpack(this);
+	Inventory->SetOwner(PlayerOwnerCharacter);
 	
 	if(IsOpened)
 		HideInventory();

@@ -47,7 +47,7 @@ void UInventoryQuickSlotUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	ItemCode = Data->ItemCode;
 	Idx = Data->Idx;
 	
-	if (!ItemManager::GetInstance()->GetItemData(Data->ItemCode, Img, Name))
+	if (!ItemManager::GetInstance()->GetItemData(Data->ItemCode, Img, Name) || Data->ItemCount < 1)
 	{
 		ItemIcon->SetBrushFromTexture(nullptr);
 		ItemCount->SetText(FText::FromString(FString("")));

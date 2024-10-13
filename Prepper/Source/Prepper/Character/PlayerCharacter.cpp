@@ -58,6 +58,7 @@ APlayerCharacter::APlayerCharacter()
 	InteractionComponent->SetIsReplicated(true);
 	
 	Inventory = CreateDefaultSubobject<UMapInventory>(TEXT("Inventory"));
+	Inventory->SetOwner(this);
 	Inventory->SetIsReplicated(true);
 
 	StatusEffect = CreateDefaultSubobject<UStatusEffectComponent>(TEXT("StatusEffectComponet"));

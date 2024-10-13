@@ -1,5 +1,6 @@
 #include "MapInventory.h"
 #include "Engine/GameInstance.h"
+#include "Prepper/Item/ItemManager.h"
 #include "UObject/ConstructorHelpers.h"
 
 #define DEFAULT_QUICK_SLOT_ITEM FString("")
@@ -47,6 +48,11 @@ bool UMapInventory::TryUseMapExist(TMap<FString, uint8>& Target, const FString& 
 	}
 	Notify();
 	return true;
+}
+
+void UMapInventory::SetOwner(IPlayerAbility* NewOwner)
+{
+	Owner = NewOwner;
 }
 
 bool UMapInventory::TryAddItem(const FString& ItemCode, const int Count)
@@ -170,7 +176,11 @@ void UMapInventory::QuickSlotRemove(const int Idx)
 
 void UMapInventory::UseItemAtQuickSlot(const int Idx)
 {
-	TryUseItem(QuickSlotItem[Idx], 1);
+	if (!TryUseItem(QuickSlotItem[Idx], 1)) return;
+	
+	FItem* Item = ItemManager::GetInstance()->GetItem(QuickSlotItem[Idx]);
+	if (Item == nullptr) return;
+	Item->Use(Owner);
 }
 
 TArray<IInventory::InventoryItem> UMapInventory::GetIter() const

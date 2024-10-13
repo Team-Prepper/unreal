@@ -52,9 +52,10 @@ void UInventoryUIUnit::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 void UInventoryUIUnit::UseButtonAction()
 {
-	TargetPlayer->GetInventory()->TryUseItem(ItemCode, 1);
+	if (!TargetPlayer->GetInventory()->TryUseItem(ItemCode, 1)) return;
 	
 	FItem* Item = ItemManager::GetInstance()->GetItem(ItemCode);
+	if (Item == nullptr) return;
 	Item->Use(TargetPlayer);
 	MenuPanel->SetVisibility(ESlateVisibility::Hidden);
 }

@@ -34,6 +34,14 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* Button1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* Button2;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* Button3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* Button4;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* Button5;
 	
 	virtual void BeginWidget() override;
 	
@@ -43,6 +51,10 @@ protected:
 	void OpenInventoryPressed();
 
 	void QuickSlot1Use();
+	void QuickSlot2Use();
+	void QuickSlot3Use();
+	void QuickSlot4Use();
+	void QuickSlot5Use();
 
 	UFUNCTION(Server, Reliable)
 	void ServerToggleInventory();
