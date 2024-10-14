@@ -22,11 +22,6 @@ public:
 	
 	virtual void Move(const FInputActionValue& Value) PURE_VIRTUAL(IControllable::Move, );
 	virtual void Look(const FInputActionValue& Value) PURE_VIRTUAL(IControllable::Look, );
-
-	virtual void EPressed() PURE_VIRTUAL(IControllable::EPressed, );
-	virtual void RPressed() PURE_VIRTUAL(IControllable::RPressed, );
-
-	virtual void ControlPressed() PURE_VIRTUAL(IControllable::ControlPressed, );
 	
 	virtual UCameraComponent* GetFollowCamera() PURE_VIRTUAL(IControllable::GetFollowCamera, return nullptr;);
 };

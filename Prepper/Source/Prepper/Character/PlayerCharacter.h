@@ -119,12 +119,12 @@ public:
 	void SetSensitivity(float Value);
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
-
-	virtual void EPressed() override;
-	virtual void RPressed() override;
-	virtual void ControlPressed() override;
-
 	virtual IControlMapper* GetControlMapper() override;
+
+	virtual void Interaction();
+	virtual void CrouchToggle();
+	virtual void Reload() override;
+
 	virtual void SeatToggle(const bool Seat) override;
 
 	UFUNCTION(NetMulticast, Reliable)

@@ -133,7 +133,7 @@ void ACarPawn::Look(const FInputActionValue& Value)
 	
 }
 
-void ACarPawn::EPressed()
+void ACarPawn::Interaction()
 {
 	Controller->Possess(Driver);
 	
@@ -144,9 +144,7 @@ void ACarPawn::EPressed()
 	Driver = nullptr;
 }
 
-void ACarPawn::RPressed() {}
-
-void ACarPawn::ControlPressed()
+void ACarPawn::ChangeCam()
 {
 	// toggle the active camera flag
 	bFrontCameraActive = !bFrontCameraActive;

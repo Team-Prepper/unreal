@@ -41,14 +41,14 @@ void UCarControlMapper::SpaceReleased() {}
 
 void UCarControlMapper::EPressed()
 {
-	TargetCar->EPressed();
+	TargetCar->Interaction();
 }
 
 void UCarControlMapper::RPressed(){}
 
 void UCarControlMapper::ControlPressed()
 {
-	TargetCar->ControlPressed();
+	TargetCar->ChangeCam();
 }
 
 void UCarControlMapper::MouseLeftPressed(){}

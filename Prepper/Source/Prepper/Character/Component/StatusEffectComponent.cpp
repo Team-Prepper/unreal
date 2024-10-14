@@ -9,7 +9,7 @@
 UStatusEffectComponent::UStatusEffectComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-
+	Character = nullptr;
 }
 
 void UStatusEffectComponent::BeginPlay()

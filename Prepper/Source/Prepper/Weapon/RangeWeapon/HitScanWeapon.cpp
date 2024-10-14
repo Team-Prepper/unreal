@@ -3,6 +3,8 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Prepper/Character/BaseCharacter.h"
+#include "Prepper/Interfaces/Damageable.h"
 #include "Sound/SoundCue.h"
 
 void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
@@ -11,41 +13,36 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
-	MakeNoise(1, OwnerCharacter, FVector::ZeroVector);
 	
 	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
 	if (!MuzzleSocket) return;
-	
-	AController* InstigatorController = OwnerPawn->GetController();
+
+	FireEffect();
 	
 	FVector HitTarget = HitTargets.Top();
 	FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
-	FVector Start = SocketTransform.GetLocation();
 
 	FHitResult FireHit;
-	bool IsHit = WeaponTraceHit(Start, HitTarget, FireHit);
-		
-	IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
-	if (DamagedTarget && HasAuthority() && InstigatorController)
+
+	if (WeaponTraceHit(SocketTransform.GetLocation(), HitTarget, FireHit))
+	{
+		HitEffect(FireHit);
+	}
+	
+	AController* InstigatorController = OwnerPawn->GetController();
+	
+	if (!HasAuthority() || !InstigatorController) return;
+
+	if (IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor()))
 	{
 		DamagedTarget->ReceiveDamage(Damage, InstigatorController, this);
 	}
-	if(ImpactParticles && IsHit)
-	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-			GetWorld(),
-			ImpactParticles,
-			FireHit.ImpactPoint,
-			FireHit.ImpactNormal.Rotation()
-		);
-	}
-	if(HitSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(
-		this,
-		HitSound,
-		FireHit.ImpactPoint);
-	}
+}
+
+void AHitScanWeapon::FireEffect()
+{
+	MakeNoise(1, OwnerCharacter, FVector::ZeroVector);
+	
 	if(MuzzleFlash)
 	{
 		UNiagaraFunctionLibrary::SpawnSystemAttached(
@@ -65,6 +62,26 @@ void AHitScanWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 			this,
 			FireSound,
 			GetActorLocation());
+	}
+}
+
+void AHitScanWeapon::HitEffect(const FHitResult& FireHit)
+{
+	if(ImpactParticles)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+			GetWorld(),
+			ImpactParticles,
+			FireHit.ImpactPoint,
+			FireHit.ImpactNormal.Rotation()
+		);
+	}
+	if(HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(
+		this,
+		HitSound,
+		FireHit.ImpactPoint);
 	}
 }
 

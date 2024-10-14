@@ -250,17 +250,17 @@ TArray<FVector_NetQuantize> AWeaponActor::GetTarget(FVector& HitTarget)
 	return HitTargets;
 }
 
-void AWeaponActor::WeaponPhysicsActive(bool active)
+void AWeaponActor::WeaponPhysicsActive(bool bActive)
 {
-	SetActorEnableCollision(active);
+	SetActorEnableCollision(bActive);
 	
-	WeaponMesh->SetSimulatePhysics(active);
-	WeaponMesh->SetEnableGravity(active);
+	WeaponMesh->SetSimulatePhysics(bActive);
+	WeaponMesh->SetEnableGravity(bActive);
 	
-	ToggleOutline(active);
-	ToggleTrigger(active);
+	ToggleOutline(bActive);
+	ToggleTrigger(bActive);
 
-	if (!active)
+	if (!bActive)
 	{
 		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		return;

@@ -291,7 +291,7 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void APlayerCharacter::EPressed()
+void APlayerCharacter::Interaction()
 {
 	if(bDisableGamePlay) return;
 
@@ -312,13 +312,13 @@ void APlayerCharacter::EPressed()
 
 }
 
-void APlayerCharacter::RPressed()
+void APlayerCharacter::Reload()
 {
 	if(bDisableGamePlay) return;
-	Reload();
+	Super::Reload();
 }
 
-void APlayerCharacter::ControlPressed()
+void APlayerCharacter::CrouchToggle()
 {
 	if(bDisableGamePlay) return;
 	if(bIsCrouched)

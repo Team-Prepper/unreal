@@ -38,9 +38,6 @@ public:
 	
 private:
 	UPROPERTY()
-	EStatusEffect CurrentStatusEffect;
-
-	UPROPERTY()
 	ABaseCharacter* Character;
 	
 public:

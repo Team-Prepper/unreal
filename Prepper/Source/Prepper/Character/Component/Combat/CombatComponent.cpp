@@ -141,6 +141,8 @@ void UCombatComponent::DropEquippedWeapon()
 	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Dropped);
 	EquippedMeleeWeapon = nullptr;
 	EquippedRangeWeapon = nullptr;
+	
+	if (!Character->IsLocallyControlled()) return;
 
 	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
 	{
@@ -411,6 +413,7 @@ void UCombatComponent::TargetElim()
 
 	if (EquippedWeapon == nullptr) return;
 	
+	if (!Character->IsLocallyControlled()) return;
 	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
 	{
 		Effect->PlayerAimingEnd();

@@ -3,15 +3,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Prepper/Character/BaseCharacter.h"
 #include "Prepper/Character/PlayerCharacter.h"
-#include "Prepper/Character/Component/StatusEffectComponent.h"
-#include "Prepper/HUD/UI/CharacterOverlay/CharacterOverlay.h"
+#include "Prepper/Character/Component/Combat/BaseCombatComponent.h"
 #include "Prepper/HUD/UI/CharacterOverlay/WeaponWidget.h"
-#include "Prepper/Weapon/Weapon.h"
-
-void UCharacterControlMapper::ToggleControlWidget(bool Toggle, APlayerController* TargetController)
-{
-	
-}
 
 void UCharacterControlMapper::Connect(APlayerController* TargetController)
 {
@@ -69,17 +62,17 @@ void UCharacterControlMapper::SpaceReleased()
 
 void UCharacterControlMapper::EPressed()
 {
-	TargetCharacter->EPressed();
+	TargetCharacter->Interaction();
 }
 
 void UCharacterControlMapper::RPressed()
 {
-	TargetCharacter->RPressed();
+	TargetCharacter->Reload();
 }
 
 void UCharacterControlMapper::ControlPressed()
 {
-	TargetCharacter->ControlPressed();
+	TargetCharacter->CrouchToggle();
 }
 
 void UCharacterControlMapper::MouseLeftPressed()

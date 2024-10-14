@@ -4,21 +4,21 @@
 #include "ShotgunWeapon.h"
 
 #include "NiagaraFunctionLibrary.h"
-#include "Kismet/GameplayStatics.h"
-#include "Sound/SoundCue.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Prepper/Character/PlayerCharacter.h"
 
 void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 {
+	ARangeWeapon::Fire(HitTargets);
+	
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
 	if (OwnerPawn == nullptr) return;
-	SpendRound();
-	AController* InstigatorController = OwnerPawn->GetController();
 
 	const USkeletalMeshSocket* MuzzleSocket = GetRangeWeaponMesh()->GetSocketByName("Muzzle");
 	if (!MuzzleSocket) return;
+
+	FireEffect();
 	
 	const FTransform SocketTransform = MuzzleSocket->GetSocketTransform(GetRangeWeaponMesh());
 	const FVector Start = SocketTransform.GetLocation();
@@ -30,8 +30,12 @@ void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	{
 		FHitResult FireHit;
 		WeaponTraceHit(Start, HitTarget, FireHit);
+		HitEffect(FireHit);
 
+		if (!HasAuthority()) continue;
+		
 		IDamageable* DamagedTarget = Cast<IDamageable>(FireHit.GetActor());
+		
 		if (!DamagedTarget) continue;
 
 		if (HitMap.Contains(DamagedTarget))
@@ -42,31 +46,17 @@ void AShotgunWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)
 		{
 			HitMap.Emplace(DamagedTarget, 1);
 		}
-		if(ImpactParticles)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(
-				GetWorld(),
-				ImpactParticles,
-				FireHit.ImpactPoint,
-				FireHit.ImpactNormal.Rotation()
-			);
-		}
-		if (HitSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(
-				this,
-				HitSound,
-				FireHit.ImpactPoint,
-				.5f,
-				FMath::FRandRange(-.5f, .5f)
-			);
-		}
 	}
+	
+	AController* InstigatorController = OwnerPawn->GetController();
+	
+	if (!HasAuthority() || !InstigatorController) return;
+	
 	for (auto HitPair : HitMap)
 	{
-		if (!HitPair.Key || !HasAuthority() || !InstigatorController) continue;
+		if (!HitPair.Key) continue;
 		
-		HitPair.Key->ReceiveDamage(Damage, InstigatorController, this);
+		HitPair.Key->ReceiveDamage(Damage * HitPair.Value, InstigatorController, this);
 	}
 	
 }

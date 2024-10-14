@@ -18,16 +18,17 @@ private:
 	
 	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* DissolveTimeline;
-	FOnTimelineFloat DissolveTrack;
 	UPROPERTY(EditAnywhere)
 	UCurveFloat* DissolveCurve;
-	// DissolveMaterialInstance로 부터 동적 생성
+	
 	UPROPERTY(VisibleAnywhere, Category = Elim)
 	UMaterialInstanceDynamic* DynamicDissolveMaterialInstance;
-
 	// 블루 프린트에 세팅
 	UPROPERTY(EditAnywhere, Category = Elim)
 	UMaterialInstance* DissolveMaterialInstance;
+	
+	FOnTimelineFloat DissolveTrack;
+	// DissolveMaterialInstance로 부터 동적 생성
 
 	UPROPERTY(EditAnywhere)
 	float DestroyDelayTime = 5.f;
@@ -38,7 +39,6 @@ public:
 	
 	virtual void SetCharacter(ABaseCharacter* Target) override;
 	virtual void TargetElim() override;
-	
 
 	UFUNCTION()
 	void UpdateDissolveMaterial(const float DissolveValue);

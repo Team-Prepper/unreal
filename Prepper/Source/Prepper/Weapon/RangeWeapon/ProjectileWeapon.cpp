@@ -3,6 +3,7 @@
 
 #include "ProjectileWeapon.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Prepper/Character/BaseCharacter.h"
 #include "Prepper/Weapon/Projectile/Projectile.h"
 
 void AProjectileWeapon::Fire(const TArray<FVector_NetQuantize>& HitTargets)

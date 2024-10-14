@@ -20,8 +20,6 @@ public:
 	UPROPERTY()
 	TObjectPtr<UWeaponWidget> WeaponOverlay;
 	
-	void ToggleControlWidget(bool Toggle, APlayerController* TargetController);
-	
 	UCharacterControlMapper():
 		WeaponOverlay(nullptr), TargetCharacter(nullptr) { } ;
 	

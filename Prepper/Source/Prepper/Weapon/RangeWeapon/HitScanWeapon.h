@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "NiagaraSystem.h"
 #include "RangeWeapon.h"
 #include "HitScanWeapon.generated.h"
 
+class UNiagaraSystem;
 /**
  * 
  */
@@ -17,6 +17,8 @@ class PREPPER_API AHitScanWeapon : public ARangeWeapon
 	
 public:
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
+	void FireEffect();
+	void HitEffect(const FHitResult& FireHit);
 
 protected:
 	bool WeaponTraceHit(const FVector& TraceStart, const FVector& HitTarget, FHitResult& OutHit);

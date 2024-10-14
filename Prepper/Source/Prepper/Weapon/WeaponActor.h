@@ -1,8 +1,6 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "WeaponTypes.h"
-#include "GameFramework/Actor.h"
 #include "Weapon.h"
 #include "Prepper/Object/InteractableActor.h"
 #include "WeaponActor.generated.h"
@@ -10,6 +8,7 @@
 
 class ABasePlayerController;
 class ABaseCharacter;
+class USoundCue;
 
 UCLASS()
 class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
@@ -90,7 +89,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	UMeshComponent* WeaponMesh;
 
-	UPROPERTY(VisibleAnywhere, Category = "Weapon")
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	UStaticMeshComponent* StaticWeaponMesh;
 
 	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
@@ -113,12 +112,10 @@ protected:
 	EWeaponType WeaponType;
 
 private:
-	void WeaponPhysicsActive(bool active);
+	void WeaponPhysicsActive(bool bActive);
 	
 public:
-	FORCEINLINE UShapeComponent* GetAreaSphere()		const { return AreaSphere; }
 	FORCEINLINE UMeshComponent* GetWeaponMesh()			const { return WeaponMesh; }
-	FORCEINLINE EWeaponState GetWeaponState()			const { return WeaponState; }
 	
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Noise")
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter; // 노이즈 발생 컴포넌트

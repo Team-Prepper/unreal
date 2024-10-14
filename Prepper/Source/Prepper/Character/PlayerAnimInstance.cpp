@@ -55,7 +55,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			bUseFABRIK = !bEquippedMeleeWeapon;
 		}
 	}
-
 	
 	// OFFSET YAW FOR STRAFING
 	FRotator AimRotation = PlayerCharacter->GetBaseAimRotation();
@@ -85,7 +84,6 @@ void UPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			LeftHandTransform.SetLocation(OutPosition);
 			LeftHandTransform.SetRotation(FQuat(OutRotator));
 
-		
 			if(PlayerCharacter->IsLocallyControlled())
 			{
 				bLocallyControlled = true;

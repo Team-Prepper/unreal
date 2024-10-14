@@ -5,12 +5,14 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Prepper.h"
+#include "Prepper/Character/BaseCharacter.h"
 #include "Prepper/Interfaces/Interactable.h"
-#include "Prepper/Object/InteractableActor.h"
 
 UInteractionComponent::UInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	Character = nullptr;
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

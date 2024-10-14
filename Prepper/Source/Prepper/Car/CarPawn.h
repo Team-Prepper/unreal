@@ -58,10 +58,8 @@ public:
 	virtual void Move(const FInputActionValue& Value) override;
 	virtual void Look(const FInputActionValue& Value) override;
 
-	virtual void EPressed() override;
-	virtual void RPressed() override;
-
-	virtual void ControlPressed() override;
+	virtual void Interaction();
+	virtual void ChangeCam();
 	
 	virtual UCameraComponent* GetFollowCamera() override;
 	virtual IControlMapper* GetControlMapper() override;

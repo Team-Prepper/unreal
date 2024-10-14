@@ -11,14 +11,18 @@ UBaseCombatComponent::UBaseCombatComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	EquippedWeapon = nullptr;
+	
 	bFireButtonPressed = false;
-	ReloadMontage = nullptr;
 	bAiming = false;
+
+	ReloadMontage = nullptr;
+	AttackMontage = nullptr;
+
 	Character = nullptr;
 }
 
 void UBaseCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                     FActorComponentTickFunction* ThisTickFunction)
+                                         FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
