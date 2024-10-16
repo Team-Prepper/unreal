@@ -22,5 +22,5 @@ public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController);
-
+	virtual void SaveGame();
 };

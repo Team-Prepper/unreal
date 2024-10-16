@@ -74,7 +74,7 @@ private:
 public:
 	virtual UMapInventory* GetInventory() const;
 
-	virtual void AddItem(const FString& ItemCode) override;
+	virtual void AddItem(const FString& ItemCode, int Count = 0) override;
 	virtual void UseQuickSlotItem(int Idx) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
 	virtual void EquipBackpack(AItemBackpack* BackpackToEquip) override;
@@ -87,7 +87,7 @@ private:
 	UFUNCTION()
 	void OnRep_EquippedBackpack();
 	UFUNCTION(NetMulticast, Reliable)
-	void MulticastAddItem(const FString& ItemCode);
+	void MulticastAddItem(const FString& ItemCode, int Count);
 	
 // IControllable
 private:

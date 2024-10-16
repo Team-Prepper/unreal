@@ -176,10 +176,10 @@ UMapInventory* APlayerCharacter::GetInventory() const
 	return Inventory;
 }
 
-void APlayerCharacter::AddItem(const FString& ItemCode)
+void APlayerCharacter::AddItem(const FString& ItemCode, int Count)
 {
 	if(!HasAuthority()) return;
-	MulticastAddItem(ItemCode);
+	MulticastAddItem(ItemCode, Count);
 }
 
 void APlayerCharacter::UseQuickSlotItem(int Idx)
@@ -236,16 +236,16 @@ void APlayerCharacter::OnRep_EquippedBackpack()
 	}
 }
 
-void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode)
+void APlayerCharacter::MulticastAddItem_Implementation(const FString& ItemCode, int Count)
 {
 	if(EquippedBackpack)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Backpack : Add Item %s"), *ItemCode);
-		if(EquippedBackpack->GetInventory()->TryAddItem(ItemCode, 1))
+		if(EquippedBackpack->GetInventory()->TryAddItem(ItemCode, Count))
 			return;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("pocket : Add Item %s"), *ItemCode);
-	Inventory->TryAddItem(ItemCode, 1);
+	Inventory->TryAddItem(ItemCode, Count);
 }
 
 // IControllable

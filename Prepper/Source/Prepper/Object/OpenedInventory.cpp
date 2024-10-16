@@ -1,8 +1,5 @@
 #include "OpenedInventory.h"
 
-#include "GameFramework/SpringArmComponent.h"
-#include "Prepper/Component/CustomCameraComponent.h"
-#include "Prepper/GameInstance/PrepperGameInstance.h"
 #include "Prepper/Item/ItemManager.h"
 #include "Prepper/Item/Object/InventoryInteractableItem.h"
 
@@ -44,9 +41,8 @@ void AOpenedInventory::InitInventory()
 	//UE_LOG(LogTemp, Warning, TEXT("Item Count : %d"), Items.Num());
 	for (int i = 0; i < Items.Num(); i++)
 	{
-		IInventory::InventoryItem Item = Items[i]; // 생성할 아이템 선택
 
-		InventoryInteractableItem = ItemManager::GetInstance()->SpawnItemInteraction(GetWorld(), Item.ItemCode);
+		InventoryInteractableItem = ItemManager::GetInstance()->SpawnItemInteraction(GetWorld(), Items[i].ItemCode);
 	
 		if (!InventoryInteractableItem)
 		{

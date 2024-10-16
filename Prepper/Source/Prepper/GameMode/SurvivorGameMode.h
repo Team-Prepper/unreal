@@ -8,6 +8,7 @@
 #include "UObject/Object.h"
 #include "SurvivorGameMode.generated.h"
 
+class APlayerCharacter;
 /**
  * 
  */
@@ -15,12 +16,20 @@ UCLASS()
 class PREPPER_API ASurvivorGameMode : public APrepperGameMode
 {
 	GENERATED_BODY()
+	friend class UBaseCombatComponent;
+	friend class UCombatComponent;
 private:
 	int EnemyKillCount;
 public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController) override;
+	virtual void SaveGame() override;
+	void SavePlayerData(APlayerCharacter* TargetPlayerCharacter);
+	void SaveServerData();
+
+	void LoadGame(APlayerCharacter* TargetPlayerCharacter);
+
 	void AddMission();
 	int GetEnemyKillCount() const { return EnemyKillCount; }
 	

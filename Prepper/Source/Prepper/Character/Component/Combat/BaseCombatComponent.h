@@ -20,6 +20,7 @@ class PREPPER_API UBaseCombatComponent : public UCharacterComponent,
 	GENERATED_BODY()
 	friend class ABaseCharacter;
 	friend class APlayerCharacter;
+	friend class ASurvivorGameMode;
 // Actor
 public:	
 	UBaseCombatComponent();

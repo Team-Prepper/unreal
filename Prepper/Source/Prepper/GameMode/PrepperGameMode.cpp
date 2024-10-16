@@ -10,6 +10,11 @@ void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABaseP
 	PlayerEliminated(ElimmedCharacter);
 }
 
+void APrepperGameMode::SaveGame()
+{
+	
+}
+
 void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter)
 {
 	if (ElimmedCharacter)
