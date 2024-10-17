@@ -17,10 +17,10 @@ FString ItemManager::ItemCombineCode(const FString& Code1, const FString& Code2)
 
 ItemManager::ItemManager()
 {
-	UDataTable* ItemDataTable;
+	TObjectPtr<UDataTable> ItemDataTable;
 	DataTableGetter::GetDataTable("ItemDataTable", ItemDataTable);
 	
-	UDataTable* ItemCombinationDataTable;
+	TObjectPtr<UDataTable> ItemCombinationDataTable;
 	DataTableGetter::GetDataTable("ItemCombinationDataTable", ItemCombinationDataTable);
 
 	Initial(ItemDataTable, ItemCombinationDataTable);

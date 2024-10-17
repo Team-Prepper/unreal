@@ -25,7 +25,7 @@ public:
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController) override;
 	virtual void SaveGame() override;
-	void SavePlayerData(APlayerCharacter* TargetPlayerCharacter);
+	void SavePlayerData(const APlayerCharacter* TargetPlayerCharacter);
 	void SaveServerData();
 
 	void LoadGame(APlayerCharacter* TargetPlayerCharacter);

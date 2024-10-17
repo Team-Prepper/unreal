@@ -10,6 +10,7 @@
 #include "Prepper/GameSave/SurvivorSaveGame.h"
 #include "Prepper/Mission/MissionChecker/DefaultMissionChecker.h"
 #include "Prepper/Weapon/WeaponActor.h"
+#include "Prepper/Weapon/WeaponManager.h"
 
 void ASurvivorGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABasePlayerController* VictimController,
                                          ABasePlayerController* AttackerController)
@@ -24,17 +25,22 @@ void ASurvivorGameMode::SaveGame()
 	
 }
 
-void ASurvivorGameMode::SavePlayerData(APlayerCharacter* TargetPlayerCharacter)
+void ASurvivorGameMode::SavePlayerData(const APlayerCharacter* TargetPlayerCharacter)
 {
 	const TObjectPtr<USurvivorSaveGame> SaveGameInstance =
 		Cast<USurvivorSaveGame>(UGameplayStatics::CreateSaveGameObject(USurvivorSaveGame::StaticClass()));
 
 	if (SaveGameInstance)
 	{
-		SaveGameInstance->EquippedWeapon =
-			TargetPlayerCharacter->GetCombatComponent()->EquippedWeapon->GetName();
-		SaveGameInstance->SecondaryEquippedWeapon =
-			Cast<UCombatComponent>(TargetPlayerCharacter->GetCombatComponent())->SecondaryWeapon->GetName();
+		UCombatComponent* CombatComp = Cast<UCombatComponent>(TargetPlayerCharacter->GetCombatComponent());
+
+		if (CombatComp)
+		{
+			SaveGameInstance->EquippedWeapon =
+				CombatComp->EquippedWeapon->GetWeaponCode();
+			SaveGameInstance->SecondaryEquippedWeapon =
+				CombatComp->SecondaryWeapon->GetWeaponCode();
+		}
 
 		TArray<IInventory::InventoryItem> ItemData = TargetPlayerCharacter->GetInventory()->GetIter();
 		for (int i = 0; i < ItemData.Num(); i++)
@@ -80,9 +86,13 @@ void ASurvivorGameMode::LoadGame(APlayerCharacter* TargetPlayerCharacter)
 			TargetPlayerCharacter->AddItem(Item, LoadGameInstance->InventoryItemCount[ItemIdx++]);
 		}
 
-		AWeaponActor* SpawnWeapon = Cast<AWeaponActor>(NewObject<AWeaponActor>(AWeaponActor::StaticClass()));
+		AWeaponActor* SpawnWeapon = 
+			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->EquippedWeapon);
 		TargetPlayerCharacter->EquipWeapon(SpawnWeapon);
-		AWeaponActor* SpawnWeapon2 = Cast<AWeaponActor>(NewObject<AWeaponActor>(AWeaponActor::StaticClass()));
+		
+		AWeaponActor* SpawnWeapon2 =
+			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->SecondaryEquippedWeapon);
+		
 		TargetPlayerCharacter->EquipWeapon(SpawnWeapon2);
 	}
 }

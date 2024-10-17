@@ -3,5 +3,5 @@
 class DataTableGetter
 {
 public:
-	static bool GetDataTable(const FString& TableName, UDataTable* &RetTable);
+	static bool GetDataTable(const FString& TableName, TObjectPtr<UDataTable> &RetTable);
 };

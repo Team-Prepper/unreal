@@ -14,10 +14,29 @@ UCLASS()
 class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
 {
 	GENERATED_BODY()
-
+public:
+	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
+	FName ReloadActionName = FName("AssaultRifle");
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
+	FString WeaponCode;
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	TArray<TSubclassOf<UPlayerAimingEffect>> AimingEffectClasses;
+	UPROPERTY(EditAnywhere, Category ="Weapon Properties")
+	UAnimationAsset* FireAnimation;
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
+	EWeaponState WeaponState;
+
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	UMeshComponent* WeaponMesh;
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+	UStaticMeshComponent* StaticWeaponMesh;
+
+	UPROPERTY(EditAnywhere, Category ="Equip")
+	FName WeaponSocketName = FName("RightHandSocket");
+	UPROPERTY(EditAnywhere, Category ="Equip")
+	FName HolsteredWeaponSocketName = FName("HolsteredWeaponSocket");
+	
 	UPROPERTY()
 	TArray<UPlayerAimingEffect*> AimingEffects;
 	
@@ -25,7 +44,8 @@ public:
 	AWeaponActor();
 
 	virtual TArray<UPlayerAimingEffect*> GetAimingEffect() override;
-	
+
+	virtual FString GetWeaponCode() override { return WeaponCode; }
 	virtual EWeaponType GetWeaponType() override { return WeaponType; };
 	virtual void SetWeaponHandler(IWeaponHandler* NewOwner) override;
 	virtual void SetWeaponState(EWeaponState State) override;
@@ -46,13 +66,6 @@ public:
 		TObjectPtr<UTexture2D>& Top,
 		TObjectPtr<UTexture2D>& Bottom,
 		float &Spread) override;
-
-	UPROPERTY(EditAnywhere, Category = Combat)
-	FName WeaponSocketName = FName("RightHandSocket");
-	UPROPERTY(EditAnywhere, Category = Combat)
-	FName HolsteredWeaponSocketName = FName("HolsteredWeaponSocket");
-	UPROPERTY(EditAnywhere, Category = Combat)
-	FName ReloadActionName = FName("AssaultRifle");
 
 	virtual FName AttachSocketName() override { return WeaponSocketName; };
 	virtual FName GetReloadActionName() override { return ReloadActionName; };
@@ -85,18 +98,6 @@ protected:
 	
 	UPROPERTY(Replicated, EditAnywhere)
 	bool bUseServerSideRewind = false;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	UMeshComponent* WeaponMesh;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	UStaticMeshComponent* StaticWeaponMesh;
-
-	UPROPERTY(EditAnywhere,Category = "Weapon Properties")
-	UAnimationAsset* FireAnimation;
-	
-	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
-	EWeaponState WeaponState;
 	
 	UFUNCTION()
 	void OnRep_WeaponState();

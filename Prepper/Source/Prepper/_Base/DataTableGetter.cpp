@@ -1,6 +1,6 @@
 ﻿#include "DataTableGetter.h"
 
-bool DataTableGetter::GetDataTable(const FString& TableName, UDataTable* &RetTable)
+bool DataTableGetter::GetDataTable(const FString& TableName, TObjectPtr<UDataTable> &RetTable)
 {
 	FString ContentPath = "/Game/Data/" + TableName;
 	

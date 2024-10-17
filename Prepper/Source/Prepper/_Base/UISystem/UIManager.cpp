@@ -12,7 +12,7 @@ UIManager::UIManager()
 	
 	NowDisplay = nullptr;
 
-	UDataTable* UIDataTable;
+	TObjectPtr<UDataTable> UIDataTable;
 	
 	if (!DataTableGetter::GetDataTable("UIDataTable", UIDataTable)) return;
 	

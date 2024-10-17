@@ -19,9 +19,11 @@ private:
 	TMap<FString, TSubclassOf<class AInventoryInteractableItem>> InteractableItems;
 
 	UPROPERTY(EditAnywhere, Category="Item")
-	UDataTable* ItemDataTable;
+	TObjectPtr<UDataTable> ItemDataTable;
 	UPROPERTY(EditAnywhere, Category="Item")
-	UDataTable* ItemCombinationDataTable;
+	TObjectPtr<UDataTable> ItemCombinationDataTable;
+	UPROPERTY(EditAnywhere, Category="Item")
+	TObjectPtr<UDataTable> WeaponDataTable;
 
 public:
 	UPrepperGameInstance();
