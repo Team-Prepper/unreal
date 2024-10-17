@@ -19,9 +19,12 @@ void ASurvivorGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABase
 	
 }
 
-void ASurvivorGameMode::SaveGame()
+void ASurvivorGameMode::SaveGame(const APlayerCharacter* TargetPlayerCharacter)
 {
-	Super::SaveGame();
+	Super::SaveGame(TargetPlayerCharacter);
+
+	if (TargetPlayerCharacter == nullptr) return;
+	SavePlayerData(TargetPlayerCharacter);
 	
 }
 
@@ -32,14 +35,20 @@ void ASurvivorGameMode::SavePlayerData(const APlayerCharacter* TargetPlayerChara
 
 	if (SaveGameInstance)
 	{
-		UCombatComponent* CombatComp = Cast<UCombatComponent>(TargetPlayerCharacter->GetCombatComponent());
-
-		if (CombatComp)
+		
+		if (UCombatComponent* CombatComp =
+			Cast<UCombatComponent>(TargetPlayerCharacter->GetCombatComponent()))
 		{
-			SaveGameInstance->EquippedWeapon =
-				CombatComp->EquippedWeapon->GetWeaponCode();
-			SaveGameInstance->SecondaryEquippedWeapon =
-				CombatComp->SecondaryWeapon->GetWeaponCode();
+			if (CombatComp->EquippedWeapon != nullptr)
+			{
+				SaveGameInstance->EquippedWeapon =
+					CombatComp->EquippedWeapon->GetWeaponCode();
+			}
+			if (CombatComp->SecondaryWeapon != nullptr)
+			{
+				SaveGameInstance->SecondaryEquippedWeapon =
+					CombatComp->SecondaryWeapon->GetWeaponCode();
+			}
 		}
 
 		TArray<IInventory::InventoryItem> ItemData = TargetPlayerCharacter->GetInventory()->GetIter();
@@ -49,7 +58,7 @@ void ASurvivorGameMode::SavePlayerData(const APlayerCharacter* TargetPlayerChara
 			SaveGameInstance->InventoryItemCount.Add(ItemData[i].Count);
 		}
 		
-		TArray<IInventory::InventoryItem> QuickSlotData = TargetPlayerCharacter->GetInventory()->GetIter();
+		TArray<IInventory::InventoryItem> QuickSlotData = TargetPlayerCharacter->GetInventory()->GetQuickSlotIter();
 		for (int i = 0; i < QuickSlotData.Num(); i++)
 		{
 			SaveGameInstance->QuickSlotItemCode.Add(QuickSlotData[i].ItemCode);
@@ -77,6 +86,7 @@ void ASurvivorGameMode::LoadGame(APlayerCharacter* TargetPlayerCharacter)
 		int QuickSlotIdx = 0;
 		for (auto Item : LoadGameInstance->QuickSlotItemCode)
 		{
+			if (LoadGameInstance->QuickSlotItemCount[QuickSlotIdx] < 1) continue;
 			TargetPlayerCharacter->AddItem(Item, LoadGameInstance->QuickSlotItemCount[QuickSlotIdx]);
 			TargetPlayerCharacter->GetInventory()->QuickSlotAdd(Item, QuickSlotIdx++);
 		}

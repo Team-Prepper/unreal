@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "PrepperGameMode.generated.h"
 
+class APlayerCharacter;
 class ABaseCharacter;
 class ABasePlayerController;
 
@@ -22,5 +23,5 @@ public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController);
-	virtual void SaveGame();
+	virtual void SaveGame(const APlayerCharacter* TargetPlayerCharacter);
 };

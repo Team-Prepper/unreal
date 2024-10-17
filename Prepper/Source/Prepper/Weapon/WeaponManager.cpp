@@ -34,5 +34,6 @@ void WeaponManager::Initial(const TObjectPtr<UDataTable> WeaponDataTable)
 TObjectPtr<AWeaponActor> WeaponManager::SpawnWeapon(UWorld* World, const FString& WeaponCode)
 {
 	if (World == nullptr) return nullptr;
+	if (!WeaponData.Contains(WeaponCode)) return nullptr;
 	return World->SpawnActor<AWeaponActor>(*WeaponData.Find(WeaponCode));
 }

@@ -29,6 +29,11 @@ protected:
 	TSubclassOf<UCompass> CompassHUDClass;
 	UPROPERTY()
 	TObjectPtr<UCompass> Compass;
+	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> SettingClass;
+	UPROPERTY()
+	TObjectPtr<UUserWidget> Setting;
 
 	UPROPERTY()
 	APrepperHUD* PrepperHUD;
@@ -42,6 +47,7 @@ public:
 	virtual void OnRep_Pawn() override;
 	virtual void OnPossess();
 	virtual void PlayerTick(float DeltaTime) override;
+	TObjectPtr<APlayerCharacter> GetPlayerCharacter();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -105,6 +111,8 @@ protected:
 	UInputAction* FireAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
 	UInputAction* OpenInventory;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
+	UInputAction* OpenSetting;
 
 	virtual void SetInput(UEnhancedInputComponent* Input);
 	
@@ -121,6 +129,8 @@ protected:
 	void AimButtonReleased();
 	void FireButtonPressed();
 	void FireButtonReleased();
+	void OpenSettingWidget();
+	void CloseSettingWidget();
 
 	UFUNCTION(Server, Reliable)
 	void ServerInteractionPressed();

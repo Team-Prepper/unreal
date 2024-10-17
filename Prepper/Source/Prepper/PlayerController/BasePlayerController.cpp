@@ -37,6 +37,12 @@ void ABasePlayerController::BeginWidget()
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(this, CharacterOverlayClass);
 		CharacterOverlay->AddToViewport();
 	}
+	if (SettingClass)
+	{
+		Setting = CreateWidget<UUserWidget>(this, SettingClass);
+		Setting->SetVisibility(ESlateVisibility::Hidden);
+		Setting->AddToViewport();
+	}
 	
 	if (CompassHUDClass)
 	{
@@ -107,6 +113,11 @@ void ABasePlayerController::PlayerTick(float DeltaTime)
 	
 	if (Compass)
 		Compass->SetDirection();
+}
+
+TObjectPtr<APlayerCharacter> ABasePlayerController::GetPlayerCharacter()
+{
+	return PlayerCharacter;
 }
 
 void ABasePlayerController::PossessPlayerCharacter()
@@ -212,6 +223,8 @@ void ABasePlayerController::SetInput(UEnhancedInputComponent* Input)
 	// Reload
 	Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &ABasePlayerController::ReloadButtonPressed);
 	
+	Input->BindAction(OpenSetting, ETriggerEvent::Completed, this, &ABasePlayerController::OpenSettingWidget);
+	
 }
 
 void ABasePlayerController::Move(const FInputActionValue& Value)
@@ -289,6 +302,25 @@ void ABasePlayerController::FireButtonReleased()
 {
 	if (!TargetControlMapper) return;
 	TargetControlMapper->MouseLeftReleased();
+}
+
+void ABasePlayerController::OpenSettingWidget()
+{
+	if (!Setting) return;
+	if (Setting->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		SetInputMode(FInputModeGameAndUI());
+		Setting->SetVisibility(ESlateVisibility::Visible);
+		return;
+	}
+	SetInputMode(FInputModeGameOnly());
+	Setting->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void ABasePlayerController::CloseSettingWidget()
+{
+	if (!Setting) return;
+	Setting->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void ABasePlayerController::ServerInteractionPressed_Implementation()

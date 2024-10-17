@@ -24,7 +24,7 @@ public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController) override;
-	virtual void SaveGame() override;
+	virtual void SaveGame(const APlayerCharacter* TargetPlayerCharacter) override;
 	void SavePlayerData(const APlayerCharacter* TargetPlayerCharacter);
 	void SaveServerData();
 
