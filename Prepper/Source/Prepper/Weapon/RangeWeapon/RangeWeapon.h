@@ -62,25 +62,25 @@ protected:
 	float ZoomInterpSpeed = 20.f;
 
 	/* Scatter - 산탄 */ 
-	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	float DistanceToSphere = 800.f;
+	
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
+	bool bUseScatter = false;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	float SphereRadius = 75.f;
 	
 	FVector TraceEndWithScatter(const FVector& HitTarget);
-	
-	UPROPERTY(EditAnywhere, Category = "Weapon Scatter")
-	bool bUseScatter = false;
 
 public:
 	UPROPERTY(EditAnywhere)
 	EFireType FireType;
 	
 	/* Ammo - 탄 */
-	UPROPERTY(EditAnywhere, Category = Combat)
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	bool bAutomatic = false;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	bool bAutoReload = false;
 
 	void AddAmmo(int32 AmmoToAdd);
@@ -96,7 +96,7 @@ protected:
 	void SpendRound();
 	
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
 	int32 Ammo;
 
 	UFUNCTION(Client, Reliable)

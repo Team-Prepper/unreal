@@ -5,6 +5,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "Prepper/Character/Component/StatusEffectComponent.h"
+#include "Prepper/GameMode/SurvivorGameMode.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/HUD/UI/CharacterOverlay/StatusWidget.h"
 #include "Prepper/HUD/UI/Inventory/InventoryUI.h"
@@ -32,10 +33,20 @@ void ASurvivorController::PossessPlayerCharacter()
 {
 	Super::PossessPlayerCharacter();
 	
+	if (!PlayerCharacter) return;
+
+	if (ASurvivorGameMode* PrepperGameMode =
+		GetWorld()->GetAuthGameMode<ASurvivorGameMode>(); PrepperGameMode != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Load Game"));
+		PrepperGameMode->LoadGame(PlayerCharacter);
+	}
+	
 	if (!CharacterOverlay) return;
 	if (!StatusWidget) return;
-	if (!PlayerCharacter) return;
 	if (!PlayerCharacter->GetStatusEffectComponent()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Attach UI"));
 	
 	PlayerCharacter->GetStatusEffectComponent()->Attach(StatusWidget);
 	PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
@@ -73,6 +84,7 @@ void ASurvivorController::ServerToggleInventory_Implementation()
 void ASurvivorController::QuickSlot1Use()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Button1Pressed"));
+	
 	if (!PlayerCharacter) return;
 	PlayerCharacter->UseQuickSlotItem(0);
 	

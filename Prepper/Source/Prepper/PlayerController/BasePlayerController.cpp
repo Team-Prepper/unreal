@@ -19,11 +19,13 @@ void ABasePlayerController::BeginPlay()
 		Subsystem->AddMappingContext(PlayerMappingContext, 0);
 	}
 
-	if (!IsLocalController()) return;
-	
-	SetInputMode(FInputModeGameOnly());
-	BeginWidget();
 
+	if (IsLocalController())
+	{
+		SetInputMode(FInputModeGameOnly());
+		BeginWidget();
+	}
+	
 	PossessPlayerCharacter();
 
 }
@@ -80,6 +82,14 @@ void ABasePlayerController::OnPossess()
 		TargetControlMapper = Cast<IControllable>(GetPawn())->GetControlMapper();
 	}
 
+	TObjectPtr<APlayerCharacter> NewPlayer = Cast<APlayerCharacter>(GetPawn());
+	
+	if (NewPlayer != nullptr && NewPlayer != PlayerCharacter)
+	{
+		PlayerCharacter = NewPlayer;
+		PossessPlayerCharacter();
+	}
+
 	if (!IsLocalController()) return;
 
 	TargetControlMapper->Connect(this);
@@ -89,15 +99,6 @@ void ABasePlayerController::OnPossess()
 		Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
 		UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
 	}
-	
-	if (Cast<APlayerCharacter>(GetPawn()))
-	{
-		PlayerCharacter = Cast<APlayerCharacter>(GetPawn());
-	}
-
-	if (!PlayerCharacter) return;
-
-	PossessPlayerCharacter();
 }
 
 void ABasePlayerController::PlayerTick(float DeltaTime)

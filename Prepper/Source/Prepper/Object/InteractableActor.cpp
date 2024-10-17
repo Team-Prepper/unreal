@@ -53,8 +53,6 @@ void AInteractableActor::ShowPickUpWidget(bool bShowWidget)
 
 void AInteractableActor::ToggleOutline(const bool bEnable)
 {
-	UE_LOG(LogTemp,Warning, TEXT("MeshCompCnt: %d"), MeshComponents.Num());
-	
 	for (const TObjectPtr<UMeshComponent> Mesh : MeshComponents)
 	{
 		Mesh->SetRenderCustomDepth(bEnable);

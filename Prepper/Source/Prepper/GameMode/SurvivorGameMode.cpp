@@ -58,7 +58,7 @@ void ASurvivorGameMode::SavePlayerData(const APlayerCharacter* TargetPlayerChara
 		SaveGameInstance->LastPosition = TargetPlayerCharacter->GetActorLocation();
 		
 	}
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TargetPlayerCharacter->GetName(), 0);
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, "Test", 0);
 }
 
 void ASurvivorGameMode::SaveServerData()
@@ -68,7 +68,7 @@ void ASurvivorGameMode::SaveServerData()
 void ASurvivorGameMode::LoadGame(APlayerCharacter* TargetPlayerCharacter)
 {
 	USurvivorSaveGame* LoadGameInstance =
-		Cast<USurvivorSaveGame>(UGameplayStatics::LoadGameFromSlot(TargetPlayerCharacter->GetName(), 0));
+		Cast<USurvivorSaveGame>(UGameplayStatics::LoadGameFromSlot("Test", 0));
 
 	if (LoadGameInstance)
 	{

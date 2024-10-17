@@ -6,6 +6,8 @@
 #include "RangeWeapon.h"
 #include "ProjectileWeapon.generated.h"
 
+class AProjectile;
+
 UCLASS()
 class PREPPER_API AProjectileWeapon : public ARangeWeapon
 {
@@ -15,7 +17,7 @@ public:
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets) override;
 
 private:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AProjectile> ProjectileClass;
+	UPROPERTY(EditAnywhere, Category="Weapon Properties")
+	TSubclassOf<AProjectile> ProjectileClass;
 	
 };

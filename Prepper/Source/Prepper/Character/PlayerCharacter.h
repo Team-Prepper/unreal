@@ -74,7 +74,7 @@ private:
 public:
 	virtual UMapInventory* GetInventory() const;
 
-	virtual void AddItem(const FString& ItemCode, int Count = 0) override;
+	virtual void AddItem(const FString& ItemCode, int Count = 1) override;
 	virtual void UseQuickSlotItem(int Idx) override;
 	virtual void EquipWeapon(AWeaponActor* Weapon) override;
 	virtual void EquipBackpack(AItemBackpack* BackpackToEquip) override;
