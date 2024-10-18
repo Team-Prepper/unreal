@@ -6,6 +6,8 @@
 #include "BasePlayerController.h"
 #include "SurvivorController.generated.h"
 
+class UCombatComponent;
+enum class EWeaponType : uint8;
 class UItemCombinationUI;
 class UInventoryUI;
 class UStatusWidget;
@@ -30,6 +32,17 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UItemCombinationUI> ItemCombinationClass;
+
+	void LoadGame();
+
+	UFUNCTION(Server, Reliable)
+	void ServerAddItem(const FString& ItemCode, int Count);
+	UFUNCTION(Server, Reliable)
+	void ServerSetAmmo(UCombatComponent* Target, EWeaponType Type, int Count);
+	
+	
+public:
+	void SaveGame();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))

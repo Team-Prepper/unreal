@@ -36,7 +36,6 @@ private:
 	TArray<FItemConvertData> ReplicatedItemUnits;
 
 	TMap<FString, uint8> ItemUnits; // 실제 아이템 저장용
-	TMap<FString, uint8> QuickSlot;
 
 	FString QuickSlotItem[MAX_QUICK_SLOT];
 

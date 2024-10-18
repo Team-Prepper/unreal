@@ -25,6 +25,7 @@ bool UMapInventory::TryAddMapExist(TMap<FString, uint8>& Target, const FString& 
 	Target.Add(ItemCode, ItemCount);
 		
 	UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
+	ConvertMapToArray();
 	Notify();
 	return true;
 }
@@ -60,9 +61,6 @@ bool UMapInventory::TryAddItem(const FString& ItemCode, const int Count)
 {
 	// 아이템이 존재한다면
 	// 그 아이템의 소지수를 1 늘리고 true 반환
-	if (TryAddMapExist(QuickSlot, ItemCode, Count)) {
-		return true;
-	}
 	if (TryAddMapExist(ItemUnits, ItemCode, Count))
 	{
 		return true;
@@ -88,8 +86,6 @@ bool UMapInventory::TryUseItem(const FString& ItemCode, const int Count)
 	// 여기서는 아이템의 갯수만 제어
 	// 효과 적용은 해당 아이템에서 직접 적용
 	// 아이템이 충분히 존재하지 않는다면 return false
-
-	if (TryUseMapExist(QuickSlot, ItemCode, Count)) return true;
 	if (!TryUseMapExist(ItemUnits, ItemCode, Count)) return false;
 	
 	ConvertMapToArray();
@@ -142,21 +138,11 @@ void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx = 0)
 	for (int i = 0; i < MAX_QUICK_SLOT; i++)
 	{
 		TargetIdx = Idx + i % MAX_QUICK_SLOT;
-		if (QuickSlotItem[i].Compare(DEFAULT_QUICK_SLOT_ITEM) == 0) break;
+		if (!ItemUnits.Contains(QuickSlotItem[TargetIdx]) ||
+			ItemUnits[QuickSlotItem[TargetIdx]] < 1) break;
 	}
-
-	if (QuickSlotItem[TargetIdx].Compare(DEFAULT_QUICK_SLOT_ITEM) != 0)
-	{
-		ItemUnits.Add(QuickSlotItem[TargetIdx], QuickSlot[QuickSlotItem[TargetIdx]]);
-		QuickSlot.Remove(QuickSlotItem[TargetIdx]);
-		
-	}
-
-	const int Count = TryGetItemCount(ItemCode);
-	ItemUnits.Remove(ItemCode);
 	
 	QuickSlotItem[TargetIdx] = ItemCode;
-	QuickSlot.Add(ItemCode, Count);
 
 	Notify();
 
@@ -166,9 +152,6 @@ void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx = 0)
 void UMapInventory::QuickSlotRemove(const int Idx)
 {
 	if (QuickSlotItem[Idx].Compare(DEFAULT_QUICK_SLOT_ITEM) == 0) return;
-	
-	ItemUnits.Add(QuickSlotItem[Idx], QuickSlot[QuickSlotItem[Idx]]);
-	QuickSlot.Remove(QuickSlotItem[Idx]);
 	
 	QuickSlotItem[Idx] = DEFAULT_QUICK_SLOT_ITEM;
 
@@ -189,6 +172,14 @@ TArray<IInventory::InventoryItem> UMapInventory::GetIter() const
 	TArray<InventoryItem> Retval;
 	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
 	{
+		bool IsQuickSlotItem = false;
+		for (int i = 0; i < MAX_QUICK_SLOT; i++)
+		{
+			if (Iter.Key().Compare(QuickSlotItem[i]) != 0) continue;
+			IsQuickSlotItem = true;
+			break;
+		}
+		if (IsQuickSlotItem) continue;
 		Retval.Add(InventoryItem(Iter.Key(), Iter.Value()));
 	}
 	return Retval;
@@ -201,9 +192,9 @@ TArray<IInventory::InventoryItem> UMapInventory::GetQuickSlotIter() const
 	for (int i = 0; i < MAX_QUICK_SLOT; i++)
 	{
 		int Cnt = 0;
-		if (QuickSlot.Contains(QuickSlotItem[i]))
+		if (ItemUnits.Contains(QuickSlotItem[i]))
 		{
-			Cnt = QuickSlot[QuickSlotItem[i]];
+			Cnt = ItemUnits[QuickSlotItem[i]];
 		}
 		Retval.Add(InventoryItem(QuickSlotItem[i], Cnt));
 	}
@@ -238,10 +229,6 @@ void UMapInventory::ChangingInventory(const TObjectPtr<UMapInventory> NewInvento
 		NewInventory->QuickSlotItem[i] = QuickSlotItem[i];
 		QuickSlotItem[i] = DEFAULT_QUICK_SLOT_ITEM;
 	}
-	for (auto Item : QuickSlot)
-	{
-		NewInventory->QuickSlot.Add(Item.Key, Item.Value);
-	}
 	for (auto Item : ItemUnits)
 	{
 		NewInventory->ItemUnits.Add(Item.Key, Item.Value);
@@ -251,7 +238,6 @@ void UMapInventory::ChangingInventory(const TObjectPtr<UMapInventory> NewInvento
 		NewInventory->Observers.Add(Observer);
 	}
 	NewInventory->Notify();
-	QuickSlot.Empty();
 	ItemUnits.Empty();
 	Observers.Empty();
 }
@@ -273,12 +259,14 @@ void UMapInventory::ConvertArrayToMap()
 	ItemUnits.Empty();
 	for (const auto& Elem : ReplicatedItemUnits)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("OnRep_ItemUnits: %s, %d"), *Elem.ItemCode, Elem.Count);
 		ItemUnits.Add(Elem.ItemCode, Elem.Count);
 	}
 }
 
 void UMapInventory::OnRep_ItemUnits()
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnRep_ItemUnits"));
 	ConvertArrayToMap(); // 클라이언트에서 배열을 맵으로 변환
 	Notify(); // 옵저버 패턴으로 변경 사항을 알림
 }

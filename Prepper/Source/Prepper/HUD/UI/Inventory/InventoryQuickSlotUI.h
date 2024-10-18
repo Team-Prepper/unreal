@@ -19,6 +19,8 @@ class PREPPER_API UInventoryQuickSlotUI : public UUserWidget, public IUserObject
 {
 	GENERATED_BODY()
 private:
+	bool DataExist = false;
+	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UWidget> MenuPanel;
 	UPROPERTY(meta = (BindWidget))

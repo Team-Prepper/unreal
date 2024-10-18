@@ -11,8 +11,7 @@ void AItemPickupAmmo::Interaction(APlayerCharacter* Target)
 
 	if(Target)
 	{
-		UBaseCombatComponent* Combat = Target->GetCombatComponent();
-		if(Combat)
+		if(UBaseCombatComponent* Combat = Target->GetCombatComponent())
 		{
 			Combat->PickupAmmo(WeaponType, AmmoAmount);
 		}

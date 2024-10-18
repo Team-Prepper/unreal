@@ -5,6 +5,8 @@
 #include "Components/WidgetComponent.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Prepper/Item/Inventory/Inventory.h"
+#include "Prepper/Item/Inventory/MapInventory.h"
 #include "Sound/SoundCue.h"
 
 AInteractableItem::AInteractableItem()
@@ -54,7 +56,10 @@ void AInteractableItem::BeginPlay()
 
 void AInteractableItem::Interaction(APlayerCharacter* Target)
 {
-	Target->AddItem(ItemCode);
+	if (!Target->GetInventory()->TryAddItem(ItemCode, 1))
+	{
+		return;
+	}
 	DestroyInteractionItem();
 }
 

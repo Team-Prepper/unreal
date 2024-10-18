@@ -4,6 +4,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Prepper/Character/PlayerCharacter.h"
+#include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/Weapon/MeleeWeapon.h"
 #include "Prepper/Weapon/WeaponActor.h"
 #include "Prepper/Weapon/AimingEffect/PlayerAimingEffect.h"
@@ -414,6 +415,7 @@ void UCombatComponent::TargetElim()
 	if (EquippedWeapon == nullptr) return;
 	
 	if (!Character->IsLocallyControlled()) return;
+	
 	for (UPlayerAimingEffect* Effect : EquippedWeapon->GetAimingEffect())
 	{
 		Effect->PlayerAimingEnd();

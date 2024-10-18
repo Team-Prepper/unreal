@@ -13,5 +13,6 @@ void USensitivityChangeEffect::PlayerAimingStart(const TObjectPtr<APlayerCharact
 
 void USensitivityChangeEffect::PlayerAimingEnd()
 {
+	if (TargetPlayer == nullptr) return;
 	TargetPlayer->SetSensitivity(1);
 }

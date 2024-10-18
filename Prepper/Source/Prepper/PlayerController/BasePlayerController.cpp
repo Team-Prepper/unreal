@@ -37,6 +37,7 @@ void ABasePlayerController::BeginWidget()
 		CharacterOverlay = CreateWidget<UCharacterOverlay>(this, CharacterOverlayClass);
 		CharacterOverlay->AddToViewport();
 	}
+	
 	if (SettingClass)
 	{
 		Setting = CreateWidget<UUserWidget>(this, SettingClass);
@@ -310,10 +311,12 @@ void ABasePlayerController::OpenSettingWidget()
 	if (Setting->GetVisibility() == ESlateVisibility::Hidden)
 	{
 		SetInputMode(FInputModeGameAndUI());
+		SetShowMouseCursor(true);
 		Setting->SetVisibility(ESlateVisibility::Visible);
 		return;
 	}
 	SetInputMode(FInputModeGameOnly());
+	SetShowMouseCursor(false);
 	Setting->SetVisibility(ESlateVisibility::Hidden);
 }
 

@@ -3,7 +3,6 @@
 #include "CoreMinimal.h"
 #include "BaseCombatComponent.h"
 #include "Components/ActorComponent.h"
-#include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
@@ -13,7 +12,7 @@ class PREPPER_API UCombatComponent : public UBaseCombatComponent
 	GENERATED_BODY()
 public:
 	friend class APlayerCharacter;
-	friend class ASurvivorGameMode;
+	friend class ASurvivorController;
 // Actor
 public:	
 	UCombatComponent();

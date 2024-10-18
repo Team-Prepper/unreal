@@ -18,10 +18,10 @@
 #include "Prepper/Item/Object/ItemBackpack.h"
 #include "Components/PawnNoiseEmitterComponent.h"
 #include "Enums/CombatState.h"
-#include "Enums/StatusEffect.h"
 #include "Enums/TurningInPlace.h"
 #include "Prepper/Component/FlexibleSpringArmComponent/FlexibleSpringArmComponent.h"
 #include "Prepper/ControlMapper/CharacterControlMapper.h"
+#include "Prepper/Item/Inventory/MapInventory.h"
 #include "Prepper/PlayerController/BasePlayerController.h"
 
 // Actor

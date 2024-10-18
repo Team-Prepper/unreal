@@ -13,6 +13,7 @@ void UZoomInEffect::PlayerAimingStart(const TObjectPtr<APlayerCharacter> PlayerC
 
 void UZoomInEffect::PlayerAimingEnd()
 {
+	if (TargetPlayer == nullptr) return;
 	TargetPlayer->GetFollowCamera()->InterpFOV(TargetPlayer->GetFollowCamera()->DefaultFOV, ZoomSpeed);
 	
 }

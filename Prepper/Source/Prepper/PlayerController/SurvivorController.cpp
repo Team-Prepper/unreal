@@ -4,12 +4,16 @@
 #include "SurvivorController.h"
 
 #include "EnhancedInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Prepper/Character/Component/StatusEffectComponent.h"
-#include "Prepper/GameMode/SurvivorGameMode.h"
+#include "Prepper/Character/Component/Combat/CombatComponent.h"
+#include "Prepper/GameSave/SurvivorSaveGame.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/HUD/UI/CharacterOverlay/StatusWidget.h"
 #include "Prepper/HUD/UI/Inventory/InventoryUI.h"
 #include "Prepper/HUD/UI/ItemCombination/ItemCombinationUI.h"
+#include "Prepper/Weapon/WeaponActor.h"
+#include "Prepper/Weapon/WeaponManager.h"
 
 void ASurvivorController::BeginWidget()
 {
@@ -34,17 +38,11 @@ void ASurvivorController::PossessPlayerCharacter()
 	Super::PossessPlayerCharacter();
 	
 	if (!PlayerCharacter) return;
-
-	if (ASurvivorGameMode* PrepperGameMode =
-		GetWorld()->GetAuthGameMode<ASurvivorGameMode>(); PrepperGameMode != nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Load Game"));
-		PrepperGameMode->LoadGame(PlayerCharacter);
-	}
-	
 	if (!CharacterOverlay) return;
 	if (!StatusWidget) return;
 	if (!PlayerCharacter->GetStatusEffectComponent()) return;
+	
+	LoadGame();
 
 	UE_LOG(LogTemp, Warning, TEXT("Attach UI"));
 	
@@ -124,4 +122,103 @@ void ASurvivorController::QuickSlot5Use()
 	UE_LOG(LogTemp, Warning, TEXT("Button5Pressed"));
 	if (!PlayerCharacter) return;
 	PlayerCharacter->UseQuickSlotItem(4);
+}
+
+void ASurvivorController::LoadGame()
+{
+	USurvivorSaveGame* LoadGameInstance =
+		Cast<USurvivorSaveGame>(UGameplayStatics::LoadGameFromSlot("Test", 0));
+
+	if (LoadGameInstance)
+	{
+		PlayerCharacter->SetActorLocation(LoadGameInstance->LastPosition);
+
+		int QuickSlotIdx = 0;
+		for (auto Item : LoadGameInstance->QuickSlotItemCode)
+		{
+			if (LoadGameInstance->QuickSlotItemCount[QuickSlotIdx] < 1) continue;
+			ServerAddItem(Item, LoadGameInstance->QuickSlotItemCount[QuickSlotIdx]);
+			PlayerCharacter->GetInventory()->QuickSlotAdd(Item, QuickSlotIdx++);
+		}
+		int ItemIdx = 0;
+		for (auto Item : LoadGameInstance->InventoryItemCode)
+		{
+			ServerAddItem(Item, LoadGameInstance->InventoryItemCount[ItemIdx++]);
+		}
+
+		AWeaponActor* SpawnWeapon = 
+			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->EquippedWeapon);
+		PlayerCharacter->EquipWeapon(SpawnWeapon);
+		
+		AWeaponActor* SpawnWeapon2 =
+			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->SecondaryEquippedWeapon);
+		
+		PlayerCharacter->EquipWeapon(SpawnWeapon2);
+		
+		if (UCombatComponent* CombatComp =
+			Cast<UCombatComponent>(PlayerCharacter->GetCombatComponent()))
+		{
+			//CombatComp->CarriedAmmoMap = LoadGameInstance->CarriedAmmoMap;
+		}
+	}
+}
+
+void ASurvivorController::ServerAddItem_Implementation(const FString& ItemCode, int Count)
+{
+	PlayerCharacter->GetInventory()->TryAddItem(ItemCode, Count);
+}
+
+void ASurvivorController::ServerSetAmmo_Implementation(UCombatComponent* Target, EWeaponType Type, int Count)
+{
+	if (Target->CarriedAmmoMap.Contains(Type))
+	{
+		Target->CarriedAmmoMap[Type] = Count;
+		return;
+	}
+	Target->CarriedAmmoMap.Add(Type, Count);
+	
+}
+
+void ASurvivorController::SaveGame()
+{
+	const TObjectPtr<USurvivorSaveGame> SaveGameInstance =
+		Cast<USurvivorSaveGame>(UGameplayStatics::CreateSaveGameObject(USurvivorSaveGame::StaticClass()));
+
+	if (SaveGameInstance)
+	{
+		
+		if (UCombatComponent* CombatComp =
+			Cast<UCombatComponent>(PlayerCharacter->GetCombatComponent()))
+		{
+			if (CombatComp->EquippedWeapon != nullptr)
+			{
+				SaveGameInstance->EquippedWeapon =
+					CombatComp->EquippedWeapon->GetWeaponCode();
+			}
+			if (CombatComp->SecondaryWeapon != nullptr)
+			{
+				SaveGameInstance->SecondaryEquippedWeapon =
+					CombatComp->SecondaryWeapon->GetWeaponCode();
+			}
+		}
+
+		TArray<IInventory::InventoryItem> ItemData = PlayerCharacter->GetInventory()->GetIter();
+		for (int i = 0; i < ItemData.Num(); i++)
+		{
+			SaveGameInstance->InventoryItemCode.Add(ItemData[i].ItemCode);
+			SaveGameInstance->InventoryItemCount.Add(ItemData[i].Count);
+		}
+		
+		TArray<IInventory::InventoryItem> QuickSlotData = PlayerCharacter->GetInventory()->GetQuickSlotIter();
+		for (int i = 0; i < QuickSlotData.Num(); i++)
+		{
+			SaveGameInstance->QuickSlotItemCode.Add(QuickSlotData[i].ItemCode);
+			SaveGameInstance->QuickSlotItemCount.Add(QuickSlotData[i].Count);
+		}
+		SaveGameInstance->LastPosition = PlayerCharacter->GetActorLocation();
+		
+	}
+	
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, "Test", 0);
+	
 }

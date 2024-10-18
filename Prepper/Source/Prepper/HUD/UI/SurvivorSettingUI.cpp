@@ -4,8 +4,7 @@
 #include "SurvivorSettingUI.h"
 
 #include "Components/Button.h"
-#include "Prepper/GameMode/SurvivorGameMode.h"
-#include "Prepper/PlayerController/BasePlayerController.h"
+#include "Prepper/PlayerController/SurvivorController.h"
 
 void USurvivorSettingUI::NativeOnInitialized()
 {
@@ -17,10 +16,9 @@ void USurvivorSettingUI::NativeOnInitialized()
 
 void USurvivorSettingUI::DataSave()
 {
-	TObjectPtr<ASurvivorGameMode> GM = GetWorld()->GetAuthGameMode<ASurvivorGameMode>();
 
-	if (!GM) return;
+	TObjectPtr<ASurvivorController> PC = Cast<ASurvivorController>(GetWorld()->GetFirstPlayerController());
+	if (PC == nullptr) return;
 
-	TObjectPtr<ABasePlayerController> PC = Cast<ABasePlayerController>(GetWorld()->GetFirstPlayerController());
-	GM->SaveGame(PC->GetPlayerCharacter());
+	PC->SaveGame();
 }

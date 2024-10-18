@@ -10,11 +10,6 @@ void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABaseP
 	PlayerEliminated(ElimmedCharacter);
 }
 
-void APrepperGameMode::SaveGame(const APlayerCharacter* TargetPlayerCharacter)
-{
-	
-}
-
 void APrepperGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter)
 {
 	if (ElimmedCharacter)

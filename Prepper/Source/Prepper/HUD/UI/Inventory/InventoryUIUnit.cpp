@@ -44,7 +44,13 @@ void UInventoryUIUnit::NativeOnListItemObjectSet(UObject* ListItemObject)
 	TargetPlayer = Data->TargetPlayer;
 	ItemCode = Data->ItemCode;
 	
-	if (!ItemManager::GetInstance()->GetItemData(Data->ItemCode, Img, Name)) return;
+	if (!ItemManager::GetInstance()->GetItemData(Data->ItemCode, Img, Name) || Data->ItemCount < 1)
+	{
+		ItemIcon->SetBrushFromTexture(nullptr);
+		ItemIcon->SetOpacity(0.f);
+		ItemCount->SetText(FText::FromString(FString("")));
+		return;
+	}
 
 	ItemIcon->SetBrushFromTexture(Img);
 	ItemCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), Data->ItemCount)));

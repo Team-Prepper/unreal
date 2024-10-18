@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/SaveGame.h"
+#include "Prepper/Weapon/WeaponTypes.h"
 #include "SurvivorSaveGame.generated.h"
 
 /**
@@ -29,4 +30,7 @@ public:
 	TArray<FString> QuickSlotItemCode;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
 	TArray<int> QuickSlotItemCount;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
+	TMap<EWeaponType, int32> CarriedAmmoMap;
 };
