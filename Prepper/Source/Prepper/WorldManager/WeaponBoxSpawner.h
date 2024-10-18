@@ -14,11 +14,16 @@ class PREPPER_API AWeaponBoxSpawner : public AActor
 public:	
 	AWeaponBoxSpawner();
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	class AInteractableBox* ControlledFallingActor;
 
-	UFUNCTION(BlueprintCallable, Category="Spawning")
-	void SpawnFallingActor();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_DropActor();
+
+	UFUNCTION(BlueprintCallable,Server,Reliable, Category="Spawning")
+	void SpawnFallingActor_Server();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Spawning")
 	TSubclassOf<AInteractableBox> FallingActorClass;
