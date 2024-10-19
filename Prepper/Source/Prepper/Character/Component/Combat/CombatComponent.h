@@ -6,6 +6,19 @@
 #include "Prepper/Weapon/WeaponTypes.h"
 #include "CombatComponent.generated.h"
 
+// 아이템 코드와 수량을 저장할 구조체 이름을 FItemConvertData로 변경
+USTRUCT(BlueprintType)
+struct FWeaponConvertData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	EWeaponType WeaponType;
+
+	UPROPERTY()
+	uint8 Count;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UCombatComponent : public UBaseCombatComponent
 {
@@ -93,6 +106,15 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TMap<EWeaponType, int32> CarriedAmmoMap;
+
+	UPROPERTY(ReplicatedUsing = OnRep_Ammo)
+	TArray<FWeaponConvertData> ReplicatedWeaponAmmoData;
+
+	UFUNCTION()
+	void OnRep_Ammo();
+
+	void ConvertArrayToMap();
+	void ConvertMapToArray();
 	
 protected:
 	UPROPERTY(EditAnywhere)

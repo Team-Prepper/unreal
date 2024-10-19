@@ -145,6 +145,11 @@ void ASurvivorController::LoadGame()
 		{
 			ServerAddItem(Item, LoadGameInstance->InventoryItemCount[ItemIdx++]);
 		}
+		
+		for (auto Value : LoadGameInstance->CarriedAmmoMap)
+		{
+			ServerSetAmmo(Value.Key, Value.Value);
+		}
 
 		AWeaponActor* SpawnWeapon = 
 			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->EquippedWeapon);
@@ -154,12 +159,6 @@ void ASurvivorController::LoadGame()
 			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->SecondaryEquippedWeapon);
 		
 		PlayerCharacter->EquipWeapon(SpawnWeapon2);
-		
-		if (UCombatComponent* CombatComp =
-			Cast<UCombatComponent>(PlayerCharacter->GetCombatComponent()))
-		{
-			//CombatComp->CarriedAmmoMap = LoadGameInstance->CarriedAmmoMap;
-		}
 	}
 }
 
@@ -168,13 +167,19 @@ void ASurvivorController::ServerAddItem_Implementation(const FString& ItemCode, 
 	PlayerCharacter->GetInventory()->TryAddItem(ItemCode, Count);
 }
 
-void ASurvivorController::ServerSetAmmo_Implementation(UCombatComponent* Target, EWeaponType Type, int Count)
+void ASurvivorController::ServerSetAmmo_Implementation(EWeaponType Type, int Count)
 {
+	UCombatComponent* Target =
+			Cast<UCombatComponent>(PlayerCharacter->GetCombatComponent());
+
+	if (Target == nullptr) return;
+	
 	if (Target->CarriedAmmoMap.Contains(Type))
 	{
 		Target->CarriedAmmoMap[Type] = Count;
 		return;
 	}
+	
 	Target->CarriedAmmoMap.Add(Type, Count);
 	
 }
@@ -200,16 +205,18 @@ void ASurvivorController::SaveGame()
 				SaveGameInstance->SecondaryEquippedWeapon =
 					CombatComp->SecondaryWeapon->GetWeaponCode();
 			}
+
+			SaveGameInstance->CarriedAmmoMap = CombatComp->CarriedAmmoMap;
 		}
 
-		TArray<IInventory::InventoryItem> ItemData = PlayerCharacter->GetInventory()->GetIter();
+		TArray<FItemConvertData> ItemData = PlayerCharacter->GetInventory()->GetIter();
 		for (int i = 0; i < ItemData.Num(); i++)
 		{
 			SaveGameInstance->InventoryItemCode.Add(ItemData[i].ItemCode);
 			SaveGameInstance->InventoryItemCount.Add(ItemData[i].Count);
 		}
 		
-		TArray<IInventory::InventoryItem> QuickSlotData = PlayerCharacter->GetInventory()->GetQuickSlotIter();
+		TArray<FItemConvertData> QuickSlotData = PlayerCharacter->GetInventory()->GetQuickSlotIter();
 		for (int i = 0; i < QuickSlotData.Num(); i++)
 		{
 			SaveGameInstance->QuickSlotItemCode.Add(QuickSlotData[i].ItemCode);

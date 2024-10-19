@@ -44,7 +44,7 @@ void UInventoryUI::Update(IInventory* const& newData)
 	InventoryView->ClearListItems();
 	QuickSlotView->ClearListItems();
 
-	TArray<IInventory::InventoryItem> Items = newData->GetIter();
+	TArray<FItemConvertData> Items = newData->GetIter();
 	
 	for (int i = 0; i < Items.Num(); i++)
 	{
@@ -59,7 +59,7 @@ void UInventoryUI::Update(IInventory* const& newData)
 		InventoryView->AddItem(Data);
 	}
 	
-	TArray<IInventory::InventoryItem> QuickSlots = newData->GetQuickSlotIter();
+	TArray<FItemConvertData> QuickSlots = newData->GetQuickSlotIter();
 
 	UE_LOG(LogTemp, Warning, TEXT("QuickSlotCnt: %d"), QuickSlots.Num());
 	

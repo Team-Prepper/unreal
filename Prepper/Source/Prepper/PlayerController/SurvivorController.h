@@ -38,7 +38,7 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(const FString& ItemCode, int Count);
 	UFUNCTION(Server, Reliable)
-	void ServerSetAmmo(UCombatComponent* Target, EWeaponType Type, int Count);
+	void ServerSetAmmo(EWeaponType Type, int Count);
 	
 	
 public:

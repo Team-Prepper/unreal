@@ -167,9 +167,9 @@ void UMapInventory::UseItemAtQuickSlot(const int Idx)
 	Item->Use(Owner);
 }
 
-TArray<IInventory::InventoryItem> UMapInventory::GetIter() const
+TArray<FItemConvertData> UMapInventory::GetIter() const
 {
-	TArray<InventoryItem> Retval;
+	TArray<FItemConvertData> Retval;
 	for (auto Iter = ItemUnits.CreateConstIterator(); Iter; ++Iter)
 	{
 		bool IsQuickSlotItem = false;
@@ -180,15 +180,15 @@ TArray<IInventory::InventoryItem> UMapInventory::GetIter() const
 			break;
 		}
 		if (IsQuickSlotItem) continue;
-		Retval.Add(InventoryItem(Iter.Key(), Iter.Value()));
+		Retval.Add(FItemConvertData(Iter.Key(), Iter.Value()));
 	}
 	return Retval;
 	
 }
 
-TArray<IInventory::InventoryItem> UMapInventory::GetQuickSlotIter() const
+TArray<FItemConvertData> UMapInventory::GetQuickSlotIter() const
 {
-	TArray<InventoryItem> Retval;
+	TArray<FItemConvertData> Retval;
 	for (int i = 0; i < MAX_QUICK_SLOT; i++)
 	{
 		int Cnt = 0;
@@ -196,7 +196,7 @@ TArray<IInventory::InventoryItem> UMapInventory::GetQuickSlotIter() const
 		{
 			Cnt = ItemUnits[QuickSlotItem[i]];
 		}
-		Retval.Add(InventoryItem(QuickSlotItem[i], Cnt));
+		Retval.Add(FItemConvertData(QuickSlotItem[i], Cnt));
 	}
 	return Retval;
 }

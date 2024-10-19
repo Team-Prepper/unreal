@@ -9,19 +9,6 @@
 #include "Net/UnrealNetwork.h" // 네트워크 관련 헤더 추가
 #include "MapInventory.generated.h"
 
-// 아이템 코드와 수량을 저장할 구조체 이름을 FItemConvertData로 변경
-USTRUCT(BlueprintType)
-struct FItemConvertData
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FString ItemCode;
-
-	UPROPERTY()
-	uint8 Count;
-};
-
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class PREPPER_API UMapInventory : public UActorComponent, public IInventory, public ISubject<IInventory*>
 {
@@ -65,8 +52,8 @@ public:
 	virtual void QuickSlotRemove(const int Idx) override;
 	virtual void UseItemAtQuickSlot(const int Idx) override;
 
-	virtual TArray<InventoryItem> GetIter() const override;
-	virtual TArray<InventoryItem> GetQuickSlotIter() const override;
+	virtual TArray<FItemConvertData> GetIter() const override;
+	virtual TArray<FItemConvertData> GetQuickSlotIter() const override;
 
 	// 클라이언트에서 호출되는 RepNotify 함수
 	UFUNCTION()

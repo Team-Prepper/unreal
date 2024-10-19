@@ -8,6 +8,21 @@
 #define MAX_ITEM_COUNT 16
 
 class IPlayerAbility;
+
+
+// 아이템 코드와 수량을 저장할 구조체 이름을 FItemConvertData로 변경
+USTRUCT(BlueprintType)
+struct FItemConvertData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString ItemCode;
+
+	UPROPERTY()
+	uint8 Count;
+};
+
 UINTERFACE(MinimalAPI)
 class UInventory : public UInterface
 {
@@ -19,13 +34,6 @@ class PREPPER_API IInventory
 	GENERATED_BODY()
 
 public:
-	class InventoryItem
-	{
-	public:
-		InventoryItem(const FString& InitItemCode, const uint8 InitCount) { ItemCode = InitItemCode; Count = InitCount;};
-		FString ItemCode;
-		uint8 Count;
-	};
 	
 	virtual bool TryAddItem(const FString& ItemCode, int Count) PURE_VIRTUAL(IInventory::TryAddItem, return 0; ); 
 	virtual bool TryUseItem(const FString& ItemCode, int Count) PURE_VIRTUAL(IInventory::TryUseItem, return 0; );
@@ -38,9 +46,9 @@ public:
 	
 	virtual bool CheckOwnItem(const FString& ItemCode) PURE_VIRTUAL(IInventory::CheckOwnItem, return 0; );
 
-	virtual TArray<InventoryItem> GetIter() const
-	PURE_VIRTUAL(IInventory::GetIter, TArray<InventoryItem> Retval; return Retval; );
-	virtual TArray<InventoryItem> GetQuickSlotIter() const
-	PURE_VIRTUAL(IInventory::GetQuickSlotIter, TArray<InventoryItem> Retval; return Retval; );
+	virtual TArray<FItemConvertData> GetIter() const
+	PURE_VIRTUAL(IInventory::GetIter, TArray<FItemConvertData> Retval; return Retval; );
+	virtual TArray<FItemConvertData> GetQuickSlotIter() const
+	PURE_VIRTUAL(IInventory::GetQuickSlotIter, TArray<FItemConvertData> Retval; return Retval; );
 
 };

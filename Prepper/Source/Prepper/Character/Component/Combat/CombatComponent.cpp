@@ -60,6 +60,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, EquippedRangeWeapon);
 	DOREPLIFETIME(UCombatComponent, EquippedMeleeWeapon);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
+	DOREPLIFETIME(UCombatComponent, ReplicatedWeaponAmmoData);
 }
 
 void UCombatComponent::BeginPlay()
@@ -422,6 +423,11 @@ void UCombatComponent::TargetElim()
 	}
 }
 
+void UCombatComponent::OnRep_Ammo()
+{
+	ConvertArrayToMap(); // 클라이언트에서 배열을 맵으로 변환
+}
+
 FGaugeInt UCombatComponent::GetAmmoShow()
 {
 	int WeaponAmmo = -1;
@@ -464,4 +470,26 @@ void UCombatComponent::UpdateCarriedAmmo()
 	}
 	
 	Notify();
+	ConvertMapToArray();
+}
+
+void UCombatComponent::ConvertMapToArray()
+{
+	ReplicatedWeaponAmmoData.Empty();
+	for (const auto& Elem : CarriedAmmoMap)
+	{
+		FWeaponConvertData ItemData;
+		ItemData.WeaponType = Elem.Key;
+		ItemData.Count = Elem.Value;
+		ReplicatedWeaponAmmoData.Add(ItemData);
+	}
+}
+
+void UCombatComponent::ConvertArrayToMap()
+{
+	CarriedAmmoMap.Empty();
+	for (const auto& Elem : ReplicatedWeaponAmmoData)
+	{
+		CarriedAmmoMap.Add(Elem.WeaponType, Elem.Count);
+	}
 }
