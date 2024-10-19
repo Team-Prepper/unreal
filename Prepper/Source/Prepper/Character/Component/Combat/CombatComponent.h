@@ -59,6 +59,8 @@ private:
 	
 	UFUNCTION()
 	void SetWeaponType();
+
+	virtual void OnRep_EquippedWeapon() override;
 	
 	UFUNCTION()
 	void OnRep_SecondaryWeapon();

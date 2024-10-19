@@ -49,7 +49,7 @@ public:
 protected:
 	virtual void DropEquippedWeapon();
 	UFUNCTION()
-	void OnRep_EquippedWeapon() const;
+	virtual void OnRep_EquippedWeapon();
 	
 protected:
 	virtual void ActionEnd();

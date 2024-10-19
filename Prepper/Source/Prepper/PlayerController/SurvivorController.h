@@ -39,6 +39,8 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	void ServerAddItem(const FString& ItemCode, int Count);
 	UFUNCTION(Server, Reliable)
 	void ServerSetAmmo(EWeaponType Type, int Count);
+	UFUNCTION(Server, Reliable)
+	void ServerEquipWeapon(const FString& WeaponCode);
 	
 	
 public:

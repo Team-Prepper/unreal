@@ -151,14 +151,9 @@ void ASurvivorController::LoadGame()
 			ServerSetAmmo(Value.Key, Value.Value);
 		}
 
-		AWeaponActor* SpawnWeapon = 
-			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->EquippedWeapon);
-		PlayerCharacter->EquipWeapon(SpawnWeapon);
+		ServerEquipWeapon(LoadGameInstance->EquippedWeapon);
+		ServerEquipWeapon(LoadGameInstance->SecondaryEquippedWeapon);
 		
-		AWeaponActor* SpawnWeapon2 =
-			WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), LoadGameInstance->SecondaryEquippedWeapon);
-		
-		PlayerCharacter->EquipWeapon(SpawnWeapon2);
 	}
 }
 
@@ -183,6 +178,16 @@ void ASurvivorController::ServerSetAmmo_Implementation(EWeaponType Type, int Cou
 	Target->CarriedAmmoMap.Add(Type, Count);
 	
 }
+
+void ASurvivorController::ServerEquipWeapon_Implementation(const FString& WeaponCode)
+{
+	AWeaponActor* SpawnWeapon =
+		WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), WeaponCode);
+		
+	PlayerCharacter->EquipWeapon(SpawnWeapon);
+	
+}
+
 
 void ASurvivorController::SaveGame()
 {

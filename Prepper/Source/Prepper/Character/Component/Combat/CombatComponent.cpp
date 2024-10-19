@@ -159,6 +159,13 @@ void UCombatComponent::SetWeaponType()
 	EquippedRangeWeapon = Cast<ARangeWeapon>(EquippedWeapon);
 	EquippedMeleeWeapon = Cast<AMeleeWeapon>(EquippedWeapon);
 }
+
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	Super::OnRep_EquippedWeapon();
+	Notify();
+}
+
 void UCombatComponent::OnRep_SecondaryWeapon()
 {
 	if (!EquippedWeapon) return;

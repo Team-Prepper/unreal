@@ -87,6 +87,7 @@ void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	EquippedWeapon->SetWeaponHandler(this);
 	
 	ReloadEmptyWeapon();
+	Notify();
 }
 
 void UBaseCombatComponent::EquipWeaponSet(AWeaponActor* WeaponToEquip)
@@ -103,7 +104,7 @@ void UBaseCombatComponent::DropEquippedWeapon()
 	EquippedWeapon = nullptr;
 }
 
-void UBaseCombatComponent::OnRep_EquippedWeapon() const
+void UBaseCombatComponent::OnRep_EquippedWeapon()
 {
 	if (!EquippedWeapon) return;
 	if (!Character) return;
