@@ -3,6 +3,8 @@
 
 #include "CardKeyDoor.h"
 
+#include "Components/BoxComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Prepper/Item/Inventory/MapInventory.h"
 
@@ -10,21 +12,43 @@
 // Sets default values
 ACardKeyDoor::ACardKeyDoor()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	DoorFrame = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrame"));
+	SetRootComponent(DoorFrame);
+	DoorInteract = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorInteract"));
+	DoorInteract->SetupAttachment(RootComponent);
+	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	AreaBox->SetupAttachment(RootComponent);
+	AreaBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AreaBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
+	PickUpWidget->SetupAttachment(RootComponent);
+	
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+}
+
+void ACardKeyDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACardKeyDoor, DoorInteract);
 }
 
 void ACardKeyDoor::Interaction(APlayerCharacter* Target)
 {
-	Super::Interaction(Target);
 	if (Target->GetInventory()->TryGetItemCount(TargetItemCode) < 1) return;
 
 	if (IsClosed)
 	{
-		OpenDoor();
+		Mul_OpenDoor();
 		return;
 	}
 	
 	CloseDoor();
+}
+
+void ACardKeyDoor::Mul_OpenDoor_Implementation()
+{
+	OpenDoor();
 }
 

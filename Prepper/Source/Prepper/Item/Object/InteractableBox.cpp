@@ -3,7 +3,7 @@
 
 #include "InteractableBox.h"
 
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/Prepper.h"
 
@@ -18,8 +18,8 @@ AInteractableBox::AInteractableBox()
 	BoxMesh->SetRenderCustomDepth(true);
 	BoxMesh->SetCustomDepthStencilValue(CustomDepthColor);
 
-	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
-	AreaSphere->SetupAttachment(RootComponent);
+	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	AreaBox->SetupAttachment(RootComponent);
 	ToggleTrigger(false);
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));

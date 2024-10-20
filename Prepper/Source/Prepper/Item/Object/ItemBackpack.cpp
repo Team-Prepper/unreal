@@ -1,6 +1,6 @@
 #include "ItemBackpack.h"
 #include "Prepper/Prepper.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Engine/StaticMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
@@ -27,10 +27,10 @@ AItemBackpack::AItemBackpack()
 	BackpackMesh->SetRenderCustomDepth(true);
 	BackpackMesh->SetCustomDepthStencilValue(CustomDepthColor);
 
-	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
-	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	AreaBox->SetupAttachment(RootComponent);
+	AreaBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AreaBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);

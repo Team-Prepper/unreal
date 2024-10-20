@@ -32,7 +32,7 @@ public:
 	
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Trigger")
-	UShapeComponent* AreaSphere;
+	class UBoxComponent* AreaBox;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Pickup Properties")
 	class UWidgetComponent* PickUpWidget;

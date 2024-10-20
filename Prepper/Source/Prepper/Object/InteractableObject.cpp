@@ -3,9 +3,8 @@
 
 #include "InteractableObject.h"
 #include "Prepper/Prepper.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Prepper/Character/PlayerCharacter.h"
 
 AInteractableObject::AInteractableObject()
 {
@@ -21,10 +20,10 @@ AInteractableObject::AInteractableObject()
 	ItemMesh->SetRenderCustomDepth(true);
 	ItemMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
 	
-	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
-	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Ignore);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	AreaBox->SetupAttachment(RootComponent);
+	AreaBox->SetCollisionResponseToAllChannels(ECR_Ignore);
+	AreaBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);

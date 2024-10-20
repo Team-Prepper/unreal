@@ -2,7 +2,7 @@
 
 #include "AimingEffect/PlayerAimingEffect.h"
 #include "Components/PawnNoiseEmitterComponent.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
@@ -37,11 +37,11 @@ AWeaponActor::AWeaponActor()
 	StaticWeaponMesh->SetSimulatePhysics(false);
 	StaticWeaponMesh->SetEnableGravity(false);
 	
-	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
-	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	AreaBox->SetupAttachment(RootComponent);
+	AreaBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	ToggleTrigger(true);
-	AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
+	AreaBox->SetCollisionObjectType(ECC_InteractMesh);
 	
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
@@ -80,8 +80,8 @@ void AWeaponActor::BeginPlay()
 	
 	if(HasAuthority())
 	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-        AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		AreaBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        AreaBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 		SetWeaponState(EWeaponState::EWS_Initial);
 		SetWeaponState(EWeaponState::EWS_Dropped);
 	}

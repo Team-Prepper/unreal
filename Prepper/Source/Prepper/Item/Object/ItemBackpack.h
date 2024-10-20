@@ -54,7 +54,7 @@ protected:
 	TSubclassOf<class AOpenedInventory> OpenedInventoryClass;
 
 	UPROPERTY()
-	UMapInventory* Inventory;
+	class UMapInventory* Inventory;
 	
 	UPROPERTY()
 	AOpenedInventory* OpenedInventory;

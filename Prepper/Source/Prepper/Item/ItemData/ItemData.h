@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Prepper/Item/ItemMeta.h"
+#include "Prepper/Item/Item.h"
 #include "ItemData.generated.h"
 
 USTRUCT(BlueprintType)
@@ -21,13 +22,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FItemMeta ItemMeta;
 
-	FItem GetItem() const
-	{
-		return FItem(ItemEffect);
-	}
-	
-	FItemMeta GetItemMeta() const
-	{
-		return ItemMeta;
-	}
+
+public:
+	FORCEINLINE FItem GetItem() const { return FItem(ItemEffect); }
+	FORCEINLINE FItemMeta GetItemMeta() const { return ItemMeta; }
 };

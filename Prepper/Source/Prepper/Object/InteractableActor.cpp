@@ -1,11 +1,8 @@
 
 #include "InteractableActor.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/Prepper.h"
-#include "Prepper/Character/PlayerCharacter.h"
-
-
 
 AInteractableActor::AInteractableActor()
 {
@@ -30,11 +27,11 @@ void AInteractableActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(AreaSphere)
+	if(AreaBox)
 	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		AreaSphere->SetCollisionObjectType(ECC_InteractMesh);
-		AreaSphere->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+		AreaBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		AreaBox->SetCollisionObjectType(ECC_InteractMesh);
+		AreaBox->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	}
 	
 	if(PickUpWidget)
@@ -63,11 +60,11 @@ void AInteractableActor::ToggleTrigger(const bool bEnable)
 {
 	if (!bEnable)
 	{
-		AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		AreaBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		return;
 	}
 	
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	AreaSphere->SetCollisionResponseToChannels(TriggerChannel);
+	AreaBox->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	AreaBox->SetCollisionResponseToChannels(TriggerChannel);
 }
 

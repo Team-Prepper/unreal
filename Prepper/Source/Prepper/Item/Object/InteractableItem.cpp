@@ -1,11 +1,10 @@
 
 #include "InteractableItem.h"
 #include "Prepper/Prepper.h"
-#include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Prepper/Character/PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
-#include "Prepper/Item/Inventory/Inventory.h"
 #include "Prepper/Item/Inventory/MapInventory.h"
 #include "Sound/SoundCue.h"
 
@@ -25,10 +24,10 @@ AInteractableItem::AInteractableItem()
 	ItemMesh->SetRenderCustomDepth(true);
 	ItemMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
 	
-	AreaSphere = CreateDefaultSubobject<USphereComponent>("AreaSphere");
-	AreaSphere->SetupAttachment(RootComponent);
-	AreaSphere->SetCollisionResponseToAllChannels(ECR_Overlap);
-	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AreaBox = CreateDefaultSubobject<UBoxComponent>("AreaBox");
+	AreaBox->SetupAttachment(RootComponent);
+	AreaBox->SetCollisionResponseToAllChannels(ECR_Overlap);
+	AreaBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
