@@ -123,12 +123,6 @@ int UMapInventory::TryGetItemCount(const FString& ItemCode)
 	return *ItemUnits.Find(ItemCode);
 }
 
-bool UMapInventory::CheckOwnItem(const FString& ItemCode)
-{
-	if (ItemUnits.Contains(ItemCode)) return true;
-	return false;
-}
-
 void UMapInventory::QuickSlotAdd(const FString& ItemCode, const int Idx = 0)
 {
 	if (Idx >= MAX_QUICK_SLOT) return;
