@@ -43,6 +43,7 @@ protected:
 	
 public:
 	virtual void Tick(float DeltaTime) override;
+	virtual void SetPawn(APawn* InPawn) override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;
 	virtual void OnPossess();
@@ -52,7 +53,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void BeginWidget();
-	virtual void PossessPlayerCharacter();
+	virtual void ServerPossessNewPlayerCharacter();
+	virtual void LocalPossessNewPlayerCharacter();
 	
 	APrepperHUD* GetPrepperHUD();
 	

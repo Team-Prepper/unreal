@@ -33,7 +33,6 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UItemCombinationUI> ItemCombinationClass;
 
-	void LoadGame();
 
 	UFUNCTION(Server, Reliable)
 	void ServerAddItem(const FString& ItemCode, int Count);
@@ -44,7 +43,14 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	
 	
 public:
+	void BeginPlay() override;
+	void LoadGame();
 	void SaveGame();
+private:
+	void LoadClientData();
+	void LoadServerData();
+	void SaveClientData();
+	void SaveServerData();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = true))
@@ -59,8 +65,9 @@ protected:
 	UInputAction* Button5;
 	
 	virtual void BeginWidget() override;
-	
-	virtual void PossessPlayerCharacter() override;
+
+	virtual void ServerPossessNewPlayerCharacter() override;
+	virtual void LocalPossessNewPlayerCharacter() override;
 	virtual void SetInput(UEnhancedInputComponent* Input) override;
 	
 	void OpenInventoryPressed();
