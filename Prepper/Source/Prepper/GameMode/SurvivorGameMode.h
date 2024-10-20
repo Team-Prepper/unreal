@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "PrepperGameMode.h"
+#include "Prepper/GameSave/SurvivorServerSaveGame.h"
 #include "Prepper/Mission/Mission.h"
 #include "UObject/Object.h"
 #include "SurvivorGameMode.generated.h"
@@ -20,12 +21,15 @@ class PREPPER_API ASurvivorGameMode : public APrepperGameMode
 	friend class UCombatComponent;
 private:
 	int EnemyKillCount;
+	float PlayTime;
 public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController) override;
-
+	virtual void Tick(float DeltaSeconds) override;
 	void AddMission();
 	int GetEnemyKillCount() const { return EnemyKillCount; }
 	
+	float GetPlayTime() const;
+	void SetPlayTime(float Time);
 };

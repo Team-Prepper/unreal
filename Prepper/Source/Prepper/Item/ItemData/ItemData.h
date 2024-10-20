@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Prepper/Item/ItemMeta.h"
+#include "Prepper/Item/Item.h"
 #include "ItemData.generated.h"
 
 USTRUCT(BlueprintType)

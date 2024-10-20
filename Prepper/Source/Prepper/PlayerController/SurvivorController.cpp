@@ -7,7 +7,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/Character/Component/Combat/CombatComponent.h"
+#include "Prepper/GameMode/SurvivorGameMode.h"
 #include "Prepper/GameSave/SurvivorSaveGame.h"
+#include "Prepper/GameSave/SurvivorServerSaveGame.h"
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/HUD/UI/CharacterOverlay/StatusWidget.h"
 #include "Prepper/HUD/UI/Inventory/InventoryUI.h"
@@ -33,16 +35,23 @@ void ASurvivorController::BeginWidget()
 	}
 }
 
-void ASurvivorController::PossessPlayerCharacter()
+void ASurvivorController::ServerPossessNewPlayerCharacter()
 {
-	Super::PossessPlayerCharacter();
-	
+	Super::ServerPossessNewPlayerCharacter();
+	UE_LOG(LogTemp, Warning, TEXT("ServerPossessNewPlayerCharacter"));
+	LoadServerData();
+}
+
+void ASurvivorController::LocalPossessNewPlayerCharacter()
+{
+	Super::LocalPossessNewPlayerCharacter();
+
 	if (!PlayerCharacter) return;
 	if (!CharacterOverlay) return;
 	if (!StatusWidget) return;
 	if (!PlayerCharacter->GetStatusEffectComponent()) return;
 	
-	LoadGame();
+	LoadClientData();
 
 	UE_LOG(LogTemp, Warning, TEXT("Attach UI"));
 	
@@ -124,37 +133,27 @@ void ASurvivorController::QuickSlot5Use()
 	PlayerCharacter->UseQuickSlotItem(4);
 }
 
+void ASurvivorController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!HasAuthority()) return;
+	if (GetPawn() != nullptr && !GetPawn()->IsLocallyControlled()) return;
+
+	USurvivorServerSaveGame* LoadGameInstance =
+		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot("Server", 0));
+
+	if (!LoadGameInstance) return;
+
+	if (ASurvivorGameMode* GM = GetWorld()->GetAuthGameMode<ASurvivorGameMode>())
+	{
+		GM->SetPlayTime(LoadGameInstance->PlayTime);
+	}
+	
+}
+
 void ASurvivorController::LoadGame()
 {
-	USurvivorSaveGame* LoadGameInstance =
-		Cast<USurvivorSaveGame>(UGameplayStatics::LoadGameFromSlot("Test", 0));
-
-	if (LoadGameInstance)
-	{
-		PlayerCharacter->SetActorLocation(LoadGameInstance->LastPosition);
-
-		int QuickSlotIdx = 0;
-		for (auto Item : LoadGameInstance->QuickSlotItemCode)
-		{
-			if (LoadGameInstance->QuickSlotItemCount[QuickSlotIdx] < 1) continue;
-			ServerAddItem(Item, LoadGameInstance->QuickSlotItemCount[QuickSlotIdx]);
-			PlayerCharacter->GetInventory()->QuickSlotAdd(Item, QuickSlotIdx++);
-		}
-		int ItemIdx = 0;
-		for (auto Item : LoadGameInstance->InventoryItemCode)
-		{
-			ServerAddItem(Item, LoadGameInstance->InventoryItemCount[ItemIdx++]);
-		}
-		
-		for (auto Value : LoadGameInstance->CarriedAmmoMap)
-		{
-			ServerSetAmmo(Value.Key, Value.Value);
-		}
-
-		ServerEquipWeapon(LoadGameInstance->EquippedWeapon);
-		ServerEquipWeapon(LoadGameInstance->SecondaryEquippedWeapon);
-		
-	}
 }
 
 void ASurvivorController::ServerAddItem_Implementation(const FString& ItemCode, int Count)
@@ -190,6 +189,56 @@ void ASurvivorController::ServerEquipWeapon_Implementation(const FString& Weapon
 
 
 void ASurvivorController::SaveGame()
+{
+	SaveClientData();
+	SaveServerData();
+}
+
+void ASurvivorController::LoadClientData()
+{
+	USurvivorSaveGame* LoadGameInstance =
+		Cast<USurvivorSaveGame>(UGameplayStatics::LoadGameFromSlot("Test", 0));
+
+	if (LoadGameInstance)
+	{
+
+		int QuickSlotIdx = 0;
+		for (auto Item : LoadGameInstance->QuickSlotItemCode)
+		{
+			if (LoadGameInstance->QuickSlotItemCount[QuickSlotIdx] < 1) continue;
+			ServerAddItem(Item, LoadGameInstance->QuickSlotItemCount[QuickSlotIdx]);
+			PlayerCharacter->GetInventory()->QuickSlotAdd(Item, QuickSlotIdx++);
+		}
+		int ItemIdx = 0;
+		for (auto Item : LoadGameInstance->InventoryItemCode)
+		{
+			ServerAddItem(Item, LoadGameInstance->InventoryItemCount[ItemIdx++]);
+		}
+		
+		for (auto Value : LoadGameInstance->CarriedAmmoMap)
+		{
+			ServerSetAmmo(Value.Key, Value.Value);
+		}
+
+		ServerEquipWeapon(LoadGameInstance->EquippedWeapon);
+		ServerEquipWeapon(LoadGameInstance->SecondaryEquippedWeapon);
+		
+	}
+}
+
+void ASurvivorController::LoadServerData()
+{
+	USurvivorServerSaveGame* LoadGameInstance =
+		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot("Server", 0));
+
+	if (LoadGameInstance)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Pos: %f, %f, %f"), LoadGameInstance->LastPosition.X, LoadGameInstance->LastPosition.Y, LoadGameInstance->LastPosition.Z );
+		PlayerCharacter->SetActorLocation(LoadGameInstance->LastPosition);
+	}
+}
+
+void ASurvivorController::SaveClientData()
 {
 	const TObjectPtr<USurvivorSaveGame> SaveGameInstance =
 		Cast<USurvivorSaveGame>(UGameplayStatics::CreateSaveGameObject(USurvivorSaveGame::StaticClass()));
@@ -227,10 +276,26 @@ void ASurvivorController::SaveGame()
 			SaveGameInstance->QuickSlotItemCode.Add(QuickSlotData[i].ItemCode);
 			SaveGameInstance->QuickSlotItemCount.Add(QuickSlotData[i].Count);
 		}
-		SaveGameInstance->LastPosition = PlayerCharacter->GetActorLocation();
 		
 	}
 	
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, "Test", 0);
+}
+
+void ASurvivorController::SaveServerData()
+{
+	ASurvivorGameMode* GM = GetWorld()->GetAuthGameMode<ASurvivorGameMode>();
+	if (GM == nullptr) return;
 	
+	const TObjectPtr<USurvivorServerSaveGame> SaveGameInstance =
+		Cast<USurvivorServerSaveGame>(UGameplayStatics::CreateSaveGameObject(USurvivorServerSaveGame::StaticClass()));
+
+	if (SaveGameInstance)
+	{
+		SaveGameInstance->PlayTime = GM->GetPlayTime();
+		SaveGameInstance->LastPosition = PlayerCharacter->GetActorLocation();
+		
+	}
+	
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, "Server", 0);
 }

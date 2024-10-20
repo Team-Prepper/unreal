@@ -26,7 +26,7 @@ void ABasePlayerController::BeginPlay()
 		BeginWidget();
 	}
 	
-	PossessPlayerCharacter();
+	LocalPossessNewPlayerCharacter();
 
 }
 
@@ -56,6 +56,10 @@ void ABasePlayerController::BeginWidget()
 	}
 }
 
+void ABasePlayerController::ServerPossessNewPlayerCharacter()
+{
+}
+
 void ABasePlayerController::OnPossess(APawn* InPawn)
 {
 	// 서버에서만 동작하는 함수
@@ -80,31 +84,31 @@ void ABasePlayerController::OnPossess()
 	UE_LOG(LogTemp, Warning, TEXT("Testing"));
 	
 	// 로컬에서도 동작하게 설계함
-	if (Cast<IControllable>(GetPawn()))
+	if (IControllable* Controllable = GetPawn<IControllable>())
 	{
 		if (TargetControlMapper && IsLocalController())
 		{
 			TargetControlMapper->Disconnect();
 		}
-		TargetControlMapper = Cast<IControllable>(GetPawn())->GetControlMapper();
-	}
-
-	TObjectPtr<APlayerCharacter> NewPlayer = Cast<APlayerCharacter>(GetPawn());
-	
-	if (NewPlayer != nullptr && NewPlayer != PlayerCharacter)
-	{
-		PlayerCharacter = NewPlayer;
-		PossessPlayerCharacter();
+		TargetControlMapper = Controllable->GetControlMapper();
 	}
 
 	if (!IsLocalController()) return;
 
 	TargetControlMapper->Connect(this);
 
-	if (Compass)
+	if (Compass != nullptr && TargetControlMapper != nullptr)
 	{
 		Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
 		UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
+	}
+
+	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
+	
+	if (NewPlayer != nullptr && NewPlayer != PlayerCharacter)
+	{
+		PlayerCharacter = NewPlayer;
+		LocalPossessNewPlayerCharacter();
 	}
 }
 
@@ -121,7 +125,7 @@ TObjectPtr<APlayerCharacter> ABasePlayerController::GetPlayerCharacter()
 	return PlayerCharacter;
 }
 
-void ABasePlayerController::PossessPlayerCharacter()
+void ABasePlayerController::LocalPossessNewPlayerCharacter()
 {
 	if (!CharacterOverlay) return;
 	if (!PlayerCharacter) return;
@@ -151,6 +155,19 @@ void ABasePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	CheckPing(DeltaTime);
+}
+
+void ABasePlayerController::SetPawn(APawn* InPawn)
+{
+	Super::SetPawn(InPawn);
+	
+	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
+	
+	if (NewPlayer != nullptr && NewPlayer != PlayerCharacter)
+	{
+		PlayerCharacter = NewPlayer;
+		ServerPossessNewPlayerCharacter();
+	}
 }
 
 void ABasePlayerController::CheckPing(float DeltaTime)

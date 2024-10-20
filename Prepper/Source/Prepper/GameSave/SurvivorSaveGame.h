@@ -19,8 +19,6 @@ public:
 	FString EquippedWeapon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
 	FString SecondaryEquippedWeapon;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
-	FVector LastPosition;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
 	TArray<FString> InventoryItemCode;

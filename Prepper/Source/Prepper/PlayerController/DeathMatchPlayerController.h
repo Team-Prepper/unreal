@@ -32,7 +32,7 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void PossessPlayerCharacter() override;
+	virtual void LocalPossessNewPlayerCharacter() override;
 
 	void SetHUDScore(float Score);
 	void SetHUDDefeats(int32 Defeats);

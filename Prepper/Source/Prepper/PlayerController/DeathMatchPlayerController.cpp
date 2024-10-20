@@ -63,9 +63,9 @@ void ADeathMatchPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	DOREPLIFETIME(ADeathMatchPlayerController, MatchState);
 }
 
-void ADeathMatchPlayerController::PossessPlayerCharacter()
+void ADeathMatchPlayerController::LocalPossessNewPlayerCharacter()
 {
-	Super::PossessPlayerCharacter();
+	Super::LocalPossessNewPlayerCharacter();
 	
 	SetHUDScore(HUDScore);
 	SetHUDDefeats(HUDDefeats);
