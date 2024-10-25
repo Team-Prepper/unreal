@@ -22,6 +22,7 @@ class PREPPER_API ASurvivorGameMode : public APrepperGameMode
 private:
 	int EnemyKillCount;
 	float PlayTime;
+	TMap<FString, bool> Achievement;
 public:
 	virtual void PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 									ABasePlayerController* VictimController,
@@ -32,4 +33,6 @@ public:
 	
 	float GetPlayTime() const;
 	void SetPlayTime(float Time);
+	void AddAchievement(const FString &NewAchievement, bool Value = true);
+	TMap<FString, bool> GetAchievement() { return Achievement; }
 };

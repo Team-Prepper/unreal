@@ -30,3 +30,10 @@ void ASurvivorGameMode::SetPlayTime(const float Time)
 {
 	PlayTime = Time;
 }
+
+void ASurvivorGameMode::AddAchievement(const FString& NewAchievement, const bool Value)
+{
+	Achievement.Add(NewAchievement, Value);
+
+	UE_LOG(LogTemp, Warning, TEXT("Acheivement: %s"), *NewAchievement);
+}

@@ -18,5 +18,7 @@ public:
 	float PlayTime;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
 	FVector LastPosition;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
+	TMap<FString, bool> Achievement;
 	
 };

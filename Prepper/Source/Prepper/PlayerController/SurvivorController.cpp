@@ -148,6 +148,10 @@ void ASurvivorController::BeginPlay()
 	if (ASurvivorGameMode* GM = GetWorld()->GetAuthGameMode<ASurvivorGameMode>())
 	{
 		GM->SetPlayTime(LoadGameInstance->PlayTime);
+		for (auto Str : LoadGameInstance->Achievement)
+		{
+			GM->AddAchievement(Str.Key, Str.Value);
+		}
 	}
 	
 }
@@ -294,6 +298,7 @@ void ASurvivorController::SaveServerData()
 	{
 		SaveGameInstance->PlayTime = GM->GetPlayTime();
 		SaveGameInstance->LastPosition = PlayerCharacter->GetActorLocation();
+		SaveGameInstance->Achievement = GM->GetAchievement();
 		
 	}
 	
