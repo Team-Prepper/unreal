@@ -109,7 +109,6 @@ void UItemCombinationUI::Combination()
 void UItemCombinationUI::Close()
 {
 	SetVisibility(ESlateVisibility::Hidden);
-	RemoveFromParent();
 	
 }
 

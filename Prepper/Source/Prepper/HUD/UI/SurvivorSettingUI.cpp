@@ -16,8 +16,7 @@ void USurvivorSettingUI::NativeOnInitialized()
 
 void USurvivorSettingUI::DataSave()
 {
-
-	TObjectPtr<ASurvivorController> PC = Cast<ASurvivorController>(GetWorld()->GetFirstPlayerController());
+	const TObjectPtr<ASurvivorController> PC = GetWorld()->GetFirstPlayerController<ASurvivorController>();
 	if (PC == nullptr) return;
 
 	PC->SaveGame();
