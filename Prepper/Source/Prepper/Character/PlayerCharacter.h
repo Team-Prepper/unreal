@@ -10,6 +10,7 @@
 #include "Prepper/Interfaces/PlayerAbility.h"
 #include "PlayerCharacter.generated.h"
 
+class AEquipment;
 class UWidgetComponent;
 class UInteractionComponent;
 class UCombatComponent;
@@ -82,6 +83,8 @@ public:
 	virtual void Heal(float Amount) override;
 	virtual void Eat(float Amount) override;
 	virtual void Drink(float Amount) override;
+
+	TArray<FString> GetEquipmentCodes();
 
 private:
 	UFUNCTION()

@@ -2,6 +2,7 @@
 
 #include "WeaponTypes.h"
 #include "Weapon.h"
+#include "Prepper/Equipment/Equipment.h"
 #include "Prepper/Object/InteractableActor.h"
 #include "WeaponActor.generated.h"
 
@@ -11,7 +12,7 @@ class ABaseCharacter;
 class USoundCue;
 
 UCLASS()
-class PREPPER_API AWeaponActor : public AInteractableActor, public IWeapon
+class PREPPER_API AWeaponActor : public AEquipment, public IWeapon
 {
 	GENERATED_BODY()
 public:
@@ -45,7 +46,7 @@ public:
 
 	virtual TArray<UPlayerAimingEffect*> GetAimingEffect() override;
 
-	virtual FString GetWeaponCode() override { return WeaponCode; }
+	virtual FString GetCode() override { return WeaponCode; }
 	virtual EWeaponType GetWeaponType() override { return WeaponType; };
 	virtual void SetWeaponHandler(IWeaponHandler* NewOwner) override;
 	virtual void SetWeaponState(EWeaponState State) override;

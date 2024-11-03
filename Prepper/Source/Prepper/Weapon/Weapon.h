@@ -28,9 +28,6 @@ public:
 	virtual void Fire(const TArray<FVector_NetQuantize>& HitTargets)
 	PURE_VIRTUAL();
 
-	virtual FString GetWeaponCode()
-	PURE_VIRTUAL(IWeapon::GetWeaponCode, return FString(); );
-
 	virtual void GetCrosshair(
 		float DeltaTime, bool bIsAiming,
 		TObjectPtr<UTexture2D>& Center,

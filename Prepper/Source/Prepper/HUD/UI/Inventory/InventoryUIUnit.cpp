@@ -51,7 +51,6 @@ void UInventoryUIUnit::NativeOnListItemObjectSet(UObject* ListItemObject)
 	{
 		ItemIcon->SetBrushFromTexture(nullptr);
 		ItemIcon->SetOpacity(0.f);
-		ItemCount->SetText(FText::FromString(FString("")));
 		return;
 	}
 

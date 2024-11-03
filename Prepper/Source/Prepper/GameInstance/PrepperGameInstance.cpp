@@ -3,9 +3,9 @@
 
 #include "PrepperGameInstance.h"
 
+#include "Prepper/Equipment/EquipmentManager.h"
 #include "Prepper/Item/ItemManager.h"
 #include "Prepper/Item/ItemData/ItemData.h"
-#include "Prepper/Weapon/WeaponManager.h"
 #include "Prepper/_Base/DataTableGetter.h"
 #include "Prepper/_Base/UISystem/UIManager.h"
 
@@ -27,5 +27,5 @@ void UPrepperGameInstance::Init()
 	Super::Init();
 	UIManager::Initialize();
 	ItemManager::GetInstance()->Initial(ItemDataTable, ItemCombinationDataTable);
-	WeaponManager::GetInstance()->Initial(WeaponDataTable);
+	EquipmentManager::GetInstance()->Initial(WeaponDataTable);
 };

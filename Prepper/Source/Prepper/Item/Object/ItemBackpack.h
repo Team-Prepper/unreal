@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Prepper/Equipment/Equipment.h"
 #include "Prepper/Object/InteractableActor.h"
 #include "ItemBackpack.generated.h"
 
@@ -18,7 +19,7 @@ enum class EBackpackState : uint8
 };
 
 UCLASS()
-class PREPPER_API AItemBackpack : public AInteractableActor
+class PREPPER_API AItemBackpack : public AEquipment
 {
 	GENERATED_BODY()
 	
@@ -31,7 +32,7 @@ public:
 	void Dropped();
 
 	UPROPERTY()
-	class USoundCue* EquipSound;
+	USoundCue* EquipSound;
 
 protected:
 	virtual void BeginPlay() override;
@@ -40,7 +41,7 @@ protected:
 	UStaticMeshComponent* BackpackMesh;
 
 	UPROPERTY(Replicated)
-	class APlayerCharacter* PlayerOwnerCharacter;
+	APlayerCharacter* PlayerOwnerCharacter;
 
 	UPROPERTY(ReplicatedUsing = OnRep_BackpackState, VisibleAnywhere)
 	EBackpackState BackpackState;
@@ -61,10 +62,16 @@ protected:
 
 	UPROPERTY(Replicated)
 	bool IsOpened = false;
+	
 private:
+	UPROPERTY(EditAnywhere, Category = "Backpack Properties")
+	FString BackpackCode;
+	
 	void BackpackPhysicsActive(bool active);
 
 public:
+	virtual FString GetCode() override { return BackpackCode; }
+	
 	void OpenInventory();
 	void ToggleInventory();
 	void ShowInventory();

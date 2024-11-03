@@ -36,8 +36,6 @@ void ACraftingTable::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	if (TargetPlayer == nullptr) return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Dist: %f"), FVector::DistSquared(TargetPlayer->GetActorLocation(), GetActorLocation()));
 	
 	if (FVector::DistSquared(TargetPlayer->GetActorLocation(), GetActorLocation()) < Distance) return;
 

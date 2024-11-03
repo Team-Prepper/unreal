@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/Character/Component/StatusEffectComponent.h"
 #include "Prepper/Character/Component/Combat/CombatComponent.h"
+#include "Prepper/Equipment/EquipmentManager.h"
 #include "Prepper/GameMode/SurvivorGameMode.h"
 #include "Prepper/GameSave/SurvivorSaveGame.h"
 #include "Prepper/GameSave/SurvivorServerSaveGame.h"
@@ -15,7 +16,6 @@
 #include "Prepper/HUD/UI/Inventory/InventoryUI.h"
 #include "Prepper/HUD/UI/ItemCombination/ItemCombinationUI.h"
 #include "Prepper/Weapon/WeaponActor.h"
-#include "Prepper/Weapon/WeaponManager.h"
 
 void ASurvivorController::BeginWidget()
 {
@@ -182,12 +182,13 @@ void ASurvivorController::ServerSetAmmo_Implementation(EWeaponType Type, int Cou
 	
 }
 
-void ASurvivorController::ServerEquipWeapon_Implementation(const FString& WeaponCode)
+void ASurvivorController::ServerEquipEquipment_Implementation(const FString& EquipmentCode)
 {
-	AWeaponActor* SpawnWeapon =
-		WeaponManager::GetInstance()->SpawnWeapon(GetWorld(), WeaponCode);
-		
-	PlayerCharacter->EquipWeapon(SpawnWeapon);
+	AEquipment* SpawnEquipment =
+		EquipmentManager::GetInstance()->SpawnWeapon<AEquipment>(GetWorld(), EquipmentCode);
+
+	if (SpawnEquipment == nullptr) return;
+	SpawnEquipment->Interaction(PlayerCharacter);
 	
 }
 
@@ -205,7 +206,15 @@ void ASurvivorController::LoadClientData()
 
 	if (LoadGameInstance)
 	{
-
+		for (auto Value : LoadGameInstance->CarriedAmmoMap)
+		{
+			ServerSetAmmo(Value.Key, Value.Value);
+		}
+		for (auto Code : LoadGameInstance->Equipments)
+		{
+			ServerEquipEquipment(Code);
+		}
+		
 		int QuickSlotIdx = 0;
 		for (auto Item : LoadGameInstance->QuickSlotItemCode)
 		{
@@ -218,14 +227,6 @@ void ASurvivorController::LoadClientData()
 		{
 			ServerAddItem(Item, LoadGameInstance->InventoryItemCount[ItemIdx++]);
 		}
-		
-		for (auto Value : LoadGameInstance->CarriedAmmoMap)
-		{
-			ServerSetAmmo(Value.Key, Value.Value);
-		}
-
-		ServerEquipWeapon(LoadGameInstance->EquippedWeapon);
-		ServerEquipWeapon(LoadGameInstance->SecondaryEquippedWeapon);
 		
 	}
 }
@@ -249,21 +250,11 @@ void ASurvivorController::SaveClientData()
 
 	if (SaveGameInstance)
 	{
+		SaveGameInstance->Equipments = PlayerCharacter->GetEquipmentCodes();
 		
 		if (UCombatComponent* CombatComp =
 			Cast<UCombatComponent>(PlayerCharacter->GetCombatComponent()))
 		{
-			if (CombatComp->EquippedWeapon != nullptr)
-			{
-				SaveGameInstance->EquippedWeapon =
-					CombatComp->EquippedWeapon->GetWeaponCode();
-			}
-			if (CombatComp->SecondaryWeapon != nullptr)
-			{
-				SaveGameInstance->SecondaryEquippedWeapon =
-					CombatComp->SecondaryWeapon->GetWeaponCode();
-			}
-
 			SaveGameInstance->CarriedAmmoMap = CombatComp->CarriedAmmoMap;
 		}
 

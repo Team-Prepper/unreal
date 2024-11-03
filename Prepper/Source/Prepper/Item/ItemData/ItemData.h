@@ -21,9 +21,11 @@ public:
 	FString ItemEffect;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ItemInfo")
 	FItemMeta ItemMeta;
-
-
-public:
+	
+	FItemData() : ItemCode(TEXT("DefaultString1")), ItemEffect(TEXT("DefaultString2")), ItemMeta(FItemMeta())
+	{
+	}
+	
 	FORCEINLINE FItem GetItem() const { return FItem(ItemEffect); }
 	FORCEINLINE FItemMeta GetItemMeta() const { return ItemMeta; }
 };

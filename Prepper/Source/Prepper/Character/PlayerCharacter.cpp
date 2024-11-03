@@ -227,6 +227,27 @@ void APlayerCharacter::Drink(float Amount)
 	UE_LOG(LogTemp, Warning, TEXT("Drink:%f"), Amount);
 }
 
+TArray<FString> APlayerCharacter::GetEquipmentCodes()
+{
+	TArray<FString> Retval;
+
+	if (Combat->EquippedWeapon != nullptr)
+	{
+		Retval.Add(Combat->EquippedWeapon->GetCode());
+	}
+	if (Combat->SecondaryWeapon != nullptr)
+	{
+		Retval.Add(Combat->SecondaryWeapon->GetCode());
+	}
+	if (EquippedBackpack != nullptr)
+	{
+		Retval.Add(EquippedBackpack->GetCode());
+	}
+
+	return Retval;
+	
+}
+
 void APlayerCharacter::OnRep_EquippedBackpack()
 {
 	if(EquippedBackpack)

@@ -16,6 +16,8 @@ class PREPPER_API USurvivorSaveGame : public USaveGame
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
+	TArray<FString> Equipments;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
 	FString EquippedWeapon;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "SaveData")
 	FString SecondaryEquippedWeapon;
