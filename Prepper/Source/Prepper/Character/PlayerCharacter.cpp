@@ -2,6 +2,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
+#include "Component/AAIHelper.h"
 #include "Component/Combat/CombatComponent.h"
 #include "Component/InteractionComponent.h"
 #include "Component/StatusEffectComponent.h"
@@ -79,6 +80,9 @@ APlayerCharacter::APlayerCharacter()
 	bBeforeSeat = false;
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
+
+	// AI Helper 컴포넌트 추가
+	AIHelper = CreateDefaultSubobject<UAIHelper>(TEXT("AIHelper"));
 }
 
 void APlayerCharacter::Tick(float DeltaTime)

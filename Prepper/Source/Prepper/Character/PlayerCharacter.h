@@ -214,5 +214,10 @@ public:
 	FORCEINLINE UBaseCombatComponent* GetCombatComponent() const { return CombatComp; }
 	FORCEINLINE UStatusEffectComponent* GetStatusEffectComponent() const { return StatusEffect; }
 	FORCEINLINE bool GetDisableGamePlay() const { return bDisableGamePlay; }
-	
+
+
+public:
+	// AI 도우미 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
+	class UAIHelper* AIHelper;
 };
