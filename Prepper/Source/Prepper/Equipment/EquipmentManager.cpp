@@ -1,6 +1,6 @@
 ﻿#include "EquipmentManager.h"
 
-#include "Equipment.h"
+
 #include "EquipmentData/EquipmentData.h"
 
 EquipmentManager::EquipmentManager()
@@ -31,11 +31,3 @@ void EquipmentManager::Initial(const TObjectPtr<UDataTable> EquipmentDataTable)
 	UE_LOG(LogTemp, Warning, TEXT("EquipmentDataTableLoad: %d"), Arr.Num());
 }
 
-template <typename T>
-TObjectPtr<T> EquipmentManager::SpawnWeapon(UWorld* World, const FString& WeaponCode)
-{
-	if (World == nullptr) return nullptr;
-	if (!EquipmentData.Contains(WeaponCode)) return nullptr;
-	return World->SpawnActor<T>(*EquipmentData.Find(WeaponCode));
-	
-}

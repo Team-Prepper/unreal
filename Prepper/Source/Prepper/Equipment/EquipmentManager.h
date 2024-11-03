@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Equipment.h"
 #include "Prepper/_Base/Singleton.h"
 
 class AEquipment;
@@ -15,6 +16,13 @@ public:
 	void Initial(const TObjectPtr<UDataTable> EquipmentDataTable);
 
 	template <typename T>
-	TObjectPtr<T> SpawnWeapon(UWorld* World, const FString& WeaponCode);
-	
+	TObjectPtr<T> SpawnEquipment(UWorld* World, const FString& WeaponCode);
 };
+
+template <typename T>
+TObjectPtr<T> EquipmentManager::SpawnEquipment(UWorld* World, const FString& WeaponCode)
+{
+	if (World == nullptr) return nullptr;
+	if (!EquipmentData.Contains(WeaponCode)) return nullptr;
+	return World->SpawnActor<T>(*EquipmentData.Find(WeaponCode));
+}

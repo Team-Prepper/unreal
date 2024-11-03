@@ -184,8 +184,9 @@ void ASurvivorController::ServerSetAmmo_Implementation(EWeaponType Type, int Cou
 
 void ASurvivorController::ServerEquipEquipment_Implementation(const FString& EquipmentCode)
 {
+	
 	AEquipment* SpawnEquipment =
-		EquipmentManager::GetInstance()->SpawnWeapon<AEquipment>(GetWorld(), EquipmentCode);
+		EquipmentManager::GetInstance()->SpawnEquipment<AEquipment>(GetWorld(), EquipmentCode);
 
 	if (SpawnEquipment == nullptr) return;
 	SpawnEquipment->Interaction(PlayerCharacter);
