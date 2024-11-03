@@ -41,8 +41,11 @@ void UInventoryUIUnit::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	UTexture2D* Img;
 	FText Name;
+	
 	TargetPlayer = Data->TargetPlayer;
 	ItemCode = Data->ItemCode;
+	
+	ItemCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), Data->ItemCount)));
 	
 	if (!ItemManager::GetInstance()->GetItemData(Data->ItemCode, Img, Name) || Data->ItemCount < 1)
 	{
@@ -53,7 +56,6 @@ void UInventoryUIUnit::NativeOnListItemObjectSet(UObject* ListItemObject)
 	}
 
 	ItemIcon->SetBrushFromTexture(Img);
-	ItemCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), Data->ItemCount)));
 }
 
 void UInventoryUIUnit::UseButtonAction()

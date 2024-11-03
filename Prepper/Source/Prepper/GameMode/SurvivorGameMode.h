@@ -34,5 +34,6 @@ public:
 	float GetPlayTime() const;
 	void SetPlayTime(float Time);
 	void AddAchievement(const FString &NewAchievement, bool Value = true);
+	bool IsAchieved(const FString &Achievement);
 	TMap<FString, bool> GetAchievement() { return Achievement; }
 };

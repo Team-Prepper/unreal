@@ -37,3 +37,9 @@ void ASurvivorGameMode::AddAchievement(const FString& NewAchievement, const bool
 
 	UE_LOG(LogTemp, Warning, TEXT("Acheivement: %s"), *NewAchievement);
 }
+
+bool ASurvivorGameMode::IsAchieved(const FString& TargetAchievement)
+{
+	if (!Achievement.Contains(TargetAchievement)) return false;
+	return Achievement[TargetAchievement];
+}

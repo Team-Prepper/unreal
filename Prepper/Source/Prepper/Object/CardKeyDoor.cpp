@@ -40,6 +40,7 @@ void ACardKeyDoor::Interaction(APlayerCharacter* Target)
 
 	if (IsClosed)
 	{
+		if (!Target->GetInventory()->TryUseItem(TargetItemCode, 1) ) return;
 		Mul_OpenDoor();
 		return;
 	}
