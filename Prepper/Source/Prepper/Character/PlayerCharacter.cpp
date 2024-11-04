@@ -3,6 +3,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
 #include "Component/AAIHelper.h"
+#include "Component/AGPTAssistant.h"
 #include "Component/Combat/CombatComponent.h"
 #include "Component/InteractionComponent.h"
 #include "Component/StatusEffectComponent.h"
@@ -83,6 +84,7 @@ APlayerCharacter::APlayerCharacter()
 
 	// AI Helper 컴포넌트 추가
 	AIHelper = CreateDefaultSubobject<UAIHelper>(TEXT("AIHelper"));
+	GPTAssistant = CreateDefaultSubobject<UGPTAssistant>(TEXT("GPTAssistant"));
 }
 
 void APlayerCharacter::Tick(float DeltaTime)

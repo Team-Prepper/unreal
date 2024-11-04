@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "IDetectable.generated.h"  // 반드시 마지막 include여야 함
+#include "IDetectable.generated.h"
 
 // 감지 가능한 타입을 정의
 UENUM(BlueprintType)

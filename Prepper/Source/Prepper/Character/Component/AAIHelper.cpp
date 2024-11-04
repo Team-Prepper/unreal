@@ -119,7 +119,7 @@ void UAIHelper::DetectNearbyItems()
 }
 void UAIHelper::OnItemEnterRange(AActor* Item, IDetectable* DetectableItem, float Distance)
 {
-	DetectedItems.Add(Item, FDetectedItemInfo(GetWorld()->GetTimeSeconds(), Distance));
+	DetectedItems.Add(Item, FDetectedItemInfo(*DetectableItem->GetDetectableDescription(), Distance, GetWorld()->GetTimeSeconds()));
     
 	// 아이템이 범위 내로 들어왔을 때의 처리
 	UE_LOG(LogTemp, Log, TEXT("New Item Detected: %s (Distance: %.2f)"), 

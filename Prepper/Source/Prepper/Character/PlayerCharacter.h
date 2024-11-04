@@ -219,5 +219,7 @@ public:
 public:
 	// AI 도우미 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
-	class UAIHelper* AIHelper;
+	class UAIHelper* AIHelper;// AI 도우미 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
+	class UGPTAssistant* GPTAssistant; 
 };
