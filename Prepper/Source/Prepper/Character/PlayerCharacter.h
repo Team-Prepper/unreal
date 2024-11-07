@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "PetCharacter.h"
 #include "Enums/CombatState.h"
 #include "Prepper/Component/CustomCameraComponent.h"
 #include "Prepper/ControlMapper/CharacterControlMapper.h"
@@ -221,5 +222,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
 	class UAIHelper* AIHelper;// AI 도우미 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
-	class UGPTAssistant* GPTAssistant; 
+	class UGPTAssistant* GPTAssistant;
+
+	// P(펫 소환)키 매핑을 위한 오버라이드 
+protected:
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+// 펫
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Pet")
+	TSubclassOf<APetCharacter> PetClass;
+
+	UPROPERTY()
+	APetCharacter* Pet;
+
+	void TogglePet();
+	void SpawnPet();
 };
