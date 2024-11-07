@@ -3,7 +3,9 @@
 
 #include "WeaponWidget.h"
 
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Prepper/Equipment/EquipmentManager.h"
 
 void UWeaponWidget::Update(const GaugeValue<int>& NewData)
 {
@@ -12,4 +14,10 @@ void UWeaponWidget::Update(const GaugeValue<int>& NewData)
 	
 	const FString CarriedText = FString::Printf(TEXT("%d"), NewData.GetMaxValue());
 	CarriedAmmoValue->SetText(FText::FromString(CarriedText));
+}
+
+void UWeaponWidget::Update(const FString& NewData)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Draw %s"), *NewData);
+	WeaponIcon->SetBrushFromTexture(EquipmentManager::GetInstance()->GetEquipmentIcon(NewData));
 }

@@ -44,7 +44,7 @@ private:
 public:
 	virtual void Attach(IObserver<GaugeValue<float>>* Observer) override;
 	virtual void Detach(IObserver<GaugeValue<float>>* Observer) override;
-	virtual void Notify() override;
+	virtual void Notify();
 protected:
 	/* 기본 변수 */
 	UPROPERTY(EditAnywhere, Category = "Player Stats")

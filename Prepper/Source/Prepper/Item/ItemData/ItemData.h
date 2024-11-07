@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemMeta.h"
 #include "GameFramework/Actor.h"
-#include "Prepper/Item/ItemMeta.h"
 #include "Prepper/Item/Item.h"
 #include "ItemData.generated.h"
 

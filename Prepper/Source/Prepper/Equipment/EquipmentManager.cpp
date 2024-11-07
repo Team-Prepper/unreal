@@ -26,8 +26,14 @@ void EquipmentManager::Initial(const TObjectPtr<UDataTable> EquipmentDataTable)
 		
 	for (int i = 0; i < Arr.Num(); ++i)
 	{
-		EquipmentData.Add(Arr[i]->EquipmentCode, Arr[i]->EquipmentClass);
+		EquipmentData.Add(Arr[i]->EquipmentCode, Arr[i]);
 	}
 	UE_LOG(LogTemp, Warning, TEXT("EquipmentDataTableLoad: %d"), Arr.Num());
+}
+
+TObjectPtr<UTexture2D> EquipmentManager::GetEquipmentIcon(const FString& EquipmentCode)
+{
+	if (!EquipmentData.Contains(EquipmentCode)) return nullptr;
+	return (*EquipmentData.Find(EquipmentCode))->EquipmentIcon;
 }
 

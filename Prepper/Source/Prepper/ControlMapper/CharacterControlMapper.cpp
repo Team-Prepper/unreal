@@ -18,7 +18,9 @@ void UCharacterControlMapper::Connect(APlayerController* TargetController)
 	if (!WeaponOverlay) return;
 
 	WeaponOverlay->AddToViewport();
-	TargetCharacter->GetCombatComponent()->Attach(WeaponOverlay);
+
+	TargetCharacter->GetCombatComponent()->Attach(static_cast<IObserver<GaugeValue<int>>*>(WeaponOverlay));
+	TargetCharacter->GetCombatComponent()->Attach(static_cast<IObserver<FString>*>(WeaponOverlay));
 
 }
 
@@ -26,7 +28,8 @@ void UCharacterControlMapper::Disconnect()
 {
 	if (!WeaponOverlay) return;
 	
-	TargetCharacter->GetCombatComponent()->Detach(WeaponOverlay);
+	TargetCharacter->GetCombatComponent()->Detach(static_cast<IObserver<GaugeValue<int>>*>(WeaponOverlay));
+	TargetCharacter->GetCombatComponent()->Detach(static_cast<IObserver<FString>*>(WeaponOverlay));
 	WeaponOverlay->RemoveFromParent();
 }
 

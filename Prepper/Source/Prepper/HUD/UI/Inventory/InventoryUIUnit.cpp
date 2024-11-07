@@ -44,8 +44,15 @@ void UInventoryUIUnit::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	TargetPlayer = Data->TargetPlayer;
 	ItemCode = Data->ItemCode;
-	
-	ItemCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), Data->ItemCount)));
+
+	if (Data->ItemCount >= 1)
+	{
+		ItemCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), Data->ItemCount)));
+	}
+	else
+	{
+		ItemCount->SetText(FText::FromString(""));
+	}
 	
 	if (!ItemManager::GetInstance()->GetItemData(Data->ItemCode, Img, Name) || Data->ItemCount < 1)
 	{
@@ -54,6 +61,7 @@ void UInventoryUIUnit::NativeOnListItemObjectSet(UObject* ListItemObject)
 		return;
 	}
 
+	ItemIcon->SetOpacity(1.f);
 	ItemIcon->SetBrushFromTexture(Img);
 }
 

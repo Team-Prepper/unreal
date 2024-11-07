@@ -38,7 +38,7 @@ private:
 public:
 	virtual void Attach(IObserver<TArray<TObjectPtr<ADeathMatchPlayerState>>>* Observer) override;
 	virtual void Detach(IObserver<TArray<TObjectPtr<ADeathMatchPlayerState>>>* Observer) override;
-	virtual void Notify() override;
+	virtual void Notify();
 private:
 	
 };

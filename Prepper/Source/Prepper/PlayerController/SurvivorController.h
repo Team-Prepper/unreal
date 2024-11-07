@@ -6,6 +6,7 @@
 #include "BasePlayerController.h"
 #include "SurvivorController.generated.h"
 
+class UQuickSlotUI;
 class UCombatComponent;
 enum class EWeaponType : uint8;
 class UItemCombinationUI;
@@ -29,6 +30,11 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	TSubclassOf<UInventoryUI> InventoryWidgetClass;
 	UPROPERTY()
 	TObjectPtr<UInventoryUI> InventoryWidget;
+	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UQuickSlotUI> QuickSlotWidgetClass;
+	UPROPERTY()
+	TObjectPtr<UQuickSlotUI> QuickSlotWidget;
 	
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UItemCombinationUI> ItemCombinationClass;

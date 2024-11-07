@@ -1,8 +1,8 @@
 ﻿#pragma once
 
-#include "ItemMeta.h"
 #include "Prepper/Item/Item.h"
 #include "ItemData/ItemCombinationData.h"
+#include "ItemData/ItemMeta.h"
 #include "Prepper/_Base/Singleton.h"
 
 class ItemManager : public Singleton<ItemManager>

@@ -42,7 +42,7 @@ void UBaseCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 
 void UBaseCombatComponent::Attach(IObserver<GaugeValue<int>>* Observer)
 {
-	Observers.insert(Observer);
+	AmmoObservers.insert(Observer);
 
 	if (!EquippedWeapon)
 	{
@@ -54,22 +54,47 @@ void UBaseCombatComponent::Attach(IObserver<GaugeValue<int>>* Observer)
 
 void UBaseCombatComponent::Detach(IObserver<GaugeValue<int>>* Observer)
 {
-	Observers.erase(Observer);
+	AmmoObservers.erase(Observer);
 }
 
-void UBaseCombatComponent::Notify()
+void UBaseCombatComponent::NotifyAmmo()
 {
-	int WeaponAmmo = -1;
+	const FGaugeInt Value = GetAmmoShow();
+	std::ranges::for_each(AmmoObservers, [&](IObserver<GaugeValue<int>>* Observer) {
+		Observer->Update(Value);
+	});
+}
+
+void UBaseCombatComponent::Attach(IObserver<FString>* Observer)
+{
+	WeaponObservers.insert(Observer);
+
+	if (!EquippedWeapon)
+	{
+		Observer->Update(FString(""));
+		return;
+	}
+	Observer->Update(EquippedWeapon->GetCode());
+}
+
+void UBaseCombatComponent::Detach(IObserver<FString>* Observer)
+{
+	WeaponObservers.erase(Observer);
+}
+
+void UBaseCombatComponent::NotifyWeapon()
+{
+	FString Value = FString();
 	
 	if (EquippedWeapon)
 	{
-		WeaponAmmo = EquippedWeapon->GetLeftAmmo();
+		Value = EquippedWeapon->GetCode();
 	}
-
-	const FGaugeInt Value = GetAmmoShow();
-	std::ranges::for_each(Observers, [&](IObserver<GaugeValue<int>>* Observer) {
+	
+	std::ranges::for_each(WeaponObservers, [&](IObserver<FString>* Observer) {
 		Observer->Update(Value);
 	});
+	
 }
 // Equipped Weapon
 void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
@@ -87,7 +112,8 @@ void UBaseCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	EquippedWeapon->SetWeaponHandler(this);
 	
 	ReloadEmptyWeapon();
-	Notify();
+	NotifyAmmo();
+	NotifyWeapon();
 }
 
 void UBaseCombatComponent::EquipWeaponSet(AWeaponActor* WeaponToEquip)
@@ -106,6 +132,8 @@ void UBaseCombatComponent::DropEquippedWeapon()
 
 void UBaseCombatComponent::OnRep_EquippedWeapon()
 {
+	NotifyWeapon();
+	
 	if (!EquippedWeapon) return;
 	if (!Character) return;
 

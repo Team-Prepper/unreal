@@ -107,6 +107,7 @@ void UCombatComponent::EquipWeapon(AWeaponActor* WeaponToEquip)
 	else
 	{
 		EquipPrimaryWeapon(WeaponToEquip);
+		NotifyWeapon();
 	}
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -163,7 +164,8 @@ void UCombatComponent::SetWeaponType()
 void UCombatComponent::OnRep_EquippedWeapon()
 {
 	Super::OnRep_EquippedWeapon();
-	Notify();
+	NotifyAmmo();
+	NotifyWeapon();
 }
 
 void UCombatComponent::OnRep_SecondaryWeapon()
@@ -215,7 +217,8 @@ void UCombatComponent::FinishSwapAttachWeapons()
 	UpdateCarriedAmmo();
 	ReloadEmptyWeapon();
 	
-	Notify();
+	NotifyAmmo();
+	NotifyWeapon();
 }
 
 
@@ -224,7 +227,7 @@ void UCombatComponent::Fire()
 	if (!CanFire()) return;
 	
 	Super::Fire();
-	Notify();
+	NotifyAmmo();
 	
 	CrosshairShootingFactor = .75f;
 }
@@ -275,7 +278,7 @@ void UCombatComponent::FinishReload()
 	
 	EquippedRangeWeapon->AddAmmo(ReloadAmount);
 	
-	Notify();
+	NotifyAmmo();
 	ActionEnd();
 	
 }
@@ -461,7 +464,7 @@ void UCombatComponent::PickupAmmo(EWeaponType WeaponType, int32 AmmoAmount)
 
 void UCombatComponent::OnRep_CarriedAmmo()
 {
-	Notify();
+	NotifyAmmo();
 }
 
 void UCombatComponent::UpdateCarriedAmmo()
@@ -476,7 +479,7 @@ void UCombatComponent::UpdateCarriedAmmo()
 		CarriedAmmo = -1;
 	}
 	
-	Notify();
+	NotifyAmmo();
 	ConvertMapToArray();
 }
 

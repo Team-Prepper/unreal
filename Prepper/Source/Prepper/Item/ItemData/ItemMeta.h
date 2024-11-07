@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Object/InventoryInteractableItem.h"
+#include "Prepper/Item/Object/InventoryInteractableItem.h"
 #include "ItemMeta.generated.h"
 
 USTRUCT(BlueprintType)

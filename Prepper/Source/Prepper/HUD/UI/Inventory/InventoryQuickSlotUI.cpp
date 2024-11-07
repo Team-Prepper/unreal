@@ -46,13 +46,21 @@ void UInventoryQuickSlotUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	TargetPlayer = Data->TargetPlayer;
 	ItemCode = Data->ItemCode;
 	Idx = Data->Idx;
+
+	if (Data->ItemCount >= 1)
+	{
+		ItemCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), Data->ItemCount)));
+	}
+	else
+	{
+		DataExist = false;
+		ItemCount->SetText(FText::FromString(""));
+	}
 	
 	if (!ItemManager::GetInstance()->GetItemData(Data->ItemCode, Img, Name) || Data->ItemCount < 1)
 	{
-		DataExist = false;
 		ItemIcon->SetBrushFromTexture(nullptr);
 		ItemIcon->SetOpacity(0.f);
-		ItemCount->SetText(FText::FromString(FString("")));
 		return;
 	}
 
@@ -60,7 +68,6 @@ void UInventoryQuickSlotUI::NativeOnListItemObjectSet(UObject* ListItemObject)
 	
 	ItemIcon->SetOpacity(1.f);
 	ItemIcon->SetBrushFromTexture(Img);
-	ItemCount->SetText(FText::FromString(FString::Printf(TEXT("%d"), Data->ItemCount)));
 }
 
 void UInventoryQuickSlotUI::QuickSlotRemoveButtonAction()
@@ -78,6 +85,7 @@ void UInventoryQuickSlotUI::CancelButtonAction()
 
 void UInventoryQuickSlotUI::MenuOpen()
 {
+	if (TargetPlayer == nullptr) return;
 	if (!DataExist) return;
 	MenuPanel->SetVisibility(ESlateVisibility::Visible);
 }

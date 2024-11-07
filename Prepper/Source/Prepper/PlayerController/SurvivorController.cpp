@@ -15,6 +15,7 @@
 #include "Prepper/HUD/UI/CharacterOverlay/StatusWidget.h"
 #include "Prepper/HUD/UI/Inventory/InventoryUI.h"
 #include "Prepper/HUD/UI/ItemCombination/ItemCombinationUI.h"
+#include "Prepper/HUD/UI/Survivor/QuickSlotWidget.h"
 #include "Prepper/Weapon/WeaponActor.h"
 
 void ASurvivorController::BeginWidget()
@@ -25,6 +26,13 @@ void ASurvivorController::BeginWidget()
 	{
 		StatusWidget = CreateWidget<UStatusWidget>(this, StatusWidgetClass);
 		StatusWidget->AddToViewport();
+	}
+
+	
+	if (QuickSlotWidgetClass && QuickSlotWidget == nullptr)
+	{
+		QuickSlotWidget = CreateWidget<UQuickSlotUI>(this, QuickSlotWidgetClass);
+		QuickSlotWidget->AddToViewport();
 	}
 	
 	if (InventoryWidgetClass && InventoryWidget == nullptr)
@@ -56,6 +64,7 @@ void ASurvivorController::LocalPossessNewPlayerCharacter()
 	UE_LOG(LogTemp, Warning, TEXT("Attach UI"));
 	
 	PlayerCharacter->GetStatusEffectComponent()->Attach(StatusWidget);
+	PlayerCharacter->GetInventory()->Attach(QuickSlotWidget);
 	PlayerCharacter->GetStatusEffectComponent()->StatusTimerStart();
 	InventoryWidget->SetTargetPlayer(PlayerCharacter);
 }

@@ -34,7 +34,7 @@ private:
 public:
 	virtual void Attach(IObserver<Status>* Observer) override;
 	virtual void Detach(IObserver<Status>* Observer) override;
-	virtual void Notify() override;
+	virtual void Notify();
 	
 private:
 	UPROPERTY()

@@ -15,7 +15,7 @@
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PREPPER_API UBaseCombatComponent : public UCharacterComponent,
-									 public IWeaponHandler, public ISubject<GaugeValue<int>>
+									 public IWeaponHandler, public ISubject<GaugeValue<int>>, public ISubject<FString>
 {
 	GENERATED_BODY()
 	friend class ABaseCharacter;
@@ -29,13 +29,17 @@ public:
 
 // Observer Pattern
 private:
-	std::pmr::set<IObserver<GaugeValue<int>>*> Observers;
+	std::pmr::set<IObserver<GaugeValue<int>>*> AmmoObservers;
+	std::pmr::set<IObserver<FString>*> WeaponObservers;
 	virtual FGaugeInt GetAmmoShow() { return FGaugeInt(0, 0); }
 	
 public:
 	virtual void Attach(IObserver<GaugeValue<int>>* Observer) override;
 	virtual void Detach(IObserver<GaugeValue<int>>* Observer) override;
-	virtual void Notify() override;
+	virtual void Attach(IObserver<FString>* Observer) override;
+	virtual void Detach(IObserver<FString>* Observer) override;
+	virtual void NotifyAmmo();
+	virtual void NotifyWeapon();
 	
 // Equip Weapon
 protected:

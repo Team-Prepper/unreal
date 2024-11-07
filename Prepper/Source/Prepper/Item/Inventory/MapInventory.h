@@ -38,7 +38,7 @@ public:
 	void SetOwner(IPlayerAbility* NewOwner);
 	virtual void Attach(IObserver<IInventory*>* Observer) override;
 	virtual void Detach(IObserver<IInventory*>* Observer) override;
-	virtual void Notify() override;
+	virtual void Notify();
 	void ChangingInventory(TObjectPtr<UMapInventory> NewInventory);
 	
 	UMapInventory();
