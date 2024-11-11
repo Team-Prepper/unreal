@@ -24,7 +24,7 @@ bool UMapInventory::TryAddMapExist(TMap<FString, uint8>& Target, const FString& 
 	const uint8 ItemCount = *Target.Find(ItemCode) + Count;
 	Target.Add(ItemCode, ItemCount);
 		
-	UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + 1"), *ItemCode);
+	UE_LOG(LogTemp, Warning, TEXT("Plus : Add Item %s + %d"), *ItemCode, Count);
 	ConvertMapToArray();
 	Notify();
 	return true;
@@ -37,6 +37,8 @@ bool UMapInventory::TryUseMapExist(TMap<FString, uint8>& Target, const FString& 
 	const int32 ItemCount = *Target.Find(ItemCode) - Count;
 
 	if (ItemCount < 0) return false;
+	
+	UE_LOG(LogTemp, Warning, TEXT("Plus : Use Item %s - %d, %d"), *ItemCode, Count, ItemCount);
 
 	// 아이템 사용 후의 개수가 0인 경우 삭제
 	if (ItemCount == 0)
@@ -74,7 +76,7 @@ bool UMapInventory::TryAddItem(const FString& ItemCode, const int Count)
 	
 	// 새로운 아이템을 추가하고 true 반환
 	ItemUnits.Add(ItemCode, Count);
-	UE_LOG(LogTemp, Warning, TEXT("Init : Add Item %s"), *ItemCode);
+	UE_LOG(LogTemp, Warning, TEXT("Init : Add Item %s, %d"), *ItemCode, Count);
 
 	ConvertMapToArray();
 	Notify();

@@ -80,5 +80,5 @@ public:
 	UFUNCTION()
 	void CntDownAction();
 
-	void CntSet();
+	void CntSet(IInventory* Inventory);
 };

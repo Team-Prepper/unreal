@@ -51,13 +51,13 @@ void UItemCombinationUI::SetVisibility(ESlateVisibility InVisibility)
 
 void UItemCombinationUI::Update(IInventory* const& newData)
 {
-	CntSet();
+	CntSet(newData);
 }
 
 void UItemCombinationUI::SetTargetPlayer(TObjectPtr<APlayerCharacter> Target)
 {
 	TargetPlayer = Target;
-	Cnt = 1;
+	Cnt = 0;
 }
 
 void UItemCombinationUI::SetCombinationTarget(const FString& CombinationTarget)
@@ -82,7 +82,7 @@ void UItemCombinationUI::SetCombinationTarget(const FString& CombinationTarget)
 	
 	SourceIcon2->SetBrushFromTexture(Img);
 
-	CntSet();
+	Update(TargetPlayer->GetInventory());
 	
 }
  
@@ -97,37 +97,55 @@ void UItemCombinationUI::SetCombinationTarget(const FString& CombinationTarget)
 
 void UItemCombinationUI::Combination()
 {
-	bool b = TargetPlayer->GetInventory()->TryUseItem(SourceItem1, Cnt1 * Cnt)
-			&& TargetPlayer->GetInventory()->TryUseItem(SourceItem2, Cnt2 * Cnt);
+	if (Cnt < 1) return;
+	
+	bool b = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem1) >= Cnt1 * Cnt
+			&& TargetPlayer->GetInventory()->TryGetItemCount(SourceItem2) >= Cnt2 * Cnt;
 
 	if (!b) return;
+
+	TargetPlayer->GetInventory()->TryUseItem(SourceItem1, Cnt1 * Cnt);
+	TargetPlayer->GetInventory()->TryUseItem(SourceItem2, Cnt2 * Cnt);
 	
 	TargetPlayer->GetInventory()->TryAddItem(TargetItem, Cnt);
+	
+	int AMax = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem1) / Cnt1;
+	int BMax = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem2) / Cnt2;
+	
+	if (AMax < BMax) BMax = AMax;
+	if (BMax < Cnt) Cnt = BMax;
+
+	CntSet(TargetPlayer->GetInventory());
 }
 
 void UItemCombinationUI::Close()
 {
 	SetVisibility(ESlateVisibility::Hidden);
-	SelectWidget->Close();
+	if (SelectWidget != nullptr)
+	{
+		SelectWidget->Close();
+	}
 }
 
 void UItemCombinationUI::CntUpAction()
 {
+	bool b = TargetPlayer->GetInventory()->TryGetItemCount(SourceItem1) >= Cnt1 * (1 + Cnt)
+			&& TargetPlayer->GetInventory()->TryGetItemCount(SourceItem2) >= Cnt2 * (1 + Cnt);
+
+	if (!b) return;
 	Cnt++;
-	CntSet();
+	CntSet(TargetPlayer->GetInventory());
 }
 
 void UItemCombinationUI::CntDownAction()
 {
-	if (Cnt == 0) return;
+	if (Cnt < 1) return;
 	Cnt--;
-	CntSet();
+	CntSet(TargetPlayer->GetInventory());
 }
 
-void UItemCombinationUI::CntSet()
+void UItemCombinationUI::CntSet(IInventory* Inventory)
 {
-	IInventory* Inventory = TargetPlayer->GetInventory();
-
 	ResultCnt->SetText(FText::FromString(FString::Printf(TEXT("%d"), Cnt)));
 	
 	SourceCnt1->SetText(FText::FromString(FString::Printf(TEXT("%d / %d"),
