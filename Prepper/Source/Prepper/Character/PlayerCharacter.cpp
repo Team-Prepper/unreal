@@ -2,6 +2,9 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InputActionValue.h"
+#include "PetCharacter.h"
+#include "Component/AAIHelper.h"
+#include "Component/AGPTAssistant.h"
 #include "Component/Combat/CombatComponent.h"
 #include "Component/InteractionComponent.h"
 #include "Component/StatusEffectComponent.h"
@@ -79,6 +82,8 @@ APlayerCharacter::APlayerCharacter()
 	bBeforeSeat = false;
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
+
+	
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -604,4 +609,50 @@ ECombatState APlayerCharacter::GetCombatState() const
 {
 	if(CombatComp == nullptr) return ECombatState::ECS_MAX;
 	return CombatComp->CombatState;
+}
+
+// 펫 소환을 위한 P키 매핑
+void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	// P키를 눌렀을 때 TogglePet 함수 호출
+	PlayerInputComponent->BindAction("TogglePet", IE_Pressed, this, &APlayerCharacter::TogglePet);
+}
+// 초기 펫 스폰
+void APlayerCharacter::SpawnPet()
+{
+	if (!PetClass)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PetClass is not set in the Blueprint!"));
+		return;
+	}
+
+	FVector SpawnLocation = GetActorLocation() + GetActorForwardVector() * 100.0f;
+	FRotator SpawnRotation = GetActorRotation();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+
+	Pet = GetWorld()->SpawnActor<APetCharacter>(PetClass, SpawnLocation, SpawnRotation, SpawnParams);
+    
+	if (Pet)
+	{
+		Pet->SetFollowTarget(this);
+		Pet->SetActive(true); // 처음에 활성화 상태로 시작
+	}
+}
+// 펫 P키 누를때마다 동작
+void APlayerCharacter::TogglePet()
+{
+	UE_LOG(LogTemp, Log, TEXT("토글키를 눌렀습니다."));
+	if (Pet)
+	{
+		bool bCurrentState = Pet->IsActive();
+		Pet->SetActive(!bCurrentState);
+	}
+	else
+	{
+		SpawnPet();
+	}
 }

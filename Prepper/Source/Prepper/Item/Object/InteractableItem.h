@@ -2,11 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Prepper/Interfaces/IDetectable.h"
 #include "Prepper/Object/InteractableActor.h"
 #include "InteractableItem.generated.h"
 
 UCLASS()
-class PREPPER_API AInteractableItem : public AInteractableActor
+class PREPPER_API AInteractableItem : public AInteractableActor, public IDetectable
 {
 	GENERATED_BODY()
 	
@@ -15,6 +16,15 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void Interaction(APlayerCharacter* Target) override;
 	virtual void Destroyed() override;
+
+	virtual FString GetDetectableDescription() const override
+	{
+		return ItemCode;
+	}
+	virtual EDetectableType GetDetectableType() const override 
+	{ 
+		return EDetectableType::Item; 
+	}
 protected:
 	virtual void BeginPlay() override;
 	
