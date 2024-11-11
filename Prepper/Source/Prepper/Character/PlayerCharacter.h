@@ -217,12 +217,7 @@ public:
 	FORCEINLINE bool GetDisableGamePlay() const { return bDisableGamePlay; }
 
 
-public:
-	// AI 도우미 컴포넌트
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
-	class UAIHelper* AIHelper;// AI 도우미 컴포넌트
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
-	class UGPTAssistant* GPTAssistant;
+
 
 	// P(펫 소환)키 매핑을 위한 오버라이드 
 protected:

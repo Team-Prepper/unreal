@@ -83,9 +83,7 @@ APlayerCharacter::APlayerCharacter()
 	// 노이즈 생성 컴포넌트 추가
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("PawnNoiseEmitter"));
 
-	// AI Helper 컴포넌트 추가
-	AIHelper = CreateDefaultSubobject<UAIHelper>(TEXT("AIHelper"));
-	GPTAssistant = CreateDefaultSubobject<UGPTAssistant>(TEXT("GPTAssistant"));
+	
 }
 
 void APlayerCharacter::Tick(float DeltaTime)
@@ -118,7 +116,6 @@ void APlayerCharacter::Destroyed()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnPet(); // 펫 소환
 }
 
 // BaseCharacter
@@ -642,10 +639,10 @@ void APlayerCharacter::SpawnPet()
 	if (Pet)
 	{
 		Pet->SetFollowTarget(this);
-		Pet->SetActive(false); // 처음에는 비활성화 상태로 시작
+		Pet->SetActive(true); // 처음에 활성화 상태로 시작
 	}
 }
-// P키 누를때마다 동작
+// 펫 P키 누를때마다 동작
 void APlayerCharacter::TogglePet()
 {
 	UE_LOG(LogTemp, Log, TEXT("토글키를 눌렀습니다."));
@@ -653,5 +650,9 @@ void APlayerCharacter::TogglePet()
 	{
 		bool bCurrentState = Pet->IsActive();
 		Pet->SetActive(!bCurrentState);
+	}
+	else
+	{
+		SpawnPet();
 	}
 }

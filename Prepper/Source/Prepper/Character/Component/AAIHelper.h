@@ -44,7 +44,7 @@ private:
 	void DetectNearbyItems();
     
 	UPROPERTY()
-	APlayerCharacter* OwningPlayer;
+	ACharacter* OwningCharacter;
 
 	
 

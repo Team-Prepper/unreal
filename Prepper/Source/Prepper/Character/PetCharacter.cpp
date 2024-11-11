@@ -1,4 +1,7 @@
 #include "PetCharacter.h"
+#include "AIController.h"
+#include "Component/AAIHelper.h"
+#include "Component/AGPTAssistant.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APetCharacter::APetCharacter()
@@ -6,14 +9,25 @@ APetCharacter::APetCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 	bIsActive = false;
 
-	// Set default movement properties
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->MaxWalkSpeed = MovementSpeed;
+	// Movement 설정 확인
+	UCharacterMovementComponent* MovementComp = GetCharacterMovement();
+	if (MovementComp)
+	{
+		MovementComp->bOrientRotationToMovement = true;
+		MovementComp->MaxWalkSpeed = MovementSpeed;
+		MovementComp->bConstrainToPlane = true;
+		MovementComp->bSnapToPlaneAtStart = true;
+	}
+
+	// AI Helper 컴포넌트 추가
+	AIHelper = CreateDefaultSubobject<UAIHelper>(TEXT("AIHelper"));
+	GPTAssistant = CreateDefaultSubobject<UGPTAssistant>(TEXT("GPTAssistant"));
 }
 
 void APetCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	AIController = Cast<AAIController>(GetController());
 }
 
 void APetCharacter::Tick(float DeltaTime)
@@ -25,14 +39,16 @@ void APetCharacter::Tick(float DeltaTime)
 
 	FVector TargetLocation = FollowTarget->GetActorLocation();
 	FVector CurrentLocation = GetActorLocation();
-	FVector DirectionToTarget = (TargetLocation - CurrentLocation).GetSafeNormal();
-    
 	float DistanceToTarget = FVector::Distance(CurrentLocation, TargetLocation);
 
-	UE_LOG(LogTemp, Log, TEXT("거리: %f"), DistanceToTarget);
 	if (DistanceToTarget > FollowDistance)
 	{
-		FVector DesiredLocation = TargetLocation - (DirectionToTarget * FollowDistance);
-		AddMovementInput(DesiredLocation);
+		// PlayerLocation 방향으로 Pet 이동
+		FVector Direction = (TargetLocation - CurrentLocation).GetSafeNormal();
+		FVector NewLocation = CurrentLocation + (Direction * 200.0f * DeltaTime); // 속도 조절
+
+		// 새 위치를 설정
+		SetActorLocation(NewLocation);
 	}
 }
+

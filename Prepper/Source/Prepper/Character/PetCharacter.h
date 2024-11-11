@@ -18,10 +18,20 @@ public:
 	void SetActive(bool bNewActive) { bIsActive = bNewActive; }
 	bool IsActive() const { return bIsActive; }
 
+public:
+	// AI 도우미 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
+	class UAIHelper* AIHelper;// AI 도우미 컴포넌트
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
+	class UGPTAssistant* GPTAssistant;
+
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY()
+	class AAIController* AIController;
+	
 	UPROPERTY()
 	AActor* FollowTarget;
 

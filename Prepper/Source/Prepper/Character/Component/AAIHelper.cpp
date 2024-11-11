@@ -3,7 +3,7 @@
 #include "Prepper/Interfaces/IDetectable.h"
 
 UAIHelper::UAIHelper()
-	: OwningPlayer(nullptr)
+	: OwningCharacter(nullptr)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -13,7 +13,7 @@ void UAIHelper::BeginPlay()
 	Super::BeginPlay();
     
 	// 소유 플레이어 캐릭터 가져오기
-	OwningPlayer = Cast<APlayerCharacter>(GetOwner());
+	OwningCharacter = Cast<ACharacter>(GetOwner());
 
 	// 타이머 설정
 	if (DetectionInterval > 0.0f)
@@ -51,19 +51,19 @@ void UAIHelper::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UAIHelper::DetectNearbyItems()
 {
-	if (!OwningPlayer) return;
+	if (!OwningCharacter) return;
 	// 현재 프레임에서 감지된 아이템들을 저장할 세트
 	TSet<AActor*> CurrentlyDetectedItems;
 
 	TArray<FOverlapResult> OverlapResults;
 	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(OwningPlayer);
+	QueryParams.AddIgnoredActor(OwningCharacter);
 
 	FCollisionShape CollisionShape = FCollisionShape::MakeSphere(DetectionRadius);
     
 	bool bHasOverlap = GetWorld()->OverlapMultiByChannel(
 		OverlapResults,
-		OwningPlayer->GetActorLocation(),
+		OwningCharacter->GetActorLocation(),
 		FQuat::Identity,
 		ECollisionChannel::ECC_Visibility,
 		CollisionShape,
@@ -83,7 +83,7 @@ void UAIHelper::DetectNearbyItems()
 					CurrentlyDetectedItems.Add(DetectedActor);
 					// 플레이어와 아이템 사이의 거리 계산
 					float Distance = FVector::Distance(
-						OwningPlayer->GetActorLocation(),
+						OwningCharacter->GetActorLocation(),
 						DetectedActor->GetActorLocation()
 					);
 
