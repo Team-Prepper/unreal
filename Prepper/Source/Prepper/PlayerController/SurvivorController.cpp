@@ -20,8 +20,6 @@
 
 void ASurvivorController::BeginWidget()
 {
-	Super::BeginWidget();
-	
 	if (StatusWidgetClass && StatusWidget == nullptr)
 	{
 		StatusWidget = CreateWidget<UStatusWidget>(this, StatusWidgetClass);
@@ -41,6 +39,9 @@ void ASurvivorController::BeginWidget()
 		InventoryWidget->SetVisibility(ESlateVisibility::Hidden);
 		InventoryWidget->AddToViewport();
 	}
+	
+	Super::BeginWidget();
+	
 }
 
 void ASurvivorController::ServerPossessNewPlayerCharacter()

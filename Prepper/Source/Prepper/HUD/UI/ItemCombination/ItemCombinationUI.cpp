@@ -88,11 +88,10 @@ void UItemCombinationUI::SetCombinationTarget(const FString& CombinationTarget)
  
  void UItemCombinationUI::OpenSelectWidget()
  {
- 	TObjectPtr<UItemCombinationSelectUI> Tmp =
- 		CreateWidget<UItemCombinationSelectUI>(this, SelectWidget);
+	SelectWidget = CreateWidget<UItemCombinationSelectUI>(this, SelectWidgetClass);
  
- 	Tmp->AddToViewport();
- 	Tmp->SetTarget(this);
+ 	SelectWidget->AddToViewport();
+ 	SelectWidget->SetTarget(this);
  
  }
 
@@ -109,7 +108,7 @@ void UItemCombinationUI::Combination()
 void UItemCombinationUI::Close()
 {
 	SetVisibility(ESlateVisibility::Hidden);
-	
+	SelectWidget->Close();
 }
 
 void UItemCombinationUI::CntUpAction()

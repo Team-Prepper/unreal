@@ -28,14 +28,7 @@ void ADeathMatchPlayerController::BeginPlay()
 
 void ADeathMatchPlayerController::BeginWidget()
 {
-	Super::BeginWidget();
 	
-	if (ScoreBoardClass && ScoreBoard == nullptr)
-	{
-		ScoreBoard = CreateWidget<UScoreBoard>(this, ScoreBoardClass);
-		ScoreBoard->AddToViewport();
-		ScoreBoard->SetVisibility(ESlateVisibility::Hidden);
-	}
 	
 	if (DeathMatchWidgetClass && DeathMatchWidget == nullptr)
 	{
@@ -47,6 +40,13 @@ void ADeathMatchPlayerController::BeginWidget()
 	{
 		AnnounceWidget = CreateWidget<UAnnouncement>(this, AnnounceWidgetClass);
 		AnnounceWidget->AddToViewport();
+	}
+	Super::BeginWidget();
+	if (ScoreBoardClass && ScoreBoard == nullptr)
+	{
+		ScoreBoard = CreateWidget<UScoreBoard>(this, ScoreBoardClass);
+		ScoreBoard->AddToViewport();
+		ScoreBoard->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

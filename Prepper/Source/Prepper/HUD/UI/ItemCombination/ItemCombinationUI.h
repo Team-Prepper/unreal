@@ -47,7 +47,9 @@ private:
 	TObjectPtr<UTextBlock> SourceCnt2;
 	
 	UPROPERTY(EditAnywhere, Category="Select")
-	TSubclassOf<UItemCombinationSelectUI> SelectWidget;
+	TSubclassOf<UItemCombinationSelectUI> SelectWidgetClass;
+	UPROPERTY()
+ 	TObjectPtr<UItemCombinationSelectUI> SelectWidget;
 
 	UPROPERTY()
 	TObjectPtr<APlayerCharacter> TargetPlayer;
