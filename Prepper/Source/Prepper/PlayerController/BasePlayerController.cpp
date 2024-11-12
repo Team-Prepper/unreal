@@ -105,11 +105,8 @@ void ABasePlayerController::OnPossess()
 
 	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
 	
-	if (NewPlayer != nullptr && NewPlayer != PlayerCharacter)
-	{
-		PlayerCharacter = NewPlayer;
-		LocalPossessNewPlayerCharacter();
-	}
+	PlayerCharacter = NewPlayer;
+	LocalPossessNewPlayerCharacter();
 }
 
 void ABasePlayerController::PlayerTick(float DeltaTime)
