@@ -24,6 +24,10 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastBoxOpen();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDestroyBox();
+
+	FTimerHandle DestructionTimerHandle;
 protected:
 	virtual void BeginPlay() override;
 
@@ -31,6 +35,6 @@ protected:
 	class UStaticMesh* OpenBoxMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawning")
-	TSubclassOf<AActor> SpawnedActorClass;
+	TArray<TSubclassOf<AActor>> SpawnedActorClasses;
 	
 };

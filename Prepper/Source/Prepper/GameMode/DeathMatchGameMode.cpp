@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "DeathMatchGameMode.h"
 
 #include "GameFramework/Character.h"
@@ -21,7 +18,6 @@ ADeathMatchGameMode::ADeathMatchGameMode()
 	bDelayedStart = true;
 }
 
-
 void ADeathMatchGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -33,7 +29,7 @@ void ADeathMatchGameMode::OnMatchStateSet()
 {
 	Super::OnMatchStateSet();
 
-	if(!GetWorld()->GetPlayerControllerIterator()) return;
+	if (!GetWorld()->GetPlayerControllerIterator()) return;
 	
 	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
 	{
@@ -49,27 +45,30 @@ void ADeathMatchGameMode::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	// 한 번만 호출하여 현재 시간을 가져옵니다.
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+
 	if (MatchState == MatchState::WaitingToStart)
 	{
-		CountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		CountdownTime = WarmupTime - CurrentTime + LevelStartingTime;
 		if (CountdownTime <= 0.f)
 		{
 			StartMatch();
 		}
 		return;
 	}
-	if(MatchState == MatchState::InProgress)
+	if (MatchState == MatchState::InProgress)
 	{
-		CountdownTime = WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-		if(CountdownTime <= 0.f)
+		CountdownTime = WarmupTime + MatchTime - CurrentTime + LevelStartingTime;
+		if (CountdownTime <= 0.f)
 		{
 			SetMatchState(MatchState::Cooldown);
 		}
 		return;
 	}
-	
-	CountdownTime = CooldownTime + WarmupTime + MatchTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
-	if(CountdownTime <= 0.f)
+
+	CountdownTime = CooldownTime + WarmupTime + MatchTime - CurrentTime + LevelStartingTime;
+	if (CountdownTime <= 0.f)
 	{
 		RestartGame();
 	}
@@ -80,16 +79,16 @@ void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 {
 	/* for Score */
 	ADeathMatchPlayerState* AttackPlayerState = AttackerController ? Cast<ADeathMatchPlayerState>(AttackerController->PlayerState) : nullptr;
-	ADeathMatchPlayerState* VictimPlayerState = VictimController ? Cast<ADeathMatchPlayerState>(VictimController -> PlayerState) : nullptr;
+	ADeathMatchPlayerState* VictimPlayerState = VictimController ? Cast<ADeathMatchPlayerState>(VictimController->PlayerState) : nullptr;
 
 	ADeathMatchGameState* DeathMatchGameState = GetGameState<ADeathMatchGameState>();
 	
-	if(AttackPlayerState &&  AttackPlayerState != VictimPlayerState && DeathMatchGameState)
+	if (AttackPlayerState && AttackPlayerState != VictimPlayerState && DeathMatchGameState)
 	{
 		AttackPlayerState->AddToScore(1.0f);
 		DeathMatchGameState->UpdateTopScore(AttackPlayerState);
 	}
-	if(VictimPlayerState)
+	if (VictimPlayerState)
 	{
 		VictimPlayerState->AddToDefeats(1);
 	}
@@ -101,7 +100,6 @@ void ADeathMatchGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter,
 		TestTimeHandle, this, &ADeathMatchGameMode::Respawn, RespawnTime);
 	
 	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
-
 }
 
 void ADeathMatchGameMode::Respawn()
@@ -128,7 +126,7 @@ void ADeathMatchGameMode::RequestRespawn(ACharacter* ElimmedCharacter, AControll
 	const int32 Selection = FMath::RandRange(0, PlayerStarts.Num() - 1);
 	RestartPlayerAtPlayerStart(ElimmedController, PlayerStarts[Selection]);
 	
-	if(ABasePlayerController* ElimmedPlayerController = Cast<ABasePlayerController>(ElimmedController))
+	if (ABasePlayerController* ElimmedPlayerController = Cast<ABasePlayerController>(ElimmedController))
 	{
 		//ElimmedPlayerController->SetPossessPawn();
 	}

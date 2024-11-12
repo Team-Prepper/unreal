@@ -48,7 +48,7 @@ void AInteractableBox::Interaction(APlayerCharacter* Target)
 	
 	MulticastBoxOpen();
 
-	if (SpawnedActorClass)
+	if (SpawnedActorClasses.Num() > 0)
 	{
 		FActorSpawnParameters SpawnParams;
 		FVector SpawnLocation = GetActorLocation() + FVector(0, 0, 50);
@@ -56,7 +56,7 @@ void AInteractableBox::Interaction(APlayerCharacter* Target)
 		SpawnRotation.Yaw += 90.0f;
     
 		// 블루프린트를 동적으로 생성
-		GetWorld()->SpawnActor<AActor>(SpawnedActorClass, SpawnLocation, SpawnRotation, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(SpawnedActorClasses[FMath::RandRange(0, SpawnedActorClasses.Num() - 1)], SpawnLocation, SpawnRotation, SpawnParams);
 	}
 }
 
@@ -67,6 +67,11 @@ void AInteractableBox::MulticastBoxOpen_Implementation()
 	BoxMesh->SetStaticMesh(OpenBoxMesh);
 	BoxMesh->SetRenderCustomDepth(false);
 	ToggleTrigger(false);
-	
+	// Set a timer to destroy the box after 5 seconds
+	GetWorld()->GetTimerManager().SetTimer(DestructionTimerHandle, this, &AInteractableBox::MulticastDestroyBox, 5.0f, false);
 }
 
+void AInteractableBox::MulticastDestroyBox_Implementation()
+{
+	Destroy();
+}
