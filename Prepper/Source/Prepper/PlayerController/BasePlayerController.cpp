@@ -52,7 +52,6 @@ void ABasePlayerController::BeginWidget()
 	{
 		Setting = CreateWidget<UUserWidget>(this, SettingClass);
 		Setting->SetVisibility(ESlateVisibility::Hidden);
-		Setting->AddToViewport();
 	}
 	
 	if (DeathWidgetClass)
@@ -349,12 +348,14 @@ void ABasePlayerController::OpenSettingWidget()
 	{
 		SetInputMode(FInputModeGameAndUI());
 		SetShowMouseCursor(true);
+		Setting->AddToViewport();
 		Setting->SetVisibility(ESlateVisibility::Visible);
 		return;
 	}
 	SetInputMode(FInputModeGameOnly());
 	SetShowMouseCursor(false);
 	Setting->SetVisibility(ESlateVisibility::Hidden);
+	Setting->RemoveFromParent();
 }
 
 void ABasePlayerController::CloseSettingWidget()
