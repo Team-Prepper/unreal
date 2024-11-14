@@ -47,6 +47,20 @@ void ABasePlayerController::BeginWidget()
 			Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
 		}
 	}
+	
+	if (SettingClass)
+	{
+		Setting = CreateWidget<UUserWidget>(this, SettingClass);
+		Setting->SetVisibility(ESlateVisibility::Hidden);
+		Setting->AddToViewport();
+	}
+	
+	if (DeathWidgetClass)
+	{
+		DeathWidget = CreateWidget<UUserWidget>(this, SettingClass);
+		DeathWidget->SetVisibility(ESlateVisibility::Hidden);
+		DeathWidget->AddToViewport();
+	}
 }
 
 void ABasePlayerController::ServerPossessNewPlayerCharacter()
