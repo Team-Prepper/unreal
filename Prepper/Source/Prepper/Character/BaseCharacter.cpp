@@ -63,6 +63,7 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::Attach(IObserver<GaugeValue<float>>* Observer)
 {
 	Observers.Add(Observer);;
+	UE_LOG(LogTemp, Warning, TEXT("CurrentHealth: %f"), CurrentHealth);
 	Observer->Update(FGaugeFloat(CurrentHealth, MaxHealth));
 }
 
@@ -79,7 +80,6 @@ void ABaseCharacter::Notify()
 		Observer->Update(Value);
 	}
 }
-
 
 // Character
 void ABaseCharacter::AttachActorAtSocket(const FName& SocketName, AActor* TargetActor)
@@ -178,7 +178,6 @@ void ABaseCharacter::MulticastElim_Implementation()
 {
 	MulticastElimAction();
 	
-	UE_LOG(LogTemp, Warning, TEXT("TMP: MulticastElim by BaseCharacter"));
 	for (int i = 0; i < CharacterComponents.Num(); i++)
 	{
 		CharacterComponents[i]->TargetElim();

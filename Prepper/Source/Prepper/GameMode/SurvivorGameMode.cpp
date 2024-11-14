@@ -3,11 +3,12 @@
 
 #include "SurvivorGameMode.h"
 
+#include "Blueprint/UserWidget.h"
+
 void ASurvivorGameMode::PlayerEliminated(ABaseCharacter* ElimmedCharacter, ABasePlayerController* VictimController,
-                                         ABasePlayerController* AttackerController)
+	ABasePlayerController* AttackerController)
 {
 	Super::PlayerEliminated(ElimmedCharacter, VictimController, AttackerController);
-	
 }
 
 void ASurvivorGameMode::Tick(float DeltaSeconds)

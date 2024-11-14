@@ -34,6 +34,11 @@ protected:
 	TSubclassOf<UUserWidget> SettingClass;
 	UPROPERTY()
 	TObjectPtr<UUserWidget> Setting;
+	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> DeathWidgetClass;
+	UPROPERTY()
+	TObjectPtr<UUserWidget> DeathWidget;
 
 	UPROPERTY()
 	APrepperHUD* PrepperHUD;
@@ -46,7 +51,6 @@ public:
 	virtual void SetPawn(APawn* InPawn) override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnRep_Pawn() override;
-	virtual void OnPossess();
 	virtual void PlayerTick(float DeltaTime) override;
 	TObjectPtr<APlayerCharacter> GetPlayerCharacter();
 	
@@ -61,7 +65,9 @@ protected:
 public:
 	/* NetWork */
 	FHighPingDelegate HighPingDelegate;
-
+	void Elim();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastElim();
 	UFUNCTION(Server, Reliable)
 	void ServerReportPingStatus(bool bHighPing);
 
