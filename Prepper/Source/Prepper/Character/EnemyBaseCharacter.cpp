@@ -1,5 +1,6 @@
 #include "EnemyBaseCharacter.h"
 #include "AIController.h"
+#include "Component/Combat/BaseCombatComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
@@ -69,7 +70,7 @@ void AEnemyBaseCharacter::Tick(float DeltaTime)
 
 	if (InTargetRange(PatrolTarget, CombatRadius))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
+		//UE_LOG(LogTemp, Warning, TEXT("Enemy Found Target -> chasing"));
 		EnemyState = EEnemyState::EES_Chasing;
 		GetCharacterMovement()->MaxWalkSpeed = 600.f;
 		MoveToTarget(PatrolTarget);
@@ -78,7 +79,7 @@ void AEnemyBaseCharacter::Tick(float DeltaTime)
 
 	if (PatrolTarget != nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
+		//UE_LOG(LogTemp, Warning, TEXT("Lost Target"));
 		EnemyState = EEnemyState::EES_Patrolling;
 		GetCharacterMovement()->MaxWalkSpeed = 300.f;
 		MoveToTarget(PatrolTarget);

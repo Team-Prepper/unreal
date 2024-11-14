@@ -143,7 +143,6 @@ void APlayerCharacter::Elim()
 
 void APlayerCharacter::MulticastElimAction() {
 
-	UE_LOG(LogTemp, Warning, TEXT("TMP: MulticastElim by PlayerCharacter"));
 	if (EquippedBackpack)
 	{
 		EquippedBackpack->SetBackpackState(EBackpackState::EBS_Dropped);

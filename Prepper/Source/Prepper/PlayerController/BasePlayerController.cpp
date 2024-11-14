@@ -38,13 +38,6 @@ void ABasePlayerController::BeginWidget()
 		CharacterOverlay->AddToViewport();
 	}
 	
-	if (SettingClass)
-	{
-		Setting = CreateWidget<UUserWidget>(this, SettingClass);
-		Setting->SetVisibility(ESlateVisibility::Hidden);
-		Setting->AddToViewport();
-	}
-	
 	if (CompassHUDClass)
 	{
 		Compass = CreateWidget<UCompass>(this, CompassHUDClass);
@@ -64,51 +57,14 @@ void ABasePlayerController::OnPossess(APawn* InPawn)
 {
 	// 서버에서만 동작하는 함수
 	Super::OnPossess(InPawn);
-	OnPossess();
 
 }
 
 void ABasePlayerController::OnRep_Pawn()
 {
 	Super::OnRep_Pawn();
-	OnPossess();
 	
 }
-
-void ABasePlayerController::OnPossess()
-{
-	if (!GetPawn()) return;
-	
-	UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"),
-		*GetPawn()->GetName(), *GetName());
-	UE_LOG(LogTemp, Warning, TEXT("Testing"));
-	
-	// 로컬에서도 동작하게 설계함
-	if (IControllable* Controllable = GetPawn<IControllable>())
-	{
-		if (TargetControlMapper && IsLocalController())
-		{
-			TargetControlMapper->Disconnect();
-		}
-		TargetControlMapper = Controllable->GetControlMapper();
-	}
-
-	if (!IsLocalController()) return;
-
-	TargetControlMapper->Connect(this);
-
-	if (Compass != nullptr && TargetControlMapper != nullptr)
-	{
-		Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
-		UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
-	}
-
-	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
-	
-	PlayerCharacter = NewPlayer;
-	LocalPossessNewPlayerCharacter();
-}
-
 void ABasePlayerController::PlayerTick(float DeltaTime)
 {
 	Super::PlayerTick(DeltaTime);
@@ -128,6 +84,22 @@ void ABasePlayerController::LocalPossessNewPlayerCharacter()
 	if (!PlayerCharacter) return;
 	
 	PlayerCharacter->Attach(CharacterOverlay);
+	
+	if (DeathWidget == nullptr) return;
+	DeathWidget->SetVisibility(ESlateVisibility::Hidden);
+
+}
+
+void ABasePlayerController::MulticastElim_Implementation()
+{
+	PlayerCharacter = nullptr;
+	UE_LOG(LogTemp, Warning, TEXT("Try but: %hs"), PlayerCharacter == nullptr ? "null" : "not null");
+	
+	if (!IsLocalController()) return;
+	UE_LOG(LogTemp, Warning, TEXT("MulticastElim"));
+	if (DeathWidget == nullptr) return;
+	UE_LOG(LogTemp, Warning, TEXT("MulticastElim22"));
+	DeathWidget->SetVisibility(ESlateVisibility::Visible);
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
@@ -148,6 +120,11 @@ APrepperHUD* ABasePlayerController::GetPrepperHUD()
 	return PrepperHUD;
 }
 
+void ABasePlayerController::Elim()
+{
+	MulticastElim();
+}
+
 void ABasePlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -157,14 +134,51 @@ void ABasePlayerController::Tick(float DeltaTime)
 void ABasePlayerController::SetPawn(APawn* InPawn)
 {
 	Super::SetPawn(InPawn);
+
+	if (GetPawn() == nullptr) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Try but: %s"), PlayerCharacter == nullptr ? *FString("null") : *PlayerCharacter->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("Pawn %s possessed by PlayerController %s"),
+	//	*GetPawn()->GetName(), *GetName());
 	
-	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
-	
-	if (NewPlayer != nullptr && NewPlayer != PlayerCharacter)
+	// 로컬에서도 동작하게 설계함
+	if (IControllable* Controllable = GetPawn<IControllable>())
 	{
-		PlayerCharacter = NewPlayer;
-		ServerPossessNewPlayerCharacter();
+		if (TargetControlMapper && IsLocalController())
+		{
+			TargetControlMapper->Disconnect();
+		}
+		TargetControlMapper = Controllable->GetControlMapper();
 	}
+
+	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
+	UE_LOG(LogTemp, Warning, TEXT("Try but: %s"), PlayerCharacter == nullptr ? *FString("null") : *PlayerCharacter->GetName());
+
+	if (HasAuthority())
+	{
+		if (PlayerCharacter == nullptr)
+		{
+			PlayerCharacter = NewPlayer;
+			ServerPossessNewPlayerCharacter();
+		}
+		return;
+	}
+
+	if (!IsLocalController()) return;
+	
+	TargetControlMapper->Connect(this);
+
+	if (Compass != nullptr && TargetControlMapper != nullptr)
+	{
+		Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
+		//UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
+	}
+	
+	if (PlayerCharacter != nullptr) return;
+	
+	PlayerCharacter = NewPlayer;
+	LocalPossessNewPlayerCharacter();
+	
 }
 
 void ABasePlayerController::CheckPing(float DeltaTime)
@@ -177,13 +191,13 @@ void ABasePlayerController::CheckPing(float DeltaTime)
 		PlayerState = GetPlayerState<APlayerState>();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Ping chk"));
+	//UE_LOG(LogTemp, Warning, TEXT("Ping chk"));
 	FString ping = FString::SanitizeFloat(PlayerState->GetPingInMilliseconds());
-	UE_LOG(LogTemp, Warning, TEXT("PING : %s"), *ping);
+	//UE_LOG(LogTemp, Warning, TEXT("PING : %s"), *ping);
 
 	if (PlayerState && PlayerState->GetPingInMilliseconds() > HighPingThreshold)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HIGH PING WARNING"));
+		//UE_LOG(LogTemp, Warning, TEXT("HIGH PING WARNING"));
 		if (IsLocalController())
 		{
 			HighPingWarningBP();

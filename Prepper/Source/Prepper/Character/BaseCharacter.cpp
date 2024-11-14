@@ -178,7 +178,6 @@ void ABaseCharacter::MulticastElim_Implementation()
 {
 	MulticastElimAction();
 	
-	UE_LOG(LogTemp, Warning, TEXT("TMP: MulticastElim by BaseCharacter"));
 	for (int i = 0; i < CharacterComponents.Num(); i++)
 	{
 		CharacterComponents[i]->TargetElim();
