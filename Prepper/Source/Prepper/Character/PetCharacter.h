@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/WidgetComponent.h"
 #include "PetCharacter.generated.h"
 
 UCLASS()
@@ -11,6 +12,12 @@ class PREPPER_API APetCharacter : public ACharacter
 
 public:
 	APetCharacter();
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	UWidgetComponent* SpeechBubbleComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> SpeechBubbleWidgetClass;
 
 	virtual void Tick(float DeltaTime) override;
 

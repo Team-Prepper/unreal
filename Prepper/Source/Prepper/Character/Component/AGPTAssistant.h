@@ -46,4 +46,12 @@ private:
 
 	// 조력자 AI 메시지를 UI에 전달하는 함수 (추후 구현 필요)
 	void HandleAIResponse(const FString& Message);
+
+public:
+	// 말풍선 위젯 관리
+	FTimerHandle MessageTimerHandle;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
+	class APetCharacter* PetOwner;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="AI Helper")
+	class USpeechBubbleWidget* SpeechBubbleInstance;
 };

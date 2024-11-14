@@ -10,6 +10,8 @@
 #include "Misc/ConfigCacheIni.h" // 설정 파일을 읽기 위한 헤더
 #include "Misc/Paths.h" // 경로 관련 헤더
 #include "GPTSettings.h"
+#include "Prepper/Character/PetCharacter.h"
+#include "Prepper/HUD/UI/SpeechBubbleWidget.h"
 
 // 생성자
 UGPTAssistant::UGPTAssistant()
@@ -40,6 +42,14 @@ void UGPTAssistant::BeginPlay()
     else
     {
         UE_LOG(LogTemp, Warning, TEXT("설정 파일에서 'OpenAI_APIKey'를 읽을 수 없습니다."));
+    }
+
+    // 펫 클래스와 말풍선 위젯 컴포넌트 찾기
+    PetOwner = Cast<APetCharacter>(GetOwner());
+    if (PetOwner && PetOwner->SpeechBubbleComponent)
+    {
+        // Widget 클래스 설정
+        PetOwner->SpeechBubbleComponent->SetWidgetClass(LoadClass<UUserWidget>(nullptr, TEXT("/Game/UI/WBP_SpeechBubble")));
     }
 
     // 타이머 설정: RequestGPTAssistant를 10초마다 호출
@@ -115,12 +125,12 @@ void UGPTAssistant::RequestGPTAssistant()
     TArray<TSharedPtr<FJsonValue>> Messages;
     TSharedPtr<FJsonObject> SystemMessage = MakeShareable(new FJsonObject());
     SystemMessage->SetStringField(TEXT("role"), TEXT("system"));
-    SystemMessage->SetStringField(TEXT("content"), TEXT("너는 좀비 세상에서 살아가는 주인공의 조력자역할이야. 주변 아이템 정보를 확인하면 주인공에게 도움이 될만한 말을 건네줘."));
+    SystemMessage->SetStringField(TEXT("content"), TEXT("너는 좀비 세상에서 살아가는 주인공의 조력자역할이야. 주변 아이템 정보를 확인하면 주인공에게 도움이 될만한 말을 건네줘. 단, 50자 이내의 한국어 대화체로 말해야해."));
     Messages.Add(MakeShareable(new FJsonValueObject(SystemMessage)));
 
     TSharedPtr<FJsonObject> UserMessage = MakeShareable(new FJsonObject());
     UserMessage->SetStringField(TEXT("role"), TEXT("user"));
-    UserMessage->SetStringField(TEXT("content"), FString::Printf(TEXT("%s"), *SerializedItems));
+    UserMessage->SetStringField(TEXT("content"), FString::Printf(TEXT("주위 정보 : %s"), *SerializedItems));
     Messages.Add(MakeShareable(new FJsonValueObject(UserMessage)));
 
     RequestObject->SetArrayField(TEXT("messages"), Messages);
@@ -191,7 +201,33 @@ void UGPTAssistant::OnGPTResponseReceived(FHttpRequestPtr Request, FHttpResponse
 
 void UGPTAssistant::HandleAIResponse(const FString& Message)
 {
-    // 일단 로그로 출력
-    UE_LOG(LogTemp, Log, TEXT("조력자 AI: %s"), *Message);
 
+    if (PetOwner && PetOwner->SpeechBubbleComponent)
+    {
+        // Widget 인스턴스 가져오기
+        if (!SpeechBubbleInstance)
+        {
+            SpeechBubbleInstance = Cast<USpeechBubbleWidget>(PetOwner->SpeechBubbleComponent->GetUserWidgetObject());
+        }
+
+        if (SpeechBubbleInstance)
+        {
+            
+            // 메시지 설정
+            SpeechBubbleInstance->SetMessage(Message);
+            
+            // Widget 표시
+            PetOwner->SpeechBubbleComponent->SetVisibility(true);
+
+            // 3초 후 메시지 숨기기
+            GetWorld()->GetTimerManager().ClearTimer(MessageTimerHandle);
+            GetWorld()->GetTimerManager().SetTimer(MessageTimerHandle, [this]()
+            {
+                if (PetOwner && PetOwner->SpeechBubbleComponent)
+                {
+                    PetOwner->SpeechBubbleComponent->SetVisibility(false);
+                }
+            }, 3.0f, false);
+        }
+    }
 }
