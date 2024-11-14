@@ -78,7 +78,7 @@ void UAIHelper::DetectNearbyItems()
 			if (DetectedActor && DetectedActor->Implements<UDetectable>())
 			{
 				IDetectable* DetectableObject = Cast<IDetectable>(DetectedActor);
-				if (DetectableObject && DetectableObject->GetDetectableType() == EDetectableType::Item)
+				if (DetectableObject) // 감지된 객체가 아이템 & 좀비일 경우
 				{
 					CurrentlyDetectedItems.Add(DetectedActor);
 					// 플레이어와 아이템 사이의 거리 계산

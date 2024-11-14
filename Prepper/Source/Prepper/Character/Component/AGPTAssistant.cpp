@@ -201,7 +201,8 @@ void UGPTAssistant::OnGPTResponseReceived(FHttpRequestPtr Request, FHttpResponse
 
 void UGPTAssistant::HandleAIResponse(const FString& Message)
 {
-
+    // 일단 로그로 출력
+    UE_LOG(LogTemp, Log, TEXT("조력자 AI: %s"), *Message);
     if (PetOwner && PetOwner->SpeechBubbleComponent)
     {
         // Widget 인스턴스 가져오기

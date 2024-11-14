@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "Prepper/Interfaces/IDetectable.h"
 #include "EnemyBaseCharacter.generated.h"
 
 class AWeaponActor;
@@ -17,7 +18,7 @@ enum class EEnemyState : uint8
 };
 
 UCLASS()
-class PREPPER_API AEnemyBaseCharacter : public ABaseCharacter
+class PREPPER_API AEnemyBaseCharacter : public ABaseCharacter, public IDetectable
 {
 	GENERATED_BODY()
 public:
@@ -27,6 +28,16 @@ public:
 	
 	void CheckPatrolTarget();
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	// 감지태그 설정
+	virtual FString GetDetectableDescription() const override
+	{
+		return "Zombie";
+	}
+	virtual EDetectableType GetDetectableType() const override 
+	{ 
+		return EDetectableType::Enemy; 
+	}
 protected:
 
 	UPROPERTY(VisibleAnywhere)

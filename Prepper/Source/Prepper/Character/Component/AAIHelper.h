@@ -24,7 +24,7 @@ public:
 	UAIHelper();
 
 	UPROPERTY(EditAnywhere, Category = "Detection")
-	float DetectionRadius = 500.0f;
+	float DetectionRadius = 1000.0f;
 
 	// 감지 주기 (초 단위)
 	UPROPERTY(EditAnywhere, Category = "Detection", meta = (ClampMin = "0.1", UIMin = "0.1"))
