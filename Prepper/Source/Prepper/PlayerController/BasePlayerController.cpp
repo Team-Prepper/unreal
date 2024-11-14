@@ -151,30 +151,25 @@ void ABasePlayerController::SetPawn(APawn* InPawn)
 		TargetControlMapper = Controllable->GetControlMapper();
 	}
 
-	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
-	UE_LOG(LogTemp, Warning, TEXT("Try but: %s"), PlayerCharacter == nullptr ? *FString("null") : *PlayerCharacter->GetName());
+	if (IsLocalController())
+	{
+		TargetControlMapper->Connect(this);
 
+		if (Compass != nullptr && TargetControlMapper != nullptr)
+		{
+			Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
+			//UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
+		}
+	}
+	if (PlayerCharacter != nullptr) return;
+	
+	TObjectPtr<APlayerCharacter> NewPlayer = GetPawn<APlayerCharacter>();
+	
 	if (HasAuthority())
 	{
-		if (PlayerCharacter == nullptr)
-		{
-			PlayerCharacter = NewPlayer;
-			ServerPossessNewPlayerCharacter();
-		}
-		return;
+		PlayerCharacter = NewPlayer;
+		ServerPossessNewPlayerCharacter();
 	}
-
-	if (!IsLocalController()) return;
-	
-	TargetControlMapper->Connect(this);
-
-	if (Compass != nullptr && TargetControlMapper != nullptr)
-	{
-		Compass->SetTargetCamera(TargetControlMapper->GetFollowCamera());
-		//UE_LOG(LogTemp, Warning, TEXT("[PrepperPlayerController] : Set Compass"));
-	}
-	
-	if (PlayerCharacter != nullptr) return;
 	
 	PlayerCharacter = NewPlayer;
 	LocalPossessNewPlayerCharacter();
