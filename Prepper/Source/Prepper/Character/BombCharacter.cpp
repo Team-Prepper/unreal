@@ -6,6 +6,7 @@
 #include "PlayerCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Prepper/GameMode/PrepperGameMode.h"
+#include "Prepper/Object/ElectricSwitch.h"
 
 
 void ABombCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -52,3 +53,14 @@ void ABombCharacter::Bomb()
 	Destroy();
 }
 
+void ABombCharacter::SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch)
+{
+	TargetSwitch = Switch;
+}
+
+void ABombCharacter::RemoveAction()
+{
+	Super::RemoveAction();
+	if (TargetSwitch == nullptr) return;
+	TargetSwitch->DefenderRemove();
+}

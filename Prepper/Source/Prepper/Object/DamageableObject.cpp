@@ -64,6 +64,11 @@ void ADamageableObject::OnRep_Health()
 	}
 }
 
+void ADamageableObject::RemoveAction()
+{
+	
+}
+
 void ADamageableObject::ServerDestroyObject_Implementation()
 {
 	MulticastDestroyObject();
@@ -71,6 +76,7 @@ void ADamageableObject::ServerDestroyObject_Implementation()
 
 void ADamageableObject::MulticastDestroyObject_Implementation()
 {
+	RemoveAction();
 	Destroy();
 }
 

@@ -49,9 +49,12 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	
 	
 public:
-	void BeginPlay() override;
+	virtual void BeginPlay() override;
 	void LoadGame();
 	void SaveGame();
+	void Respawn();
+	UFUNCTION(Server, Reliable)
+	void ServerRespawnRequest(ACharacter* ElimmedCharacter, AController* ElimmedController);
 private:
 	void LoadClientData();
 	void LoadServerData();

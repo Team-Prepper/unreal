@@ -36,7 +36,6 @@ public:
 									ABasePlayerController* VictimController,
 									ABasePlayerController* AttackerController) override;
 	
-	virtual void RequestRespawn(ACharacter* ElimmedCharacter, AController* ElimmedController);
 	void Respawn();
 	
 	UPROPERTY(EditDefaultsOnly)

@@ -3,6 +3,7 @@
 
 #include "ElectricSwitch.h"
 
+#include "Prepper/Character/BombCharacter.h"
 #include "Prepper/GameMode/SurvivorGameMode.h"
 
 void AElectricSwitch::Interaction(APlayerCharacter* Target)
@@ -11,12 +12,21 @@ void AElectricSwitch::Interaction(APlayerCharacter* Target)
 	ASurvivorGameMode* GM = GetWorld()->GetAuthGameMode<ASurvivorGameMode>();
 	if (GM == nullptr) return;
 
-	GM->GetAchievement();
+	if (GM->IsAchieved(TargetAchievement)) return;
+	
 	CreateMonster();
 	
 }
 
 void AElectricSwitch::CreateMonster()
 {
-	GetWorld()->SpawnActor(TargetMonster);
+	GetWorld()->SpawnActor<ABombCharacter>(TargetMonster)->SetElectricSwitch(this);
+}
+
+void AElectricSwitch::DefenderRemove()
+{
+	ASurvivorGameMode* GM = GetWorld()->GetAuthGameMode<ASurvivorGameMode>();
+	
+	if (GM == nullptr) return;
+	GM->AddAchievement(TargetAchievement, true);
 }

@@ -7,6 +7,8 @@
 #include "Prepper/Interfaces/Damageable.h"
 #include "DamageableObject.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class PREPPER_API ADamageableObject : public AActor, public IDamageable
 {
@@ -25,7 +27,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* ObjectMesh;
+	UStaticMeshComponent* ObjectMesh;
 
 	/* 체력 관련 */
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
@@ -38,19 +40,22 @@ protected:
 	void OnRep_Health();
 
 	UPROPERTY(EditAnywhere)
-	class UNiagaraSystem* ImpactParticles;
+	UNiagaraSystem* ImpactParticles;
 
 	UPROPERTY(EditAnywhere)
-	class USoundCue* ImpactSound;
+	USoundCue* ImpactSound;
 
 	UPROPERTY(EditAnywhere)
-	class UNiagaraSystem* DestroyParticles;
+	UNiagaraSystem* DestroyParticles;
 
 	UPROPERTY(EditAnywhere)
-	class USoundCue* DestroySound;
+	USoundCue* DestroySound;
 
 	UFUNCTION(Server, Reliable)
 	void ServerDestroyObject();
+	
+	virtual void RemoveAction();
+	
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastDestroyObject();
 };

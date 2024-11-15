@@ -56,9 +56,8 @@ void ABasePlayerController::BeginWidget()
 	
 	if (DeathWidgetClass)
 	{
-		DeathWidget = CreateWidget<UUserWidget>(this, SettingClass);
+		DeathWidget = CreateWidget<UUserWidget>(this, DeathWidgetClass);
 		DeathWidget->SetVisibility(ESlateVisibility::Hidden);
-		DeathWidget->AddToViewport();
 	}
 }
 
@@ -99,20 +98,25 @@ void ABasePlayerController::LocalPossessNewPlayerCharacter()
 	PlayerCharacter->Attach(CharacterOverlay);
 	
 	if (DeathWidget == nullptr) return;
+	
+	SetInputMode(FInputModeGameOnly());
+	SetShowMouseCursor(false);
 	DeathWidget->SetVisibility(ESlateVisibility::Hidden);
+	DeathWidget->RemoveFromParent();
 
 }
 
 void ABasePlayerController::MulticastElim_Implementation()
 {
 	PlayerCharacter = nullptr;
-	UE_LOG(LogTemp, Warning, TEXT("Try but: %hs"), PlayerCharacter == nullptr ? "null" : "not null");
 	
 	if (!IsLocalController()) return;
-	UE_LOG(LogTemp, Warning, TEXT("MulticastElim"));
 	if (DeathWidget == nullptr) return;
-	UE_LOG(LogTemp, Warning, TEXT("MulticastElim22"));
+	
+	SetInputMode(FInputModeUIOnly());
+	SetShowMouseCursor(true);
 	DeathWidget->SetVisibility(ESlateVisibility::Visible);
+	DeathWidget->AddToViewport();
 }
 
 void ABasePlayerController::ServerReportPingStatus_Implementation(bool bHighPing)
@@ -183,6 +187,8 @@ void ABasePlayerController::SetPawn(APawn* InPawn)
 		PlayerCharacter = NewPlayer;
 		ServerPossessNewPlayerCharacter();
 	}
+
+	if (!IsLocalController()) return;
 	
 	PlayerCharacter = NewPlayer;
 	LocalPossessNewPlayerCharacter();

@@ -7,6 +7,8 @@
 #include "Prepper/Object/DamageableObject.h"
 #include "BombCharacter.generated.h"
 
+class AElectricSwitch;
+
 UCLASS()
 class PREPPER_API ABombCharacter : public ADamageableObject
 {
@@ -16,6 +18,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	float MaxTime = 10.f;
+
+	UPROPERTY()
+	TObjectPtr<AElectricSwitch> TargetSwitch;
 	
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -30,4 +35,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	void Bomb();
+	void SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch);
+	virtual void RemoveAction() override;
 };

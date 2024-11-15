@@ -6,6 +6,7 @@
 #include "InteractableObject.h"
 #include "ElectricSwitch.generated.h"
 
+class ABombCharacter;
 /**
  * 
  */
@@ -17,9 +18,10 @@ class PREPPER_API AElectricSwitch : public AInteractableObject
 	UPROPERTY(EditAnywhere)
 	FString TargetAchievement;
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<AActor> TargetMonster;
+	TSubclassOf<ABombCharacter> TargetMonster;
 	
 public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 	void CreateMonster();
+	void DefenderRemove();
 };

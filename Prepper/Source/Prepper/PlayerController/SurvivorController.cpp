@@ -210,6 +210,18 @@ void ASurvivorController::SaveGame()
 	SaveServerData();
 }
 
+void ASurvivorController::Respawn()
+{
+}
+
+void ASurvivorController::ServerRespawnRequest_Implementation(ACharacter* ElimmedCharacter,
+	AController* ElimmedController)
+{
+	const TObjectPtr<APrepperGameMode> GM = GetWorld()->GetAuthGameMode<APrepperGameMode>();
+	if (GM == nullptr) return;
+	GM->RequestRespawn(GetPawn<APlayerCharacter>(), this);
+}
+
 void ASurvivorController::LoadClientData()
 {
 	USurvivorSaveGame* LoadGameInstance =
