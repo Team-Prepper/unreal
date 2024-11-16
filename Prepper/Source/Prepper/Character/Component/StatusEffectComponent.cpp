@@ -16,18 +16,18 @@ void UStatusEffectComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if(!Character) return;
+	if (!Character) return;
 }
 
 void UStatusEffectComponent::Attach(IObserver<Status>* Observer)
 {
 	Observers.insert(Observer);
 	if (StateEffectMap.IsEmpty()) return;
-	
+
 	Observer->Update(
-		Status(	FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
-						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
-						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100)));
+		Status(FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
+		       FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
+		       FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100)));
 }
 
 void UStatusEffectComponent::Detach(IObserver<Status>* Observer)
@@ -38,15 +38,15 @@ void UStatusEffectComponent::Detach(IObserver<Status>* Observer)
 void UStatusEffectComponent::Notify()
 {
 	if (StateEffectMap.IsEmpty()) return;
-	
-	const Status Value(	FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
-						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
-						FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100));
 
-	std::ranges::for_each(Observers, [&](IObserver<Status>* Observer) {
+	const Status Value(FGaugeFloat(StateEffectMap[EStatusEffect::ESE_HUNGRY], 100),
+	                   FGaugeFloat(StateEffectMap[EStatusEffect::ESE_THIRSTY], 100),
+	                   FGaugeFloat(StateEffectMap[EStatusEffect::ESE_INFECTED], 100));
+
+	std::ranges::for_each(Observers, [&](IObserver<Status>* Observer)
+	{
 		Observer->Update(Value);
 	});
-
 }
 
 void UStatusEffectComponent::SetCharacter(ABaseCharacter* Target)
@@ -56,23 +56,24 @@ void UStatusEffectComponent::SetCharacter(ABaseCharacter* Target)
 
 void UStatusEffectComponent::InitStateEffectMap()
 {
-	UE_LOG(LogTemp,Warning,TEXT("SET STATUS EFFECT LEVEL"));
+	UE_LOG(LogTemp, Warning, TEXT("SET STATUS EFFECT LEVEL"));
 	StateEffectMap.Emplace(EStatusEffect::ESE_HUNGRY, 100);
 	StateEffectMap.Emplace(EStatusEffect::ESE_THIRSTY, 100);
 	StateEffectMap.Emplace(EStatusEffect::ESE_INFECTED, 0);
 }
 
 
-void UStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UStatusEffectComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+                                           FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
 void UStatusEffectComponent::StatusTimerStart()
 {
-	if(!Character || !Character->IsLocallyControlled()) return;
-	
-	UE_LOG(LogTemp,Warning,TEXT("StatusEffectReady"));
+	if (!Character || !Character->IsLocallyControlled()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("StatusEffectReady"));
 	StatusFlags.ClearAllEffects();
 	InitStateEffectMap();
 
@@ -88,10 +89,10 @@ void UStatusEffectComponent::StatusTimerStart()
 
 void UStatusEffectComponent::StatusTimerFinish()
 {
-	if(!Character) return;
-	
+	if (!Character) return;
+
 	StateEffectMap[EStatusEffect::ESE_HUNGRY] -= StatusEffectTickValue[0];
-	if(Character->GetMovementState() == EMovementState::EMS_Sprint ||
+	if (Character->GetMovementState() == EMovementState::EMS_Sprint ||
 		Character->GetMovementState() == EMovementState::EMS_Aim)
 	{
 		StateEffectMap[EStatusEffect::ESE_THIRSTY] -= StatusEffectTickValue[1];
@@ -100,6 +101,18 @@ void UStatusEffectComponent::StatusTimerFinish()
 
 	Notify();
 	UpdateStatusEffect();
+}
+
+void UStatusEffectComponent::AddHungry(float Amount)
+{
+	StateEffectMap[EStatusEffect::ESE_HUNGRY] += Amount;
+	Notify();
+}
+
+void UStatusEffectComponent::AddThirsty(float Amount)
+{
+	StateEffectMap[EStatusEffect::ESE_THIRSTY] += Amount;
+	Notify();
 }
 
 void UStatusEffectComponent::UpdateStatusEffect()
@@ -119,9 +132,9 @@ void UStatusEffectComponent::UpdateStatusEffect()
 		}
 	}
 
-	if(StatusFlags.HasEffect(EStatusEffect::ESE_HUNGRY))
+	if (StatusFlags.HasEffect(EStatusEffect::ESE_HUNGRY))
 	{
-		UE_LOG(LogTemp,Warning,TEXT("HUNGRY"));
+		UE_LOG(LogTemp, Warning, TEXT("HUNGRY"));
 		UGameplayStatics::ApplyDamage(
 			Character,
 			EffectThresholds[0].DebuffValue,
@@ -131,11 +144,12 @@ void UStatusEffectComponent::UpdateStatusEffect()
 		);
 	}
 
-	if(StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
+	if (StatusFlags.HasEffect(EStatusEffect::ESE_THIRSTY))
 	{
-		UE_LOG(LogTemp,Warning,TEXT("THIRSTY"));
+		UE_LOG(LogTemp, Warning, TEXT("THIRSTY"));
 		Character->CoefficientMovementSpeed = EffectThresholds[1].DebuffValue;
-	}else
+	}
+	else
 	{
 		Character->CoefficientMovementSpeed = 1.0f;
 	}

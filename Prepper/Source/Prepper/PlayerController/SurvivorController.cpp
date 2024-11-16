@@ -14,7 +14,6 @@
 #include "Prepper/HUD/PrepperHUD.h"
 #include "Prepper/HUD/UI/CharacterOverlay/StatusWidget.h"
 #include "Prepper/HUD/UI/Inventory/InventoryUI.h"
-#include "Prepper/HUD/UI/ItemCombination/ItemCombinationUI.h"
 #include "Prepper/HUD/UI/Survivor/QuickSlotWidget.h"
 #include "Prepper/Weapon/WeaponActor.h"
 
@@ -106,13 +105,6 @@ void ASurvivorController::QuickSlot1Use()
 	PlayerCharacter->UseQuickSlotItem(0);
 	
 	return;
-	if (ItemCombinationClass == nullptr) return;
-	TObjectPtr<UItemCombinationUI> Tmp =
-		CreateWidget<UItemCombinationUI>(this, ItemCombinationClass);
-	
-	Tmp->SetTargetPlayer(PlayerCharacter);
-	Tmp->SetVisibility(ESlateVisibility::Visible);
-	Tmp->AddToViewport();
 }
 
 void ASurvivorController::QuickSlot2Use()
@@ -151,7 +143,7 @@ void ASurvivorController::BeginPlay()
 	if (GetPawn() != nullptr && !GetPawn()->IsLocallyControlled()) return;
 
 	USurvivorServerSaveGame* LoadGameInstance =
-		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot("Server", 0));
+		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("%s-%s"), *GetWorld()->GetMapName(), *FString("Server")), 0));
 
 	if (!LoadGameInstance) return;
 
@@ -222,6 +214,14 @@ void ASurvivorController::ServerRespawnRequest_Implementation(ACharacter* Elimme
 	GM->RequestRespawn(GetPawn<APlayerCharacter>(), this);
 }
 
+void ASurvivorController::MulticastShowGameEnd_Implementation()
+{
+	if (!IsLocalController()) return;
+	if (!ClearWidgetClass) return;
+	
+	CreateWidget(this, ClearWidgetClass)->AddToViewport();
+}
+
 void ASurvivorController::LoadClientData()
 {
 	USurvivorSaveGame* LoadGameInstance =
@@ -257,7 +257,7 @@ void ASurvivorController::LoadClientData()
 void ASurvivorController::LoadServerData()
 {
 	USurvivorServerSaveGame* LoadGameInstance =
-		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot("Server", 0));
+		Cast<USurvivorServerSaveGame>(UGameplayStatics::LoadGameFromSlot(FString::Printf(TEXT("%s-%s"), *GetWorld()->GetMapName(), *FString("Server")), 0));
 
 	if (LoadGameInstance)
 	{

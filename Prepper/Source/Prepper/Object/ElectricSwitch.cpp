@@ -13,6 +13,7 @@ void AElectricSwitch::Interaction(APlayerCharacter* Target)
 	if (GM == nullptr) return;
 
 	if (GM->IsAchieved(TargetAchievement)) return;
+	// 막는걸로?
 	
 	CreateMonster();
 	

@@ -223,11 +223,13 @@ void APlayerCharacter::Heal(float Amount)
 
 void APlayerCharacter::Eat(float Amount)
 {
+	StatusEffect->AddHungry(Amount);
 	UE_LOG(LogTemp, Warning, TEXT("Eat:%f"), Amount);
 }
 
 void APlayerCharacter::Drink(float Amount)
 {
+	StatusEffect->AddThirsty(Amount);
 	UE_LOG(LogTemp, Warning, TEXT("Drink:%f"), Amount);
 }
 

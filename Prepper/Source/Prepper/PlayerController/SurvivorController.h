@@ -37,6 +37,9 @@ class PREPPER_API ASurvivorController : public ABasePlayerController
 	TObjectPtr<UQuickSlotUI> QuickSlotWidget;
 	
 	UPROPERTY(EditAnywhere, Category = "Player HUD")
+	TSubclassOf<UUserWidget> ClearWidgetClass;
+	
+	UPROPERTY(EditAnywhere, Category = "Player HUD")
 	TSubclassOf<UItemCombinationUI> ItemCombinationClass;
 
 
@@ -55,6 +58,9 @@ public:
 	void Respawn();
 	UFUNCTION(Server, Reliable)
 	void ServerRespawnRequest(ACharacter* ElimmedCharacter, AController* ElimmedController);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastShowGameEnd();
+
 private:
 	void LoadClientData();
 	void LoadServerData();

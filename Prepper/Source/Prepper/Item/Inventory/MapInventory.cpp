@@ -233,6 +233,7 @@ void UMapInventory::ChangingInventory(const TObjectPtr<UMapInventory> NewInvento
 	{
 		NewInventory->Observers.Add(Observer);
 	}
+	NewInventory->SetOwner(Owner);
 	NewInventory->Notify();
 	ItemUnits.Empty();
 	Observers.Empty();

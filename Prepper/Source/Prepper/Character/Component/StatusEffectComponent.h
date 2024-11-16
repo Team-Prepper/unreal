@@ -73,6 +73,9 @@ public:
 	void StatusTimerStart();
 	void StatusTimerFinish();
 
+	void AddHungry(float Amount);
+	void AddThirsty(float Amount);
+
 	/*
 	UFUNCTION()
 	void ApplyStatusEffect();
