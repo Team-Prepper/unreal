@@ -24,4 +24,7 @@ public:
 	virtual void Interaction(APlayerCharacter* Target) override;
 	void CreateMonster();
 	void DefenderRemove();
+private:
+	UPROPERTY(EditAnywhere, Category = "SpawnPosition",meta = (AllowPrivateAccess = "true"))
+	FVector SpawnPosition;
 };
