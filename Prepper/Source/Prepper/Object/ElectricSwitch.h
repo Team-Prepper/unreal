@@ -29,4 +29,7 @@ public:
 	void DefenderWin();
 	void CreateMonster();
 	void DefenderRemove();
+private:
+	UPROPERTY(EditAnywhere, Category = "SpawnPosition",meta = (AllowPrivateAccess = "true"))
+	FVector SpawnPosition;
 };
