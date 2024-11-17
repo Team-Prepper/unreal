@@ -33,6 +33,8 @@ void ABombCharacter::BeginPlay()
 void ABombCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (!HasAuthority()) return;
 	TimeSend += DeltaTime;
 
 	if (TimeSend < MaxTime) return;
@@ -50,6 +52,7 @@ void ABombCharacter::Bomb()
 		Cast<APlayerCharacter>(Player)->ReceiveDamage(1000, nullptr, nullptr);
 	}
 
+	TargetSwitch->DefenderWin();
 	Destroy();
 }
 

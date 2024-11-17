@@ -19,9 +19,14 @@ class PREPPER_API AElectricSwitch : public AInteractableObject
 	FString TargetAchievement;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ABombCharacter> TargetMonster;
+	UPROPERTY(EditAnywhere)
+	FVector SpawnLocation = FVector(0, 0, 0);
+
+	bool IsSpawned = false;
 	
 public:
 	virtual void Interaction(APlayerCharacter* Target) override;
+	void DefenderWin();
 	void CreateMonster();
 	void DefenderRemove();
 };

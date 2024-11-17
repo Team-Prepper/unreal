@@ -13,14 +13,20 @@ void AElectricSwitch::Interaction(APlayerCharacter* Target)
 	if (GM == nullptr) return;
 
 	if (GM->IsAchieved(TargetAchievement)) return;
-	// 막는걸로?
+	if (IsSpawned) return;
 	
 	CreateMonster();
 	
 }
 
+void AElectricSwitch::DefenderWin()
+{
+	IsSpawned = false;
+}
+
 void AElectricSwitch::CreateMonster()
 {
+	IsSpawned = true;
 	GetWorld()->SpawnActor<ABombCharacter>(TargetMonster)->SetElectricSwitch(this);
 }
 
