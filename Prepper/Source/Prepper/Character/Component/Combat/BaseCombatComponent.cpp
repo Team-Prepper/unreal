@@ -26,6 +26,9 @@ void UBaseCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	HitTarget = TraceHit().Location;
+	
+
 }
 
 void UBaseCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -323,4 +326,51 @@ void UBaseCombatComponent::OnRep_CombatState()
 	default:
 		break;
 	}
+}
+
+FHitResult UBaseCombatComponent::TraceHit()
+{
+	FVector Start = GetOwner()->GetActorLocation(); 
+
+	// 끝 위치 (총구 앞 직선 방향으로 거리 설정)
+	FVector ForwardVector = GetOwner()->GetActorForwardVector(); // 액터의 앞쪽 방향 벡터
+	float TraceDistance = 1000.0f; // 트레이스 거리 (1,000 유닛)
+	FVector End = Start + (ForwardVector * TraceDistance);
+
+	// 충돌 결과를 저장할 HitResult
+	FHitResult HitResult;
+
+	// 충돌을 위한 쿼리 매개변수 설정
+	FCollisionQueryParams TraceParams;
+	TraceParams.bTraceComplex = true; // 복잡한 충돌 확인 여부
+	TraceParams.AddIgnoredActor(GetOwner()); // 자신은 충돌 무시
+
+	// 라인 트레이스 실행
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult, // 충돌 결과 저장
+		Start,     // 시작 위치
+		End,       // 끝 위치
+		ECC_Visibility, // 충돌 채널
+		TraceParams // 쿼리 매개변수
+	);
+
+	// 충돌 여부 판별
+	if (bHit)
+	{
+		// 충돌한 오브젝트의 이름 출력
+		//UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *HitResult.GetActor()->GetName());
+
+		// 충돌 지점을 시각화 (디버그 용도)
+		//DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10.0f, FColor::Red, false, 2.0f);
+	}
+	else
+	{
+		// 충돌하지 않았을 경우
+		//UE_LOG(LogTemp, Warning, TEXT("No Hit Detected"));
+	}
+
+	// 트레이스 라인을 디버그로 시각화 (옵션)
+	//DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f, 0, 1.0f);
+
+	return HitResult;
 }

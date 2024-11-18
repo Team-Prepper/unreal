@@ -147,4 +147,7 @@ protected:
 	void OnRep_CombatState();
 public:
 	ECombatState GetCombatState() const { return CombatState; }
+
+private:
+	FHitResult TraceHit();
 };

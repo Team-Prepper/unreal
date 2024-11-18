@@ -6,6 +6,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Weapon/WeaponActor.h"
+#include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
 
 AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
@@ -60,6 +61,7 @@ void AEnemyBaseCharacter::Tick(float DeltaTime)
 	// 공격사거리 안에서 공격이 아닐떄 -> 공격!
 	if (InTargetRange(PatrolTarget, AttackRadius))
 	{
+		GetCharacterMovement()->StopMovementImmediately();
 		//UE_LOG(LogTemp, Warning, TEXT("CODE : zombie Attack"));
 		AttackTrigger(true);
 		AttackTrigger(false);
@@ -234,5 +236,7 @@ void AEnemyBaseCharacter::SpawnWeaponActor()
 	
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Weapon Actor: %s"), *EquippedWeapon->GetName());
 	CombatComp->EquipWeapon(EquippedWeapon);
+
+	AttackRadius = Cast<ARangeWeapon>(EquippedWeapon) ? 1000 : 150;
 	
 }
