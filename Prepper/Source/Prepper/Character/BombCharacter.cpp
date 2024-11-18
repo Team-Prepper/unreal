@@ -44,12 +44,13 @@ void ABombCharacter::Tick(float DeltaTime)
 
 void ABombCharacter::Bomb()
 {
+	if(IsElim) return;
 	TArray<AActor*> Players;
 	UGameplayStatics::GetAllActorsOfClass(this, APlayerCharacter::StaticClass(), Players);
 
 	for (auto Player : Players)
 	{
-		Cast<APlayerCharacter>(Player)->ReceiveDamage(1000, nullptr, nullptr);
+		Cast<APlayerCharacter>(Player)->ReceiveDamage(10000, nullptr, nullptr);
 	}
 
 	TargetSwitch->DefenderWin();
@@ -63,6 +64,7 @@ void ABombCharacter::SetElectricSwitch(TObjectPtr<AElectricSwitch> Switch)
 
 void ABombCharacter::RemoveAction()
 {
+	IsElim = true;
 	Super::RemoveAction();
 	if (TargetSwitch == nullptr) return;
 	TargetSwitch->DefenderRemove();

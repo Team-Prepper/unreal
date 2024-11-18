@@ -27,7 +27,8 @@ void AElectricSwitch::DefenderWin()
 void AElectricSwitch::CreateMonster()
 {
 	IsSpawned = true;
-	GetWorld()->SpawnActor<ABombCharacter>(TargetMonster)->SetElectricSwitch(this);
+	FRotator SpawnRotation = FRotator::ZeroRotator;
+	GetWorld()->SpawnActor<ABombCharacter>(TargetMonster, SpawnPosition, SpawnRotation)->SetElectricSwitch(this);
 }
 
 void AElectricSwitch::DefenderRemove()

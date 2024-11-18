@@ -21,6 +21,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AElectricSwitch> TargetSwitch;
+
+	UPROPERTY()
+	bool IsElim = false;
 	
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
