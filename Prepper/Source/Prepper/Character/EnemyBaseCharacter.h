@@ -107,5 +107,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TSubclassOf<AWeaponActor> WeaponActorClass;
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	UAnimMontage* FireWeaponMontage;
 	
 };

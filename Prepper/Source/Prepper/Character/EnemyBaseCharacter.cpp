@@ -6,6 +6,7 @@
 #include "Perception/PawnSensingComponent.h"
 #include "Prepper/Prepper.h"
 #include "Prepper/Weapon/WeaponActor.h"
+#include "Prepper/Weapon/RangeWeapon/RangeWeapon.h"
 
 AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
@@ -229,10 +230,18 @@ void AEnemyBaseCharacter::SpawnWeaponActor()
 
 	const TObjectPtr<AWeaponActor> EquippedWeapon =
 		World->SpawnActor<AWeaponActor>(WeaponActorClass, Location, Rotation, SpawnParams);
-
+	
 	if (!EquippedWeapon) return;
 	
 	UE_LOG(LogTemp, Warning, TEXT("Spawned Weapon Actor: %s"), *EquippedWeapon->GetName());
 	CombatComp->EquipWeapon(EquippedWeapon);
+
+	if(Cast<ARangeWeapon>(EquippedWeapon))
+	{
+		AttackRadius = 1000;
+	}else
+	{
+		AttackRadius = 150;
+	}
 	
 }

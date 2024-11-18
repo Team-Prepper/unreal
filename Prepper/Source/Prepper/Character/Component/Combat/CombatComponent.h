@@ -40,10 +40,10 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	AWeaponActor* SecondaryWeapon;
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, VisibleAnywhere)
 	class ARangeWeapon* EquippedRangeWeapon;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, VisibleAnywhere)
 	class AMeleeWeapon* EquippedMeleeWeapon;
 
 protected:
@@ -162,7 +162,7 @@ private:
 // Targeting
 protected:
 	UPROPERTY()
-	APrepperHUD* HUD;
+	class APrepperHUD* HUD;
 	
 	void TraceUnderCrosshair(FHitResult& TraceHitResult);
 
