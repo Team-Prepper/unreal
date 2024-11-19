@@ -139,6 +139,7 @@ void ACarPawn::Interaction()
 	
 	Driver->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Driver->SetActorLocation(GetActorLocation() + FVector(0, 0, 200));
+	Driver->SetActorRotation(FRotator().ZeroRotator);
 	Driver->SetMovementState(EMovementState::EMS_Idle);
 
 	Driver = nullptr;
