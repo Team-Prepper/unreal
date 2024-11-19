@@ -30,7 +30,7 @@ private:
 	FTimerHandle GPTRequestTimerHandle;
 
 	// GPT API 요청 간격 (초 단위)
-	float RequestInterval = 10.0f;
+	float RequestInterval = 20.0f;
 
 	// GPT API 요청 및 응답 처리 함수
 	void RequestGPTAssistant();
