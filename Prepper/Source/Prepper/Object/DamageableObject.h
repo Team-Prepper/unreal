@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Prepper/Interfaces/Damageable.h"
+#include "Sound/SoundCue.h"
+#include "NiagaraSystem.h"
 #include "DamageableObject.generated.h"
 
 class UNiagaraSystem;
